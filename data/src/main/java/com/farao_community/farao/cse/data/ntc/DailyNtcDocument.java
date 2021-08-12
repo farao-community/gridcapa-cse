@@ -21,9 +21,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-/**
- * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
- */
 public final class DailyNtcDocument {
     private final OffsetDateTime targetDateTime;
     private final NTCReductionsDocument ntcReductionsDocument;

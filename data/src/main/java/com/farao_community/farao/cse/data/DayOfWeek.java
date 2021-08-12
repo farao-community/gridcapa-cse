@@ -6,9 +6,6 @@
  */
 package com.farao_community.farao.cse.data;
 
-/**
- * @author Belgacem Najjari {@literal <belgacem.najjari at rte-france.com>}
- */
 public enum DayOfWeek {
     EVERYDAY(0),
     SATURDAY(6),

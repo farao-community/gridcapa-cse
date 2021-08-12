@@ -13,9 +13,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-/**
- * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
- */
 public final class DateTimeUtil {
 
     private DateTimeUtil() {

@@ -7,9 +7,6 @@
 
 package com.farao_community.farao.cse.data.ntc;
 
-/**
- * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
- */
 public class NtcInformation {
     private final String variationType;
     private final double flow;

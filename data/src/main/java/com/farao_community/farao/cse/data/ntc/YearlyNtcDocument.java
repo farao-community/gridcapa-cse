@@ -17,9 +17,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-/**
- * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
- */
 public final class YearlyNtcDocument {
     private final OffsetDateTime targetDateTime;
     private final NTCAnnualDocument ntcAnnualDocument;

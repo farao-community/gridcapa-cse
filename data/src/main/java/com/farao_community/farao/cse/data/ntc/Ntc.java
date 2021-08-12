@@ -18,9 +18,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-/**
- * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
- */
 public final class Ntc {
     private final YearlyNtcDocument yearlyNtcDocument;
     private final DailyNtcDocument dailyNtcDocument;

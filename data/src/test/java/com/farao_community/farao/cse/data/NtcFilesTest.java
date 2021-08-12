@@ -17,10 +17,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
- * @author Belgacem Najjari {@literal <belgacem.najjari at rte-france.com>}
- */
 class NtcFilesTest {
     private static final double DOUBLE_PRECISION = 0.001;
 

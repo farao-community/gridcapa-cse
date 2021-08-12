@@ -14,9 +14,6 @@ import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-/**
- * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
- */
 public final class NtcUtil {
     static final String ABSOLUTE = "absolute";
 

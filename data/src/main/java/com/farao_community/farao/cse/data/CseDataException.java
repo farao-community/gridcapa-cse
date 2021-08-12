@@ -7,9 +7,6 @@
 
 package com.farao_community.farao.cse.data;
 
-/**
- * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
- */
 public class CseDataException extends RuntimeException {
 
     public CseDataException(String message) {
