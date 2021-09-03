@@ -24,8 +24,7 @@
     </scm>
 
     <modules>
-        <module>data</module>
-        <module>network-processing</module>
+        <module>gridcapa-cse-lib</module>
     </modules>
 
     <properties>
