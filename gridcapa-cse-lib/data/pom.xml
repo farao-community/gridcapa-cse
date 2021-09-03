@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>gridcapa-cse</artifactId>
+        <artifactId>gridcapa-cse-lib</artifactId>
         <groupId>com.farao-community.farao</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
