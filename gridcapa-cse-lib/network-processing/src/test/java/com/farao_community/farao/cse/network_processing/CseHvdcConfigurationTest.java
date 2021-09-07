@@ -14,7 +14,6 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.ucte.converter.UcteExporter;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
@@ -31,13 +30,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class CseHvdcConfigurationTest {
 
-    @BeforeEach
-    public void setUp() {
-
-    }
-
     @Test
-    public void roundTripNetworkOk() throws IOException {
+    void roundTripNetworkOk() throws IOException {
         Network network = Importers.loadNetwork("20210219_1630_2D5_CO_CSE5.uct", getClass().getResourceAsStream("/20210219_1630_2D5_CO_CSE1.uct"), LocalComputationManager.getDefault(), new ImportConfig(), null);
 
         File hvdcConfigFile = new File(getClass().getResource("/HvdcConfig.json").getFile());
@@ -52,7 +46,7 @@ class CseHvdcConfigurationTest {
     }
 
     @Test
-    public void roundTripNetworkShouldThrow() throws IOException {
+    void roundTripNetworkShouldThrow() throws IOException {
         Network network = Importers.loadNetwork("20210219_1630_2D5_CO_CSE5.uct", getClass().getResourceAsStream("/20210219_1630_2D5_CO_CSE1.uct"), LocalComputationManager.getDefault(), new ImportConfig(), null);
 
         File hvdcConfigFile = new File(getClass().getResource("/HvdcConfig.json").getFile());
