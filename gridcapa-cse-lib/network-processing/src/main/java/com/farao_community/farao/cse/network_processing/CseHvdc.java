@@ -116,7 +116,7 @@ public class CseHvdc {
         } else if (generatorOr.getTargetP() <= 0 && generatorEx.getTargetP() >= 0) {
             convertersMode = HvdcLine.ConvertersMode.SIDE_1_INVERTER_SIDE_2_RECTIFIER;
         } else {
-            throw new RuntimeException(String.format("Fictive generators' target P for hvdc %s are of the same sign. Unable to decide flow direction.", id));
+            throw new CseHvdcException(String.format("Fictive generators' target P for hvdc %s are of the same sign. Unable to decide flow direction.", id));
         }
 
         // Creating the hvdc line between the two vsc converter stations
@@ -163,12 +163,8 @@ public class CseHvdc {
         }
 
         // Reconnecting the extra lines
-        ((Bus) initialNetwork.getIdentifiable(lineOr)).getLines().forEach(line -> {
-            reconnectLineIfNeeded(line, modifiedNetwork.getLine(line.getId()));
-        });
-        ((Bus) initialNetwork.getIdentifiable(lineEx)).getLines().forEach(line -> {
-            reconnectLineIfNeeded(line, modifiedNetwork.getLine(line.getId()));
-        });
+        ((Bus) initialNetwork.getIdentifiable(lineOr)).getLines().forEach(line -> reconnectLineIfNeeded(line, modifiedNetwork.getLine(line.getId())));
+        ((Bus) initialNetwork.getIdentifiable(lineEx)).getLines().forEach(line -> reconnectLineIfNeeded(line, modifiedNetwork.getLine(line.getId())));
 
     }
 

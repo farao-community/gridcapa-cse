@@ -7,7 +7,6 @@
 package com.farao_community.farao.cse.network_processing;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
@@ -19,7 +18,7 @@ import java.io.IOException;
 public class CseHvdcConfigurationDeserializer extends JsonDeserializer<CseHvdcConfiguration> {
 
     @Override
-    public CseHvdcConfiguration deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public CseHvdcConfiguration deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         if (jsonParser.nextToken().isStructEnd()) {
             throw new CseHvdcConfigurationDeserializationException("Hvdc configuration file is empty");
         }

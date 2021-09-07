@@ -10,15 +10,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
-import java.io.IOException;
-
 /**
  * @author Philippe Edwards {@literal <philippe.edwards@rte-france.com>}
  */
 class CseHvdcConfigurationSerializer extends JsonSerializer<CseHvdcConfiguration> {
 
     @Override
-    public void serialize(CseHvdcConfiguration hvdcConfiguration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-
+    public void serialize(CseHvdcConfiguration hvdcConfiguration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) {
+        throw new UnsupportedOperationException("CSE HVDC configuration serializer is not implemented yet");
     }
 }
