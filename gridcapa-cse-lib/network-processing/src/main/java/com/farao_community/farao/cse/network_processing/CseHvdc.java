@@ -164,15 +164,20 @@ public class CseHvdc {
 
         // Reconnecting the extra lines
         ((Bus) initialNetwork.getIdentifiable(lineOr)).getLines().forEach(line -> {
-            Line disconnectedLine = modifiedNetwork.getLine(line.getId());
-            disconnectedLine.getTerminal1().disconnect();
-            disconnectedLine.getTerminal2().disconnect();
+            reconnectLineIfNeeded(line, modifiedNetwork.getLine(line.getId()));
         });
         ((Bus) initialNetwork.getIdentifiable(lineEx)).getLines().forEach(line -> {
-            Line disconnectedLine = modifiedNetwork.getLine(line.getId());
-            disconnectedLine.getTerminal1().disconnect();
-            disconnectedLine.getTerminal2().disconnect();
+            reconnectLineIfNeeded(line, modifiedNetwork.getLine(line.getId()));
         });
 
+    }
+
+    private void reconnectLineIfNeeded(Line initialLine, Line modifiedLine) {
+        if (initialLine.getTerminal1().isConnected()) {
+            modifiedLine.getTerminal1().connect();
+        }
+        if (initialLine.getTerminal2().isConnected()) {
+            modifiedLine.getTerminal2().connect();
+        }
     }
 }
