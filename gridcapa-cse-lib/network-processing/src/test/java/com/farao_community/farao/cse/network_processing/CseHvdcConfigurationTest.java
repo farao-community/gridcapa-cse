@@ -17,7 +17,6 @@ import com.powsybl.ucte.converter.UcteExporter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
-import org.opentest4j.ValueWrapper;
 
 import java.io.*;
 import java.util.Arrays;
@@ -31,8 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Philippe Edwards {@literal <philippe.edwards at rte-france.com>}
  */
 class CseHvdcConfigurationTest {
-
-    private ValueWrapper actual;
 
     @BeforeEach
     public void setUp() {
