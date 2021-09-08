@@ -7,7 +7,7 @@
     <parent>
         <artifactId>farao-parent</artifactId>
         <groupId>com.farao-community.farao</groupId>
-        <version>1.0.8</version>
+        <version>1.0.9</version>
     </parent>
 
     <artifactId>gridcapa-cse</artifactId>
@@ -28,8 +28,6 @@
     </modules>
 
     <properties>
-        <java.version>11</java.version>
-
         <!-- Dependencies versions -->
         <maven.jaxb2.version>0.14.0</maven.jaxb2.version>
         <maven.jvnet.jaxb2-basics.version>1.11.1</maven.jvnet.jaxb2-basics.version>
@@ -37,7 +35,7 @@
         <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
         <jaxb-runtime.version>2.4.0-b180830.0438</jaxb-runtime.version>
 
-        <farao.bom.version>1.0.8</farao.bom.version>
+        <farao.bom.version>1.0.9</farao.bom.version>
     </properties>
 
     <build>
