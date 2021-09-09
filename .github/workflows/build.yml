@@ -16,7 +16,7 @@ jobs:
           java-version: 11
 
       - name: Build with Maven
-        run: mvn --batch-mode -Pcoverage install
+        run: mvn --batch-mode -Pdefault,coverage install
 
       - name: Run SonarCloud analysis
         run: >
