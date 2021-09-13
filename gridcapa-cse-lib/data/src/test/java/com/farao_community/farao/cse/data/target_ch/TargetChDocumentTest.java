@@ -38,17 +38,17 @@ class TargetChDocumentTest {
         checkValues(targetChDocument, "2020-12-27T23:00Z", 130, 20);
     }
 
-    private void checkValues(TargetChDocument targetChDocument, String targetDateTime, double mannoMendrisioTarget, double silsSoazzaTarget) {
+    private void checkValues(TargetChDocument targetChDocument, String targetDateTime, double mannoMendrisioTarget, double magadinoSoazzaTarget) {
         Map<String, List<OutageInformation>> information = targetChDocument.getOutagesInformationPerLineId(OffsetDateTime.parse(targetDateTime));
         OutageInformation mannoMendrisioInformation = information.get("ml_0001").stream()
                 .filter(outageInformation -> outageInformation.getName().equals("150kV Manno-Mendrisio"))
                 .findFirst()
                 .orElseThrow();
-        OutageInformation silsSoazzaInformation = information.get("ml_0001").stream()
+        OutageInformation magadinoSoazzaInformation = information.get("ml_0001").stream()
                 .filter(outageInformation -> outageInformation.getName().equals("220kV Magadino-Soazza 'Moesa Sud'"))
                 .findFirst()
                 .orElseThrow();
         assertEquals(mannoMendrisioTarget, mannoMendrisioInformation.getFixedFlow());
-        assertEquals(silsSoazzaTarget, silsSoazzaInformation.getFixedFlow());
+        assertEquals(magadinoSoazzaTarget, magadinoSoazzaInformation.getFixedFlow());
     }
 }
