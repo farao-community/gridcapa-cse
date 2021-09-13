@@ -22,7 +22,7 @@ class NtcFilesTest {
     private Ntc ntc;
 
     @BeforeEach
-    public void setUp() throws JAXBException {
+    void setUp() throws JAXBException {
         OffsetDateTime targetDateTime = OffsetDateTime.parse("2021-06-24T16:30Z");
         InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1.xml");
         InputStream dailyData = getClass().getResourceAsStream("20210624_2D4_NTC_reductions_CSE1.xml");

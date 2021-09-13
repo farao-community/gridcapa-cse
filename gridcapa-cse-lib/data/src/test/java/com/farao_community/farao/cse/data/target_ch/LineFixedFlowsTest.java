@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LineFixedFlowsTest {
 
     @Test
-    public void testFixedFlowWhenNoLinesAreInOutage() throws JAXBException {
+    void testFixedFlowWhenNoLinesAreInOutage() throws JAXBException {
         String filename = "TestCase12NodesNoOutages.uct";
         Network network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
 
@@ -37,7 +37,7 @@ class LineFixedFlowsTest {
     }
 
     @Test
-    public void testFixedFlowWhenOneLineIsInOutage() throws JAXBException {
+    void testFixedFlowWhenOneLineIsInOutage() throws JAXBException {
         String filename = "TestCase12NodesOneOutage.uct";
         Network network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
 
@@ -53,7 +53,7 @@ class LineFixedFlowsTest {
     }
 
     @Test
-    public void testFixedFlowWhenTwoLinesAreInOutage() throws JAXBException {
+    void testFixedFlowWhenTwoLinesAreInOutage() throws JAXBException {
         String filename = "TestCase12NodesTwoOutages.uct";
         Network network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
 

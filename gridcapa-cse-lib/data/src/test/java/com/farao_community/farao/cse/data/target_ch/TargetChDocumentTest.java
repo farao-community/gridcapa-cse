@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TargetChDocumentTest {
 
     @Test
-    public void testImport() throws JAXBException {
+    void testImport() throws JAXBException {
         InputStream is = getClass().getResourceAsStream("20191120_Targets_CH_completetest.xml");
         TargetChDocument targetChDocument = TargetChDocument.create(is);
 

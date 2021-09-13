@@ -51,15 +51,9 @@ public final class LineFixedFlows {
             Optional<Branch<?>> optBranch = findBranch(outageInformation, network, ucteNetworkHelper);
             if (optBranch.isPresent()) {
                 Branch<?> branch = optBranch.get();
-                if (isOutOfService(branch)) {
-                    double outageFixedFlow = outageInformation.getFixedFlow();
-                    if (fixedFlow.isEmpty()) {
-                        fixedFlow = Optional.of(outageFixedFlow);
-                    } else {
-                        if (fixedFlow.get() > outageFixedFlow) {
-                            fixedFlow = Optional.of(outageFixedFlow);
-                        }
-                    }
+                double outageFixedFlow = outageInformation.getFixedFlow();
+                if (isOutOfService(branch) && (fixedFlow.isEmpty() || fixedFlow.get() > outageFixedFlow)) {
+                    fixedFlow = Optional.of(outageFixedFlow);
                 }
             }
         }
