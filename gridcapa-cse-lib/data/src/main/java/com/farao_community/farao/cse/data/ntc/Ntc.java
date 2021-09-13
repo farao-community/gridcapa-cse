@@ -49,6 +49,13 @@ public final class Ntc {
         return getReducedSplittingFactors(ntcPerCountry, flowOnMerchantLinesPerCountry, totalNtc, totalFlowOnMerchantLines);
     }
 
+    public Map<String, Double> getFlowOnFixedFlowLines() {
+        Predicate<TLine> fixedFlowLines = tLine -> tLine.isFixedFlow() && tLine.isModelized();
+        Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocument.getLineInformationPerLineId(fixedFlowLines);
+        Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocument.getLineInformationPerLineId(fixedFlowLines);
+        return getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
+    }
+
     Map<String, Double> getFlowPerCountry(Predicate<TLine> lineSelector) {
         Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocument.getLineInformationPerLineId(lineSelector);
         Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocument.getLineInformationPerLineId(lineSelector);

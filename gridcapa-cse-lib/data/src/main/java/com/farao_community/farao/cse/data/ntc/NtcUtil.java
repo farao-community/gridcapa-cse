@@ -14,14 +14,14 @@ import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public final class NtcUtil {
+final class NtcUtil {
     static final String ABSOLUTE = "absolute";
 
     private NtcUtil() {
         // Should not be instantiated
     }
 
-    public static <T> Collector<T, ?, Optional<T>> toSingleton(String message) {
+    static <T> Collector<T, ?, Optional<T>> toSingleton(String message) {
         return Collectors.collectingAndThen(
             Collectors.toList(),
             list -> {
@@ -36,13 +36,13 @@ public final class NtcUtil {
         );
     }
 
-    public static TNTC getTNtcFromLine(OffsetDateTime targetDateTime, TLine tLine) {
+    static TNTC getTNtcFromLine(OffsetDateTime targetDateTime, TLine tLine) {
         return getTNtcFromPeriods(targetDateTime, tLine.getPeriod()).stream()
                 .collect(toSingleton(String.format("Several matching flow information for line %s", tLine.getCode())))
                 .orElseThrow(() -> new CseDataException(String.format("No NTC definition for line %s", tLine.getCode())));
     }
 
-    public static List<TNTC> getTNtcFromDays(OffsetDateTime targetDateTime, List<TDay> tDays) {
+    static List<TNTC> getTNtcFromDays(OffsetDateTime targetDateTime, List<TDay> tDays) {
         Optional<TDay> day = tDays.stream()
                 .filter(tDay -> DateTimeUtil.isDayMatching(targetDateTime, tDay.getDay()))
                 .collect(toSingleton(String.format("Several day definitions for target date %s", targetDateTime.toString())));
@@ -52,7 +52,7 @@ public final class NtcUtil {
                 .orElse(Collections.emptyList());
     }
 
-    public static List<TNTC> getTNtcFromPeriods(OffsetDateTime targetDateTime, List<TPeriod> tPeriods) {
+    static List<TNTC> getTNtcFromPeriods(OffsetDateTime targetDateTime, List<TPeriod> tPeriods) {
         Optional<TPeriod> period = tPeriods.stream()
                 .filter(tPeriod -> DateTimeUtil.isTargetDateInInterval(targetDateTime, tPeriod.getDtini(), tPeriod.getDtfin()))
                 .collect(toSingleton(String.format("Several period definitions for target date %s", targetDateTime.toString())));
@@ -62,7 +62,7 @@ public final class NtcUtil {
         }
 
         Optional<TDayOfWeek> dayOfWeek = period.get().getDayOfWeek().stream()
-                .filter(tDayOfWeek -> DateTimeUtil.isTargetDayOfWeekMatchWithDayNum(tDayOfWeek.getDaynum(), targetDateTime.getDayOfWeek().getValue()))
+                .filter(tDayOfWeek -> isTargetDayOfWeekMatchWithDayNum(tDayOfWeek.getDaynum(), targetDateTime.getDayOfWeek().getValue()))
                 .filter(tDayOfWeek -> !getTNtcFromTimeIntervals(targetDateTime, tDayOfWeek.getTimeInterval()).isEmpty())
                 .collect(toSingleton(String.format("Several matching day of week in period for target date %s", targetDateTime.toString())));
 
@@ -71,11 +71,29 @@ public final class NtcUtil {
                 .orElse(Collections.emptyList());
     }
 
-    public static List<TNTC> getTNtcFromTimeIntervals(OffsetDateTime targetDateTime, List<TTimeInterval> tTimeIntervals) {
+    static List<TNTC> getTNtcFromTimeIntervals(OffsetDateTime targetDateTime, List<TTimeInterval> tTimeIntervals) {
         Optional<TTimeInterval> timeInterval = tTimeIntervals.stream()
                 .filter(tTimeInterval -> DateTimeUtil.isTargetDateInInterval(targetDateTime, tTimeInterval.getTini(), tTimeInterval.getTfin()))
                 .collect(toSingleton(String.format("Several matching time interval for target date %s", targetDateTime.toString())));
 
         return timeInterval.map(TTimeInterval::getNTC).orElse(Collections.emptyList());
+    }
+
+    static boolean isTargetDayOfWeekMatchWithDayNum(int daynum, int targetDayZOfWeek) {
+        DayOfWeek dayOfWeek = DayOfWeek.getInstance(daynum);
+        switch (dayOfWeek) {
+            case EVERYDAY:
+                return true;
+            case SATURDAY:
+                return targetDayZOfWeek == DayOfWeek.SATURDAY.getDaynum();
+            case SUNDAY:
+                return targetDayZOfWeek == DayOfWeek.SUNDAY.getDaynum();
+            case MONTOFRI:
+                return targetDayZOfWeek != DayOfWeek.SATURDAY.getDaynum() && targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
+            case MONTOSAT:
+                return targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
+            default:
+                return false;
+        }
     }
 }
