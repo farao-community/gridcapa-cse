@@ -7,22 +7,20 @@
 
 package com.farao_community.farao.cse.data.target_ch;
 
-import javax.xml.bind.JAXBContext;
+import com.farao_community.farao.cse.data.DataUtil;
+
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;
+
+import static com.farao_community.farao.cse.data.DataUtil.toOptional;
 
 final class TargetChDocument {
     private final TargetsDocument targetsDocument;
 
     static TargetChDocument create(InputStream targetChInputStream) throws JAXBException {
-        TargetsDocument targetsDocument =  JAXBContext.newInstance(TargetsDocument.class)
-                .createUnmarshaller()
-                .unmarshal(new StreamSource(targetChInputStream), TargetsDocument.class)
-                .getValue();
-        return new TargetChDocument(targetsDocument);
+        return new TargetChDocument(DataUtil.unmarshalFromInputStream(targetChInputStream, TargetsDocument.class));
     }
 
     private TargetChDocument(TargetsDocument targetsDocument) {
@@ -59,7 +57,7 @@ final class TargetChDocument {
 
     private void addOutageInformation(List<OutageInformation> outagesInformation, OffsetDateTime targetDateTime, TOutage tOutage) {
         TargetChUtil.getFixedFlowFromDaysOfWeek(targetDateTime, tOutage.getDayOfWeek()).stream()
-                .collect(TargetChUtil.toSingleton("For a line/outage there should be only one fixed flow"))
+                .collect(toOptional())
                 .ifPresent(fixedFlow -> outagesInformation.add(new OutageInformation(tOutage, fixedFlow)));
     }
 }

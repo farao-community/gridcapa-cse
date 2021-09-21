@@ -7,15 +7,14 @@
 
 package com.farao_community.farao.cse.data.target_ch;
 
-import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.DateTimeUtil;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+
+import static com.farao_community.farao.cse.data.DataUtil.toOptional;
 
 final class TargetChUtil {
 
@@ -23,40 +22,28 @@ final class TargetChUtil {
         // Should not be instantiated
     }
 
-    static <T> Collector<T, ?, Optional<T>> toSingleton(String message) {
-        return Collectors.collectingAndThen(Collectors.toList(), list -> {
-            if (list.isEmpty()) {
-                return Optional.empty();
-            }
-            if (list.size() == 1) {
-                return Optional.of(list.get(0));
-            }
-            throw new CseDataException(message);
-        });
-    }
-
     static Optional<TPeriod> getMatchingPeriod(OffsetDateTime targetDateTime, List<TPeriod> tPeriods) {
         return tPeriods.stream()
                 .filter(tPeriod -> DateTimeUtil.isTargetDateInInterval(targetDateTime, tPeriod.getTini(), tPeriod.getTfin()))
-                .collect(toSingleton(String.format("Several period definitions for target date %s", targetDateTime.toString())));
+                .collect(toOptional());
     }
 
     static Optional<Double> getFixedFlowFromDaysOfWeek(OffsetDateTime targetDateTime, List<TDayOfWeek> tDayOfWeeks) {
-        Optional<TDayOfWeek> dayOfWeek = tDayOfWeeks.stream()
+        return tDayOfWeeks.stream()
                 .filter(tDayOfWeek -> isTargetDayOfWeekMatchWithDayNum(tDayOfWeek.getDaynum(), targetDateTime.getDayOfWeek().getValue()))
                 .filter(tDayOfWeek -> getFixedFlowFromTimeIntervals(targetDateTime, tDayOfWeek.getTimeInterval()).isPresent())
-                .collect(toSingleton(String.format("Several matching day of week in period for target date %s", targetDateTime.toString())));
-
-        return dayOfWeek
-                .map(tDay -> getFixedFlowFromTimeIntervals(targetDateTime, dayOfWeek.get().getTimeInterval()).get());
+                .collect(toOptional())
+                .map(TDayOfWeek::getTimeInterval)
+                .flatMap(tTimeIntervals -> getFixedFlowFromTimeIntervals(targetDateTime, tTimeIntervals));
     }
 
     static Optional<Double> getFixedFlowFromTimeIntervals(OffsetDateTime targetDateTime, List<TTimeInterval> tTimeIntervals) {
-        Optional<TTimeInterval> timeInterval = tTimeIntervals.stream()
+        return tTimeIntervals.stream()
                 .filter(tTimeInterval -> DateTimeUtil.isTargetDateInInterval(targetDateTime, tTimeInterval.getTini(), tTimeInterval.getTfin()))
-                .collect(toSingleton(String.format("Several matching time interval for target date %s", targetDateTime.toString())));
-
-        return timeInterval.map(TTimeInterval::getFixedFlow).map(TFixedFlow::getValue).map(Short::doubleValue);
+                .collect(toOptional())
+                .map(TTimeInterval::getFixedFlow)
+                .map(TFixedFlow::getValue)
+                .map(Short::doubleValue);
     }
 
     static boolean isTargetDayOfWeekMatchWithDayNum(int daynum, int targetDayZOfWeek) {
