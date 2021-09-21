@@ -41,11 +41,8 @@ final class TargetChDocument {
         Set<TLine> lines = new HashSet<>();
         tTargetData.forEach(data -> {
             TSpecialLines tSpecialLines = data.getSpecialLines();
-            if (tSpecialLines != null) {
-                TLine tLine = tSpecialLines.getLine();
-                if (tLine != null) {
-                    lines.add(tSpecialLines.getLine());
-                }
+            if (tSpecialLines != null && tSpecialLines.getLine() != null) {
+                lines.add(tSpecialLines.getLine());
             }
         });
         return lines;
