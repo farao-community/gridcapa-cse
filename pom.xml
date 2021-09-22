@@ -70,6 +70,8 @@
                 <groupId>com.farao-community.farao</groupId>
                 <artifactId>farao-bom</artifactId>
                 <version>${farao.bom.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
