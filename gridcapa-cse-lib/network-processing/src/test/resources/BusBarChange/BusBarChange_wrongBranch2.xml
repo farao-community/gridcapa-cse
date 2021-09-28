@@ -21,17 +21,22 @@
   <CRACSeries>
     <RemedialActions>
       <RemedialAction>
-        <Name v="RA_NOK"/>
+        <Name v="Bus bar ok test"/>
         <TimeInterval v="2020-03-12T23:00Z/2020-03-13T00:00Z"/>
         <Operator v="BE"/>
         <Application v="PREVENTIVE"/>
         <SharedWith v="None"/>
         <BusBar>
-          <InitialNode v="BBE2AA1 "/>
-          <FinalNode v="BBE2AA12"/>
-          <Branch> <!-- this is a PST -->
-            <FromNode v="BBE2AA1 "/>
-            <ToNode v="BBE3AA1 "/>
+          <InitialNode v="BBE1AA11"/>
+          <FinalNode v="BBE1AA12"/>
+          <Branch>
+            <FromNode v="BBE1AA11"/> <!-- initial node in the from node -->
+            <ToNode v="BBE2AA1*"/>
+            <Order v="1"/>
+          </Branch>
+          <Branch> <!-- is not connected to initial/final node -->
+            <FromNode v="NNL1AA1 "/>
+            <ToNode v="NNL3AA1 "/>
             <Order v="1"/>
           </Branch>
         </BusBar>

@@ -90,9 +90,17 @@ class BusBarChangeProcessorTest {
     }
 
     @Test
-    void testWrongBranch() throws IOException {
+    void testWrongBranchIsPst() throws IOException {
         // The RA has a branch of type PST. The RA should be skipped and the network should not be modified.
         setUp("BaseNetwork.uct", "BusBarChange_wrongBranch.xml");
+        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/BaseNetwork.uct");
+        assertEquals(0, busBarChangeSwitchesSet.size());
+    }
+
+    @Test
+    void testWrongBranchNotConnected() throws IOException {
+        // The RA has a branch which is not connected to the initial nor to the final node
+        setUp("BaseNetwork.uct", "BusBarChange_wrongBranch2.xml");
         TestUtils.assertNetworksAreEqual(network, "/BusBarChange/BaseNetwork.uct");
         assertEquals(0, busBarChangeSwitchesSet.size());
     }

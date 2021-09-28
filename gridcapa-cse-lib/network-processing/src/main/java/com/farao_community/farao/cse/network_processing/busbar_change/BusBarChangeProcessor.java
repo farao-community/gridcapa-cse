@@ -83,7 +83,7 @@ public class BusBarChangeProcessor {
     /**
      * For every BusBar TRemedialAction, this method detects and stores info about elements that should be created:
      * - buses, if initial or final node does not exist in the network (info stored in busesToCreate)
-     * - switches, to be able to move the branch from the initial to the final node (info stored in switchesToCreatePerRa)
+     * - switches, to be able to move the line from the initial to the final node (info stored in switchesToCreatePerRa)
      */
     private void computeBusesAndSwitchesToCreate(TRemedialAction tRemedialAction) {
         String raId = tRemedialAction.getName().getV();
@@ -118,9 +118,9 @@ public class BusBarChangeProcessor {
         switchesToCreatePerRa.put(raId, new HashSet<>());
         for (TBranch tBranch : tRemedialAction.getBusBar().getBranch()) {
             String suffix = String.valueOf(tBranch.getOrder().getV());
-            // Try to get from->to branch
+            // Try to get from->to line
             UcteCnecElementHelper branchHelper = getBranchHelper(tBranch.getFromNode().getV(), tBranch.getToNode().getV(), suffix);
-            // Branch may be already on final node, try from/to->final node
+            // Line may be already on final node, try from/to->final node
             if (!branchHelper.isValid()) {
                 branchHelper = getBranchHelper(tBranch.getFromNode().getV(), finalNodeId, suffix);
             }
@@ -132,6 +132,9 @@ public class BusBarChangeProcessor {
             } else if (!(network.getIdentifiable(branchHelper.getIdInNetwork()) instanceof Line)) {
                 throw new FaraoException(String.format("One of the branches (%s) in the remedial action is not a line: %s", branchHelper.getIdInNetwork(), network.getIdentifiable(branchHelper.getIdInNetwork()).getClass()));
             }
+            if (!isLineConnected(branchHelper.getIdInNetwork(), initialNodeId) && !isLineConnected(branchHelper.getIdInNetwork(), finalNodeId)) {
+                throw new FaraoException(String.format("Branch %s is neither connected to initial node (%s) nor to final node (%s)", branchHelper.getIdInNetwork(), initialNodeId, finalNodeId));
+            }
             raSwitchesToCreate.add(new SwitchPairToCreate(branchHelper.getIdInNetwork(), initialNodeId, finalNodeId));
         }
 
@@ -140,6 +143,16 @@ public class BusBarChangeProcessor {
         switchesToCreatePerRa.get(raId).addAll(raSwitchesToCreate);
         initialNodePerRa.put(raId, initialNodeId);
         finalNodePerRa.put(raId, finalNodeId);
+    }
+
+    /**
+     * Returns true if a line is connected to a given node
+     */
+    private boolean isLineConnected(String lineId, String nodeId) {
+        Line line = network.getLine(lineId);
+        String bus1 = line.getTerminal1().getBusBreakerView().getConnectableBus().getId();
+        String bus2 = line.getTerminal2().getBusBreakerView().getConnectableBus().getId();
+        return bus1.equals(nodeId) || bus2.equals(nodeId);
     }
 
     /**
@@ -160,7 +173,7 @@ public class BusBarChangeProcessor {
             .sorted(Comparator.comparing(SwitchPairToCreate::uniqueId))
             .forEach(switchPairToCreate -> {
                 if (!createdSwitches.containsKey(switchPairToCreate.uniqueId())) {
-                    Pair<String, String> switches = createSwitchPair(switchPairToCreate.branchId, switchPairToCreate.initialNodeId, switchPairToCreate.finalNodeId);
+                    Pair<String, String> switches = createSwitchPair(switchPairToCreate.lineId, switchPairToCreate.initialNodeId, switchPairToCreate.finalNodeId);
                     createdSwitches.put(switchPairToCreate.uniqueId(),
                         Map.of(switchPairToCreate.initialNodeId, switches.getFirst(),
                             switchPairToCreate.finalNodeId, switches.getSecond()));
@@ -263,17 +276,17 @@ public class BusBarChangeProcessor {
     }
 
     /**
-     * Creates a switch pair between a branch and two nodes, by creating an intermediary fictitious switch
-     * The branch should be initially connected to one of the two nodes
-     * The switches are open or closed depending on the initial state of the branch
+     * Creates a switch pair between a line and two nodes, by creating an intermediary fictitious switch
+     * The line should be initially connected to one of the two nodes
+     * The switches are open or closed depending on the initial state of the line
      *
-     * @param branchId: ID of the branch
+     * @param lineId: ID of the line
      * @param node1:    ID of node1
      * @param node2:    ID of node2
      * @return the pair of IDs of the two created switches (switch to node1, switch to node2)
      */
-    private Pair<String, String> createSwitchPair(String branchId, String node1, String node2) {
-        Line line = (Line) network.getIdentifiable(branchId);
+    private Pair<String, String> createSwitchPair(String lineId, String node1, String node2) {
+        Line line = network.getLine(lineId);
         String bus1 = line.getTerminal1().getBusBreakerView().getConnectableBus().getId();
         String bus2 = line.getTerminal2().getBusBreakerView().getConnectableBus().getId();
 
@@ -284,22 +297,21 @@ public class BusBarChangeProcessor {
         Bus fictitiousBus = createBus(busId, voltageLevel.getId(), line.getTerminal1().getBusBreakerView().getConnectableBus().getId());
 
         // Move one line end to the fictitious bus
-        boolean branchIsOnNode1; // check if branch is initially on node1
+        boolean lineIsOnNode1 = true; // check if line is initially on node1
         if (bus1.equals(node1) || bus1.equals(node2)) {
             moveLine(line, Branch.Side.ONE, fictitiousBus);
-            branchIsOnNode1 = bus1.equals(node1);
+            lineIsOnNode1 = bus1.equals(node1);
         } else if (bus2.equals(node1) || bus2.equals(node2)) {
             moveLine(line, Branch.Side.TWO, fictitiousBus);
-            branchIsOnNode1 = bus2.equals(node1);
-        } else {
-            throw new FaraoException(String.format("Neither node1 (%s) nor node2 (%s) belongs to the branch %s. Cannot create switch.", node1, node2, branchId));
+            lineIsOnNode1 = bus2.equals(node1);
         }
+        // else: should not happen, a check was done before
 
         // Create switches
-        // Set OPEN/CLOSED status depending on the branch's initially connected node
+        // Set OPEN/CLOSED status depending on the line's initially connected node
         double currentLimit = Math.min(line.getCurrentLimits1().getPermanentLimit(), line.getCurrentLimits2().getPermanentLimit());
-        String switchOnInitial = createSwitch(voltageLevel, node1, fictitiousBus.getId(), currentLimit, !branchIsOnNode1).getId();
-        String switchOnFinal = createSwitch(voltageLevel, node2, fictitiousBus.getId(), currentLimit, branchIsOnNode1).getId();
+        String switchOnInitial = createSwitch(voltageLevel, node1, fictitiousBus.getId(), currentLimit, !lineIsOnNode1).getId();
+        String switchOnFinal = createSwitch(voltageLevel, node2, fictitiousBus.getId(), currentLimit, lineIsOnNode1).getId();
 
         return Pair.create(switchOnInitial, switchOnFinal);
     }
@@ -426,21 +438,21 @@ public class BusBarChangeProcessor {
      * Contains needed info to create a pair of switches
      */
     private static class SwitchPairToCreate {
-        String branchId; // ID of the branch in the network
+        String lineId; // ID of the line in the network
         String initialNodeId; // ID of the initial node to connect the switch to
         String finalNodeId; // ID of the final node to connect the switch to
 
-        SwitchPairToCreate(String branchId, String initialNodeId, String finalNodeId) {
-            this.branchId = branchId;
+        SwitchPairToCreate(String lineId, String initialNodeId, String finalNodeId) {
+            this.lineId = lineId;
             this.initialNodeId = initialNodeId;
             this.finalNodeId = finalNodeId;
         }
 
         String uniqueId() {
             if (initialNodeId.compareTo(finalNodeId) < 0) {
-                return String.format("%s - %s - %s", branchId, initialNodeId, finalNodeId);
+                return String.format("%s - %s - %s", lineId, initialNodeId, finalNodeId);
             } else {
-                return String.format("%s - %s - %s", branchId, finalNodeId, initialNodeId);
+                return String.format("%s - %s - %s", lineId, finalNodeId, initialNodeId);
             }
         }
     }
