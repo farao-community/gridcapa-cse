@@ -5,15 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package com.farao_community.farao.cse.network_processing;
+package com.farao_community.farao.cse.network_processing.hvdc;
 
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.ImportConfig;
-import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.import_.Importers;
+import com.powsybl.iidm.network.Network;
 import com.powsybl.ucte.converter.UcteExporter;
-
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
