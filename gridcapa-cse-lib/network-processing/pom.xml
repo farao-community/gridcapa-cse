@@ -28,26 +28,6 @@
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-commons</artifactId>
-            <version>4.4.0</version> <!-- TODO : remove this -->
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-iidm-api</artifactId>
-            <version>4.4.0</version> <!-- TODO : remove this -->
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-iidm-converter-api</artifactId>
-            <version>4.4.0</version> <!-- TODO : remove this -->
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-iidm-xml-converter</artifactId>
-            <version>4.4.0</version> <!-- TODO : remove this -->
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
             <artifactId>powsybl-ucte-converter</artifactId>
         </dependency>
         <dependency>

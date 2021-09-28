@@ -2,7 +2,6 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.farao_community.farao.cse.network_processing.TestUtils;
 import com.powsybl.computation.local.LocalComputationManager;
-import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.import_.ImportConfig;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
@@ -12,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BusBarChangeProcessorTest {
 
@@ -24,9 +23,14 @@ class BusBarChangeProcessorTest {
 
     private void setUp(String networkFile, String cracFile) {
         network = Importers.loadNetwork(networkFile, getClass().getResourceAsStream("/BusBarChange/" + networkFile), LocalComputationManager.getDefault(), new ImportConfig(), null);
-        Network originalNetwork = Importers.loadNetwork(networkFile, getClass().getResourceAsStream("/BusBarChange/" + networkFile), LocalComputationManager.getDefault(), new ImportConfig(), null);
         InputStream is = getClass().getResourceAsStream("/BusBarChange/" + cracFile);
-        busBarChangeSwitchesSet = new BusBarChangeProcessor().process(network, originalNetwork, is);
+        busBarChangeSwitchesSet = new BusBarChangeProcessor().process(network, is);
+    }
+
+    private void compareLists(List<String> expected, List<String> actual) {
+        assertEquals(expected.size(), actual.size());
+        assertTrue(expected.containsAll(actual));
+        assertTrue(actual.containsAll(expected));
     }
 
     @Test
@@ -37,8 +41,8 @@ class BusBarChangeProcessorTest {
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("Bus bar ok test", busBarChangeSwitches.getRemedialActionId());
-        assertEquals(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1X BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), busBarChangeSwitches.getSwitchesToOpen());
-        assertEquals(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1X BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), busBarChangeSwitches.getSwitchesToClose());
+        compareLists(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1X BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), busBarChangeSwitches.getSwitchesToOpen());
+        compareLists(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1X BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), busBarChangeSwitches.getSwitchesToClose());
     }
 
     @Test
@@ -49,8 +53,8 @@ class BusBarChangeProcessorTest {
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("Bus bar ok test", busBarChangeSwitches.getRemedialActionId());
-        assertEquals(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1X BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), busBarChangeSwitches.getSwitchesToOpen());
-        assertEquals(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1X BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), busBarChangeSwitches.getSwitchesToClose());
+        compareLists(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1X BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), busBarChangeSwitches.getSwitchesToOpen());
+        compareLists(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1X BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), busBarChangeSwitches.getSwitchesToClose());
     }
 
     @Test
@@ -61,8 +65,8 @@ class BusBarChangeProcessorTest {
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("Bus bar ok test", busBarChangeSwitches.getRemedialActionId());
-        assertEquals(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1X BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), busBarChangeSwitches.getSwitchesToOpen());
-        assertEquals(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1X BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), busBarChangeSwitches.getSwitchesToClose());
+        compareLists(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1X BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), busBarChangeSwitches.getSwitchesToOpen());
+        compareLists(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1X BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), busBarChangeSwitches.getSwitchesToClose());
     }
 
     @Test
@@ -73,8 +77,8 @@ class BusBarChangeProcessorTest {
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("RA_OK", busBarChangeSwitches.getRemedialActionId());
-        assertEquals(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1X BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), busBarChangeSwitches.getSwitchesToOpen());
-        assertEquals(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1X BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), busBarChangeSwitches.getSwitchesToClose());
+        compareLists(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1X BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), busBarChangeSwitches.getSwitchesToOpen());
+        compareLists(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1X BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), busBarChangeSwitches.getSwitchesToClose());
     }
 
     @Test
@@ -101,25 +105,10 @@ class BusBarChangeProcessorTest {
         TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork_redundance.uct");
         assertEquals(2, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_1")).findAny().orElseThrow();
-        assertEquals(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1X BBE1AA11 1"), bbcs.getSwitchesToOpen());
-        assertEquals(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1X BBE1AA12 1"), bbcs.getSwitchesToClose());
+        compareLists(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1Y BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), bbcs.getSwitchesToOpen());
+        compareLists(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1Y BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), bbcs.getSwitchesToClose());
         bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_2")).findAny().orElseThrow();
-        assertEquals(List.of("BBE1AA1Y BBE1AA12 1", "BBE1AA1W BBE1AA12 1", "BBE1AA1X BBE1AA12 1"), bbcs.getSwitchesToOpen());
-        assertEquals(List.of("BBE1AA1Y BBE1AA11 1", "BBE1AA1W BBE1AA11 1", "BBE1AA1X BBE1AA11 1"), bbcs.getSwitchesToClose());
+        compareLists(List.of("BBE1AA1Y BBE1AA12 1", "BBE1AA1W BBE1AA12 1", "BBE1AA1X BBE1AA12 1"), bbcs.getSwitchesToOpen());
+        compareLists(List.of("BBE1AA1Y BBE1AA11 1", "BBE1AA1W BBE1AA11 1", "BBE1AA1X BBE1AA11 1"), bbcs.getSwitchesToClose());
     }
-
-   /* @Test
-    void test() throws IOException {
-        //Network network2 = Importers.loadNetwork("TestCase12Nodes_forCSE.uct", getClass().getResourceAsStream("/TestCase12Nodes_forCSE.uct"), LocalComputationManager.getDefault(), new ImportConfig(), null);
-        //Network network3 = Importers.loadNetwork("BusBarChange/TestCase12Nodes_forCSE3.uct", getClass().getResourceAsStream("/TestCase12Nodes_forCSE.uct"), LocalComputationManager.getDefault(), new ImportConfig(), null);
-
-
-        Network network = Importers.loadNetwork("BaseNetwork.uct", getClass().getResourceAsStream("/BusBarChange/BaseNetwork.uct"), LocalComputationManager.getDefault(), new ImportConfig(), null);
-
-        InputStream is = getClass().getResourceAsStream("/BusBarChange/BusBarChange.xml");
-        new BusBarChangeProcessor().process(network, "BusBarChange.xml", is);
-
-        //Exporters.export("UCTE", network, new Properties(), "D:\\Users\\mitripet\\Desktop", "TestCase12Nodes_actual");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork.uct");
-    }*/
 }

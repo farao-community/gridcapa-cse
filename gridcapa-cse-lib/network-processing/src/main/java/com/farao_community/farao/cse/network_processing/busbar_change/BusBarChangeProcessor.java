@@ -11,10 +11,7 @@ import com.farao_community.farao.data.crac_creation_util.ucte.UcteBusHelper;
 import com.farao_community.farao.data.crac_creation_util.ucte.UcteCnecElementHelper;
 import com.farao_community.farao.data.crac_creation_util.ucte.UcteNetworkAnalyzer;
 import com.farao_community.farao.data.crac_creation_util.ucte.UcteNetworkAnalyzerProperties;
-import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.network.*;
-import com.powsybl.iidm.xml.XMLExporter;
-import com.powsybl.iidm.xml.XMLImporter;
 import com.powsybl.ucte.converter.util.UcteConstants;
 import com.rte_france.farao.data.crac.io.cse.*;
 import com.rte_france.farao.data.crac.io.cse.crac_creator.CseCracCreator;
@@ -26,109 +23,101 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
+ * This class processes a CSE crac file in order to create, in the network, switches that can be used to apply
+ * BusBar remedial actions
+ *
  * @author Peter Mitri {@literal <peter.mitri@rte-france.com>}
  */
 public class BusBarChangeProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(BusBarChangeProcessor.class);
 
-    private Network originalNetwork;
-    private Network modifiedNetwork;
-    private UcteNetworkAnalyzer originalNetworkAnalyzer;
-    private UcteNetworkAnalyzer modifiedNetworkAnalyzer;
-    private Map<String, String> createdSwitches;
+    private Network network;
+    private UcteNetworkAnalyzer ucteNetworkAnalyzer;
+
+    private Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa;
+    private Map<String, String> initialNodePerRa;
+    private Map<String, String> finalNodePerRa;
+    private Map<String, BusToCreate> busesToCreate;
+    private Map<String, Map<String, String>> createdSwitches;
 
     public BusBarChangeProcessor() {
-        createdSwitches = new HashMap<>();
+        // nothing to do here
     }
 
-    private static Network copyUcteNetwork(Network network) {
-        MemDataSource dataSource = new MemDataSource();
-        new XMLExporter().export(network, new Properties(), dataSource);
-        return new XMLImporter().importData(dataSource, NetworkFactory.findDefault(), new Properties());
-    }
-
-    public Set<BusBarChangeSwitches> process(Network modifiedNetwork, Network originalNetwork, InputStream cracInputStream) {
-        // TODO : copy original network
+    public Set<BusBarChangeSwitches> process(Network network, InputStream cracInputStream) {
         CseCracImporter importer = new CseCracImporter();
         CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
-        this.originalNetwork = originalNetwork; // we have to keep a copy in case several RAs share branches
-        this.modifiedNetwork = modifiedNetwork;
-        originalNetworkAnalyzer = new UcteNetworkAnalyzer(originalNetwork, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
-        modifiedNetworkAnalyzer = new UcteNetworkAnalyzer(modifiedNetwork, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+        this.network = network;
+        ucteNetworkAnalyzer = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+
+        switchesToCreatePerRa = new HashMap<>();
+        initialNodePerRa = new HashMap<>();
+        finalNodePerRa = new HashMap<>();
+        busesToCreate = new HashMap<>();
+        createdSwitches = new HashMap<>();
 
         TCRACSeries tcracSeries = CseCracCreator.getCracSeries(cseCrac.getCracDocument());
         List<TRemedialActions> tRemedialActionsList = tcracSeries.getRemedialActions();
-        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = new HashSet<>();
+
         for (TRemedialActions tRemedialActions : tRemedialActionsList) {
             if (tRemedialActions != null) {
                 tRemedialActions.getRemedialAction().stream()
                     .filter(tRemedialAction -> tRemedialAction.getBusBar() != null)
                     .forEach(tRemedialAction -> {
                         try {
-                            busBarChangeSwitchesSet.add(createSwitches(tRemedialAction));
+                            computeBusesAndSwitchesToCreate(tRemedialAction);
                         } catch (FaraoException e) {
                             LOGGER.warn("RA {} has been skipped: {}", tRemedialAction.getName().getV(), e.getMessage());
                         }
-                    }
-                );
+                    });
             }
         }
-        return busBarChangeSwitchesSet;
-    }
-
-    private void updateModifiedNetworkAnalyzer() {
-        modifiedNetworkAnalyzer = new UcteNetworkAnalyzer(modifiedNetwork, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+        createBuses();
+        createSwitches();
+        return computeBusBarChangeSwitches();
     }
 
     /**
-     * Create fictitious switches for a given BusBar change remedial action
-     * For every branch in the RA, this method creates two switches (open or closed initially depending on initial network)
-     * for initial and final node, and a fictitious intermediary bus
-     *
-     * @param tRemedialAction: the native remedial action in the CSE CRAC file
-     * @return a {@link BusBarChangeSwitches} object mapping the IDs of created switches that should be open or closed by the remedial action
+     * For every BusBar TRemedialAction, this method detects and stores info about elements that should be created:
+     * - buses, if initial or final node does not exist in the network (info stored in busesToCreate)
+     * - switches, to be able to move the branch from the initial to the final node (info stored in switchesToCreatePerRa)
      */
-    private BusBarChangeSwitches createSwitches(TRemedialAction tRemedialAction) {
+    private void computeBusesAndSwitchesToCreate(TRemedialAction tRemedialAction) {
         String raId = tRemedialAction.getName().getV();
+        Set<BusToCreate> raBusesToCreate = new HashSet<>();
+        Set<SwitchPairToCreate> raSwitchesToCreate = new HashSet<>();
 
         // Get initial and final nodes
-        UcteBusHelper initialNodeHelper = new UcteBusHelper(tRemedialAction.getBusBar().getInitialNode().getV(), modifiedNetworkAnalyzer);
-        UcteBusHelper finalNodeHelper = new UcteBusHelper(tRemedialAction.getBusBar().getFinalNode().getV(), modifiedNetworkAnalyzer);
+        UcteBusHelper initialNodeHelper = new UcteBusHelper(tRemedialAction.getBusBar().getInitialNode().getV(), ucteNetworkAnalyzer);
+        UcteBusHelper finalNodeHelper = new UcteBusHelper(tRemedialAction.getBusBar().getFinalNode().getV(), ucteNetworkAnalyzer);
 
         String initialNodeId;
         String finalNodeId;
         Bus referenceBus;
-        VoltageLevel voltageLevel;
-        boolean shouldCreateInitialNode = false;
-        boolean shouldCreateFinalNode = false;
-
         if (initialNodeHelper.isValid() && finalNodeHelper.isValid()) {
             initialNodeId = initialNodeHelper.getIdInNetwork();
             finalNodeId = finalNodeHelper.getIdInNetwork();
-            referenceBus = (Bus) modifiedNetwork.getIdentifiable(initialNodeHelper.getIdInNetwork());
-            voltageLevel = referenceBus.getVoltageLevel();
         } else if (initialNodeHelper.isValid() && !finalNodeHelper.isValid()) {
             initialNodeId = initialNodeHelper.getIdInNetwork();
-            referenceBus = (Bus) modifiedNetwork.getIdentifiable(initialNodeId);
-            voltageLevel = referenceBus.getVoltageLevel();
+            referenceBus = (Bus) network.getIdentifiable(initialNodeId);
             finalNodeId = tRemedialAction.getBusBar().getFinalNode().getV();
-            shouldCreateFinalNode = true;
+            raBusesToCreate.add(new BusToCreate(finalNodeId, referenceBus.getVoltageLevel().getId(), initialNodeId));
         } else if (!initialNodeHelper.isValid() && finalNodeHelper.isValid()) {
             finalNodeId = finalNodeHelper.getIdInNetwork();
-            referenceBus = (Bus) modifiedNetwork.getIdentifiable(finalNodeId);
-            voltageLevel = referenceBus.getVoltageLevel();
+            referenceBus = (Bus) network.getIdentifiable(finalNodeId);
             initialNodeId = tRemedialAction.getBusBar().getInitialNode().getV();
-            shouldCreateInitialNode = true;
+            raBusesToCreate.add(new BusToCreate(initialNodeId, referenceBus.getVoltageLevel().getId(), finalNodeId));
         } else {
             throw new FaraoException(String.format("Remedial action's initial and final nodes are not valid: %s", initialNodeHelper.getInvalidReason()));
         }
 
-        // Get all branches
-        Set<String> branches = new HashSet<>();
+        // Store all switches to create
+        switchesToCreatePerRa.put(raId, new HashSet<>());
         for (TBranch tBranch : tRemedialAction.getBusBar().getBranch()) {
-            String suffix =  String.valueOf(tBranch.getOrder().getV());
+            String suffix = String.valueOf(tBranch.getOrder().getV());
             // Try to get from->to branch
             UcteCnecElementHelper branchHelper = getBranchHelper(tBranch.getFromNode().getV(), tBranch.getToNode().getV(), suffix);
             // Branch may be already on final node, try from/to->final node
@@ -140,46 +129,76 @@ public class BusBarChangeProcessor {
             }
             if (!branchHelper.isValid()) {
                 throw new FaraoException(String.format("One of the branches (%s) in the remedial action is not valid", generateUcteId(tBranch.getFromNode().getV(), tBranch.getToNode().getV(), suffix)));
-            } else if (!(originalNetwork.getIdentifiable(branchHelper.getIdInNetwork()) instanceof Line)) {
-                throw new FaraoException(String.format("One of the branches (%s) in the remedial action is not a line: %s", branchHelper.getIdInNetwork(), modifiedNetwork.getIdentifiable(branchHelper.getIdInNetwork()).getClass()));
+            } else if (!(network.getIdentifiable(branchHelper.getIdInNetwork()) instanceof Line)) {
+                throw new FaraoException(String.format("One of the branches (%s) in the remedial action is not a line: %s", branchHelper.getIdInNetwork(), network.getIdentifiable(branchHelper.getIdInNetwork()).getClass()));
             }
-            branches.add(branchHelper.getIdInNetwork());
+            raSwitchesToCreate.add(new SwitchPairToCreate(branchHelper.getIdInNetwork(), initialNodeId, finalNodeId));
         }
 
-        if (shouldCreateInitialNode) {
-            createBus(initialNodeId, voltageLevel, referenceBus);
-            updateModifiedNetworkAnalyzer();
-        }
-        if (shouldCreateFinalNode) {
-            createBus(finalNodeId, voltageLevel, referenceBus);
-            updateModifiedNetworkAnalyzer();
-        }
+        // If everything is OK with the RA, store what should be created
+        raBusesToCreate.forEach(busToCreate -> busesToCreate.putIfAbsent(busToCreate.getBusId(), busToCreate));
+        switchesToCreatePerRa.get(raId).addAll(raSwitchesToCreate);
+        initialNodePerRa.put(raId, initialNodeId);
+        finalNodePerRa.put(raId, finalNodeId);
+    }
 
-        List<String> switchesToOpen = new ArrayList<>();
-        List<String> switchesToClose = new ArrayList<>();
+    /**
+     * Creates buses needed in busesToCreate
+     */
+    private void createBuses() {
+        busesToCreate.values().stream()
+            .sorted(Comparator.comparing(BusToCreate::getBusId))
+            .forEach(busToCreate -> createBus(busToCreate.busId, busToCreate.voltageLevelId, busToCreate.referenceBusId));
+    }
 
-        branches.forEach(branchId -> {
-            Pair<String, String> switches = createSwitches(branchId, initialNodeId, finalNodeId, voltageLevel);
-            switchesToOpen.add(switches.getFirst());
-            switchesToClose.add(switches.getSecond());
+    /**
+     * Creates switches needed in switchesToCreatePerRa
+     * Stores info about created switches in createdSwitches, per connected node (initial/final)
+     */
+    private void createSwitches() {
+        switchesToCreatePerRa.values().stream().flatMap(Set::stream)
+            .sorted(Comparator.comparing(SwitchPairToCreate::uniqueId))
+            .forEach(switchPairToCreate -> {
+                if (!createdSwitches.containsKey(switchPairToCreate.uniqueId())) {
+                    Pair<String, String> switches = createSwitchPair(switchPairToCreate.branchId, switchPairToCreate.initialNodeId, switchPairToCreate.finalNodeId);
+                    createdSwitches.put(switchPairToCreate.uniqueId(),
+                        Map.of(switchPairToCreate.initialNodeId, switches.getFirst(),
+                            switchPairToCreate.finalNodeId, switches.getSecond()));
+                }
+            });
+    }
+
+    /**
+     * Maps info in createdSwitches to needed switches for RAs, and creates a BusBarChangeSwitches set
+     */
+    private Set<BusBarChangeSwitches> computeBusBarChangeSwitches() {
+        Set<BusBarChangeSwitches> busBarChangeSwitches = new HashSet<>();
+        initialNodePerRa.keySet().forEach(raId -> {
+            Set<String> switchPairsIds = switchesToCreatePerRa.get(raId).stream().map(SwitchPairToCreate::uniqueId).collect(Collectors.toSet());
+            List<String> switchesToOpen = switchPairsIds.stream().map(switchPairId ->
+                createdSwitches.get(switchPairId).get(initialNodePerRa.get(raId))).collect(Collectors.toList());
+            List<String> switchesToClose = switchPairsIds.stream().map(switchPairId ->
+                createdSwitches.get(switchPairId).get(finalNodePerRa.get(raId))).collect(Collectors.toList());
+            busBarChangeSwitches.add(new BusBarChangeSwitches(raId, switchesToOpen, switchesToClose));
         });
-
-        return new BusBarChangeSwitches(raId, switchesToOpen, switchesToClose);
+        return busBarChangeSwitches;
     }
 
     private UcteCnecElementHelper getBranchHelper(String from, String to, String suffix) {
-        return new UcteCnecElementHelper(from, to, suffix, originalNetworkAnalyzer);
+        return new UcteCnecElementHelper(from, to, suffix, ucteNetworkAnalyzer);
     }
 
-    private static Bus createBus(String newBusId, VoltageLevel voltageLevel, Bus baseBus) {
+    private Bus createBus(String newBusId, String voltageLevelId, String referenceBusId) {
+        VoltageLevel voltageLevel = network.getVoltageLevel(voltageLevelId);
+        Bus referenceBus = (Bus) network.getIdentifiable(referenceBusId);
         Bus newBus = voltageLevel.getBusBreakerView().newBus()
             .setId(newBusId)
             .setFictitious(false)
             .setEnsureIdUnicity(true)
             .add();
         findAndSetGeographicalName(newBus, voltageLevel);
-        copyGenerators(baseBus, newBusId, voltageLevel);
-        copyLoads(baseBus, newBusId, voltageLevel);
+        copyGenerators(referenceBus, newBusId, voltageLevel);
+        copyLoads(referenceBus, newBusId, voltageLevel);
         return newBus;
     }
 
@@ -243,61 +262,51 @@ public class BusBarChangeProcessor {
         return newSwitch;
     }
 
-    private String getCreatedSwitchKey(String branchId, String node) {
-        return branchId + " - " + node;
-    }
-
-    private Pair<String, String> createSwitches(String branchId, String initialNode, String finalNode, VoltageLevel voltageLevel) {
-        String initialKey = getCreatedSwitchKey(branchId, initialNode);
-        String finalKey = getCreatedSwitchKey(branchId, finalNode);
-
-        // Check if switches have been created fo other RAs before
-        if (createdSwitches.containsKey(initialKey) && createdSwitches.containsKey(finalKey)) {
-            return Pair.create(createdSwitches.get(initialKey),  createdSwitches.get(finalKey));
-        } else if ((createdSwitches.containsKey(initialKey) && !createdSwitches.containsKey(finalKey))
-            || (!createdSwitches.containsKey(initialKey) && createdSwitches.containsKey(finalKey))) {
-            throw new FaraoException("3-node cases are not handled for now");
-        }
-
-        // Else create them
-        Line line = (Line) modifiedNetwork.getIdentifiable(branchId);
+    /**
+     * Creates a switch pair between a branch and two nodes, by creating an intermediary fictitious switch
+     * The branch should be initially connected to one of the two nodes
+     * The switches are open or closed depending on the initial state of the branch
+     *
+     * @param branchId: ID of the branch
+     * @param node1:    ID of node1
+     * @param node2:    ID of node2
+     * @return the pair of IDs of the two created switches (switch to node1, switch to node2)
+     */
+    private Pair<String, String> createSwitchPair(String branchId, String node1, String node2) {
+        Line line = (Line) network.getIdentifiable(branchId);
         String bus1 = line.getTerminal1().getBusBreakerView().getConnectableBus().getId();
         String bus2 = line.getTerminal2().getBusBreakerView().getConnectableBus().getId();
 
+        VoltageLevel voltageLevel = ((Bus) network.getIdentifiable(node1)).getVoltageLevel();
+
         // Create fictitious bus
         String busId = generateFictitiousBusId(voltageLevel);
-        Bus fictitiousBus = createBus(busId, voltageLevel, line.getTerminal1().getBusBreakerView().getConnectableBus());
+        Bus fictitiousBus = createBus(busId, voltageLevel.getId(), line.getTerminal1().getBusBreakerView().getConnectableBus().getId());
 
         // Move one line end to the fictitious bus
-        boolean raIsInverted; // check if branch is already on final node
-        if (bus1.equals(initialNode) || bus1.equals(finalNode)) {
-            moveLine(line, fictitiousBus, Branch.Side.ONE);
-            raIsInverted = bus1.equals(finalNode);
-        } else if (bus2.equals(initialNode) || bus2.equals(finalNode)) {
-            moveLine(line, fictitiousBus, Branch.Side.TWO);
-            raIsInverted = bus2.equals(finalNode);
+        boolean branchIsOnNode1; // check if branch is initially on node1
+        if (bus1.equals(node1) || bus1.equals(node2)) {
+            moveLine(line, Branch.Side.ONE, fictitiousBus);
+            branchIsOnNode1 = bus1.equals(node1);
+        } else if (bus2.equals(node1) || bus2.equals(node2)) {
+            moveLine(line, Branch.Side.TWO, fictitiousBus);
+            branchIsOnNode1 = bus2.equals(node1);
         } else {
-            throw new FaraoException(String.format("Neither initial node (%s) nor final node (%s) belongs to the branch %s", initialNode, finalNode, branchId));
+            throw new FaraoException(String.format("Neither node1 (%s) nor node2 (%s) belongs to the branch %s. Cannot create switch.", node1, node2, branchId));
         }
 
         // Create switches
-        // If branch is initially on the final node (raIsInverted = false):
-        // - create a closed switch between fictitious bus and initial node
-        // - create an open switch between fictitious bus and final node
-        // If branch is initially on the final node (raIsInverted = true):
-        // - create an open switch between fictitious bus and initial node
-        // - create a closed switch between fictitious bus and final node
+        // Set OPEN/CLOSED status depending on the branch's initially connected node
         double currentLimit = Math.min(line.getCurrentLimits1().getPermanentLimit(), line.getCurrentLimits2().getPermanentLimit());
-        String switchToOpen = createSwitch(voltageLevel, initialNode, fictitiousBus.getId(), currentLimit, raIsInverted).getId();
-        String switchToClose = createSwitch(voltageLevel, finalNode, fictitiousBus.getId(), currentLimit, !raIsInverted).getId();
+        String switchOnInitial = createSwitch(voltageLevel, node1, fictitiousBus.getId(), currentLimit, !branchIsOnNode1).getId();
+        String switchOnFinal = createSwitch(voltageLevel, node2, fictitiousBus.getId(), currentLimit, branchIsOnNode1).getId();
 
-        // Put them in map for RAs coming next
-        createdSwitches.put(initialKey, switchToOpen);
-        createdSwitches.put(finalKey, switchToClose);
-
-        return Pair.create(switchToOpen, switchToClose);
+        return Pair.create(switchOnInitial, switchOnFinal);
     }
 
+    /**
+     * Generate a fictitious bus ID for a given voltage level, starting with the "Z" suffix and going back to 9
+     */
     private String generateFictitiousBusId(VoltageLevel voltageLevel) {
         char suffix = 'Z';
         String busId;
@@ -305,7 +314,7 @@ public class BusBarChangeProcessor {
             busId = String.format("%s%s", voltageLevel.getId(), suffix);
             suffix -= 1;
         }
-        while (modifiedNetwork.getIdentifiable(busId) != null && suffix >= '9');
+        while (network.getIdentifiable(busId) != null && suffix >= '9');
         return busId;
     }
 
@@ -321,7 +330,16 @@ public class BusBarChangeProcessor {
         }
     }
 
-    private Line moveLine(Line line, Bus bus, Branch.Side side) {
+    /**
+     * Move a line's given side to a given bus
+     * The method actually copies the line to a new one then deletes it
+     *
+     * @param line the line to move
+     * @param side the side of the line to move
+     * @param bus  the new bus to connect to the side
+     * @return the new line
+     */
+    private Line moveLine(Line line, Branch.Side side, Bus bus) {
         String from = (side == Branch.Side.ONE) ? bus.getId() : line.getTerminal1().getBusBreakerView().getBus().getId();
         String to = (side == Branch.Side.ONE) ? line.getTerminal2().getBusBreakerView().getBus().getId() : bus.getId();
         String newLineId = generateUcteId(from, to, getOrderCode(line));
@@ -344,7 +362,7 @@ public class BusBarChangeProcessor {
     }
 
     private LineAdder initializeAdderToMove(Line line, String newId) {
-        return modifiedNetwork.newLine()
+        return network.newLine()
             .setId(newId)
             .setR(line.getR())
             .setX(line.getX())
@@ -382,6 +400,48 @@ public class BusBarChangeProcessor {
             lineTo.newCurrentLimits2()
                 .setPermanentLimit(lineFrom.getCurrentLimits2().getPermanentLimit())
                 .add();
+        }
+    }
+
+    /**
+     * Contains needed info to create a bus
+     */
+    private static class BusToCreate {
+        String busId; // ID of the bus to create
+        String voltageLevelId; // ID of the voltage level to create the bus upon
+        String referenceBusId; // ID of the reference bus
+
+        BusToCreate(String busId, String voltageLevelId, String referenceBusId) {
+            this.busId = busId;
+            this.voltageLevelId = voltageLevelId;
+            this.referenceBusId = referenceBusId;
+        }
+
+        String getBusId() {
+            return busId;
+        }
+    }
+
+    /**
+     * Contains needed info to create a pair of switches
+     */
+    private static class SwitchPairToCreate {
+        String branchId; // ID of the branch in the network
+        String initialNodeId; // ID of the initial node to connect the switch to
+        String finalNodeId; // ID of the final node to connect the switch to
+
+        SwitchPairToCreate(String branchId, String initialNodeId, String finalNodeId) {
+            this.branchId = branchId;
+            this.initialNodeId = initialNodeId;
+            this.finalNodeId = finalNodeId;
+        }
+
+        String uniqueId() {
+            if (initialNodeId.compareTo(finalNodeId) < 0) {
+                return String.format("%s - %s - %s", branchId, initialNodeId, finalNodeId);
+            } else {
+                return String.format("%s - %s - %s", branchId, finalNodeId, initialNodeId);
+            }
         }
     }
 

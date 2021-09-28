@@ -15,7 +15,12 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestUtils {
+public final class TestUtils {
+
+    private TestUtils() {
+
+    }
+
     public static void assertNetworksAreEqual(Network network, String reference) throws IOException {
         MemDataSource dataSource = new MemDataSource();
 
