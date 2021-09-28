@@ -352,28 +352,32 @@ public class BusBarChangeProcessor {
      * @return the new line
      */
     private Line moveLine(Line line, Branch.Side side, Bus bus) {
+        if (line instanceof TieLine) {
+            return moveTieLine((TieLine) line, side, bus);
+        }
+
         String from = (side == Branch.Side.ONE) ? bus.getId() : line.getTerminal1().getBusBreakerView().getBus().getId();
         String to = (side == Branch.Side.ONE) ? line.getTerminal2().getBusBreakerView().getBus().getId() : bus.getId();
         String newLineId = generateUcteId(from, to, getOrderCode(line));
-        LineAdder adder = initializeAdderToMove(line, newLineId);
-        if (side == Branch.Side.ONE) {
-            setIdenticalToSide(line, Branch.Side.TWO, adder)
-                .setConnectableBus1(bus.getId())
-                .setBus1(bus.getId())
-                .setVoltageLevel1(bus.getVoltageLevel().getId());
-        } else if (side == Branch.Side.TWO) {
-            setIdenticalToSide(line, Branch.Side.ONE, adder)
-                .setConnectableBus2(bus.getId())
-                .setBus2(bus.getId())
-                .setVoltageLevel2(bus.getVoltageLevel().getId());
-        }
+        LineAdder adder = initializeLineAdderToMove(line, newLineId);
+        setAdderProperties(adder, line, side, bus);
         Line newLine = adder.add();
         copyCurrentLimits(line, newLine);
         line.remove();
         return newLine;
     }
 
-    private LineAdder initializeAdderToMove(Line line, String newId) {
+    private Line moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
+        String newLineId = replaceTieLineNode(tieLine, side, bus.getId());
+        TieLineAdder adder = initializeTieLineAdderToMove(tieLine, newLineId);
+        setAdderProperties(adder, tieLine, side, bus);
+        TieLine newTieLine = adder.add();
+        copyCurrentLimits(tieLine, newTieLine);
+        tieLine.remove();
+        return newTieLine;
+    }
+
+    private LineAdder initializeLineAdderToMove(Line line, String newId) {
         return network.newLine()
             .setId(newId)
             .setR(line.getR())
@@ -386,7 +390,7 @@ public class BusBarChangeProcessor {
             .setName(newId);
     }
 
-    private static LineAdder setIdenticalToSide(Line line, Branch.Side side, LineAdder adder) {
+    private static BranchAdder<?> setIdenticalToSide(Line line, Branch.Side side, BranchAdder<?> adder) {
         TopologyKind topologyKind = line.getTerminal(side).getVoltageLevel().getTopologyKind();
         if (topologyKind == TopologyKind.BUS_BREAKER) {
             if (side == Branch.Side.ONE) {
@@ -400,6 +404,57 @@ public class BusBarChangeProcessor {
             }
         }
         throw new AssertionError();
+    }
+
+    private void setAdderProperties(BranchAdder<?> adder, Line lineToCopy, Branch.Side sideToUpdate, Bus busToUpdate) {
+        if (sideToUpdate == Branch.Side.ONE) {
+            setIdenticalToSide(lineToCopy, Branch.Side.TWO, adder)
+                .setConnectableBus1(busToUpdate.getId())
+                .setBus1(busToUpdate.getId())
+                .setVoltageLevel1(busToUpdate.getVoltageLevel().getId());
+        } else if (sideToUpdate == Branch.Side.TWO) {
+            setIdenticalToSide(lineToCopy, Branch.Side.ONE, adder)
+                .setConnectableBus2(busToUpdate.getId())
+                .setBus2(busToUpdate.getId())
+                .setVoltageLevel2(busToUpdate.getVoltageLevel().getId());
+        }
+    }
+
+    private String replaceTieLineNode(TieLine tieLine, Branch.Side side, String newNodeId) {
+        TieLine.HalfLine halfLine = (side == Branch.Side.ONE) ? tieLine.getHalf1() : tieLine.getHalf2();
+        String node1 = halfLine.getId().substring(0, 8);
+        String node2 = halfLine.getId().substring(9, 17);
+        String nodeToReplace = node1.equals(tieLine.getUcteXnodeCode()) ? node2 : node1;
+        return tieLine.getId().replace(nodeToReplace, newNodeId);
+    }
+
+    private TieLineAdder initializeTieLineAdderToMove(TieLine tieLine, String newId) {
+        TieLine.HalfLine half1 = tieLine.getHalf1();
+        TieLine.HalfLine half2 = tieLine.getHalf2();
+        String xnodeCode = tieLine.getUcteXnodeCode();
+        return network.newTieLine()
+            .setId(newId)
+            .newHalfLine1()
+            .setId(half1.getId())
+            .setR(half1.getR())
+            .setX(half1.getX())
+            .setB1(half1.getB1())
+            .setB2(half1.getB2())
+            .setG1(half1.getG1())
+            .setG2(half1.getG2())
+            .setFictitious(half1.isFictitious())
+            .add()
+            .newHalfLine2()
+            .setId(half2.getId())
+            .setR(half2.getR())
+            .setX(half2.getX())
+            .setB1(half2.getB1())
+            .setB2(half2.getB2())
+            .setG1(half2.getG1())
+            .setG2(half2.getG2())
+            .setFictitious(half2.isFictitious())
+            .add()
+            .setUcteXnodeCode(xnodeCode);
     }
 
     private static void copyCurrentLimits(Line lineFrom, Line lineTo) {
