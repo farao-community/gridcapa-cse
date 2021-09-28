@@ -8,9 +8,7 @@ package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.*;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -22,11 +20,7 @@ public final class YearlyNtcDocument {
     private final NTCAnnualDocument ntcAnnualDocument;
 
     public static YearlyNtcDocument create(OffsetDateTime targetDateTime, InputStream ntcAnnualInputStream) throws JAXBException {
-        NTCAnnualDocument ntcAnnualDocument =  JAXBContext.newInstance(NTCAnnualDocument.class)
-                .createUnmarshaller()
-                .unmarshal(new StreamSource(ntcAnnualInputStream), NTCAnnualDocument.class)
-                .getValue();
-        return new YearlyNtcDocument(targetDateTime, ntcAnnualDocument);
+        return new YearlyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(ntcAnnualInputStream, NTCAnnualDocument.class));
     }
 
     private YearlyNtcDocument(OffsetDateTime targetDateTime, NTCAnnualDocument ntcAnnualDocument) {

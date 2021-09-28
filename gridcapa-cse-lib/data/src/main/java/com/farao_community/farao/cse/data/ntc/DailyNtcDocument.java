@@ -9,9 +9,7 @@ package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.*;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -26,11 +24,7 @@ public final class DailyNtcDocument {
     private final NTCReductionsDocument ntcReductionsDocument;
 
     public static DailyNtcDocument create(OffsetDateTime targetDateTime, InputStream ntcReductionsInputStream) throws JAXBException {
-        NTCReductionsDocument ntcReductionsDocument =  JAXBContext.newInstance(NTCReductionsDocument.class)
-                .createUnmarshaller()
-                .unmarshal(new StreamSource(ntcReductionsInputStream), NTCReductionsDocument.class)
-                .getValue();
-        return new DailyNtcDocument(targetDateTime, ntcReductionsDocument);
+        return new DailyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(ntcReductionsInputStream, NTCReductionsDocument.class));
     }
 
     private DailyNtcDocument(OffsetDateTime targetDateTime, NTCReductionsDocument ntcReductionsDocument) {

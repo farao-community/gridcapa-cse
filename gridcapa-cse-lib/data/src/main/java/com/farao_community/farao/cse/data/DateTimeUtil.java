@@ -34,25 +34,11 @@ public final class DateTimeUtil {
             double utcHour = targetDate.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime().getHour();
             double startHour = LocalTime.parse(startingTime, DateTimeFormatter.ofPattern("'T'HH:mm'Z'")).getHour();
             double endHour = LocalTime.parse(endingTime, DateTimeFormatter.ofPattern("'T'HH:mm'Z'")).getHour();
-            return utcHour >= startHour && utcHour <= endHour;
-        }
-    }
-
-    public static boolean isTargetDayOfWeekMatchWithDayNum(int daynum, int targetDayZOfWeek) {
-        DayOfWeek dayOfWeek = DayOfWeek.getInstance(daynum);
-        switch (dayOfWeek) {
-            case EVERYDAY:
-                return true;
-            case SATURDAY:
-                return targetDayZOfWeek == DayOfWeek.SATURDAY.getDaynum();
-            case SUNDAY:
-                return targetDayZOfWeek == DayOfWeek.SUNDAY.getDaynum();
-            case MONTOFRI:
-                return targetDayZOfWeek != DayOfWeek.SATURDAY.getDaynum() && targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
-            case MONTOSAT:
-                return targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
-            default:
-                return false;
+            // Patch to model that an end time of 00 is midnight, so we set it to 24 so that condition works
+            if (endHour == 0) {
+                endHour = 24;
+            }
+            return utcHour >= startHour && utcHour < endHour;
         }
     }
 }
