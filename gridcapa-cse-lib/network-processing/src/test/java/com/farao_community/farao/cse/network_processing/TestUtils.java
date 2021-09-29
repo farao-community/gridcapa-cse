@@ -14,6 +14,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public final class TestUtils {
 
@@ -21,7 +22,7 @@ public final class TestUtils {
 
     }
 
-    public static void assertNetworksAreEqual(Network network, String reference) throws IOException {
+    public static void assertNetworksAreEqual(Network network, String reference) {
         MemDataSource dataSource = new MemDataSource();
 
         UcteExporter exporter = new UcteExporter();
@@ -30,6 +31,8 @@ public final class TestUtils {
         try (InputStream actual = dataSource.newInputStream(null, "uct");
              InputStream expected = TestUtils.class.getResourceAsStream(reference)) {
             compareTxt(expected, actual, Arrays.asList(1, 2));
+        } catch (IOException e) {
+            fail(e.getMessage());
         }
     }
 
