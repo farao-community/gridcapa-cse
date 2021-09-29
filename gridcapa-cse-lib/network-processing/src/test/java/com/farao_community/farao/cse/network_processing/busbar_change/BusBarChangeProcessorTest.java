@@ -153,18 +153,4 @@ class BusBarChangeProcessorTest {
         compareLists(List.of("BBE1AA1Y BBE1AA12 1", "BBE1AA1W BBE1AA12 1", "BBE1AA1X BBE1AA12 1"), bbcs.getSwitchesToOpen());
         compareLists(List.of("BBE1AA1Y BBE1AA11 1", "BBE1AA1W BBE1AA11 1", "BBE1AA1X BBE1AA11 1"), bbcs.getSwitchesToClose());
     }
-
-    @Test
-    void testCse() {
-        setUp("20210901_2230_213_UX0.uct", "20210901_2230_423_CRAC_IT2.xml");
-        Exporters.export("XIIDM", network, new Properties(), "D:\\Users\\mitripet\\Desktop", "network");
-        Exporters.export("UCTE", network, new Properties(), "D:\\Users\\mitripet\\Desktop", "network");
-        CracCreationParameters parameters = new CracCreationParameters();
-        CseCracCreationParameters cseParameters = new CseCracCreationParameters();
-        cseParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
-        parameters.addExtension(CseCracCreationParameters.class, cseParameters);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        JsonCracCreationParameters.write(parameters, os);
-        int c = 0;
-    }
 }
