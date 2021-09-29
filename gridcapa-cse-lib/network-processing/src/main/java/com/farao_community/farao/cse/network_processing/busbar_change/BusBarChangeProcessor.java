@@ -268,6 +268,7 @@ public class BusBarChangeProcessor {
 
     /**
      * Generate a fictitious bus ID for a given voltage level, starting with the "Z" suffix and going back to 9
+     * This is important, we need to keep the same first 7 letters in order to match critical branch names later if needed
      */
     private String generateFictitiousBusId(VoltageLevel voltageLevel) {
         char suffix = 'Z';
