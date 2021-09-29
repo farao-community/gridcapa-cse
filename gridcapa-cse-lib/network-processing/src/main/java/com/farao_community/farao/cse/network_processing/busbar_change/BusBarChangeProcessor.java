@@ -183,9 +183,9 @@ public class BusBarChangeProcessor {
         switchesToCreatePerRa.values().stream().flatMap(Set::stream)
             .sorted(Comparator.comparing(SwitchPairToCreate::uniqueId))
             .forEach(switchPairToCreate -> {
-                if (!createdSwitches.containsKey(switchPairToCreate.uniqueId())) {
-                    Pair<String, String> switches = createSwitchPair(switchPairToCreate.lineId, switchPairToCreate.initialNodeId, switchPairToCreate.finalNodeId);
-                    createdSwitches.put(switchPairToCreate.uniqueId(),
+                if (!createdSwitches.containsKey(switchPairToCreate.uniqueId)) {
+                    Pair<String, String> switches = createSwitchPair(switchPairToCreate);
+                    createdSwitches.put(switchPairToCreate.uniqueId,
                         Map.of(switchPairToCreate.initialNodeId, switches.getFirst(),
                             switchPairToCreate.finalNodeId, switches.getSecond()));
                 }
@@ -217,13 +217,14 @@ public class BusBarChangeProcessor {
      * The branch should be initially connected to one of the two nodes
      * The switches are open or closed depending on the initial state of the branch
      *
-     * @param branchId: ID of the branch
-     * @param node1:    ID of node1
-     * @param node2:    ID of node2
+     * @param switchPairToCreate: object containing ID of the branch, ID of node1, ID of node2
      * @return the pair of IDs of the two created switches (switch to node1, switch to node2)
      */
-    private Pair<String, String> createSwitchPair(String branchId, String node1, String node2) {
-        Branch<?> branch = network.getBranch(branchId);
+    private Pair<String, String> createSwitchPair(SwitchPairToCreate switchPairToCreate) {
+        LOGGER.debug("Creating switch pair: {}", switchPairToCreate.uniqueId);
+        String node1 = switchPairToCreate.initialNodeId;
+        String node2 = switchPairToCreate.finalNodeId;
+        Branch<?> branch = network.getBranch(switchPairToCreate.branchId);
         String bus1 = branch.getTerminal1().getBusBreakerView().getConnectableBus().getId();
         String bus2 = branch.getTerminal2().getBusBreakerView().getConnectableBus().getId();
 
@@ -302,22 +303,24 @@ public class BusBarChangeProcessor {
      * Contains needed info to create a pair of switches
      */
     private static class SwitchPairToCreate {
-        String lineId; // ID of the line in the network
+        String branchId; // ID of the branch in the network
         String initialNodeId; // ID of the initial node to connect the switch to
         String finalNodeId; // ID of the final node to connect the switch to
+        String uniqueId;
 
-        SwitchPairToCreate(String lineId, String initialNodeId, String finalNodeId) {
-            this.lineId = lineId;
+        SwitchPairToCreate(String branchId, String initialNodeId, String finalNodeId) {
+            this.branchId = branchId;
             this.initialNodeId = initialNodeId;
             this.finalNodeId = finalNodeId;
+            if (initialNodeId.compareTo(finalNodeId) < 0) {
+                this.uniqueId =  String.format("%s {%s, %s}", branchId, initialNodeId, finalNodeId);
+            } else {
+                this.uniqueId =  String.format("%s {%s, %s}", branchId, finalNodeId, initialNodeId);
+            }
         }
 
         String uniqueId() {
-            if (initialNodeId.compareTo(finalNodeId) < 0) {
-                return String.format("%s - %s - %s", lineId, initialNodeId, finalNodeId);
-            } else {
-                return String.format("%s - %s - %s", lineId, finalNodeId, initialNodeId);
-            }
+            return uniqueId;
         }
 
         /**
@@ -325,7 +328,7 @@ public class BusBarChangeProcessor {
          * but on different initial & final nodes
          */
         boolean generates3NodeCase(SwitchPairToCreate otherPair) {
-            return this.lineId.equals(otherPair.lineId) && !this.uniqueId().equals(otherPair.uniqueId());
+            return this.branchId.equals(otherPair.branchId) && !this.uniqueId.equals(otherPair.uniqueId);
         }
     }
 

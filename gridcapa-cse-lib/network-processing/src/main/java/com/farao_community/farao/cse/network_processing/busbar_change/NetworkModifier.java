@@ -9,6 +9,8 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 import com.farao_community.farao.commons.FaraoException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.ucte.converter.util.UcteConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class exposes useful methods to modify a network
@@ -16,6 +18,8 @@ import com.powsybl.ucte.converter.util.UcteConstants;
  * @author Peter Mitri {@literal <peter.mitri@rte-france.com>}
  */
 public class NetworkModifier {
+    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkModifier.class);
+
     private Network network;
 
     public NetworkModifier(Network network) {
@@ -38,6 +42,7 @@ public class NetworkModifier {
         // TODO : is copying loads & generators necessary?
         copyGenerators(referenceBus, newBusId, voltageLevel);
         copyLoads(referenceBus, newBusId, voltageLevel);
+        LOGGER.debug("New bus '{}' has been created", newBus.getId());
         return newBus;
     }
 
@@ -58,6 +63,7 @@ public class NetworkModifier {
         if (currentLimit != null) {
             newSwitch.setProperty(UcteConstants.CURRENT_LIMIT_PROPERTY_KEY, String.valueOf((int) currentLimit.doubleValue()));
         }
+        LOGGER.debug("New switch '{}' has been created", newSwitch.getId());
         return newSwitch;
     }
 
@@ -140,16 +146,16 @@ public class NetworkModifier {
         }
     }
 
-    private TwoWindingsTransformer moveTwoWindingsTransformer(TwoWindingsTransformer twoWindingsTransformer, Branch.Side side, Bus bus) {
-        String newId = replaceSimpleBranchNode(twoWindingsTransformer, side, bus.getId());
-        TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(twoWindingsTransformer, newId);
-        setBranchAdderProperties(adder, twoWindingsTransformer, side, bus);
-        TwoWindingsTransformer newTransformer = adder.add();
-        copyCurrentLimits(twoWindingsTransformer, newTransformer);
-        copyProperties(twoWindingsTransformer, newTransformer);
-        copyTapChanger(twoWindingsTransformer, newTransformer);
-        twoWindingsTransformer.remove();
-        return newTransformer;
+    private Line moveLine(Line line, Branch.Side side, Bus bus) {
+        String newLineId = replaceSimpleBranchNode(line, side, bus.getId());
+        LineAdder adder = initializeLineAdderToMove(line, newLineId);
+        setBranchAdderProperties(adder, line, side, bus);
+        Line newLine = adder.add();
+        copyCurrentLimits(line, newLine);
+        copyProperties(line, newLine);
+        LOGGER.debug("Line '{}' has been removed, new TieLine '{}' has been created", line.getId(), newLine.getId());
+        line.remove();
+        return newLine;
     }
 
     private Line moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
@@ -159,19 +165,22 @@ public class NetworkModifier {
         TieLine newTieLine = adder.add();
         copyCurrentLimits(tieLine, newTieLine);
         copyProperties(tieLine, newTieLine);
+        LOGGER.debug("TieLine '{}' has been removed, new TieLine '{}' has been created", tieLine.getId(), newTieLine.getId());
         tieLine.remove();
         return newTieLine;
     }
 
-    private Line moveLine(Line line, Branch.Side side, Bus bus) {
-        String newLineId = replaceSimpleBranchNode(line, side, bus.getId());
-        LineAdder adder = initializeLineAdderToMove(line, newLineId);
-        setBranchAdderProperties(adder, line, side, bus);
-        Line newLine = adder.add();
-        copyCurrentLimits(line, newLine);
-        copyProperties(line, newLine);
-        line.remove();
-        return newLine;
+    private TwoWindingsTransformer moveTwoWindingsTransformer(TwoWindingsTransformer transformer, Branch.Side side, Bus bus) {
+        String newId = replaceSimpleBranchNode(transformer, side, bus.getId());
+        TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(transformer, newId);
+        setBranchAdderProperties(adder, transformer, side, bus);
+        TwoWindingsTransformer newTransformer = adder.add();
+        copyCurrentLimits(transformer, newTransformer);
+        copyProperties(transformer, newTransformer);
+        copyTapChanger(transformer, newTransformer);
+        LOGGER.debug("TwoWindingsTransformer '{}' has been removed, new transformer '{}' has been created", transformer.getId(), newTransformer.getId());
+        transformer.remove();
+        return newTransformer;
     }
 
     private static void copyTapChanger(TwoWindingsTransformer transformerFrom, TwoWindingsTransformer transformerTo) {
