@@ -12,7 +12,6 @@ import com.farao_community.farao.data.crac_creation_util.ucte.UcteCnecElementHel
 import com.farao_community.farao.data.crac_creation_util.ucte.UcteNetworkAnalyzer;
 import com.farao_community.farao.data.crac_creation_util.ucte.UcteNetworkAnalyzerProperties;
 import com.powsybl.iidm.network.*;
-import com.powsybl.ucte.converter.util.UcteConstants;
 import com.rte_france.farao.data.crac.io.cse.*;
 import com.rte_france.farao.data.crac.io.cse.crac_creator.CseCracCreator;
 import com.rte_france.farao.data.crac.io.cse.crac_creator.parameters.BusBarChangeSwitches;
@@ -36,6 +35,7 @@ public class BusBarChangeProcessor {
 
     private Network network;
     private UcteNetworkAnalyzer ucteNetworkAnalyzer;
+    private NetworkModifier networkModifier;
 
     private Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa;
     private Map<String, String> initialNodePerRa;
@@ -51,7 +51,8 @@ public class BusBarChangeProcessor {
         CseCracImporter importer = new CseCracImporter();
         CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
         this.network = network;
-        ucteNetworkAnalyzer = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+        this.ucteNetworkAnalyzer = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+        this.networkModifier = new NetworkModifier(network);
 
         switchesToCreatePerRa = new HashMap<>();
         initialNodePerRa = new HashMap<>();
@@ -71,7 +72,6 @@ public class BusBarChangeProcessor {
                             computeBusesAndSwitchesToCreate(tRemedialAction);
                         } catch (FaraoException e) {
                             LOGGER.warn("RA {} has been skipped: {}", tRemedialAction.getName().getV(), e.getMessage());
-                            System.out.println(String.format("RA %s has been skipped: %s", tRemedialAction.getName().getV(), e.getMessage()));
                         }
                     });
             }
@@ -172,7 +172,7 @@ public class BusBarChangeProcessor {
     private void createBuses() {
         busesToCreate.values().stream()
             .sorted(Comparator.comparing(BusToCreate::getBusId))
-            .forEach(busToCreate -> createBus(busToCreate.busId, busToCreate.voltageLevelId, busToCreate.referenceBusId));
+            .forEach(busToCreate -> networkModifier.createBus(busToCreate.busId, busToCreate.voltageLevelId, busToCreate.referenceBusId));
     }
 
     /**
@@ -212,83 +212,6 @@ public class BusBarChangeProcessor {
         return new UcteCnecElementHelper(from, to, suffix, ucteNetworkAnalyzer);
     }
 
-    private Bus createBus(String newBusId, String voltageLevelId, String referenceBusId) {
-        VoltageLevel voltageLevel = network.getVoltageLevel(voltageLevelId);
-        Bus referenceBus = (Bus) network.getIdentifiable(referenceBusId);
-        Bus newBus = voltageLevel.getBusBreakerView().newBus()
-            .setId(newBusId)
-            .setFictitious(false)
-            .setEnsureIdUnicity(true)
-            .add();
-        findAndSetGeographicalName(newBus, voltageLevel);
-        // TODO : is copying loads & generators necessary?
-        copyGenerators(referenceBus, newBusId, voltageLevel);
-        copyLoads(referenceBus, newBusId, voltageLevel);
-        return newBus;
-    }
-
-    private static void findAndSetGeographicalName(Bus bus, VoltageLevel voltageLevel) {
-        for (Bus otherBus : voltageLevel.getBusBreakerView().getBuses()) {
-            if (otherBus.hasProperty(UcteConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY)) {
-                bus.setProperty(UcteConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY, otherBus.getProperty(UcteConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY));
-                break;
-            }
-        }
-    }
-
-    private static void copyGenerators(Bus busFrom, String busToId, VoltageLevel onVoltageLevel) {
-        for (Generator generator : busFrom.getGenerators()) {
-            Generator newGenerator = onVoltageLevel.newGenerator()
-                .setId(String.format("%s_generator", busToId))
-                .setBus(busToId)
-                .setMaxP(generator.getMaxP())
-                .setMinP(generator.getMinP())
-                .setTargetP(0)
-                .setTargetQ(0)
-                .setRatedS(generator.getRatedS())
-                .setVoltageRegulatorOn(generator.isVoltageRegulatorOn())
-                .setTargetV(generator.getTargetV())
-                .setConnectableBus(busToId)
-                .setEnsureIdUnicity(true)
-                .add();
-            newGenerator.newMinMaxReactiveLimits()
-                .setMinQ(generator.getReactiveLimits().getMinQ(generator.getTargetP()))
-                .setMaxQ(generator.getReactiveLimits().getMaxQ(generator.getTargetP()))
-                .add();
-        }
-
-    }
-
-    private static void copyLoads(Bus busFrom, String busToId, VoltageLevel onVoltageLevel) {
-        for (Load load : busFrom.getLoads()) {
-            onVoltageLevel.newLoad()
-                .setId(String.format("%s_load", busToId))
-                .setBus(busToId)
-                .setP0(0)
-                .setQ0(0)
-                .setLoadType(load.getLoadType())
-                .setEnsureIdUnicity(true)
-                .setConnectableBus(busToId)
-                .add();
-        }
-    }
-
-    private static Switch createSwitch(VoltageLevel voltageLevel, String bus1Id, String bus2Id, Double currentLimit, boolean open) {
-        String switchId = String.format("%s %s 1", bus2Id, bus1Id);
-        Switch newSwitch = voltageLevel.getBusBreakerView().newSwitch()
-            .setId(switchId)
-            .setBus1(bus1Id)
-            .setBus2(bus2Id)
-            .setOpen(open)
-            .setFictitious(false)
-            .setEnsureIdUnicity(true)
-            .add();
-        if (currentLimit != null) {
-            newSwitch.setProperty(UcteConstants.CURRENT_LIMIT_PROPERTY_KEY, String.valueOf((int) currentLimit.doubleValue()));
-        }
-        return newSwitch;
-    }
-
     /**
      * Creates a switch pair between a branch and two nodes, by creating an intermediary fictitious switch
      * The branch should be initially connected to one of the two nodes
@@ -308,15 +231,15 @@ public class BusBarChangeProcessor {
 
         // Create fictitious bus
         String busId = generateFictitiousBusId(voltageLevel);
-        Bus fictitiousBus = createBus(busId, voltageLevel.getId(), branch.getTerminal1().getBusBreakerView().getConnectableBus().getId());
+        Bus fictitiousBus = networkModifier.createBus(busId, voltageLevel.getId(), branch.getTerminal1().getBusBreakerView().getConnectableBus().getId());
 
         // Move one branch end to the fictitious bus
         boolean branchIsOnNode1 = true; // check if branch is initially on node1
         if (bus1.equals(node1) || bus1.equals(node2)) {
-            moveBranch(branch, Branch.Side.ONE, fictitiousBus);
+            networkModifier.moveBranch(branch, Branch.Side.ONE, fictitiousBus);
             branchIsOnNode1 = bus1.equals(node1);
         } else if (bus2.equals(node1) || bus2.equals(node2)) {
-            moveBranch(branch, Branch.Side.TWO, fictitiousBus);
+            networkModifier.moveBranch(branch, Branch.Side.TWO, fictitiousBus);
             branchIsOnNode1 = bus2.equals(node1);
         }
         // else: should not happen, a check was done before
@@ -324,8 +247,8 @@ public class BusBarChangeProcessor {
         // Create switches
         // Set OPEN/CLOSED status depending on the branch's initially connected node
         Double currentLimit = getMinimumCurrentLimit(branch);
-        String switchOnInitial = createSwitch(voltageLevel, node1, fictitiousBus.getId(), currentLimit, !branchIsOnNode1).getId();
-        String switchOnFinal = createSwitch(voltageLevel, node2, fictitiousBus.getId(), currentLimit, branchIsOnNode1).getId();
+        String switchOnInitial = networkModifier.createSwitch(voltageLevel, node1, fictitiousBus.getId(), currentLimit, !branchIsOnNode1).getId();
+        String switchOnFinal = networkModifier.createSwitch(voltageLevel, node2, fictitiousBus.getId(), currentLimit, branchIsOnNode1).getId();
 
         return Pair.create(switchOnInitial, switchOnFinal);
     }
@@ -354,231 +277,6 @@ public class BusBarChangeProcessor {
         }
         while (network.getIdentifiable(busId) != null && suffix >= '9');
         return busId;
-    }
-
-    private static String generateUcteId(String node1, String node2, String suffix) {
-        return String.format("%1$8s %2$8s %3$s", node1, node2, suffix);
-    }
-
-    private static String getOrderCode(Branch<?> branch) {
-        if (branch.hasProperty(UcteConstants.ORDER_CODE)) {
-            return branch.getProperty(UcteConstants.ORDER_CODE);
-        } else {
-            return branch.getId().substring(branch.getId().length() - 1);
-        }
-    }
-
-    /**
-     * Move a branch's given side to a given bus
-     * (The method actually copies the branch to a new one then deletes it)
-     *
-     * @param branch the branch to move
-     * @param side the side of the branch to move
-     * @param bus  the new bus to connect to the side
-     * @return the new line
-     */
-    private Branch<?> moveBranch(Branch<?> branch, Branch.Side side, Bus bus) {
-        if (branch instanceof TwoWindingsTransformer) {
-            return moveTwoWindingsTransformer((TwoWindingsTransformer) branch, side, bus);
-        } else if (branch instanceof TieLine) {
-            return moveTieLine((TieLine) branch, side, bus);
-        } else if (branch instanceof Line) {
-            return moveLine((Line) branch, side, bus);
-        } else {
-            throw new FaraoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
-        }
-    }
-
-    private TwoWindingsTransformer moveTwoWindingsTransformer(TwoWindingsTransformer twoWindingsTransformer, Branch.Side side, Bus bus) {
-        String newId = replaceSimpleBranchNode(twoWindingsTransformer, side, bus.getId());
-        TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(twoWindingsTransformer, newId);
-        setBranchAdderProperties(adder, twoWindingsTransformer, side, bus);
-        TwoWindingsTransformer newTransformer = adder.add();
-        copyCurrentLimits(twoWindingsTransformer, newTransformer);
-        copyProperties(twoWindingsTransformer, newTransformer);
-        copyTapChanger(twoWindingsTransformer, newTransformer);
-        twoWindingsTransformer.remove();
-        return newTransformer;
-    }
-
-    private Line moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
-        String newLineId = replaceTieLineNode(tieLine, side, bus.getId());
-        TieLineAdder adder = initializeTieLineAdderToMove(tieLine, newLineId, side, bus);
-        setBranchAdderProperties(adder, tieLine, side, bus);
-        TieLine newTieLine = adder.add();
-        copyCurrentLimits(tieLine, newTieLine);
-        copyProperties(tieLine, newTieLine);
-        tieLine.remove();
-        return newTieLine;
-    }
-
-    private Line moveLine(Line line, Branch.Side side, Bus bus) {
-        String newLineId = replaceSimpleBranchNode(line, side, bus.getId());
-        LineAdder adder = initializeLineAdderToMove(line, newLineId);
-        setBranchAdderProperties(adder, line, side, bus);
-        Line newLine = adder.add();
-        copyCurrentLimits(line, newLine);
-        copyProperties(line, newLine);
-        line.remove();
-        return newLine;
-    }
-
-    private static void copyTapChanger(TwoWindingsTransformer transformerFrom, TwoWindingsTransformer transformerTo) {
-        PhaseTapChanger pst = transformerFrom.getPhaseTapChanger();
-        if (pst == null) {
-            return;
-        }
-        PhaseTapChangerAdder ptca = transformerTo.newPhaseTapChanger()
-            .setLowTapPosition(pst.getLowTapPosition())
-            .setTapPosition(pst.getTapPosition())
-            .setRegulationValue(pst.getRegulationValue())
-            .setRegulationMode(pst.getRegulationMode());
-        pst.getAllSteps().values().forEach(step ->
-            ptca.beginStep()
-                .setRho(step.getRho())
-                .setAlpha(step.getAlpha())
-                .setR(step.getR())
-                .setX(step.getX())
-                .setG(step.getG())
-                .setB(step.getB())
-                .endStep()
-        );
-        ptca.add();
-    }
-
-    private static void copyProperties(Identifiable<?> identifiableFrom, Identifiable<?> identifiableTo) {
-        identifiableFrom.getPropertyNames().forEach(property ->
-            identifiableTo.setProperty(property, identifiableFrom.getProperty(property))
-        );
-    }
-
-    private LineAdder initializeLineAdderToMove(Line line, String newId) {
-        return network.newLine()
-            .setId(newId)
-            .setR(line.getR())
-            .setX(line.getX())
-            .setG1(line.getG1())
-            .setB1(line.getB1())
-            .setG2(line.getG2())
-            .setB2(line.getB2())
-            .setFictitious(line.isFictitious())
-            .setName(newId);
-    }
-
-    private static BranchAdder<?> setIdenticalToSide(Branch<?> branch, Branch.Side side, BranchAdder<?> adder) {
-        TopologyKind topologyKind = branch.getTerminal(side).getVoltageLevel().getTopologyKind();
-        if (topologyKind == TopologyKind.BUS_BREAKER) {
-            if (side == Branch.Side.ONE) {
-                return adder.setVoltageLevel1(branch.getTerminal1().getVoltageLevel().getId())
-                    .setConnectableBus1(branch.getTerminal1().getBusBreakerView().getConnectableBus().getId())
-                    .setBus1(branch.getTerminal1().getBusBreakerView().getBus() != null ? branch.getTerminal1().getBusBreakerView().getBus().getId() : null);
-            } else if (side == Branch.Side.TWO) {
-                return adder.setVoltageLevel2(branch.getTerminal2().getVoltageLevel().getId())
-                    .setConnectableBus2(branch.getTerminal2().getBusBreakerView().getConnectableBus().getId())
-                    .setBus2(branch.getTerminal2().getBusBreakerView().getBus() != null ? branch.getTerminal2().getBusBreakerView().getBus().getId() : null);
-            }
-        }
-        throw new AssertionError();
-    }
-
-    private void setBranchAdderProperties(BranchAdder<?> adder, Branch<?> branchToCopy, Branch.Side sideToUpdate, Bus busToUpdate) {
-        if (sideToUpdate == Branch.Side.ONE) {
-            setIdenticalToSide(branchToCopy, Branch.Side.TWO, adder)
-                .setConnectableBus1(busToUpdate.getId())
-                .setBus1(busToUpdate.getId())
-                .setVoltageLevel1(busToUpdate.getVoltageLevel().getId());
-        } else if (sideToUpdate == Branch.Side.TWO) {
-            setIdenticalToSide(branchToCopy, Branch.Side.ONE, adder)
-                .setConnectableBus2(busToUpdate.getId())
-                .setBus2(busToUpdate.getId())
-                .setVoltageLevel2(busToUpdate.getVoltageLevel().getId());
-        }
-    }
-
-    private String replaceSimpleBranchNode(Branch<?> branch, Branch.Side side, String newNodeId) {
-        String from = (side == Branch.Side.ONE) ? newNodeId : branch.getTerminal1().getBusBreakerView().getBus().getId();
-        String to = (side == Branch.Side.ONE) ? branch.getTerminal2().getBusBreakerView().getBus().getId() : newNodeId;
-        if (branch instanceof TwoWindingsTransformer) {
-            // convention is inverted
-            return generateUcteId(to, from, getOrderCode(branch));
-        } else {
-            return generateUcteId(from, to, getOrderCode(branch));
-        }
-    }
-
-    private static String replaceTieLineNode(TieLine tieLine, Branch.Side side, String newNodeId) {
-        String nodeToReplace = getTieLineNodeToReplace(tieLine, side);
-        return tieLine.getId().replace(nodeToReplace, newNodeId);
-    }
-
-    private static String replaceHalfLineNode(TieLine tieLine, Branch.Side side, String newNodeId) {
-        TieLine.HalfLine halfLine = (side == Branch.Side.ONE) ? tieLine.getHalf1() : tieLine.getHalf2();
-        String nodeToReplace = getTieLineNodeToReplace(tieLine, side);
-        return halfLine.getId().replace(nodeToReplace, newNodeId);
-    }
-
-    private static String getTieLineNodeToReplace(TieLine tieLine, Branch.Side side) {
-        TieLine.HalfLine halfLine = (side == Branch.Side.ONE) ? tieLine.getHalf1() : tieLine.getHalf2();
-        String node1 = halfLine.getId().substring(0, 8);
-        String node2 = halfLine.getId().substring(9, 17);
-        return node1.equals(tieLine.getUcteXnodeCode()) ? node2 : node1;
-    }
-
-    private TieLineAdder initializeTieLineAdderToMove(TieLine tieLine, String newId, Branch.Side sideToUpdate, Bus bus) {
-        TieLine.HalfLine half1 = tieLine.getHalf1();
-        TieLine.HalfLine half2 = tieLine.getHalf2();
-        String xnodeCode = tieLine.getUcteXnodeCode();
-        String newHalf1Id = (sideToUpdate == Branch.Side.ONE) ? replaceHalfLineNode(tieLine, Branch.Side.ONE, bus.getId()): half1.getId();
-        String newHalf2Id = (sideToUpdate == Branch.Side.TWO) ? replaceHalfLineNode(tieLine, Branch.Side.TWO, bus.getId()): half2.getId();
-        return network.newTieLine()
-            .setId(newId)
-            .newHalfLine1()
-            .setId(newHalf1Id)
-            .setR(half1.getR())
-            .setX(half1.getX())
-            .setB1(half1.getB1())
-            .setB2(half1.getB2())
-            .setG1(half1.getG1())
-            .setG2(half1.getG2())
-            .setFictitious(half1.isFictitious())
-            .add()
-            .newHalfLine2()
-            .setId(newHalf2Id)
-            .setR(half2.getR())
-            .setX(half2.getX())
-            .setB1(half2.getB1())
-            .setB2(half2.getB2())
-            .setG1(half2.getG1())
-            .setG2(half2.getG2())
-            .setFictitious(half2.isFictitious())
-            .add()
-            .setUcteXnodeCode(xnodeCode);
-    }
-
-    private TwoWindingsTransformerAdder initializeTwoWindingsTransformerAdderToMove(TwoWindingsTransformer twoWindingsTransformer, String newId) {
-        return twoWindingsTransformer.getSubstation().newTwoWindingsTransformer()
-            .setEnsureIdUnicity(true)
-            .setId(newId)
-            .setRatedU1(twoWindingsTransformer.getRatedU1())
-            .setRatedU2(twoWindingsTransformer.getRatedU2())
-            .setR(twoWindingsTransformer.getR())
-            .setX(twoWindingsTransformer.getX())
-            .setG(twoWindingsTransformer.getG())
-            .setB(twoWindingsTransformer.getB())
-            .setFictitious(twoWindingsTransformer.isFictitious());
-    }
-
-    private static void copyCurrentLimits(Branch<?> branchFrom, Branch<?> branchTo) {
-        if (branchFrom.getCurrentLimits1() != null) {
-            branchTo.newCurrentLimits1()
-                .setPermanentLimit(branchFrom.getCurrentLimits1().getPermanentLimit())
-                .add();
-        }
-        if (branchFrom.getCurrentLimits2() != null) {
-            branchTo.newCurrentLimits2()
-                .setPermanentLimit(branchFrom.getCurrentLimits2().getPermanentLimit())
-                .add();
-        }
     }
 
     /**

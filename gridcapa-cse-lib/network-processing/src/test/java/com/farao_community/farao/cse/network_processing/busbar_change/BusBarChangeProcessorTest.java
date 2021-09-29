@@ -1,8 +1,6 @@
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.farao_community.farao.cse.network_processing.TestUtils;
-import com.farao_community.farao.data.crac_creator_api.parameters.CracCreationParameters;
-import com.farao_community.farao.data.crac_creator_api.parameters.JsonCracCreationParameters;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.import_.ImportConfig;
@@ -12,11 +10,8 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.TieLine;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.rte_france.farao.data.crac.io.cse.crac_creator.parameters.BusBarChangeSwitches;
-import com.rte_france.farao.data.crac.io.cse.crac_creator.parameters.CseCracCreationParameters;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
@@ -27,12 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class BusBarChangeProcessorTest {
 
     private Network network;
-    private Network network2;
     private Set<BusBarChangeSwitches> busBarChangeSwitchesSet;
 
     private void setUp(String networkFile, String cracFile) {
         network = Importers.loadNetwork(networkFile, getClass().getResourceAsStream("/BusBarChange/" + networkFile), LocalComputationManager.getDefault(), new ImportConfig(), null);
-        network2 = Importers.loadNetwork(networkFile, getClass().getResourceAsStream("/BusBarChange/" + networkFile), LocalComputationManager.getDefault(), new ImportConfig(), null);
         InputStream is = getClass().getResourceAsStream("/BusBarChange/" + cracFile);
         busBarChangeSwitchesSet = new BusBarChangeProcessor().process(network, is);
     }
@@ -107,7 +100,7 @@ class BusBarChangeProcessorTest {
         assertNotNull(tieLine);
         assertTrue(tieLine instanceof TieLine);
     }
-    
+
     @Test
     void testWithPst() {
         // Create a switch on a PST
