@@ -1,0 +1,20 @@
+{
+  "data": {
+    "type": "cse-request",
+    "id": "id",
+    "attributes": {
+      "instant": "2017-06-01T23:55Z",
+      "cgmUrl": "networkFileUrl",
+      "mergedCracUrl": "mergedCracUrl",
+      "mergedGlskUrl": "mergedGlskUrl",
+      "ntcReductionsUrl": "ntcReductionsUrl",
+      "ntc2AtItUrl": "ntc2AtItUrl",
+      "ntc2ChItUrl": "ntc2ChItUrl",
+      "ntc2FrItUrl": "ntc2FrItUrl",
+      "ntc2SiItUrl": "ntc2SiItUrl",
+      "targetChUrl": "targetChUrl",
+      "vulcanusUrl": "vulcanusUrl",
+      "yearlyNtcUrl": "yearlyNtcUrl"
+    }
+  }
+}
