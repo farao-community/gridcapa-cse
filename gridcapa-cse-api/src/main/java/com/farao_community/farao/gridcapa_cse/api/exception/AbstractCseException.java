@@ -13,11 +13,11 @@ package com.farao_community.farao.gridcapa_cse.api.exception;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 public abstract class AbstractCseException extends RuntimeException  {
-    public AbstractCseException(String message) {
+    protected AbstractCseException(String message) {
         super(message);
     }
 
-    public AbstractCseException(String message, Throwable throwable) {
+    protected AbstractCseException(String message, Throwable throwable) {
         super(message, throwable);
     }
 
