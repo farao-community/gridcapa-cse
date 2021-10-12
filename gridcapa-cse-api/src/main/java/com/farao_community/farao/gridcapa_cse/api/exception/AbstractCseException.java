@@ -7,6 +7,9 @@
 package com.farao_community.farao.gridcapa_cse.api.exception;
 
 /**
+ * Custom abstract exception to be extended by all application exceptions.
+ * Any subclass may be automatically wrapped to a JSON API error message if needed
+ *
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 public abstract class AbstractCseException extends RuntimeException  {

@@ -7,8 +7,6 @@
 package com.farao_community.farao.gridcapa_cse.api.exception;
 
 /**
- * Custom abstract exception to be extended by all application exceptions.
- *
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 public class CseInvalidDataException extends AbstractCseException {

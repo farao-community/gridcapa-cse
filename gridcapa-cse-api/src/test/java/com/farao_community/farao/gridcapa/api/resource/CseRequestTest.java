@@ -19,7 +19,7 @@ class CseRequestTest {
 
     @Test
     void checkCseRequestForD2ccProcess() {
-        CseRequest cseRequest = new CseRequest("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsCs2Url",
+        CseRequest cseRequest = new CseRequest("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsUrl",
                 "ntc2AtItUrl", "ntc2ChItItUrl", "ntc2FrItUrl", "ntc2SiItUrl", "targetChUrl", "vulcanusUrl", "yearlyNtcUrl");
         assertNotNull(cseRequest);
         assertEquals("cgmUrl", cseRequest.getCgmUrl());
@@ -30,7 +30,7 @@ class CseRequestTest {
 
     @Test
     void checkCseRequestForIdccProcess() {
-        CseRequest cseRequest = new CseRequest("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsCs2Url",
+        CseRequest cseRequest = new CseRequest("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsUrl",
                 "vulcanusUrl", "yearlyNtcUrl");
         assertNotNull(cseRequest);
         assertEquals("cgmUrl", cseRequest.getCgmUrl());
