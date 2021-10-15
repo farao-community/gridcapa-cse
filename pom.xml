@@ -55,6 +55,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Compile dependencies -->
             <dependency>
                 <groupId>com.github.jasminb</groupId>
                 <artifactId>jsonapi-converter</artifactId>

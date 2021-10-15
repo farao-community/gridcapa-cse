@@ -56,9 +56,9 @@ public class CseRequest {
         this.ntc2FrItUrl = ntc2FrItUrl;
         this.ntc2SiItUrl = ntc2SiItUrl;
         this.ntcReductionsUrl = ntcReductionsUrl;
+        this.targetChUrl = targetChUrl;
         this.vulcanusUrl = vulcanusUrl;
         this.yearlyNtcUrl = yearlyNtcUrl;
-        this.targetChUrl = targetChUrl;
     }
 
     public static CseRequest d2ccProcess(String id,
