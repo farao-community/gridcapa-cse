@@ -62,32 +62,30 @@ public class CseRequest {
     }
 
     public static CseRequest d2ccProcess(String id,
-                      String instant,
-                      String cgmUrl,
-                      String mergedCracUrl,
-                      String mergedGlskUrl,
-                      String ntcReductionsUrl,
-                      String targetChUrl,
-                      String vulcanusUrl,
-                      String yearlyNtcUrl) {
+                                         String instant,
+                                         String cgmUrl,
+                                         String mergedCracUrl,
+                                         String mergedGlskUrl,
+                                         String ntcReductionsUrl,
+                                         String targetChUrl,
+                                         String vulcanusUrl,
+                                         String yearlyNtcUrl) {
         return new CseRequest(id, instant, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null, null, null, null, targetChUrl, vulcanusUrl, yearlyNtcUrl);
-
     }
 
-    public static  CseRequest idccProcess(String id,
-                      String instant,
-                      String cgmUrl,
-                      String mergedCracUrl,
-                      String mergedGlskUrl,
-                      String ntcReductionsUrl,
-                      String ntc2AtItUrl,
-                      String ntc2ChItUrl,
-                      String ntc2FrItUrl,
-                      String ntc2SiItUrl,
-                      String vulcanusUrl,
-                      String yearlyNtcUrl) {
+    public static CseRequest idccProcess(String id,
+                                         String instant,
+                                         String cgmUrl,
+                                         String mergedCracUrl,
+                                         String mergedGlskUrl,
+                                         String ntcReductionsUrl,
+                                         String ntc2AtItUrl,
+                                         String ntc2ChItUrl,
+                                         String ntc2FrItUrl,
+                                         String ntc2SiItUrl,
+                                         String vulcanusUrl,
+                                         String yearlyNtcUrl) {
         return new CseRequest(id, instant, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl);
-
     }
 
     public String getId() {
