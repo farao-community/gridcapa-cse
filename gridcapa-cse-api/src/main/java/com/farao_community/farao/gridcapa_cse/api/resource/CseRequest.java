@@ -18,19 +18,19 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @Type("cse-request")
 public class CseRequest {
     @Id
-    private String id;
+    private final String id;
     private final String instant;
-    private String cgmUrl;
-    private String mergedCracUrl;
-    private String mergedGlskUrl;
-    private String ntcReductionsUrl;
-    private String ntc2AtItUrl;
-    private String ntc2ChItUrl;
-    private String ntc2FrItUrl;
-    private String ntc2SiItUrl;
-    private String targetChUrl;
-    private String vulcanusUrl;
-    private String yearlyNtcUrl;
+    private final String cgmUrl;
+    private final String mergedCracUrl;
+    private final String mergedGlskUrl;
+    private final String ntcReductionsUrl;
+    private final String ntc2AtItUrl;
+    private final String ntc2ChItUrl;
+    private final String ntc2FrItUrl;
+    private final String ntc2SiItUrl;
+    private final String targetChUrl;
+    private final String vulcanusUrl;
+    private final String yearlyNtcUrl;
 
     @JsonCreator
     public CseRequest(@JsonProperty("id") String id,
@@ -56,20 +56,38 @@ public class CseRequest {
         this.ntc2FrItUrl = ntc2FrItUrl;
         this.ntc2SiItUrl = ntc2SiItUrl;
         this.ntcReductionsUrl = ntcReductionsUrl;
-        this.targetChUrl = targetChUrl;
         this.vulcanusUrl = vulcanusUrl;
         this.yearlyNtcUrl = yearlyNtcUrl;
+        this.targetChUrl = targetChUrl;
     }
 
-    public CseRequest(@JsonProperty("id") String id,
-                      @JsonProperty("instant") String instant,
-                      @JsonProperty("cgmUrl") String cgmUrl,
-                      @JsonProperty("mergedCracUrl") String mergedCracUrl,
-                      @JsonProperty("mergedGlskUrl") String mergedGlskUrl,
-                      @JsonProperty("ntcReductionsUrl") String ntcReductionsUrl,
-                      @JsonProperty("vulcanusUrl") String vulcanusUrl,
-                      @JsonProperty("yearlyNtcUrl") String yearlyNtcUrl) {
-        this(id, instant, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null, null, null, null, null, vulcanusUrl, yearlyNtcUrl);
+    public static CseRequest d2ccProcess(String id,
+                      String instant,
+                      String cgmUrl,
+                      String mergedCracUrl,
+                      String mergedGlskUrl,
+                      String ntcReductionsUrl,
+                      String targetChUrl,
+                      String vulcanusUrl,
+                      String yearlyNtcUrl) {
+        return new CseRequest(id, instant, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null, null, null, null, targetChUrl, vulcanusUrl, yearlyNtcUrl);
+
+    }
+
+    public static  CseRequest idccProcess(String id,
+                      String instant,
+                      String cgmUrl,
+                      String mergedCracUrl,
+                      String mergedGlskUrl,
+                      String ntcReductionsUrl,
+                      String ntc2AtItUrl,
+                      String ntc2ChItUrl,
+                      String ntc2FrItUrl,
+                      String ntc2SiItUrl,
+                      String vulcanusUrl,
+                      String yearlyNtcUrl) {
+        return new CseRequest(id, instant, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl);
+
     }
 
     public String getId() {

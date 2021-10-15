@@ -18,8 +18,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @Type("cse-response")
 public class CseResponse {
     @Id
-    private String id;
-    private String ttcFileUrl;
+    private final String id;
+    private final String ttcFileUrl;
 
     @JsonCreator
     public CseResponse(@JsonProperty("id") String id, @JsonProperty("ttcFileUrl") String ttcFileUrl) {

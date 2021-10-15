@@ -19,19 +19,17 @@ class CseRequestTest {
 
     @Test
     void checkCseRequestForD2ccProcess() {
-        CseRequest cseRequest = new CseRequest("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsUrl",
-                "ntc2AtItUrl", "ntc2ChItItUrl", "ntc2FrItUrl", "ntc2SiItUrl", "targetChUrl", "vulcanusUrl", "yearlyNtcUrl");
+        CseRequest cseRequest = CseRequest.d2ccProcess("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsUrl", "targetChUrl", "vulcanusUrl", "yearlyNtcUrl");
         assertNotNull(cseRequest);
         assertEquals("cgmUrl", cseRequest.getCgmUrl());
-        assertEquals("ntc2FrItUrl", cseRequest.getNtc2FrItUrl());
-        assertEquals("ntc2AtItUrl", cseRequest.getNtc2AtItUrl());
+        assertEquals("ntcReductionsUrl", cseRequest.getNtcReductionsUrl());
+        assertEquals("targetChUrl", cseRequest.getTargetChUrl());
         assertEquals("yearlyNtcUrl", cseRequest.getYearlyNtcUrl());
     }
 
     @Test
     void checkCseRequestForIdccProcess() {
-        CseRequest cseRequest = new CseRequest("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsUrl",
-                "vulcanusUrl", "yearlyNtcUrl");
+        CseRequest cseRequest = CseRequest.idccProcess("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsUrl", "ntc2AtItUrl", "ntc2ChItUrl", "ntc2FrItUrl", "ntc2SiItUrl", "vulcanusUrl", "yearlyNtcUrl");
         assertNotNull(cseRequest);
         assertEquals("cgmUrl", cseRequest.getCgmUrl());
         assertEquals("mergedCracUrl", cseRequest.getMergedCracUrl());
