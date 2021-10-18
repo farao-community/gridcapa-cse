@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>farao-parent</artifactId>
+        <artifactId>farao-parent-ws</artifactId>
         <groupId>com.farao-community.farao</groupId>
         <version>1.0.10</version>
     </parent>
@@ -26,11 +26,13 @@
     <modules>
         <module>gridcapa-cse-lib</module>
         <module>gridcapa-cse-api</module>
+        <module>gridcapa-cse-spring-boot-starter</module>
     </modules>
 
     <properties>
         <!-- Dependencies versions -->
         <commons.lang.version>3.11</commons.lang.version>
+        <commons.io.version>2.5</commons.io.version>
         <maven.jaxb2.version>0.14.0</maven.jaxb2.version>
         <maven.jvnet.jaxb2-basics.version>1.11.1</maven.jvnet.jaxb2-basics.version>
 

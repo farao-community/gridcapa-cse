@@ -1,0 +1,16 @@
+{
+  "data": {
+    "type": "cse-request",
+    "id": "id",
+    "attributes": {
+      "instant": "2017-06-01T23:55Z",
+      "cgmUrl": "networkFileUrl",
+      "mergedCracUrl": "mergedCracUrl",
+      "mergedGlskUrl": "mergedGlskUrl",
+      "ntcReductionsUrl": "ntcReductionsUrl",
+      "targetChUrl": "targetChUrl",
+      "vulcanusUrl": "vulcanusUrl",
+      "yearlyNtcUrl": "yearlyNtcUrl"
+    }
+  }
+}
