@@ -26,6 +26,7 @@
     <modules>
         <module>gridcapa-cse-lib</module>
         <module>gridcapa-cse-api</module>
+        <module>gridcapa-cse-app</module>
         <module>gridcapa-cse-spring-boot-starter</module>
     </modules>
 
@@ -62,6 +63,11 @@
                 <groupId>com.github.jasminb</groupId>
                 <artifactId>jsonapi-converter</artifactId>
                 <version>${jsonapi.converter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.xml.bind</groupId>
