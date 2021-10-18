@@ -5,3 +5,15 @@ minio:
     name: minioadmin
     secret: minioadmin
   url: http://localhost:9000/
+
+cse-cc:
+  messages:
+    cse-request:
+      routing-key: cse.key
+      exchange: cse.exchange
+      queue-prefix: cse-request-queue
+    cse-response:
+      exchange: cse-response
+      expiration: 60000
+  whitelist:
+    - http://localhost:9000
