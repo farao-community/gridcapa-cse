@@ -12,9 +12,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
-@SuppressWarnings("hideutilityclassconstructor")
 @SpringBootApplication
-public class CseApplication {
+public final class CseApplication {
+
+    private CseApplication() {
+        throw new AssertionError("Utility class should not be instantiated.");
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(CseApplication.class, args);
