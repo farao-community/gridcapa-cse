@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream;
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
-@SpringBootTest(classes = {MinioAdapter.class, MinioConfiguration.class})
+@SpringBootTest
 class MinioAdapterTest {
 
     @Autowired

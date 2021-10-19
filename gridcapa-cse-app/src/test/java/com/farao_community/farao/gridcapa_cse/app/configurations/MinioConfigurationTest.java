@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
-@SpringBootTest(classes = MinioConfiguration.class)
+@SpringBootTest
 class MinioConfigurationTest {
 
     @Autowired

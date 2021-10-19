@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
-@SpringBootTest(classes = UrlWhitelistConfiguration.class)
+@SpringBootTest
 class UrlWhitelistConfigurationTest {
 
     @Autowired
