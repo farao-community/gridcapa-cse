@@ -16,6 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.ByteArrayInputStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
@@ -37,5 +39,19 @@ class MinioAdapterTest {
     void checkThatUploadFileActuallyPutObject() throws Exception {
         minioAdapter.uploadFile("file/path", new ByteArrayInputStream("File content".getBytes()));
         Mockito.verify(minioClient, Mockito.times(1)).putObject(Mockito.any());
+    }
+
+    @Test
+    void checkGetPresignedUrl() throws Exception {
+        Mockito.when(minioClient.getPresignedObjectUrl(Mockito.any())).thenReturn("http://url");
+        String url = minioAdapter.generatePreSignedUrl("file/path");
+        Mockito.verify(minioClient, Mockito.times(1)).getPresignedObjectUrl(Mockito.any());
+        assertEquals("http://url", url);
+    }
+
+    @Test
+    void checkFileNameReturnedCorrectlyFromUrl() {
+        String stringUrl = "http://localhost:9000/folder/id/fileName.xml";
+        assertEquals("fileName.xml", minioAdapter.getFileNameFromUrl(stringUrl));
     }
 }
