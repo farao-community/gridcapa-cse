@@ -27,7 +27,7 @@ public class UrlValidationService {
 
     public InputStream openUrlStream(String urlString) throws IOException {
         if (urlWhitelistConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
-            throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelist.", urlString));
+            throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelisted url's.", urlString));
         }
         URL url = new URL(urlString);
         return url.openStream(); // NOSONAR Usage of whitelist not triggered by Sonar quality assessment, even if listed as a solution to the vulnerability
