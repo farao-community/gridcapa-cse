@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Timestamp>
+    <Time v="2021-01-01T18:30Z"/>
+    <Valid v="1"/>
+    <TTC v="8125.0"/>
+    <MNII v="4200.0"/>
+    <TTCLimitedBy v="Critical Branch"/>
+    <CountryBalances>
+        <CountryBalance>
+            <Country v="DE"/>
+            <BalanceValue v="4216.0"/>
+        </CountryBalance>
+        <CountryBalance>
+            <Country v="AT"/>
+            <BalanceValue v="-1250.0"/>
+        </CountryBalance>
+        <CountryBalance>
+            <Country v="CH"/>
+            <BalanceValue v="320.0"/>
+        </CountryBalance>
+        <CountryBalance>
+            <Country v="SI"/>
+            <BalanceValue v="621.0"/>
+        </CountryBalance>
+        <CountryBalance>
+            <Country v="IT"/>
+            <BalanceValue v="-4271.0"/>
+        </CountryBalance>
+        <CountryBalance>
+            <Country v="FR"/>
+            <BalanceValue v="-1839.0"/>
+        </CountryBalance>
+    </CountryBalances>
+    <BorderExchanges>
+        <BorderExchange>
+            <Border v="FR-DE"/>
+            <ExchangeValue v="-595"/>
+        </BorderExchange>
+        <BorderExchange>
+            <Border v="IT-SI"/>
+            <ExchangeValue v="-665"/>
+        </BorderExchange>
+        <BorderExchange>
+            <Border v="CH-FR"/>
+            <ExchangeValue v="741"/>
+        </BorderExchange>
+        <BorderExchange>
+            <Border v="IT-FR"/>
+            <ExchangeValue v="-1064"/>
+        </BorderExchange>
+        <BorderExchange>
+            <Border v="CH-DE"/>
+            <ExchangeValue v="-1199"/>
+        </BorderExchange>
+        <BorderExchange>
+            <Border v="IT-CH"/>
+            <ExchangeValue v="-1884"/>
+        </BorderExchange>
+        <BorderExchange>
+            <Border v="IT-AT"/>
+            <ExchangeValue v="-219"/>
+        </BorderExchange>
+    </BorderExchanges>
+    <CGMfile v="secure_CGM_with_PRA.uct"/>
+    <GSKfile v="20210101_1930_185_GSK_CO_CSE1.xml"/>
+    <CRACfile v="mockCrac.json"/>
+    <BASECASEfile v="20210101_1930_185_CSE1.uct"/>
+    <SplittingFactors>
+        <SplittingFactor>
+            <Factor v="0.02"/>
+            <Country v="AT"/>
+        </SplittingFactor>
+        <SplittingFactor>
+            <Factor v="0.5"/>
+            <Country v="CH"/>
+        </SplittingFactor>
+        <SplittingFactor>
+            <Factor v="0.08"/>
+            <Country v="SI"/>
+        </SplittingFactor>
+        <SplittingFactor>
+            <Factor v="0.3"/>
+            <Country v="FR"/>
+        </SplittingFactor>
+    </SplittingFactors>
+    <Inputfiles>
+        <CRACfiles/>
+        <GSKfiles/>
+        <NTCRedfiles>
+            <File>
+                <Filename v="20210101_2D5_NTC_reductions_CSE1.xml"/>
+                <Country v="IT"/>
+                <CreationDateTime v="2020-12-30T18:28Z"/>
+                <Backupfile v="A02"/>
+            </File>
+        </NTCRedfiles>
+        <IDCFfiles>
+            <File>
+                <Filename v="20210101_1930_185_CSE1.uct"/>
+                <Country v="UX"/>
+                <CreationDateTime v=""/>
+                <Backupfile v="A02"/>
+            </File>
+        </IDCFfiles>
+    </Inputfiles>
+    <LimitingElement>
+        <CriticalBranch>
+            <Outage>
+                <Name v="N Situation"/>
+            </Outage>
+            <MonitoredElement>
+                <Element>
+                    <Name v="Tie-line FR DE"/>
+                    <Code v="FFR2AA1  DDE3AA1  1"/>
+                    <areafrom v="FR"/>
+                    <areato v="DE"/>
+                    <I unit="A" v="1916"/>
+                    <Imax unit="A" v="1500"/>
+                </Element>
+            </MonitoredElement>
+        </CriticalBranch>
+    </LimitingElement>
+    <Results>
+        <Preventive>
+            <Action>
+                <Name v="PST1"/>
+                <PSTtap v="-16"/>
+            </Action>
+        </Preventive>
+        <CriticalBranch>
+            <Outage>
+                <Name v="N Situation"/>
+            </Outage>
+            <MonitoredElement>
+                <Element>
+                    <Name v="Line DE1 DE2"/>
+                    <Code v="DDE1AA1  DDE2AA1  1"/>
+                    <areafrom v="DE"/>
+                    <areato v="DE"/>
+                    <I unit="A" v="564"/>
+                    <Imax unit="A" v="1500"/>
+                </Element>
+                <Element>
+                    <Name v="Tie-line FR DE"/>
+                    <Code v="FFR2AA1  DDE3AA1  1"/>
+                    <areafrom v="FR"/>
+                    <areato v="DE"/>
+                    <I unit="A" v="1916"/>
+                    <Imax unit="A" v="1500"/>
+                </Element>
+            </MonitoredElement>
+        </CriticalBranch>
+        <CriticalBranch>
+            <Outage>
+                <Name v="Contingency FR1 FR3"/>
+                <Element>
+                    <Code v="FFR1AA1  FFR3AA1  1"/>
+                    <areafrom v="FR"/>
+                    <areato v="FR"/>
+                </Element>
+            </Outage>
+            <MonitoredElement>
+                <Element>
+                    <Name v="Line DE1 DE2"/>
+                    <Code v="DDE1AA1  DDE2AA1  1"/>
+                    <areafrom v="DE"/>
+                    <areato v="DE"/>
+                    <IAfterOutage unit="A" v="583"/>
+                    <ImaxAfterOutage unit="A" v="1500"/>
+                    <IAfterCRA unit="A" v="583"/>
+                    <ImaxAfterCRA unit="A" v="1500"/>
+                </Element>
+                <Element>
+                    <Name v="Tie-line FR DE"/>
+                    <Code v="FFR2AA1  DDE3AA1  1"/>
+                    <areafrom v="FR"/>
+                    <areato v="DE"/>
+                    <IAfterOutage unit="A" v="1858"/>
+                    <ImaxAfterOutage unit="A" v="1500"/>
+                    <IAfterSPS unit="A" v="1000"/>
+                    <ImaxAfterSPS unit="A" v="1500"/>
+                    <IAfterCRA unit="A" v="1858"/>
+                    <ImaxAfterCRA unit="A" v="1500"/>
+                </Element>
+            </MonitoredElement>
+        </CriticalBranch>
+    </Results>
+</Timestamp>

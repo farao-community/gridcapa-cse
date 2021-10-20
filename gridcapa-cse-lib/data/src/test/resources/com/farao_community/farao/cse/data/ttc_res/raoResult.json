@@ -1,0 +1,21 @@
+{
+  "computationStatus" : "default",
+  "networkActionResults" : [ {
+    "networkActionId" : "Open line NL1-NL2",
+    "activatedStates" : [ {
+      "instant" : "preventive"
+    } ]
+  } ],
+  "pstRangeActionResults" : [
+    {
+      "pstRangeActionId" : "PRA_PST_BE",
+      "initialTap" : 0,
+      "initialSetpoint" : 0,
+      "activatedStates" : [ {
+        "instant" : "preventive",
+        "tap" : -16,
+        "setpoint" : -3.2
+      } ]
+    }
+  ]
+}
