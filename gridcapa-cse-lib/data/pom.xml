@@ -58,6 +58,18 @@
                             <generateDirectory>${project.build.directory}/generated-sources/xjc-ntc2</generateDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>ttc_res</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>src/main/resources/com/farao_community/farao/cse/data/xsd/ttc_res</schemaDirectory>
+                            <generatePackage>com.farao_community.farao.cse.data.xsd.ttc_res</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/xjc-ttc_res</generateDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

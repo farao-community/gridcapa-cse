@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="Timestamp">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Time"/>
+        <xs:element ref="Reason_Type"/>
+        <xs:element ref="Valid"/>
+        <xs:element ref="TTC"/>
+        <xs:element ref="MNII"/>
+        <xs:element ref="TTCLimitedBy"/>
+        <xs:element ref="CountryBalances"/>
+        <xs:element ref="BorderExchanges"/>
+        <xs:element ref="CGMfile"/>
+        <xs:element ref="GSKfile"/>
+        <xs:element ref="CRACfile"/>
+        <xs:element ref="BASECASEfile"/>
+        <xs:element ref="SplittingFactors"/>
+        <xs:element ref="Inputfiles"/>
+        <xs:element ref="LimitingElement"/>
+        <xs:element ref="Results"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Reason_Type">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="ReasonCode" type="xs:string"/>
+      <xs:element name="Reason" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+  <xs:element name="Time">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Valid">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="TTC">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:double"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MNII">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:double"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="TTCLimitedBy">
+    <xs:complexType>
+      <xs:attribute name="v" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CountryBalances">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="CountryBalance"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CountryBalance">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Country"/>
+        <xs:element ref="BalanceValue"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BalanceValue">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BorderExchanges">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="BorderExchange"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BorderExchange">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Border"/>
+        <xs:element ref="ExchangeValue"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Border">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExchangeValue">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CGMfile">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GSKfile">
+    <xs:complexType>
+      <xs:attribute name="v" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CRACfile">
+    <xs:complexType>
+      <xs:attribute name="v" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BASECASEfile">
+    <xs:complexType>
+      <xs:attribute name="v" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SplittingFactors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="SplittingFactor"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SplittingFactor">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Factor"/>
+        <xs:element ref="Country"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Factor">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Inputfiles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CRACfiles"/>
+        <xs:element ref="GSKfiles"/>
+        <xs:element ref="NTCRedfiles"/>
+        <xs:element ref="IDCFfiles"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CRACfiles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="File"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GSKfiles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="File"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="NTCRedfiles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="File"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IDCFfiles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="File"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LimitingElement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CriticalBranch"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Results">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Preventive"/>
+        <xs:element maxOccurs="unbounded" ref="CriticalBranch"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Preventive">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Action"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Action">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Name"/>
+        <xs:element minOccurs="0" ref="PSTtap"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PSTtap">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Country">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="File">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Filename"/>
+        <xs:element ref="Country"/>
+        <xs:element ref="CreationDateTime"/>
+        <xs:element ref="Backupfile"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Filename">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreationDateTime">
+    <xs:complexType>
+      <xs:attribute name="v" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Backupfile">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CriticalBranch">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Outage"/>
+        <xs:element minOccurs="0" ref="MonitoredElement"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Outage">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Name"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="Element"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MonitoredElement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Element"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Name">
+    <xs:complexType>
+      <xs:attribute name="v" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Element">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="Name"/>
+        <xs:element ref="Code"/>
+        <xs:element ref="areafrom"/>
+        <xs:element ref="areato"/>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="IAfterOutage"/>
+          <xs:element ref="ImaxAfterOutage"/>
+        </xs:sequence>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="IAfterSPS"/>
+          <xs:element ref="ImaxAfterSPS"/>
+        </xs:sequence>
+        <xs:choice minOccurs="0">
+          <xs:sequence>
+            <xs:element ref="I"/>
+            <xs:element ref="Imax"/>
+          </xs:sequence>
+          <xs:sequence>
+            <xs:element ref="IAfterCRA"/>
+            <xs:element ref="ImaxAfterCRA"/>
+          </xs:sequence>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Code">
+    <xs:complexType>
+      <xs:attribute name="v" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="areafrom">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="areato">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IAfterOutage">
+    <xs:complexType>
+      <xs:attribute name="unit" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImaxAfterOutage">
+    <xs:complexType>
+      <xs:attribute name="unit" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IAfterSPS">
+    <xs:complexType>
+      <xs:attribute name="unit" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImaxAfterSPS">
+    <xs:complexType>
+      <xs:attribute name="unit" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="I">
+    <xs:complexType>
+      <xs:attribute name="unit" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Imax">
+    <xs:complexType>
+      <xs:attribute name="unit" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IAfterCRA">
+    <xs:complexType>
+      <xs:attribute name="unit" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImaxAfterCRA">
+    <xs:complexType>
+      <xs:attribute name="unit" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
