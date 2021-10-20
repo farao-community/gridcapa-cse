@@ -4,10 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 package com.farao_community.farao.cse.data.target_ch;
 
 import com.farao_community.farao.cse.data.DateTimeUtil;
+import com.farao_community.farao.cse.data.xsd.target_ch.TDayOfWeek;
+import com.farao_community.farao.cse.data.xsd.target_ch.TFixedFlow;
+import com.farao_community.farao.cse.data.xsd.target_ch.TPeriod;
+import com.farao_community.farao.cse.data.xsd.target_ch.TTimeInterval;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.time.OffsetDateTime;

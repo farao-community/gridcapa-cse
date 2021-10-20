@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.data.ntc;
 
-import com.farao_community.farao.cse.data.TLine;
+import com.farao_community.farao.cse.data.xsd.TLine;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
