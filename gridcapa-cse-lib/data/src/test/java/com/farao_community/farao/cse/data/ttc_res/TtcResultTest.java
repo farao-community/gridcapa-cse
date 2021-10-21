@@ -111,7 +111,7 @@ class TtcResultTest {
     }
 
     @Test
-    void functionalTest1() {
+    void testTtcAndMniiValuesForGlskLimitationWithPositiveValues() {
         TtcResult.ProcessData processData = initProcessData("GLSK_LIMITATION", 1200, 700);
         Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
 
@@ -120,20 +120,20 @@ class TtcResultTest {
     }
 
     @Test
-    void functionalTest2() {
-        TtcResult.ProcessData processData = initProcessData("Critical Branch", 700, 2100);
-        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
-
-        assertEquals(2800, ttcResults.getTTC().getV());
-        assertEquals(700, ttcResults.getMNII().getV());
-    }
-
-    @Test
-    void functionalTest3() {
+    void testTtcAndMniiValuesForGlskLimitationWithNegativeValues() {
         TtcResult.ProcessData processData = initProcessData("GLSK_LIMITATION", 700, 2100);
         Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
 
         assertEquals(700, ttcResults.getTTC().getV());
         assertEquals(-1400, ttcResults.getMNII().getV());
+    }
+
+    @Test
+    void testTtcAndMniiValuesForCriticalBranch() {
+        TtcResult.ProcessData processData = initProcessData("Critical Branch", 700, 2100);
+        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
+
+        assertEquals(2800, ttcResults.getTTC().getV());
+        assertEquals(700, ttcResults.getMNII().getV());
     }
 }
