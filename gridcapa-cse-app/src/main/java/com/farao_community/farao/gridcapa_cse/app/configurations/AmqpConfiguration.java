@@ -21,35 +21,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AmqpConfiguration {
 
-    @Value("${cse-cc.messages.cse-request.exchange}")
-    private String cseRequestExchange;
-    @Value("${cse-cc.messages.cse-request.routing-key}")
-    private String cseRoutingKey;
     @Value("${cse-cc.messages.cse-response.exchange}")
     private String cseResponseExchange;
     @Value("${cse-cc.messages.cse-response.expiration}")
     private String cseResponseExpiration;
-    @Value("${cse-cc.messages.cse-request.queue-prefix}")
-    private String cseRequestQueuePrefix;
+    @Value("${cse-cc.messages.cse-request.queue-name}")
+    private String cseRequestQueueName;
 
     @Bean
-    public NamingStrategy cseRequestQueueNamingStrategy() {
-        return new Base64UrlNamingStrategy(cseRequestQueuePrefix + "-");
-    }
-
-    @Bean
-    public Queue cseRequestQueue(NamingStrategy cseRequestQueueNamingStrategy) {
-        return new AnonymousQueue(cseRequestQueueNamingStrategy);
-    }
-
-    @Bean
-    public DirectExchange cseRequestExchange() {
-        return new DirectExchange(cseRequestExchange);
-    }
-
-    @Bean
-    public Binding cseRequestBinding(DirectExchange cseRequestExchange, Queue cseRequestQueue) {
-        return BindingBuilder.bind(cseRequestQueue).to(cseRequestExchange).with(cseRoutingKey);
+    public Queue cseRequestQueue() {
+        return new Queue(cseRequestQueueName);
     }
 
     @Bean

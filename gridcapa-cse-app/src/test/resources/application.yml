@@ -16,9 +16,7 @@ minio:
 cse-cc:
   messages:
     cse-request:
-      routing-key: cse.key
-      exchange: cse.exchange
-      queue-prefix: cse-request-queue
+      queue-name: cse-request-queue
     cse-response:
       exchange: cse-response
       expiration: 60000

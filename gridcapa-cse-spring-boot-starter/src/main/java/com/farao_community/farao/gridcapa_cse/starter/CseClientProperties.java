@@ -24,25 +24,16 @@ public class CseClientProperties {
     }
 
     public static class AmqpConfiguration {
-        private String exchange;
-        private String routingKey;
+        private String queueName;
         private String expiration;
         private String applicationId;
 
-        public String getExchange() {
-            return exchange;
+        public String getQueueName() {
+            return queueName;
         }
 
-        public void setExchange(String exchange) {
-            this.exchange = exchange;
-        }
-
-        public String getRoutingKey() {
-            return routingKey;
-        }
-
-        public void setRoutingKey(String routingKey) {
-            this.routingKey = routingKey;
+        public void setQueueName(String queueName) {
+            this.queueName = queueName;
         }
 
         public String getExpiration() {

@@ -18,11 +18,9 @@ minio:
 cse-cc:
   messages:
     cse-request:
-      routing-key: cse.key
-      exchange: cse.exchange
-      queue-prefix: cse-request-queue
+      queue-name: ${CSE_CC_REQUEST_QUEUE_NAME:cse-request-queue}
     cse-response:
-      exchange: cse-response
+      exchange: ${CSE_CC_RESPONSE_EXCHANGE:cse-response}
       expiration: 60000
   whitelist:
     - http://${MINIO_HOST:localhost}:${MINIO_PORT:9000}/

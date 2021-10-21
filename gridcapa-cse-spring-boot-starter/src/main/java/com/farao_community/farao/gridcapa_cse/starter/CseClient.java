@@ -32,7 +32,7 @@ public class CseClient {
 
     public CseResponse run(CseRequest cseRequest, int priority) {
         LOGGER.info("Cse request sent: {}", cseRequest);
-        Message responseMessage = amqpTemplate.sendAndReceive(cseClientProperties.getAmqp().getExchange(), cseClientProperties.getAmqp().getRoutingKey(), cseMessageHandler.buildMessage(cseRequest, priority));
+        Message responseMessage = amqpTemplate.sendAndReceive(cseClientProperties.getAmqp().getQueueName(), cseMessageHandler.buildMessage(cseRequest, priority));
         CseResponse cseResponse = cseMessageHandler.readMessage(responseMessage);
         LOGGER.info("Cse response received: {}", cseResponse);
         return cseResponse;
