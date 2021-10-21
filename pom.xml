@@ -35,8 +35,7 @@
         <commons.lang.version>3.11</commons.lang.version>
         <commons.io.version>2.5</commons.io.version>
         <maven.jaxb2.version>0.14.0</maven.jaxb2.version>
-        <maven.jvnet.jaxb2-basics.version>1.11.1</maven.jvnet.jaxb2-basics.version>
-
+        <mockito.core.version>3.9.0</mockito.core.version>
         <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
         <jaxb-runtime.version>2.4.0-b180830.0438</jaxb-runtime.version>
         <jsonapi.converter.version>0.10</jsonapi.converter.version>
@@ -91,7 +90,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>3.9.0</version>
+                <version>${mockito.core.version}</version>
                 <scope>test</scope>
             </dependency>
 
