@@ -7,26 +7,26 @@
 
 package com.farao_community.farao.cse.data.ntc;
 
-public class LineInformation {
+class LineInformation {
     private final String country;
     private final String variationType;
     private final double flow;
 
-    public LineInformation(String country, String variationType, double flow) {
+    LineInformation(String country, String variationType, double flow) {
         this.country = country;
         this.variationType = variationType;
         this.flow = flow;
     }
 
-    public String getCountry() {
+    String getCountry() {
         return country;
     }
 
-    public String getVariationType() {
+    String getVariationType() {
         return variationType;
     }
 
-    public double getFlow() {
+    double getFlow() {
         return flow;
     }
 }

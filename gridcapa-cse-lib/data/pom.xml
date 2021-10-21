@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>gridcapa-cse-data</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Data management for CSE</name>
     <description>Module that manages specific data format for CSE processes</description>
@@ -29,7 +30,7 @@
                         </goals>
                         <configuration>
                             <schemaDirectory>src/main/resources/com/farao_community/farao/cse/data/xsd</schemaDirectory>
-                            <generatePackage>com.farao_community.farao.cse.data</generatePackage>
+                            <generatePackage>com.farao_community.farao.cse.data.xsd</generatePackage>
                             <generateDirectory>${project.build.directory}/generated-sources/xjc-common_files</generateDirectory>
                         </configuration>
                     </execution>
@@ -41,17 +42,56 @@
                         </goals>
                         <configuration>
                             <schemaDirectory>src/main/resources/com/farao_community/farao/cse/data/xsd/target_ch</schemaDirectory>
-                            <generatePackage>com.farao_community.farao.cse.data.target_ch</generatePackage>
+                            <generatePackage>com.farao_community.farao.cse.data.xsd.target_ch</generatePackage>
                             <generateDirectory>${project.build.directory}/generated-sources/xjc-target_ch</generateDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>ntc2</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>src/main/resources/com/farao_community/farao/cse/data/xsd/ntc2</schemaDirectory>
+                            <generatePackage>com.farao_community.farao.cse.data.xsd.ntc2</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/xjc-ntc2</generateDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ttc_res</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>src/main/resources/com/farao_community/farao/cse/data/xsd/ttc_res</schemaDirectory>
+                            <generatePackage>com.farao_community.farao.cse.data.xsd.ttc_res</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/xjc-ttc_res</generateDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
-
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <excludePackageNames>com.farao_community.farao.cse.data.xsd:com.farao_community.farao.cse.data.xsd.*</excludePackageNames>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gridcapa-cse-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-iidm-api</artifactId>
@@ -60,6 +100,22 @@
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-creation-util</artifactId>
             <version>${farao.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-crac-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-rao-result-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-ucte-util</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -74,6 +130,21 @@
         </dependency>
 
         <!-- TEST -->
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-crac-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-crac-io-json</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-rao-result-json</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-config-test</artifactId>
@@ -92,6 +163,11 @@
         <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-ucte-converter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

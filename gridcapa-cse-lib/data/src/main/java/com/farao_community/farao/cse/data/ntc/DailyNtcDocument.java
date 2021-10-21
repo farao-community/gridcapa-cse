@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.*;
+import com.farao_community.farao.cse.data.xsd.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -19,11 +20,11 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class DailyNtcDocument {
+final class DailyNtcDocument {
     private final OffsetDateTime targetDateTime;
     private final NTCReductionsDocument ntcReductionsDocument;
 
-    public static DailyNtcDocument create(OffsetDateTime targetDateTime, InputStream ntcReductionsInputStream) throws JAXBException {
+    static DailyNtcDocument create(OffsetDateTime targetDateTime, InputStream ntcReductionsInputStream) throws JAXBException {
         return new DailyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(ntcReductionsInputStream, NTCReductionsDocument.class));
     }
 
@@ -32,7 +33,7 @@ public final class DailyNtcDocument {
         this.ntcReductionsDocument = ntcReductionsDocument;
     }
 
-    public Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
+    Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
         List<TSpecialLines> tSpecialLines = ntcReductionsDocument.getSpecialLines();
         if (tSpecialLines.isEmpty()) {
             return Collections.emptyMap();
@@ -51,7 +52,7 @@ public final class DailyNtcDocument {
         throw new CseDataException("Several special lines sections have been defined");
     }
 
-    public Map<String, NtcInformation> getNtcInformationPerCountry() {
+    Map<String, NtcInformation> getNtcInformationPerCountry() {
         List<TNTC> ntcValues = NtcUtil.getTNtcFromPeriods(targetDateTime, getTNtcReductions().getPeriod());
         Map<String, NtcInformation> ntcPerCountry = new HashMap<>();
         ntcValues.forEach(tNtc -> {

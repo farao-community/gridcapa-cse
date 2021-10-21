@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.*;
+import com.farao_community.farao.cse.data.xsd.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -15,11 +16,11 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class YearlyNtcDocument {
+final class YearlyNtcDocument {
     private final OffsetDateTime targetDateTime;
     private final NTCAnnualDocument ntcAnnualDocument;
 
-    public static YearlyNtcDocument create(OffsetDateTime targetDateTime, InputStream ntcAnnualInputStream) throws JAXBException {
+    static YearlyNtcDocument create(OffsetDateTime targetDateTime, InputStream ntcAnnualInputStream) throws JAXBException {
         return new YearlyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(ntcAnnualInputStream, NTCAnnualDocument.class));
     }
 
@@ -28,7 +29,7 @@ public final class YearlyNtcDocument {
         this.ntcAnnualDocument = ntcAnnualDocument;
     }
 
-    public Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
+    Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
         TSpecialLines tSpecialLines = getTNtcValues().getSpecialLines();
         if (tSpecialLines != null) {
             return tSpecialLines.getLine().stream()
@@ -47,7 +48,7 @@ public final class YearlyNtcDocument {
         return Collections.emptyMap();
     }
 
-    public Map<String, NtcInformation> getNtcInformationPerCountry() {
+    Map<String, NtcInformation> getNtcInformationPerCountry() {
         List<TNTC> ntcValues = getNtcValues();
         Map<String, NtcInformation> ntcPerCountry = new HashMap<>();
         ntcValues.forEach(tntc -> {

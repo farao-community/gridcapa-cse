@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.cse.data.ntc;
 
-public enum DayOfWeek {
+enum DayOfWeek {
     EVERYDAY(0),
     SATURDAY(6),
     SUNDAY(7),
@@ -20,11 +20,11 @@ public enum DayOfWeek {
         this.daynum = daynum;
     }
 
-    public int getDaynum() {
+    int getDaynum() {
         return daynum;
     }
 
-    public static DayOfWeek getInstance(int daynum) {
+    static DayOfWeek getInstance(int daynum) {
         switch (daynum) {
             case 0 : return EVERYDAY;
             case 6 : return SATURDAY;

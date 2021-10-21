@@ -7,6 +7,8 @@
 
 package com.farao_community.farao.cse.data.target_ch;
 
+import com.farao_community.farao.cse.data.xsd.target_ch.TOutage;
+
 class OutageInformation {
     private final String name;
     private final String fromNode;

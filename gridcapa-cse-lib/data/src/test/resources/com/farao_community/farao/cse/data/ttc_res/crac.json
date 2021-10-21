@@ -1,0 +1,66 @@
+{
+  "type" : "simple-crac",
+  "id" : "17XTSO-CS------W-20190108-F301v1",
+  "name" : "17XTSO-CS------W-20190108-F301v1",
+  "networkElementsNamePerId" : {
+    "FFR1AA1  FFR3AA1  1": "FFR1AA1  FFR3AA1  1",
+    "NNL1AA1  NNL3AA1  1": "NNL1AA1  NNL3AA1  1",
+    "DDE2AA1  DDE3AA1  1": "DDE2AA1  DDE3AA1  1",
+    "FFR2AA1  DDE3AA1  1": "FFR2AA1  DDE3AA1  1",
+    "NNL2AA1  NNL3AA1  1": "NNL2AA1  NNL3AA1  1",
+    "FFR2AA1  FFR3AA1  1": "FFR2AA1  FFR3AA1  1",
+    "DDE1AA1  DDE2AA1  1": "DDE1AA1  DDE2AA1  1",
+    "NNL2AA1  BBE3AA1  1": "NNL2AA1  BBE3AA1  1",
+    "NNL1AA1  NNL2AA1  1": "NNL1AA1  NNL2AA1  1",
+    "BBE2AA1  BBE3AA1  1": "BBE2AA1  BBE3AA1  1",
+    "FFR1AA1  FFR2AA1  1": "FFR1AA1  FFR2AA1  1"
+  },
+  "contingencies" : [ {
+    "id" : "Contingency FR1 FR3",
+    "name" : "Contingency FR1 FR3",
+    "networkElementsIds" : [ "FFR1AA1  FFR3AA1  1" ]
+  } ],
+  "flowCnecs" : [ ],
+  "pstRangeActions" : [ {
+    "id" : "PRA_PST_BE",
+    "name" : "PRA_PST_BE",
+    "operator" : "BE",
+    "freeToUseUsageRules" : [ {
+      "usageMethod" : "available",
+      "instant" : "preventive"
+    } ],
+    "initialTap": 0,
+    "tapToAngleConversionMap" : {"-1" : -0.5, "0" :  0, "1" : 0.5 },
+    "networkElementId" : "BBE2AA1  BBE3AA1  1",
+    "ranges" : [ {
+      "min" : -16.0,
+      "max" : 16.0,
+      "rangeType" : "absolute"
+    } ]
+  } ],
+  "networkActions" : [ {
+    "id" : "Open line NL1-NL2",
+    "name" : "Open line NL1-NL2",
+    "operator" : "NL",
+    "freeToUseUsageRules" : [ {
+      "usageMethod" : "available",
+      "instant" : "preventive"
+    } ],
+    "topologicalActions" : [ {
+      "networkElementId" : "NNL1AA1  NNL2AA1  1",
+      "actionType" : "open"
+    } ]
+  }, {
+    "id" : "Open line FR1-FR2",
+    "name" : "Open line FR1-FR2",
+    "operator" : "FR",
+    "freeToUseUsageRules" : [ {
+      "usageMethod" : "available",
+      "instant" : "preventive"
+    } ],
+    "topologicalActions" : [ {
+      "networkElementId" : "FFR1AA1  FFR2AA1  1",
+      "actionType" : "open"
+    } ]
+  } ]
+}
