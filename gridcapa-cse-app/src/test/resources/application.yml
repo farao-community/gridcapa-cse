@@ -1,0 +1,24 @@
+spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+minio:
+  bucket: cse-data
+  base-path: default-base-path/
+  access:
+    name: minioadmin
+    secret: minioadmin
+  url: http://localhost:9000/
+
+cse-cc:
+  messages:
+    cse-request:
+      queue-name: cse-request-queue
+    cse-response:
+      exchange: cse-response
+      expiration: 60000
+  whitelist:
+    - http://localhost:9000

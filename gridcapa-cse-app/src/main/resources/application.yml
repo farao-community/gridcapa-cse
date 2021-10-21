@@ -1,0 +1,31 @@
+spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    template:
+      reply-timeout: 2400000
+
+minio:
+  bucket: ${MINIO_BUCKET:cse-data}
+  base-path: ${CSE_CC_SERVER_MINIO_BASE_PATH:default-base-path/}
+  access:
+    name: ${MINIO_USERNAME:minioadmin}
+    secret: ${MINIO_PASSWORD:minioadmin}
+  url: http://${MINIO_HOST:localhost}:${MINIO_PORT:9000}/
+
+cse-cc:
+  messages:
+    cse-request:
+      queue-name: ${CSE_CC_REQUEST_QUEUE_NAME:cse-request-queue}
+    cse-response:
+      exchange: ${CSE_CC_RESPONSE_EXCHANGE:cse-response}
+      expiration: 60000
+  whitelist:
+    - http://${MINIO_HOST:localhost}:${MINIO_PORT:9000}/
+
+server:
+  port: ${CSE_CC_SERVER_PORT:8080}
+
+

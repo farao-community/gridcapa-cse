@@ -57,6 +57,7 @@
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
         <module name="StringLiteralEquality"/>
+        <module name="SuppressWarningsHolder"/>
         <module name="TypecastParenPad"/>
         <module name="TypeName"/>
         <module name="UnnecessaryParentheses"/>
@@ -65,4 +66,5 @@
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
     </module>
+    <module name="SuppressWarningsFilter"/>
 </module>
