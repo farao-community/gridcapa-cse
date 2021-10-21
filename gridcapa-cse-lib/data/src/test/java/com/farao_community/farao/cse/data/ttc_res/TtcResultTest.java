@@ -120,7 +120,7 @@ class TtcResultTest {
     }
 
     @Test
-    void testTtcAndMniiValuesForGlskLimitationWithNegativeValues() {
+    void testTtcAndMniiValuesForGlskLimitationWithNegativeMniiValue() {
         TtcResult.ProcessData processData = initProcessData("GLSK_LIMITATION", 700, 2100);
         Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
 
