@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -51,8 +50,8 @@ public final class ItalianImport {
     public static double getItalyBorderFlow(Branch<?> branch) {
         double leavingFlow = 0;
         for (Branch.Side side : Branch.Side.values()) {
-            Optional<Country> countrySide = branch.getTerminal(side).getVoltageLevel().getSubstation().get().getCountry();
-            double flow = countrySide.isPresent() && countrySide.get().equals(Country.IT) ? -branch.getTerminal(side).getP() : branch.getTerminal(side).getP();
+            Country countrySide = getCountrySide(branch, side);
+            double flow = countrySide.equals(Country.IT) ? -branch.getTerminal(side).getP() : branch.getTerminal(side).getP();
             if (!Double.isNaN(flow)) {
                 leavingFlow += branch.getTerminal(side).isConnected() ? flow : 0; //in this branch one of the terminals is connected but P = Nan
             }
@@ -76,8 +75,12 @@ public final class ItalianImport {
         return branch.getTerminal(side)
             .getVoltageLevel()
             .getSubstation()
-            .orElseThrow(() -> new CseInternalException(String.format("Could not find country in side %s of branch : %s", side.name(), branch.getId())))
-            .getNullableCountry();
+            .orElseThrow(() -> new CseInternalException(getErrorMessage("substation", side, branch)))
+            .getCountry()
+            .orElseThrow(() -> new CseInternalException(getErrorMessage("country", side, branch)));
+    }
 
+    private static String getErrorMessage(String object, Branch.Side side, Branch<?> branch) {
+        return String.format("Could not find %s on side %s of branch : %s", object, side.name(), branch.getId());
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.Random;
 
@@ -28,6 +29,7 @@ import java.util.Random;
 public class DichotomyRunner {
     private static final double MAX_IMPORT_VALUE = 19999;
     private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
+    private static final Random RANDOM = new SecureRandom();
 
     private final UrlValidationService urlValidationService;
     private final MinioAdapter minioAdapter;
@@ -49,7 +51,7 @@ public class DichotomyRunner {
             new StepsIndexStrategyConfiguration(true, cseRequest.getInitialDichotomyStep())
         );
 
-        DichotomyRequest dichotomyRequest = new DichotomyRequest(new Random().toString(),
+        DichotomyRequest dichotomyRequest = new DichotomyRequest(String.valueOf(RANDOM.nextLong()),
             new DichotomyFileResource(urlValidationService.getFileNameFromUrl(cseData.getPreProcesedNetworkUrl()), cseData.getPreProcesedNetworkUrl()),
             new DichotomyFileResource(urlValidationService.getFileNameFromUrl(cseData.getJsonCracUrl()), cseData.getJsonCracUrl()),
             new DichotomyFileResource(urlValidationService.getFileNameFromUrl(cseRequest.getMergedGlskUrl()), cseRequest.getMergedGlskUrl()),
