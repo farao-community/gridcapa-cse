@@ -7,10 +7,12 @@
 package com.farao_community.farao.gridcapa.api.resource;
 
 import com.farao_community.farao.gridcapa_cse.api.resource.CseRequest;
+import com.farao_community.farao.gridcapa_cse.api.resource.ProcessType;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.time.OffsetDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -19,21 +21,56 @@ class CseRequestTest {
 
     @Test
     void checkCseRequestForD2ccProcess() {
-        CseRequest cseRequest = CseRequest.d2ccProcess("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsUrl", "targetChUrl", "vulcanusUrl", "yearlyNtcUrl");
+        CseRequest cseRequest = CseRequest.d2ccProcess(
+            "id",
+            OffsetDateTime.parse("2017-07-18T08:18Z"),
+            "cgmUrl",
+            "mergedCracUrl",
+            "mergedGlskUrl",
+            "ntcReductionsUrl",
+            "targetChUrl",
+            "vulcanusUrl",
+            "yearlyNtcUrl",
+            50,
+            650,
+            null);
         assertNotNull(cseRequest);
         assertEquals("cgmUrl", cseRequest.getCgmUrl());
         assertEquals("ntcReductionsUrl", cseRequest.getNtcReductionsUrl());
         assertEquals("targetChUrl", cseRequest.getTargetChUrl());
         assertEquals("yearlyNtcUrl", cseRequest.getYearlyNtcUrl());
+        assertEquals(ProcessType.D2CC, cseRequest.getProcessType());
+        assertEquals(50, cseRequest.getDichotomyPrecision());
+        assertEquals(650, cseRequest.getInitialDichotomyStep());
+        assertTrue(Double.isNaN(cseRequest.getInitialDichotomyIndex()));
     }
 
     @Test
     void checkCseRequestForIdccProcess() {
-        CseRequest cseRequest = CseRequest.idccProcess("id", "2017-07-18T08:18Z", "cgmUrl", "mergedCracUrl", "mergedGlskUrl", "ntcReductionsUrl", "ntc2AtItUrl", "ntc2ChItUrl", "ntc2FrItUrl", "ntc2SiItUrl", "vulcanusUrl", "yearlyNtcUrl");
+        CseRequest cseRequest = CseRequest.idccProcess(
+            "id",
+            OffsetDateTime.parse("2017-07-18T08:18Z"),
+            "cgmUrl",
+            "mergedCracUrl",
+            "mergedGlskUrl",
+            "ntcReductionsUrl",
+            "ntc2AtItUrl",
+            "ntc2ChItUrl",
+            "ntc2FrItUrl",
+            "ntc2SiItUrl",
+            "vulcanusUrl",
+            "yearlyNtcUrl",
+            50,
+            650,
+            2500.);
         assertNotNull(cseRequest);
         assertEquals("cgmUrl", cseRequest.getCgmUrl());
         assertEquals("mergedCracUrl", cseRequest.getMergedCracUrl());
         assertEquals("vulcanusUrl", cseRequest.getVulcanusUrl());
         assertEquals("yearlyNtcUrl", cseRequest.getYearlyNtcUrl());
+        assertEquals(ProcessType.IDCC, cseRequest.getProcessType());
+        assertEquals(50, cseRequest.getDichotomyPrecision());
+        assertEquals(650, cseRequest.getInitialDichotomyStep());
+        assertEquals(2500, cseRequest.getInitialDichotomyIndex());
     }
 }

@@ -9,16 +9,11 @@ package com.farao_community.farao.cse.data.ntc2;
 import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.ntc2.CapacityDocument;
-import com.farao_community.farao.gridcapa_cse.api.exception.CseInternalException;
 import com.farao_community.farao.gridcapa_cse.api.exception.CseInvalidDataException;
 import com.powsybl.iidm.network.Country;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -33,7 +28,6 @@ import java.util.stream.Stream;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public final class Ntc2 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Ntc2.class);
     private static final String AUSTRIAN_TAG = "AT";
     private static final String SWISS_TAG = "CH";
     private static final String FRENCH_TAG = "FR";
@@ -53,17 +47,17 @@ public final class Ntc2 {
         return exchanges.get(new EICode(country).getAreaCode());
     }
 
-    public static Ntc2 create(OffsetDateTime targetDateTime, Iterable<File> ntc2Files) {
-        return new Ntc2(getD2Exchanges(ntc2Files, targetDateTime));
+    public static Ntc2 create(OffsetDateTime targetDateTime, Map<String, InputStream> ntc2InputStreams) {
+        return new Ntc2(getD2Exchanges(ntc2InputStreams, targetDateTime));
     }
 
-    private static Map<String, Double> getD2Exchanges(Iterable<File> ntc2Files, OffsetDateTime targetDateTime) {
+    private static Map<String, Double> getD2Exchanges(Map<String, InputStream> ntc2InputStreams, OffsetDateTime targetDateTime) {
         Map<String, Double> result = new HashMap<>();
-        for (File ntc2file : ntc2Files) {
-            Optional<String> optAreaCode = getAreaCodeFromFilename(ntc2file.getName());
+        for (Map.Entry<String, InputStream> ntc2Entry : ntc2InputStreams.entrySet()) {
+            Optional<String> optAreaCode = getAreaCodeFromFilename(ntc2Entry.getKey());
             optAreaCode.ifPresent(areaCode -> {
                 try {
-                    double d2Exchange = getD2ExchangeByOffsetDateTime(ntc2file, targetDateTime);
+                    double d2Exchange = getD2ExchangeByOffsetDateTime(ntc2Entry.getValue(), targetDateTime);
                     result.put(areaCode, d2Exchange);
                 } catch (Exception e) {
                     throw new CseInvalidDataException(e.getMessage(), e);
@@ -73,21 +67,16 @@ public final class Ntc2 {
         return result;
     }
 
-    private static Double getD2ExchangeByOffsetDateTime(File ntc2file, OffsetDateTime targetDateTime) throws JAXBException {
-        try (FileInputStream fileInputStream = new FileInputStream(ntc2file)) {
-            Map<Integer, Double> qtyByPositionMap = new HashMap<>();
-            CapacityDocument capacityDocument = DataUtil.unmarshalFromInputStream(fileInputStream, CapacityDocument.class);
-            checkTimeInterval(capacityDocument, targetDateTime);
-            int position = targetDateTime.atZoneSameInstant(ZoneId.of("CET")).getHour() + 1;
-            capacityDocument.getCapacityTimeSeries().getPeriod().getInterval().forEach(interval -> {
-                int index = interval.getPos().getV().intValue();
-                qtyByPositionMap.put(index, interval.getQty().getV().doubleValue());
-            });
-            return qtyByPositionMap.get(position);
-        } catch (IOException e) {
-            LOGGER.error("Error while reading file '{}'", ntc2file.getName());
-            throw new CseInternalException("Error while reading file " + ntc2file.getName(), e);
-        }
+    private static Double getD2ExchangeByOffsetDateTime(InputStream ntc2InputStream, OffsetDateTime targetDateTime) throws JAXBException {
+        Map<Integer, Double> qtyByPositionMap = new HashMap<>();
+        CapacityDocument capacityDocument = DataUtil.unmarshalFromInputStream(ntc2InputStream, CapacityDocument.class);
+        checkTimeInterval(capacityDocument, targetDateTime);
+        int position = targetDateTime.atZoneSameInstant(ZoneId.of("CET")).getHour() + 1;
+        capacityDocument.getCapacityTimeSeries().getPeriod().getInterval().forEach(interval -> {
+            int index = interval.getPos().getV().intValue();
+            qtyByPositionMap.put(index, interval.getQty().getV().doubleValue());
+        });
+        return qtyByPositionMap.get(position);
     }
 
     private static void checkTimeInterval(CapacityDocument capacityDocument, OffsetDateTime targetDateTime) {

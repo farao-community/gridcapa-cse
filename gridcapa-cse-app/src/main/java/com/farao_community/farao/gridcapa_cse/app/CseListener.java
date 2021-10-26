@@ -9,12 +9,13 @@ package com.farao_community.farao.gridcapa_cse.app;
 import com.farao_community.farao.gridcapa_cse.api.JsonApiConverter;
 import com.farao_community.farao.gridcapa_cse.api.exception.CseInternalException;
 import com.farao_community.farao.gridcapa_cse.api.resource.CseRequest;
+import com.farao_community.farao.gridcapa_cse.api.resource.CseResponse;
 import com.farao_community.farao.gridcapa_cse.app.configurations.AmqpConfiguration;
+import com.farao_community.farao.gridcapa_cse.app.services.CseRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.stereotype.Component;
-
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -27,10 +28,12 @@ public class CseListener implements MessageListener {
     private final AmqpTemplate amqpTemplate;
     private final AmqpConfiguration amqpConfiguration;
     private final JsonApiConverter jsonApiConverter;
+    private final CseRunner cseServer;
 
-    public CseListener(AmqpTemplate amqpTemplate, AmqpConfiguration amqpConfiguration) {
+    public CseListener(AmqpTemplate amqpTemplate, AmqpConfiguration amqpConfiguration, CseRunner cseServer) {
         this.amqpTemplate = amqpTemplate;
         this.amqpConfiguration = amqpConfiguration;
+        this.cseServer = cseServer;
         this.jsonApiConverter = new JsonApiConverter();
     }
 
@@ -41,14 +44,22 @@ public class CseListener implements MessageListener {
         try {
             CseRequest cseRequest = jsonApiConverter.fromJsonMessage(message.getBody(), CseRequest.class);
             LOGGER.info("Cse request received : {}", cseRequest);
-            // TODO handle request and send CseResponse
+            CseResponse cseResponse = cseServer.run(cseRequest);
+            sendCseResponse(cseResponse, replyTo, correlationId);
         } catch (CseInternalException e) {
             sendErrorResponse(e, replyTo, correlationId);
         } catch (Exception e) {
             CseInternalException unknownException = new CseInternalException("Unknown exception", e);
             sendErrorResponse(unknownException, replyTo, correlationId);
         }
+    }
 
+    private void sendCseResponse(CseResponse cseResponse, String replyTo, String correlationId) {
+        if (replyTo != null) {
+            amqpTemplate.send(replyTo, createMessageResponse(cseResponse, correlationId));
+        } else {
+            amqpTemplate.send(amqpConfiguration.cseResponseExchange().getName(), "", createMessageResponse(cseResponse, correlationId));
+        }
     }
 
     private void sendErrorResponse(CseInternalException exception, String replyTo, String correlationId) {
@@ -69,6 +80,12 @@ public class CseListener implements MessageListener {
         return jsonApiConverter.toJsonMessage(e);
     }
 
+    private Message createMessageResponse(CseResponse cseResponse, String correlationId) {
+        return MessageBuilder.withBody(jsonApiConverter.toJsonMessage(cseResponse))
+            .andProperties(buildMessageResponseProperties(correlationId))
+            .build();
+    }
+
     private MessageProperties buildMessageResponseProperties(String correlationId) {
         return MessagePropertiesBuilder.newInstance()
                 .setAppId("cse-server")
@@ -80,5 +97,4 @@ public class CseListener implements MessageListener {
                 .setPriority(1)
                 .build();
     }
-
 }

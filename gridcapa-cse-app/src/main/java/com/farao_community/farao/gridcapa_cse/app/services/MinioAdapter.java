@@ -4,19 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.gridcapa_cse.app.configurations;
+package com.farao_community.farao.gridcapa_cse.app.services;
 
 import com.farao_community.farao.gridcapa_cse.api.exception.CseInternalException;
+import com.farao_community.farao.gridcapa_cse.app.configurations.MinioConfiguration;
 import io.minio.*;
 import io.minio.http.Method;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,15 +70,6 @@ public class MinioAdapter {
             );
         } catch (Exception e) {
             throw new CseInternalException("Exception in MinIO connection.", e);
-        }
-    }
-
-    public String getFileNameFromUrl(String stringUrl) {
-        try {
-            URL url = new URL(stringUrl);
-            return FilenameUtils.getName(url.getPath());
-        } catch (IOException e) {
-            throw new CseInternalException(String.format("Exception occurred while retrieving file name from : %s Cause: %s ", stringUrl, e.getMessage()));
         }
     }
 }
