@@ -6,10 +6,8 @@
  */
 package com.farao_community.farao.gridcapa_cse.app.services;
 
-import com.farao_community.farao.gridcapa_cse.api.exception.CseInternalException;
 import com.farao_community.farao.gridcapa_cse.api.exception.CseInvalidDataException;
 import com.farao_community.farao.gridcapa_cse.app.configurations.UrlWhitelistConfiguration;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,7 +19,7 @@ import java.net.URL;
  */
 @Component
 public class UrlValidationService {
-    private UrlWhitelistConfiguration urlWhitelistConfiguration;
+    private final UrlWhitelistConfiguration urlWhitelistConfiguration;
 
     public UrlValidationService(UrlWhitelistConfiguration urlWhitelistConfiguration) {
         this.urlWhitelistConfiguration = urlWhitelistConfiguration;
@@ -33,14 +31,5 @@ public class UrlValidationService {
         }
         URL url = new URL(urlString);
         return url.openStream(); // NOSONAR Usage of whitelist not triggered by Sonar quality assessment, even if listed as a solution to the vulnerability
-    }
-
-    public String getFileNameFromUrl(String stringUrl) {
-        try {
-            URL url = new URL(stringUrl);
-            return FilenameUtils.getName(url.getPath());
-        } catch (IOException e) {
-            throw new CseInternalException(String.format("Exception occurred while retrieving file name from : %s Cause: %s ", stringUrl, e.getMessage()));
-        }
     }
 }

@@ -13,7 +13,6 @@ import com.github.jasminb.jsonapi.annotations.Type;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -91,7 +90,7 @@ public class CseRequest {
         return new CseRequest(
             id, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
             null, null, null, targetChUrl, vulcanusUrl, yearlyNtcUrl,
-            dichotomyPrecision, initialDichotomyStep, Optional.ofNullable(initialDichotomyIndex).orElse(Double.NaN));
+            dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
     public static CseRequest idccProcess(String id,
@@ -111,7 +110,7 @@ public class CseRequest {
                                          Double initialDichotomyIndex) {
         return new CseRequest(id, ProcessType.IDCC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl,
             ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl,
-            dichotomyPrecision, initialDichotomyStep, Optional.ofNullable(initialDichotomyIndex).orElse(Double.NaN));
+            dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
     public String getId() {

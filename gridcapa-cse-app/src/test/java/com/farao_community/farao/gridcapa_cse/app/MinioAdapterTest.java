@@ -7,7 +7,6 @@
 package com.farao_community.farao.gridcapa_cse.app;
 
 import com.farao_community.farao.gridcapa_cse.app.services.MinioAdapter;
-import com.farao_community.farao.gridcapa_cse.app.services.UrlValidationService;
 import io.minio.MinioClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,9 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @SpringBootTest
 class MinioAdapterTest {
-
-    @Autowired
-    private UrlValidationService urlValidationService;
 
     @Autowired
     private MinioAdapter minioAdapter;
@@ -52,11 +48,5 @@ class MinioAdapterTest {
         String url = minioAdapter.generatePreSignedUrl("file/path");
         Mockito.verify(minioClient, Mockito.times(1)).getPresignedObjectUrl(Mockito.any());
         assertEquals("http://url", url);
-    }
-
-    @Test
-    void checkFileNameReturnedCorrectlyFromUrl() {
-        String stringUrl = "http://localhost:9000/folder/id/fileName.xml";
-        assertEquals("fileName.xml", urlValidationService.getFileNameFromUrl(stringUrl));
     }
 }

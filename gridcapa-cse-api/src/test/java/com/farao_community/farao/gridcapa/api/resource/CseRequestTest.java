@@ -42,7 +42,7 @@ class CseRequestTest {
         assertEquals(ProcessType.D2CC, cseRequest.getProcessType());
         assertEquals(50, cseRequest.getDichotomyPrecision());
         assertEquals(650, cseRequest.getInitialDichotomyStep());
-        assertTrue(Double.isNaN(cseRequest.getInitialDichotomyIndex()));
+        assertNull(cseRequest.getInitialDichotomyIndex());
     }
 
     @Test

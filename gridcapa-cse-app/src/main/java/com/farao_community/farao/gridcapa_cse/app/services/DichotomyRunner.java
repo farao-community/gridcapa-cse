@@ -12,12 +12,9 @@ import com.farao_community.farao.dichotomy_runner.starter.DichotomyClient;
 import com.farao_community.farao.gridcapa_cse.api.resource.CseRequest;
 import com.farao_community.farao.gridcapa_cse.api.resource.ProcessType;
 import com.farao_community.farao.gridcapa_cse.app.CseData;
-import com.farao_community.farao.rao_api.json.JsonRaoParameters;
-import com.farao_community.farao.rao_api.parameters.RaoParameters;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.Random;
@@ -28,21 +25,23 @@ import java.util.Random;
 @Service
 public class DichotomyRunner {
     private static final double MAX_IMPORT_VALUE = 19999;
-    private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
     private static final Random RANDOM = new SecureRandom();
 
-    private final UrlValidationService urlValidationService;
-    private final MinioAdapter minioAdapter;
+    private final FileExporter fileExporter;
     private final DichotomyClient dichotomyClient;
 
-    public DichotomyRunner(UrlValidationService urlValidationService, MinioAdapter minioAdapter, DichotomyClient dichotomyClient) {
-        this.urlValidationService = urlValidationService;
-        this.minioAdapter = minioAdapter;
+    public DichotomyRunner(FileExporter fileExporter, DichotomyClient dichotomyClient) {
+        this.fileExporter = fileExporter;
         this.dichotomyClient = dichotomyClient;
     }
 
     public DichotomyResponse runDichotomy(CseRequest cseRequest, CseData cseData, double initialItalianImportFromNetwork) {
-        String raoParametersUrl = saveRaoParameters();
+        DichotomyRequest dichotomyRequest = getDichotomyRequest(cseRequest, cseData, initialItalianImportFromNetwork);
+        return dichotomyClient.runDichotomy(dichotomyRequest);
+    }
+
+    DichotomyRequest getDichotomyRequest(CseRequest cseRequest, CseData cseData, double initialItalianImportFromNetwork) {
+        String raoParametersUrl = fileExporter.saveRaoParameters();
         DichotomyParameters dichotomyParameters = new DichotomyParameters(
             Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImportFromNetwork),
             MAX_IMPORT_VALUE,
@@ -51,23 +50,12 @@ public class DichotomyRunner {
             new StepsIndexStrategyConfiguration(true, cseRequest.getInitialDichotomyStep())
         );
 
-        DichotomyRequest dichotomyRequest = new DichotomyRequest(String.valueOf(RANDOM.nextLong()),
-            new DichotomyFileResource(urlValidationService.getFileNameFromUrl(cseData.getPreProcesedNetworkUrl()), cseData.getPreProcesedNetworkUrl()),
-            new DichotomyFileResource(urlValidationService.getFileNameFromUrl(cseData.getJsonCracUrl()), cseData.getJsonCracUrl()),
-            new DichotomyFileResource(urlValidationService.getFileNameFromUrl(cseRequest.getMergedGlskUrl()), cseRequest.getMergedGlskUrl()),
-            new DichotomyFileResource(urlValidationService.getFileNameFromUrl(raoParametersUrl), raoParametersUrl),
+        return new DichotomyRequest(String.valueOf(RANDOM.nextLong()),
+            new DichotomyFileResource(FilenameUtils.getName(cseData.getPreProcesedNetworkUrl()), cseData.getPreProcesedNetworkUrl()),
+            new DichotomyFileResource(FilenameUtils.getName(cseData.getJsonCracUrl()), cseData.getJsonCracUrl()),
+            new DichotomyFileResource(FilenameUtils.getName(cseRequest.getMergedGlskUrl()), cseRequest.getMergedGlskUrl()),
+            new DichotomyFileResource(FilenameUtils.getName(raoParametersUrl), raoParametersUrl),
             dichotomyParameters);
-        return dichotomyClient.runDichotomy(dichotomyRequest);
-    }
-
-    private String saveRaoParameters() {
-        RaoParameters raoParameters = RaoParameters.load();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonRaoParameters.write(raoParameters, baos);
-        String raoParametersDestinationPath = RAO_PARAMETERS_FILE_NAME;
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        minioAdapter.uploadFile(raoParametersDestinationPath, bais);
-        return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
     }
 
     private ShiftDispatcherConfiguration getShiftDispatcherConfiguration(ProcessType processType, CseData cseData) {
