@@ -24,10 +24,10 @@
     </scm>
 
     <modules>
-        <module>gridcapa-cse-lib</module>
-        <module>gridcapa-cse-api</module>
-        <module>gridcapa-cse-app</module>
-        <module>gridcapa-cse-spring-boot-starter</module>
+        <module>cse-lib</module>
+        <module>cse-runner-api</module>
+        <module>cse-runner-app</module>
+        <module>cse-runner-spring-boot-starter</module>
     </modules>
 
     <properties>
