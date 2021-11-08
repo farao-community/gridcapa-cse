@@ -1,6 +1,10 @@
-name: CI
+name: CI - master
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 
 jobs:
   build:
@@ -9,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: master
 
       - name: Set up JDK 11
         uses: actions/setup-java@v1
@@ -27,3 +33,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Build and publish Docker image
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: farao/gridcapa-cse
+          username: farao
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Broadcast update event
+        uses: farao-community/broadcast-event@master
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          event-type: gridcapa_cse_updated
