@@ -76,7 +76,7 @@ class CseReferenceExchangesTest {
     }
 
     @Test
-    void functionalTest11() throws IOException {
+    void testOnRealData1() throws IOException {
         LocalDateTime localDateTime = LocalDateTime.parse("2021-01-01T00:00");
         ZoneOffset zoneOffset = ZoneId.of("CET").getRules().getOffset(localDateTime);
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
@@ -90,7 +90,7 @@ class CseReferenceExchangesTest {
     }
 
     @Test
-    void functionalTest12() throws IOException {
+    void testOnRealData2() throws IOException {
         LocalDateTime localDateTime = LocalDateTime.parse("2021-01-01T01:00");
         ZoneOffset zoneOffset = ZoneId.of("CET").getRules().getOffset(localDateTime);
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
@@ -104,7 +104,7 @@ class CseReferenceExchangesTest {
     }
 
     @Test
-    void functionalTest21() throws IOException {
+    void testOnRealData3() throws IOException {
         LocalDateTime localDateTime = LocalDateTime.parse("2021-03-01T00:00");
         ZoneOffset zoneOffset = ZoneId.of("CET").getRules().getOffset(localDateTime);
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
@@ -118,7 +118,7 @@ class CseReferenceExchangesTest {
     }
 
     @Test
-    void functionalTest22() throws IOException {
+    void testOnRealData4() throws IOException {
         LocalDateTime localDateTime = LocalDateTime.parse("2021-03-01T01:00");
         ZoneOffset zoneOffset = ZoneId.of("CET").getRules().getOffset(localDateTime);
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
