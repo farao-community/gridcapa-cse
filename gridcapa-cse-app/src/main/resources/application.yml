@@ -16,6 +16,8 @@ minio:
   url: http://${MINIO_HOST:localhost}:${MINIO_PORT:9000}/
 
 cse-cc:
+  xnodes:
+    filename: cvg_xnodes_20200714.xml
   messages:
     cse-request:
       queue-name: ${CSE_CC_REQUEST_QUEUE_NAME:cse-request-queue}

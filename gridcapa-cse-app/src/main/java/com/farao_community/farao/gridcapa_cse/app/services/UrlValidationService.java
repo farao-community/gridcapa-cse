@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.gridcapa_cse.app;
+package com.farao_community.farao.gridcapa_cse.app.services;
 
 import com.farao_community.farao.gridcapa_cse.api.exception.CseInvalidDataException;
 import com.farao_community.farao.gridcapa_cse.app.configurations.UrlWhitelistConfiguration;
@@ -19,7 +19,7 @@ import java.net.URL;
  */
 @Component
 public class UrlValidationService {
-    private UrlWhitelistConfiguration urlWhitelistConfiguration;
+    private final UrlWhitelistConfiguration urlWhitelistConfiguration;
 
     public UrlValidationService(UrlWhitelistConfiguration urlWhitelistConfiguration) {
         this.urlWhitelistConfiguration = urlWhitelistConfiguration;

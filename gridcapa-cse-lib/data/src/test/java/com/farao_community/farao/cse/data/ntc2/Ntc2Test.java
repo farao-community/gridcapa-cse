@@ -10,14 +10,14 @@ import com.farao_community.farao.gridcapa_cse.api.exception.CseInvalidDataExcept
 import com.powsybl.iidm.network.Country;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.logging.Logger;
+import org.junit.platform.commons.logging.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -28,18 +28,30 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 class Ntc2Test {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Ntc2Test.class);
 
-    private List<File> test1Nt2Files;
-    private List<File> test2Nt2Files;
+    private Map<String, InputStream> test1Nt2Files;
+    private Map<String, InputStream> test2Nt2Files;
 
     @BeforeEach
     void setUp() throws IOException {
-        test1Nt2Files = Files.list(Paths.get(Objects.requireNonNull(getClass().getResource("test1")).getPath()))
-            .map(Path::toFile)
-            .collect(Collectors.toList());
-        test2Nt2Files = Files.list(Paths.get(Objects.requireNonNull(getClass().getResource("test2")).getPath()))
-            .map(Path::toFile)
-            .collect(Collectors.toList());
+        test1Nt2Files = getNtc2Files("test1");
+        test2Nt2Files = getNtc2Files("test2");
+    }
+
+    private Map<String, InputStream> getNtc2Files(String directory) throws IOException {
+        return Files.list(Paths.get(Objects.requireNonNull(getClass().getResource(directory)).getPath()))
+            .collect(Collectors.toMap(
+                path -> path.getFileName().toString(),
+                path -> {
+                    try {
+                        return new FileInputStream(path.toFile());
+                    } catch (FileNotFoundException e) {
+                        LOGGER.warn(() -> path + " not found.");
+                        return null;
+                    }
+                }
+            ));
     }
 
     @Test

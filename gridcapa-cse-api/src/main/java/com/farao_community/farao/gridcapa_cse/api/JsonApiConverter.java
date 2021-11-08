@@ -13,6 +13,8 @@ import com.farao_community.farao.gridcapa_cse.api.exception.CseInvalidDataExcept
 import com.farao_community.farao.gridcapa_cse.api.resource.CseRequest;
 import com.farao_community.farao.gridcapa_cse.api.resource.CseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import com.github.jasminb.jsonapi.SerializationFeature;
@@ -29,8 +31,9 @@ public class JsonApiConverter {
     private final ObjectMapper objectMapper;
 
     public JsonApiConverter() {
-
-        objectMapper = new ObjectMapper();
+        objectMapper = JsonMapper.builder()
+            .addModule(new JavaTimeModule())
+            .build();
     }
 
     public <T> T fromJsonMessage(byte[] jsonMessage, Class<T> tClass) {

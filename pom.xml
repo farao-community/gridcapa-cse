@@ -32,15 +32,19 @@
 
     <properties>
         <!-- Dependencies versions -->
+        <apache.poi.version>3.7</apache.poi.version>
         <commons.lang.version>3.11</commons.lang.version>
         <commons.io.version>2.5</commons.io.version>
         <maven.jaxb2.version>0.14.0</maven.jaxb2.version>
         <mockito.core.version>3.9.0</mockito.core.version>
+        <jackson.datatype.version>2.13.0</jackson.datatype.version>
         <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
         <jaxb-runtime.version>2.4.0-b180830.0438</jaxb-runtime.version>
         <jsonapi.converter.version>0.10</jsonapi.converter.version>
 
-        <farao.bom.version>1.0.10</farao.bom.version>
+        <farao.bom.version>1.1.0</farao.bom.version>
+        <gridcapa.dichotomy.runner.version>0.1.0</gridcapa.dichotomy.runner.version>
+        <powsybl.open-loadflow.version>0.13.0</powsybl.open-loadflow.version>
     </properties>
 
     <build>
@@ -58,6 +62,16 @@
     <dependencyManagement>
         <dependencies>
             <!-- Compile dependencies -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.datatype.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.farao-community.farao</groupId>
+                <artifactId>gridcapa-dichotomy-runner-spring-boot-starter</artifactId>
+                <version>${gridcapa.dichotomy.runner.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.github.jasminb</groupId>
                 <artifactId>jsonapi-converter</artifactId>
@@ -78,6 +92,11 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.lang.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${apache.poi.version}</version>
+            </dependency>
 
             <!-- RUNTIME -->
             <dependency>
@@ -87,6 +106,11 @@
                 <scope>runtime</scope>
             </dependency>
 
+            <dependency>
+                <groupId>com.powsybl</groupId>
+                <artifactId>powsybl-open-loadflow</artifactId>
+                <version>${powsybl.open-loadflow.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>

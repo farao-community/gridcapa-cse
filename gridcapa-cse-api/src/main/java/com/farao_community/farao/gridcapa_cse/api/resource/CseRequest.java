@@ -12,6 +12,8 @@ import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.time.OffsetDateTime;
+
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
@@ -19,7 +21,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class CseRequest {
     @Id
     private final String id;
-    private final String instant;
+    private final ProcessType processType;
+    private final OffsetDateTime targetProcessDateTime;
     private final String cgmUrl;
     private final String mergedCracUrl;
     private final String mergedGlskUrl;
@@ -31,10 +34,14 @@ public class CseRequest {
     private final String targetChUrl;
     private final String vulcanusUrl;
     private final String yearlyNtcUrl;
+    private final double dichotomyPrecision;
+    private final double initialDichotomyStep;
+    private final Double initialDichotomyIndex;
 
     @JsonCreator
     public CseRequest(@JsonProperty("id") String id,
-                      @JsonProperty("instant") String instant,
+                      @JsonProperty("processType") ProcessType processType,
+                      @JsonProperty("targetProcessDateTime") OffsetDateTime targetProcessDateTime,
                       @JsonProperty("cgmUrl") String cgmUrl,
                       @JsonProperty("mergedCracUrl") String mergedCracUrl,
                       @JsonProperty("mergedGlskUrl") String mergedGlskUrl,
@@ -45,9 +52,13 @@ public class CseRequest {
                       @JsonProperty("ntc2SiItUrl") String ntc2SiItUrl,
                       @JsonProperty("targetChUrl") String targetChUrl,
                       @JsonProperty("vulcanusUrl") String vulcanusUrl,
-                      @JsonProperty("yearlyNtcUrl") String yearlyNtcUrl) {
+                      @JsonProperty("yearlyNtcUrl") String yearlyNtcUrl,
+                      @JsonProperty("dichotomyPrecision") double dichotomyPrecision,
+                      @JsonProperty("initialDichotomyStep") double initialDichotomyStep,
+                      @JsonProperty("initialDichotomyIndex") Double initialDichotomyIndex) {
         this.id = id;
-        this.instant = instant;
+        this.processType = processType;
+        this.targetProcessDateTime = targetProcessDateTime;
         this.cgmUrl = cgmUrl;
         this.mergedCracUrl = mergedCracUrl;
         this.mergedGlskUrl = mergedGlskUrl;
@@ -59,22 +70,31 @@ public class CseRequest {
         this.targetChUrl = targetChUrl;
         this.vulcanusUrl = vulcanusUrl;
         this.yearlyNtcUrl = yearlyNtcUrl;
+        this.dichotomyPrecision = dichotomyPrecision;
+        this.initialDichotomyStep = initialDichotomyStep;
+        this.initialDichotomyIndex = initialDichotomyIndex;
     }
 
     public static CseRequest d2ccProcess(String id,
-                                         String instant,
+                                         OffsetDateTime targetProcessDateTime,
                                          String cgmUrl,
                                          String mergedCracUrl,
                                          String mergedGlskUrl,
                                          String ntcReductionsUrl,
                                          String targetChUrl,
                                          String vulcanusUrl,
-                                         String yearlyNtcUrl) {
-        return new CseRequest(id, instant, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null, null, null, null, targetChUrl, vulcanusUrl, yearlyNtcUrl);
+                                         String yearlyNtcUrl,
+                                         double dichotomyPrecision,
+                                         double initialDichotomyStep,
+                                         Double initialDichotomyIndex) {
+        return new CseRequest(
+            id, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
+            null, null, null, targetChUrl, vulcanusUrl, yearlyNtcUrl,
+            dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
     public static CseRequest idccProcess(String id,
-                                         String instant,
+                                         OffsetDateTime targetProcessDateTime,
                                          String cgmUrl,
                                          String mergedCracUrl,
                                          String mergedGlskUrl,
@@ -84,16 +104,25 @@ public class CseRequest {
                                          String ntc2FrItUrl,
                                          String ntc2SiItUrl,
                                          String vulcanusUrl,
-                                         String yearlyNtcUrl) {
-        return new CseRequest(id, instant, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl);
+                                         String yearlyNtcUrl,
+                                         double dichotomyPrecision,
+                                         double initialDichotomyStep,
+                                         Double initialDichotomyIndex) {
+        return new CseRequest(id, ProcessType.IDCC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl,
+            ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl,
+            dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
     public String getId() {
         return id;
     }
 
-    public String getInstant() {
-        return instant;
+    public ProcessType getProcessType() {
+        return processType;
+    }
+
+    public OffsetDateTime getTargetProcessDateTime() {
+        return targetProcessDateTime;
     }
 
     public String getCgmUrl() {
@@ -138,6 +167,18 @@ public class CseRequest {
 
     public String getYearlyNtcUrl() {
         return yearlyNtcUrl;
+    }
+
+    public double getDichotomyPrecision() {
+        return dichotomyPrecision;
+    }
+
+    public double getInitialDichotomyStep() {
+        return initialDichotomyStep;
+    }
+
+    public Double getInitialDichotomyIndex() {
+        return initialDichotomyIndex;
     }
 
     @Override
