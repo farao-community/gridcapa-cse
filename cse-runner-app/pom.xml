@@ -34,7 +34,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>gridcapa-cse-api</artifactId>
+            <artifactId>gridcapa-cse-runner-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
