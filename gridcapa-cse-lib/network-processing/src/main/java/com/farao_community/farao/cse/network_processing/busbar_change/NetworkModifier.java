@@ -39,9 +39,6 @@ public class NetworkModifier {
             .setEnsureIdUnicity(true)
             .add();
         findAndSetGeographicalName(newBus, voltageLevel);
-        // TODO : is copying loads & generators necessary?
-        copyGenerators(referenceBus, newBusId, voltageLevel);
-        copyLoads(referenceBus, newBusId, voltageLevel);
         LOGGER.debug("New bus '{}' has been created", newBus.getId());
         return newBus;
     }
@@ -98,43 +95,6 @@ public class NetworkModifier {
                 bus.setProperty(UcteConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY, otherBus.getProperty(UcteConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY));
                 break;
             }
-        }
-    }
-
-    private static void copyGenerators(Bus busFrom, String busToId, VoltageLevel onVoltageLevel) {
-        for (Generator generator : busFrom.getGenerators()) {
-            Generator newGenerator = onVoltageLevel.newGenerator()
-                .setId(String.format("%s_generator", busToId))
-                .setBus(busToId)
-                .setMaxP(generator.getMaxP())
-                .setMinP(generator.getMinP())
-                .setTargetP(0)
-                .setTargetQ(0)
-                .setRatedS(generator.getRatedS())
-                .setVoltageRegulatorOn(generator.isVoltageRegulatorOn())
-                .setTargetV(generator.getTargetV())
-                .setConnectableBus(busToId)
-                .setEnsureIdUnicity(true)
-                .add();
-            newGenerator.newMinMaxReactiveLimits()
-                .setMinQ(generator.getReactiveLimits().getMinQ(generator.getTargetP()))
-                .setMaxQ(generator.getReactiveLimits().getMaxQ(generator.getTargetP()))
-                .add();
-        }
-
-    }
-
-    private static void copyLoads(Bus busFrom, String busToId, VoltageLevel onVoltageLevel) {
-        for (Load load : busFrom.getLoads()) {
-            onVoltageLevel.newLoad()
-                .setId(String.format("%s_load", busToId))
-                .setBus(busToId)
-                .setP0(0)
-                .setQ0(0)
-                .setLoadType(load.getLoadType())
-                .setEnsureIdUnicity(true)
-                .setConnectableBus(busToId)
-                .add();
         }
     }
 

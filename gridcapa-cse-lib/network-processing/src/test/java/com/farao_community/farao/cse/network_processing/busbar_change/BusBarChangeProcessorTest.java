@@ -1,6 +1,7 @@
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.farao_community.farao.cse.network_processing.TestUtils;
+import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.import_.ImportConfig;
@@ -9,7 +10,6 @@ import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.TieLine;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.rte_france.farao.data.crac.io.cse.crac_creator.parameters.BusBarChangeSwitches;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;

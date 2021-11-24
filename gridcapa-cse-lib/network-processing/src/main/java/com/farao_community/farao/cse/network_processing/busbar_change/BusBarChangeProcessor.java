@@ -7,15 +7,19 @@
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.farao_community.farao.commons.FaraoException;
-import com.farao_community.farao.data.crac_creation_util.ucte.UcteBusHelper;
-import com.farao_community.farao.data.crac_creation_util.ucte.UcteCnecElementHelper;
-import com.farao_community.farao.data.crac_creation_util.ucte.UcteNetworkAnalyzer;
-import com.farao_community.farao.data.crac_creation_util.ucte.UcteNetworkAnalyzerProperties;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
+import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
+import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TBranch;
+import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TCRACSeries;
+import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TRemedialAction;
+import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TRemedialActions;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteBusHelper;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteCnecElementHelper;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzerProperties;
 import com.powsybl.iidm.network.*;
-import com.rte_france.farao.data.crac.io.cse.*;
-import com.rte_france.farao.data.crac.io.cse.crac_creator.CseCracCreator;
-import com.rte_france.farao.data.crac.io.cse.crac_creator.parameters.BusBarChangeSwitches;
-import com.rte_france.farao.data.crac.io.cse.importer.CseCracImporter;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
