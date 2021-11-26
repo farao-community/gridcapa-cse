@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
@@ -38,12 +40,20 @@ public class FileImporter {
         this.urlValidationService = urlValidationService;
     }
 
+    private String getFilenameFromUrl(String url) {
+        try {
+            return FilenameUtils.getName(new URL(url).getPath());
+        } catch (MalformedURLException e) {
+            throw new CseInvalidDataException(String.format("URL is invalid: %s", url));
+        }
+    }
+
     public Network importNetwork(String cgmUrl) throws IOException {
-        return Importers.loadNetwork(FilenameUtils.getName(cgmUrl), urlValidationService.openUrlStream(cgmUrl));
+        return Importers.loadNetwork(getFilenameFromUrl(cgmUrl), urlValidationService.openUrlStream(cgmUrl));
     }
 
     public Crac importCrac(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
-        String cracFilename = FilenameUtils.getName(cracUrl);
+        String cracFilename = getFilenameFromUrl(cracUrl);
         InputStream cracInputStream = urlValidationService.openUrlStream(cracUrl);
         return CracCreators.importAndCreateCrac(cracFilename, cracInputStream, network, targetProcessDateTime).getCrac();
     }
@@ -67,10 +77,10 @@ public class FileImporter {
              InputStream ntc2FrItStream = urlValidationService.openUrlStream(ntc2FrItUrl);
              InputStream ntc2SiItStream = urlValidationService.openUrlStream(ntc2SiItUrl)) {
             Map<String, InputStream> ntc2Streams = Map.of(
-                FilenameUtils.getName(ntc2AtItUrl), ntc2AtItStream,
-                FilenameUtils.getName(ntc2ChItUrl), ntc2ChItStream,
-                FilenameUtils.getName(ntc2FrItUrl), ntc2FrItStream,
-                FilenameUtils.getName(ntc2SiItUrl), ntc2SiItStream
+                getFilenameFromUrl(ntc2AtItUrl), ntc2AtItStream,
+                getFilenameFromUrl(ntc2ChItUrl), ntc2ChItStream,
+                getFilenameFromUrl(ntc2FrItUrl), ntc2FrItStream,
+                getFilenameFromUrl(ntc2SiItUrl), ntc2SiItStream
             );
             return Ntc2.create(targetProcessDateTime, ntc2Streams);
         } catch (IOException e) {

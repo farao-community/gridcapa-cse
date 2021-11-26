@@ -7,8 +7,8 @@
 
 package com.farao_community.farao.cse.data.target_ch;
 
-import com.farao_community.farao.data.crac_creation_util.UcteBranchHelper;
-import com.farao_community.farao.data.crac_creation_util.UcteNetworkHelper;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteCnecElementHelper;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Network;
 
@@ -36,19 +36,19 @@ public final class LineFixedFlows {
      *
      * @param lineId: ID of the line that should match the ID in the network
      * @param network: Network on which to check whether outages are applied or not
-     * @param ucteNetworkHelper: For CSE network must be imported from UCTE file.
+     * @param ucteNetworkAnalyzer: For CSE network must be imported from UCTE file.
      *                         This helps to match corresponding line ID in the network
      * @return An optional of the corrected flow on the line given the network. Optional would be empty if there is
      * no new definition of the flow in the target CH file
      */
-    public Optional<Double> getFixedFlow(String lineId, Network network, UcteNetworkHelper ucteNetworkHelper) {
+    public Optional<Double> getFixedFlow(String lineId, Network network, UcteNetworkAnalyzer ucteNetworkAnalyzer) {
         List<OutageInformation> outagesInformation = outagesInformationPerLineId.get(lineId);
         Optional<Double> fixedFlow = Optional.empty();
         if (outagesInformation == null) {
             return fixedFlow;
         }
         for (OutageInformation outageInformation : outagesInformation) {
-            Optional<Branch<?>> optBranch = findBranch(outageInformation, network, ucteNetworkHelper);
+            Optional<Branch<?>> optBranch = findBranch(outageInformation, network, ucteNetworkAnalyzer);
             if (optBranch.isPresent()) {
                 Branch<?> branch = optBranch.get();
                 double outageFixedFlow = outageInformation.getFixedFlow();
@@ -60,15 +60,15 @@ public final class LineFixedFlows {
         return fixedFlow;
     }
 
-    private static Optional<Branch<?>> findBranch(OutageInformation outageInformation, Network network, UcteNetworkHelper ucteNetworkHelper) {
-        UcteBranchHelper ucteBranchHelper = new UcteBranchHelper(
+    private static Optional<Branch<?>> findBranch(OutageInformation outageInformation, Network network, UcteNetworkAnalyzer ucteNetworkAnalyzer) {
+        UcteCnecElementHelper ucteCnecElementHelper = new UcteCnecElementHelper(
                 outageInformation.getFromNode(),
                 outageInformation.getToNode(),
                 outageInformation.getOrderCode(),
-                ucteNetworkHelper
+                ucteNetworkAnalyzer
         );
-        if (ucteBranchHelper.isBranchValid()) {
-            return Optional.of(network.getBranch(ucteBranchHelper.getBranchIdInNetwork()));
+        if (ucteCnecElementHelper.isValid()) {
+            return Optional.of(network.getBranch(ucteCnecElementHelper.getIdInNetwork()));
         } else {
             return Optional.empty();
         }

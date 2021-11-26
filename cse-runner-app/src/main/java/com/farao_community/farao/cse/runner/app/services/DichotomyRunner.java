@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.dichotomy_runner.api.resource.*;
 import com.farao_community.farao.dichotomy_runner.starter.DichotomyClient;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
@@ -15,6 +16,8 @@ import com.farao_community.farao.cse.runner.app.CseData;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.Random;
@@ -40,6 +43,14 @@ public class DichotomyRunner {
         return dichotomyClient.runDichotomy(dichotomyRequest);
     }
 
+    private String getFilenameFromUrl(String url) {
+        try {
+            return FilenameUtils.getName(new URL(url).getPath());
+        } catch (MalformedURLException e) {
+            throw new CseInvalidDataException(String.format("URL is invalid: %s", url));
+        }
+    }
+
     DichotomyRequest getDichotomyRequest(CseRequest cseRequest, CseData cseData, double initialItalianImportFromNetwork) {
         String raoParametersUrl = fileExporter.saveRaoParameters();
         DichotomyParameters dichotomyParameters = new DichotomyParameters(
@@ -51,10 +62,10 @@ public class DichotomyRunner {
         );
 
         return new DichotomyRequest(String.valueOf(RANDOM.nextLong()),
-            new DichotomyFileResource(FilenameUtils.getName(cseData.getPreProcesedNetworkUrl()), cseData.getPreProcesedNetworkUrl()),
-            new DichotomyFileResource(FilenameUtils.getName(cseData.getJsonCracUrl()), cseData.getJsonCracUrl()),
-            new DichotomyFileResource(FilenameUtils.getName(cseRequest.getMergedGlskUrl()), cseRequest.getMergedGlskUrl()),
-            new DichotomyFileResource(FilenameUtils.getName(raoParametersUrl), raoParametersUrl),
+            new DichotomyFileResource(getFilenameFromUrl(cseData.getPreProcesedNetworkUrl()), cseData.getPreProcesedNetworkUrl()),
+            new DichotomyFileResource(getFilenameFromUrl(cseData.getJsonCracUrl()), cseData.getJsonCracUrl()),
+            new DichotomyFileResource(getFilenameFromUrl(cseRequest.getMergedGlskUrl()), cseRequest.getMergedGlskUrl()),
+            new DichotomyFileResource(getFilenameFromUrl(raoParametersUrl), raoParametersUrl),
             dichotomyParameters);
     }
 

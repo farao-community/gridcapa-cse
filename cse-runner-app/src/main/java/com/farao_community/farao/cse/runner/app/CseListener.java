@@ -45,6 +45,7 @@ public class CseListener implements MessageListener {
             CseRequest cseRequest = jsonApiConverter.fromJsonMessage(message.getBody(), CseRequest.class);
             LOGGER.info("Cse request received : {}", cseRequest);
             CseResponse cseResponse = cseServer.run(cseRequest);
+            LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
         } catch (CseInternalException e) {
             sendErrorResponse(e, replyTo, correlationId);

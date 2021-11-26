@@ -7,8 +7,8 @@
 
 package com.farao_community.farao.cse.data.target_ch;
 
-import com.farao_community.farao.data.crac_creation_util.UcteNetworkHelper;
-import com.farao_community.farao.data.crac_creation_util.UcteNetworkHelperProperties;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzerProperties;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class LineFixedFlowsTest {
                 getClass().getResourceAsStream("simple_target_ch.xml")
         );
 
-        UcteNetworkHelper ucteNetworkHelper = new UcteNetworkHelper(network, new UcteNetworkHelperProperties(UcteNetworkHelperProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+        UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         Optional<Double> fixedFlow = lineFixedFlows.getFixedFlow("BBE2AA1  BBE3AA1  1", network, ucteNetworkHelper);
         assertTrue(fixedFlow.isEmpty());
     }
@@ -46,7 +46,7 @@ class LineFixedFlowsTest {
                 getClass().getResourceAsStream("simple_target_ch.xml")
         );
 
-        UcteNetworkHelper ucteNetworkHelper = new UcteNetworkHelper(network, new UcteNetworkHelperProperties(UcteNetworkHelperProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+        UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         Optional<Double> fixedFlow = lineFixedFlows.getFixedFlow("BBE2AA1  BBE3AA1  1", network, ucteNetworkHelper);
         assertTrue(fixedFlow.isPresent());
         assertEquals(100, fixedFlow.get());
@@ -62,7 +62,7 @@ class LineFixedFlowsTest {
                 getClass().getResourceAsStream("simple_target_ch.xml")
         );
 
-        UcteNetworkHelper ucteNetworkHelper = new UcteNetworkHelper(network, new UcteNetworkHelperProperties(UcteNetworkHelperProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+        UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         Optional<Double> fixedFlow = lineFixedFlows.getFixedFlow("BBE2AA1  BBE3AA1  1", network, ucteNetworkHelper);
         assertTrue(fixedFlow.isPresent());
         assertEquals(50, fixedFlow.get());
