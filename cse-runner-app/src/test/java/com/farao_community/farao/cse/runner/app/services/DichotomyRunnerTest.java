@@ -44,11 +44,11 @@ class DichotomyRunnerTest {
 
     @BeforeEach
     void setUp() {
-        when(fileExporter.saveRaoParameters()).thenReturn("raoParametersUrl");
+        when(fileExporter.saveRaoParameters()).thenReturn("file://raoParametersUrl.json");
 
         cseData = Mockito.mock(CseData.class);
-        when(cseData.getPreProcesedNetworkUrl()).thenReturn("preProcessedNetworkUrl");
-        when(cseData.getJsonCracUrl()).thenReturn("jsonCracUrl");
+        when(cseData.getPreProcesedNetworkUrl()).thenReturn("file://preProcessedNetworkUrl.xiidm");
+        when(cseData.getJsonCracUrl()).thenReturn("file://jsonCracUrl.json");
         when(cseData.getReducedSplittingFactors()).thenReturn(Map.of(
             "10YFR-RTE------C", 0.2,
             "10YAT-APG------L", 0.3,
@@ -62,7 +62,7 @@ class DichotomyRunnerTest {
         when(cseRequest.getInitialDichotomyStep()).thenReturn(650.);
         when(cseRequest.getInitialDichotomyIndex()).thenReturn(null);
         when(cseRequest.getProcessType()).thenReturn(ProcessType.D2CC);
-        when(cseRequest.getMergedGlskUrl()).thenReturn("glskUrl");
+        when(cseRequest.getMergedGlskUrl()).thenReturn("file://glskUrl.xml");
     }
 
     private void setUpForProcess(ProcessType processType) {
@@ -92,10 +92,10 @@ class DichotomyRunnerTest {
             2000
         );
 
-        assertEquals("jsonCracUrl", dichotomyRequest.getCrac().getUrl());
-        assertEquals("preProcessedNetworkUrl", dichotomyRequest.getNetwork().getUrl());
-        assertEquals("glskUrl", dichotomyRequest.getGlsk().getUrl());
-        assertEquals("raoParametersUrl", dichotomyRequest.getRaoParameters().getUrl());
+        assertEquals("file://jsonCracUrl.json", dichotomyRequest.getCrac().getUrl());
+        assertEquals("file://preProcessedNetworkUrl.xiidm", dichotomyRequest.getNetwork().getUrl());
+        assertEquals("file://glskUrl.xml", dichotomyRequest.getGlsk().getUrl());
+        assertEquals("file://raoParametersUrl.json", dichotomyRequest.getRaoParameters().getUrl());
         assertEquals(50, dichotomyRequest.getParameters().getPrecision());
         assertEquals(2000, dichotomyRequest.getParameters().getMinValue());
         assertEquals(19999, dichotomyRequest.getParameters().getMaxValue());
@@ -111,10 +111,10 @@ class DichotomyRunnerTest {
             2000
         );
 
-        assertEquals("jsonCracUrl", dichotomyRequest.getCrac().getUrl());
-        assertEquals("preProcessedNetworkUrl", dichotomyRequest.getNetwork().getUrl());
-        assertEquals("glskUrl", dichotomyRequest.getGlsk().getUrl());
-        assertEquals("raoParametersUrl", dichotomyRequest.getRaoParameters().getUrl());
+        assertEquals("file://jsonCracUrl.json", dichotomyRequest.getCrac().getUrl());
+        assertEquals("file://preProcessedNetworkUrl.xiidm", dichotomyRequest.getNetwork().getUrl());
+        assertEquals("file://glskUrl.xml", dichotomyRequest.getGlsk().getUrl());
+        assertEquals("file://raoParametersUrl.json", dichotomyRequest.getRaoParameters().getUrl());
         assertEquals(50, dichotomyRequest.getParameters().getPrecision());
         assertEquals(2000, dichotomyRequest.getParameters().getMinValue());
         assertEquals(19999, dichotomyRequest.getParameters().getMaxValue());
