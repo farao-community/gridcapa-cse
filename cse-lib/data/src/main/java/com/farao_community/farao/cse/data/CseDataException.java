@@ -12,4 +12,8 @@ public class CseDataException extends RuntimeException {
     public CseDataException(String message) {
         super(message);
     }
+
+    public CseDataException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

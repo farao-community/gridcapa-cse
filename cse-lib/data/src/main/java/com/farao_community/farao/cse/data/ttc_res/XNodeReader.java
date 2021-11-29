@@ -1,8 +1,8 @@
 package com.farao_community.farao.cse.data.ttc_res;
 
+import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.Xnodes;
-import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +30,9 @@ public final class XNodeReader {
         } catch (IOException e) {
             String errorMessage = String.format("Unable to find xnodes configuration file at %s", filePath);
             LOGGER.error(errorMessage);
-            throw new CseInvalidDataException(errorMessage, e);
+            throw new CseDataException(errorMessage, e);
         } catch (JAXBException e) {
-            throw new CseInvalidDataException("Xnodes configuration file is not readable.", e);
+            throw new CseDataException("Unable to unmarshal xnodes file.", e);
         }
         return xnodes.getXnode().stream().map(xnode ->
             new XNode(xnode.getName(), xnode.getArea1(), xnode.getSubarea1(), xnode.getArea2(), xnode.getSubarea2())).collect(Collectors.toList());
