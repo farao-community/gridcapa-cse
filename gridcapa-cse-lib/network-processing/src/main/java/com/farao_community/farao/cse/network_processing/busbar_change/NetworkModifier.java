@@ -12,6 +12,9 @@ import com.powsybl.ucte.converter.util.UcteConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This class exposes useful methods to modify a network
  *
@@ -21,18 +24,19 @@ public class NetworkModifier {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkModifier.class);
 
     private Network network;
+    private Set<Connectable<?>> connectablesToRemove;
 
     public NetworkModifier(Network network) {
         this.network = network;
+        this.connectablesToRemove = new HashSet<>();
     }
 
     /**
      * Create a bus with a given ID, on a given voltage level
      * Use a given reference bus to copy generators & loads
      */
-    public Bus createBus(String newBusId, String voltageLevelId, String referenceBusId) {
+    public Bus createBus(String newBusId, String voltageLevelId) {
         VoltageLevel voltageLevel = network.getVoltageLevel(voltageLevelId);
-        Bus referenceBus = (Bus) network.getIdentifiable(referenceBusId);
         Bus newBus = voltageLevel.getBusBreakerView().newBus()
             .setId(newBusId)
             .setFictitious(false)
@@ -114,7 +118,7 @@ public class NetworkModifier {
         copyCurrentLimits(line, newLine);
         copyProperties(line, newLine);
         LOGGER.debug("Line '{}' has been removed, new TieLine '{}' has been created", line.getId(), newLine.getId());
-        line.remove();
+        connectablesToRemove.add(line);
         return newLine;
     }
 
@@ -126,7 +130,7 @@ public class NetworkModifier {
         copyCurrentLimits(tieLine, newTieLine);
         copyProperties(tieLine, newTieLine);
         LOGGER.debug("TieLine '{}' has been removed, new TieLine '{}' has been created", tieLine.getId(), newTieLine.getId());
-        tieLine.remove();
+        connectablesToRemove.add(tieLine);
         return newTieLine;
     }
 
@@ -139,7 +143,7 @@ public class NetworkModifier {
         copyProperties(transformer, newTransformer);
         copyTapChanger(transformer, newTransformer);
         LOGGER.debug("TwoWindingsTransformer '{}' has been removed, new transformer '{}' has been created", transformer.getId(), newTransformer.getId());
-        transformer.remove();
+        connectablesToRemove.add(transformer);
         return newTransformer;
     }
 
@@ -299,5 +303,14 @@ public class NetworkModifier {
                 .setPermanentLimit(branchFrom.getCurrentLimits2().getPermanentLimit())
                 .add();
         }
+    }
+
+    /**
+     * Objects moved by the modifier are not removed until they are no longer needed
+     * Call this function when you want to remove these objects
+     */
+    public void commitAllChanges() {
+        connectablesToRemove.forEach(Connectable::remove);
+        connectablesToRemove = new HashSet<>();
     }
 }

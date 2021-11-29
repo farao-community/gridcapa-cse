@@ -82,6 +82,7 @@ public class BusBarChangeProcessor {
         }
         createBuses();
         createSwitches();
+        networkModifier.commitAllChanges();
         return computeBusBarChangeSwitches();
     }
 
@@ -109,12 +110,12 @@ public class BusBarChangeProcessor {
             initialNodeId = initialNodeHelper.getIdInNetwork();
             referenceBus = (Bus) network.getIdentifiable(initialNodeId);
             finalNodeId = tRemedialAction.getBusBar().getFinalNode().getV();
-            raBusesToCreate.add(new BusToCreate(finalNodeId, referenceBus.getVoltageLevel().getId(), initialNodeId));
+            raBusesToCreate.add(new BusToCreate(finalNodeId, referenceBus.getVoltageLevel().getId()));
         } else if (!initialNodeHelper.isValid() && finalNodeHelper.isValid()) {
             finalNodeId = finalNodeHelper.getIdInNetwork();
             referenceBus = (Bus) network.getIdentifiable(finalNodeId);
             initialNodeId = tRemedialAction.getBusBar().getInitialNode().getV();
-            raBusesToCreate.add(new BusToCreate(initialNodeId, referenceBus.getVoltageLevel().getId(), finalNodeId));
+            raBusesToCreate.add(new BusToCreate(initialNodeId, referenceBus.getVoltageLevel().getId()));
         } else {
             throw new FaraoException(String.format("Remedial action's initial and final nodes are not valid: %s", initialNodeHelper.getInvalidReason()));
         }
@@ -145,11 +146,6 @@ public class BusBarChangeProcessor {
                 throw new FaraoException(String.format("Branch %s is neither connected to initial node (%s) nor to final node (%s)", branchHelper.getIdInNetwork(), initialNodeId, finalNodeId));
             }
             SwitchPairToCreate switchPairToCreate = new SwitchPairToCreate(branchHelper.getIdInNetwork(), initialNodeId, finalNodeId);
-            // Throw an exception if a 3-node case is detected with another remedial action
-            String otherRa = switchesToCreatePerRa.keySet().stream().filter(ra -> switchesToCreatePerRa.get(ra).stream().anyMatch(switchPairToCreate::generates3NodeCase)).findAny().orElse(null);
-            if (otherRa != null) {
-                throw new FaraoException(String.format("Branch %s is also used in another BusBar RemedialAction (%s) but with different initial/final nodes; this is not yet handled", branchHelper.getIdInNetwork(), otherRa));
-            }
             raSwitchesToCreate.add(switchPairToCreate);
         }
 
@@ -176,7 +172,7 @@ public class BusBarChangeProcessor {
     private void createBuses() {
         busesToCreate.values().stream()
             .sorted(Comparator.comparing(BusToCreate::getBusId))
-            .forEach(busToCreate -> networkModifier.createBus(busToCreate.busId, busToCreate.voltageLevelId, busToCreate.referenceBusId));
+            .forEach(busToCreate -> networkModifier.createBus(busToCreate.busId, busToCreate.voltageLevelId));
     }
 
     /**
@@ -236,7 +232,7 @@ public class BusBarChangeProcessor {
 
         // Create fictitious bus
         String busId = generateFictitiousBusId(voltageLevel);
-        Bus fictitiousBus = networkModifier.createBus(busId, voltageLevel.getId(), branch.getTerminal1().getBusBreakerView().getConnectableBus().getId());
+        Bus fictitiousBus = networkModifier.createBus(busId, voltageLevel.getId());
 
         // Move one branch end to the fictitious bus
         boolean branchIsOnNode1 = true; // check if branch is initially on node1
@@ -291,12 +287,10 @@ public class BusBarChangeProcessor {
     private static class BusToCreate {
         String busId; // ID of the bus to create
         String voltageLevelId; // ID of the voltage level to create the bus upon
-        String referenceBusId; // ID of the reference bus
 
-        BusToCreate(String busId, String voltageLevelId, String referenceBusId) {
+        BusToCreate(String busId, String voltageLevelId) {
             this.busId = busId;
             this.voltageLevelId = voltageLevelId;
-            this.referenceBusId = referenceBusId;
         }
 
         String getBusId() {
@@ -326,14 +320,6 @@ public class BusBarChangeProcessor {
 
         String uniqueId() {
             return uniqueId;
-        }
-
-        /**
-         * Returns true if 2 switch pairs to create operate on the same branch
-         * but on different initial & final nodes
-         */
-        boolean generates3NodeCase(SwitchPairToCreate otherPair) {
-            return this.branchId.equals(otherPair.branchId) && !this.uniqueId.equals(otherPair.uniqueId);
         }
     }
 

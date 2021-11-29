@@ -146,4 +146,17 @@ class BusBarChangeProcessorTest {
         compareLists(List.of("BBE1AA1Y BBE1AA12 1", "BBE1AA1W BBE1AA12 1", "BBE1AA1X BBE1AA12 1"), bbcs.getSwitchesToOpen());
         compareLists(List.of("BBE1AA1Y BBE1AA11 1", "BBE1AA1W BBE1AA11 1", "BBE1AA1X BBE1AA11 1"), bbcs.getSwitchesToClose());
     }
+
+    @Test
+    void test3NodeCase() {
+        setUp("BaseNetwork.uct", "BusBarChange_3nodes.xml");
+        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork_3nodes.uct");
+        assertEquals(2, busBarChangeSwitchesSet.size());
+        BusBarChangeSwitches bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_1")).findAny().orElseThrow();
+        compareLists(List.of("BBE1AA1Z BBE1AA11 1", "BBE1AA1W BBE1AA11 1"), bbcs.getSwitchesToOpen());
+        compareLists(List.of("BBE1AA1Z BBE1AA12 1", "BBE1AA1W BBE1AA12 1"), bbcs.getSwitchesToClose());
+        bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_2")).findAny().orElseThrow();
+        compareLists(List.of("BBE1AA1Y BBE1AA13 1", "BBE1AA1V BBE1AA13 1", "BBE1AA1X BBE1AA13 1"), bbcs.getSwitchesToOpen());
+        compareLists(List.of("BBE1AA1Y BBE1AA11 1", "BBE1AA1V BBE1AA11 1", "BBE1AA1X BBE1AA11 1"), bbcs.getSwitchesToClose());
+    }
 }
