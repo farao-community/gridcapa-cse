@@ -17,16 +17,15 @@ import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.Map;
+
+import static com.farao_community.farao.cse.runner.app.util.FileUtil.getFilenameFromUrl;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -38,14 +37,6 @@ public class FileImporter {
 
     public FileImporter(UrlValidationService urlValidationService) {
         this.urlValidationService = urlValidationService;
-    }
-
-    private String getFilenameFromUrl(String url) {
-        try {
-            return FilenameUtils.getName(new URL(url).getPath());
-        } catch (MalformedURLException e) {
-            throw new CseInvalidDataException(String.format("URL is invalid: %s", url));
-        }
     }
 
     public Network importNetwork(String cgmUrl) throws IOException {

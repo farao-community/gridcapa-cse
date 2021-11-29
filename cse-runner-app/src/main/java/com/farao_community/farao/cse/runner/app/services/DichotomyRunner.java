@@ -7,20 +7,18 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
-import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.dichotomy_runner.api.resource.*;
 import com.farao_community.farao.dichotomy_runner.starter.DichotomyClient;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.Random;
+
+import static com.farao_community.farao.cse.runner.app.util.FileUtil.getFilenameFromUrl;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -41,14 +39,6 @@ public class DichotomyRunner {
     public DichotomyResponse runDichotomy(CseRequest cseRequest, CseData cseData, double initialItalianImportFromNetwork) {
         DichotomyRequest dichotomyRequest = getDichotomyRequest(cseRequest, cseData, initialItalianImportFromNetwork);
         return dichotomyClient.runDichotomy(dichotomyRequest);
-    }
-
-    private String getFilenameFromUrl(String url) {
-        try {
-            return FilenameUtils.getName(new URL(url).getPath());
-        } catch (MalformedURLException e) {
-            throw new CseInvalidDataException(String.format("URL is invalid: %s", url));
-        }
     }
 
     DichotomyRequest getDichotomyRequest(CseRequest cseRequest, CseData cseData, double initialItalianImportFromNetwork) {
