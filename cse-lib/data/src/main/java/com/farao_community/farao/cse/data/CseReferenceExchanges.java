@@ -7,7 +7,6 @@
 package com.farao_community.farao.cse.data;
 
 import com.farao_community.farao.commons.EICode;
-import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.powsybl.iidm.network.Country;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -97,7 +96,7 @@ public final class CseReferenceExchanges {
 
     private static String getVulcanusTime(OffsetDateTime offsetDateTime) {
         if (offsetDateTime.getMinute() % MINUTES_STEP != 0) {
-            throw new CseInvalidDataException(String.format("Process datetime minutes must be a multiple of %d.", MINUTES_STEP));
+            throw new CseDataException(String.format("Process datetime minutes must be a multiple of %d.", MINUTES_STEP));
         }
         LocalDateTime localDateTimeStart = offsetDateTime.atZoneSameInstant(ZoneId.of("CET")).toLocalDateTime();
         LocalDateTime localDateTimeEnd = localDateTimeStart.plusMinutes(MINUTES_STEP);
@@ -107,7 +106,7 @@ public final class CseReferenceExchanges {
     private static void checkDate(LocalDate localDate, OffsetDateTime offsetDateTime) {
         LocalDate targetLocalDate = offsetDateTime.atZoneSameInstant(ZoneId.of("CET")).toLocalDate();
         if (!localDate.isEqual(targetLocalDate)) {
-            throw new CseInvalidDataException("Vulcanus file is out of range for the target date");
+            throw new CseDataException("Vulcanus file is out of range for the target date");
         }
     }
 }

@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.runner.app;
 
 import com.farao_community.farao.cse.runner.api.JsonApiConverter;
+import com.farao_community.farao.cse.runner.api.exception.AbstractCseException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
@@ -45,11 +46,13 @@ public class CseListener implements MessageListener {
             CseRequest cseRequest = jsonApiConverter.fromJsonMessage(message.getBody(), CseRequest.class);
             LOGGER.info("Cse request received : {}", cseRequest);
             CseResponse cseResponse = cseServer.run(cseRequest);
+            LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
-        } catch (CseInternalException e) {
+        } catch (AbstractCseException e) {
             sendErrorResponse(e, replyTo, correlationId);
         } catch (Exception e) {
             CseInternalException unknownException = new CseInternalException("Unknown exception", e);
+            LOGGER.error(unknownException.getDetails());
             sendErrorResponse(unknownException, replyTo, correlationId);
         }
     }
@@ -62,7 +65,7 @@ public class CseListener implements MessageListener {
         }
     }
 
-    private void sendErrorResponse(CseInternalException exception, String replyTo, String correlationId) {
+    private void sendErrorResponse(AbstractCseException exception, String replyTo, String correlationId) {
         if (replyTo != null) {
             amqpTemplate.send(replyTo, createErrorResponse(exception, correlationId));
         } else {
@@ -70,13 +73,13 @@ public class CseListener implements MessageListener {
         }
     }
 
-    private Message createErrorResponse(CseInternalException exception, String correlationId) {
+    private Message createErrorResponse(AbstractCseException exception, String correlationId) {
         return MessageBuilder.withBody(exceptionToJsonMessage(exception))
                 .andProperties(buildMessageResponseProperties(correlationId))
                 .build();
     }
 
-    private byte[] exceptionToJsonMessage(CseInternalException e) {
+    private byte[] exceptionToJsonMessage(AbstractCseException e) {
         return jsonApiConverter.toJsonMessage(e);
     }
 

@@ -7,12 +7,12 @@
 package com.farao_community.farao.cse.data.ttc_res;
 
 import com.farao_community.farao.commons.Unit;
+import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.data.crac_api.*;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_api.cnec.Side;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
-import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.powsybl.ucte.network.UcteCountryCode;
 
 import java.util.*;
@@ -116,7 +116,7 @@ public class CracResultsHelper {
                 mergedCnec.setiAfterSps(flowCnecResult.getFlow());
                 mergedCnec.setiMaxAfterSps(flowCnecResult.getiMax());
             } else {
-                throw new CseInternalException("Couldn't find Cnec type in cnec Id : " + cnec.getId());
+                throw new CseDataException("Couldn't find Cnec type in cnec Id : " + cnec.getId());
             }
         });
         return mergedCnecs;
@@ -143,7 +143,7 @@ public class CracResultsHelper {
                 iMax = Math.abs(lowerBound.get());
             }
         } else {
-            throw new CseInternalException(String.format("Cnec %s is defined with no thresholds", flowCnec.getName()));
+            throw new CseDataException(String.format("Cnec %s is defined with no thresholds", flowCnec.getName()));
         }
         return new FlowCnecResult(flow, iMax);
     }
@@ -178,7 +178,7 @@ public class CracResultsHelper {
                     return area1;
                 }
             } else {
-                throw new CseInternalException("XNode " + nodeFrom + " Not found in XNodes configuration file");
+                throw new CseDataException("XNode " + nodeFrom + " Not found in XNodes configuration file");
             }
         }
     }
@@ -201,7 +201,7 @@ public class CracResultsHelper {
                 worstCnec = Optional.of(flowCnec);
             }
         }
-        return worstCnec.orElseThrow(() -> new CseInternalException("Exception occurred while retrieving the most limiting element."));
+        return worstCnec.orElseThrow(() -> new CseDataException("Exception occurred while retrieving the most limiting element."));
     }
 
     private double computeFlowMargin(FlowCnec flowCnec) {

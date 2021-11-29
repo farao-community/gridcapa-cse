@@ -6,7 +6,6 @@
  */
 package com.farao_community.farao.cse.data;
 
-import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.powsybl.iidm.network.Country;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +29,7 @@ class CseReferenceExchangesTest {
     @Test
     void creationThrowsExceptionWhenMinutesNotAMultipleOf15() {
         assertThrows(
-            CseInvalidDataException.class,
+            CseDataException.class,
             () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
                 OffsetDateTime.parse("2019-12-28T14:05Z"),
                 getClass().getResourceAsStream("vulcanus_28122019_96.xls")
@@ -41,7 +40,7 @@ class CseReferenceExchangesTest {
     @Test
     void creationThrowsExceptionWhenTargetDateTimeDifferentFromFileDate() {
         assertThrows(
-            CseInvalidDataException.class,
+            CseDataException.class,
             () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
                 OffsetDateTime.parse("2019-12-29T14:30Z"),
                 getClass().getResourceAsStream("vulcanus_28122019_96.xls")

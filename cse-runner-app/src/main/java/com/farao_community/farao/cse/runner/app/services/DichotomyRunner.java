@@ -12,12 +12,13 @@ import com.farao_community.farao.dichotomy_runner.starter.DichotomyClient;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.Random;
+
+import static com.farao_community.farao.cse.runner.app.util.FileUtil.getFilenameFromUrl;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -51,10 +52,10 @@ public class DichotomyRunner {
         );
 
         return new DichotomyRequest(String.valueOf(RANDOM.nextLong()),
-            new DichotomyFileResource(FilenameUtils.getName(cseData.getPreProcesedNetworkUrl()), cseData.getPreProcesedNetworkUrl()),
-            new DichotomyFileResource(FilenameUtils.getName(cseData.getJsonCracUrl()), cseData.getJsonCracUrl()),
-            new DichotomyFileResource(FilenameUtils.getName(cseRequest.getMergedGlskUrl()), cseRequest.getMergedGlskUrl()),
-            new DichotomyFileResource(FilenameUtils.getName(raoParametersUrl), raoParametersUrl),
+            new DichotomyFileResource(getFilenameFromUrl(cseData.getPreProcesedNetworkUrl()), cseData.getPreProcesedNetworkUrl()),
+            new DichotomyFileResource(getFilenameFromUrl(cseData.getJsonCracUrl()), cseData.getJsonCracUrl()),
+            new DichotomyFileResource(getFilenameFromUrl(cseRequest.getMergedGlskUrl()), cseRequest.getMergedGlskUrl()),
+            new DichotomyFileResource(getFilenameFromUrl(raoParametersUrl), raoParametersUrl),
             dichotomyParameters);
     }
 

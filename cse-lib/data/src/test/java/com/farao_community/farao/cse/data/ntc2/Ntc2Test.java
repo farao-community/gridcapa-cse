@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.cse.data.ntc2;
 
-import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
+import com.farao_community.farao.cse.data.CseDataException;
 import com.powsybl.iidm.network.Country;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,11 +83,11 @@ class Ntc2Test {
 
     @Test
     void assertThrowsWhenDataIsMissing() {
-        assertThrows(CseInvalidDataException.class, () -> Ntc2.create(OffsetDateTime.parse("2021-02-07T23:00Z"), test2Nt2Files));
+        assertThrows(CseDataException.class, () -> Ntc2.create(OffsetDateTime.parse("2021-02-07T23:00Z"), test2Nt2Files));
     }
 
     @Test
     void assertThrowsWhenTargetDateTimeOutOfBound() {
-        assertThrows(CseInvalidDataException.class, () -> Ntc2.create(OffsetDateTime.parse("2021-06-01T22:00Z"), test1Nt2Files));
+        assertThrows(CseDataException.class, () -> Ntc2.create(OffsetDateTime.parse("2021-06-01T22:00Z"), test1Nt2Files));
     }
 }
