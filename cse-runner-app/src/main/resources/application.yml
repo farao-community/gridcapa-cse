@@ -17,7 +17,7 @@ minio:
 
 cse-cc:
   xnodes:
-    filename: cvg_xnodes_20200714.xml
+    file-path: xnodes/cvg_xnodes_20200714.xml
   messages:
     cse-request:
       queue-name: ${CSE_CC_REQUEST_QUEUE_NAME:cse-request-queue}

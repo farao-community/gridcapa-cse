@@ -9,6 +9,7 @@ package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.data.ttc_res.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
+import com.farao_community.farao.cse.data.ttc_res.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.runner.app.util.ItalianImport;
 import com.farao_community.farao.data.crac_api.Crac;
@@ -64,7 +65,7 @@ public class TtcResultService {
 
         RaoResult raoResult = fileImporter.importRaoResult(dichotomyResponse.getHighestValidStep().getRaoResult().getUrl(), crac);
 
-        Timestamp timestamp = TtcResult.generate(ttcFiles, processData, new CracResultsHelper(crac, raoResult, xNodesConfiguration.getXNodes()));
+        Timestamp timestamp = TtcResult.generate(ttcFiles, processData, new CracResultsHelper(crac, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath())));
         return fileExporter.saveTtcResult(timestamp);
     }
 }
