@@ -6,12 +6,12 @@
  */
 package com.farao_community.farao.cse.data.ttc_res;
 
+import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.xsd.ttc_res.*;
 import com.farao_community.farao.data.crac_api.Contingency;
 import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
-import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -291,7 +291,7 @@ public final class TtcResult {
                 mostLimitingElement.setIAfterSPS(iAfterSPS);
                 mostLimitingElement.setImaxAfterSPS(imaxAfterSps);
             } else {
-                throw new CseInternalException("Couldn't find Cnec type in cnec Id : " + worstCnec.getId());
+                throw new CseDataException("Couldn't find Cnec type in cnec Id : " + worstCnec.getId());
             }
         }
 

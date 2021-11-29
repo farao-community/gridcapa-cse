@@ -7,9 +7,9 @@
 package com.farao_community.farao.cse.data.ntc2;
 
 import com.farao_community.farao.commons.EICode;
+import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.ntc2.CapacityDocument;
-import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.powsybl.iidm.network.Country;
 
 import javax.xml.bind.JAXBException;
@@ -60,7 +60,7 @@ public final class Ntc2 {
                     double d2Exchange = getD2ExchangeByOffsetDateTime(ntc2Entry.getValue(), targetDateTime);
                     result.put(areaCode, d2Exchange);
                 } catch (Exception e) {
-                    throw new CseInvalidDataException(e.getMessage(), e);
+                    throw new CseDataException(e.getMessage(), e);
                 }
             });
         }
@@ -84,7 +84,7 @@ public final class Ntc2 {
                 .map(OffsetDateTime::parse)
                 .collect(Collectors.toList());
         if (targetDateTime.isBefore(interval.get(0)) || targetDateTime.isAfter(interval.get(1)) || targetDateTime.equals(interval.get(1))) {
-            throw new CseInvalidDataException("Target date time is out of bound for NTC2 archive");
+            throw new CseDataException("Target date time is out of bound for NTC2 archive");
         }
     }
 
