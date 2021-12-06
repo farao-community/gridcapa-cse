@@ -11,6 +11,7 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
+import com.farao_community.farao.data.crac_creation.creator.cse.parameters.SwitchPairId;
 import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TBranch;
 import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TCRACSeries;
 import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TRemedialAction;
@@ -199,11 +200,14 @@ public class BusBarChangeProcessor {
         Set<BusBarChangeSwitches> busBarChangeSwitches = new HashSet<>();
         initialNodePerRa.keySet().forEach(raId -> {
             Set<String> switchPairsIds = switchesToCreatePerRa.get(raId).stream().map(SwitchPairToCreate::uniqueId).collect(Collectors.toSet());
-            List<String> switchesToOpen = switchPairsIds.stream().map(switchPairId ->
-                createdSwitches.get(switchPairId).get(initialNodePerRa.get(raId))).collect(Collectors.toList());
-            List<String> switchesToClose = switchPairsIds.stream().map(switchPairId ->
-                createdSwitches.get(switchPairId).get(finalNodePerRa.get(raId))).collect(Collectors.toList());
-            busBarChangeSwitches.add(new BusBarChangeSwitches(raId, switchesToOpen, switchesToClose));
+            Set<SwitchPairId> switchPairs = new HashSet<>();
+            switchPairsIds.forEach(switchPairId ->
+                switchPairs.add(
+                    new SwitchPairId(
+                        createdSwitches.get(switchPairId).get(initialNodePerRa.get(raId)),
+                        createdSwitches.get(switchPairId).get(finalNodePerRa.get(raId))
+                    )));
+            busBarChangeSwitches.add(new BusBarChangeSwitches(raId, switchPairs));
         });
         return busBarChangeSwitches;
     }
