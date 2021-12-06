@@ -43,7 +43,8 @@
         <jsonapi.converter.version>0.10</jsonapi.converter.version>
 
         <farao.bom.version>1.1.0</farao.bom.version>
-        <gridcapa.dichotomy.runner.version>0.1.0</gridcapa.dichotomy.runner.version>
+        <farao.dichotomy.version>3.2.0-SNAPSHOT</farao.dichotomy.version>
+        <gridcapa.rao.runner.version>0.1.1</gridcapa.rao.runner.version>
         <powsybl.open-loadflow.version>0.13.0</powsybl.open-loadflow.version>
     </properties>
 
@@ -69,8 +70,13 @@
             </dependency>
             <dependency>
                 <groupId>com.farao-community.farao</groupId>
-                <artifactId>gridcapa-dichotomy-runner-spring-boot-starter</artifactId>
-                <version>${gridcapa.dichotomy.runner.version}</version>
+                <artifactId>farao-network-dichotomy</artifactId>
+                <version>${farao.dichotomy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.farao-community.farao</groupId>
+                <artifactId>gridcapa-rao-runner-spring-boot-starter</artifactId>
+                <version>${gridcapa.rao.runner.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.jasminb</groupId>

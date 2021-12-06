@@ -7,9 +7,11 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
+import com.farao_community.farao.cse.runner.api.resource.FileResource;
 import com.farao_community.farao.cse.runner.app.configurations.MinioConfiguration;
 import io.minio.*;
 import io.minio.http.Method;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -68,6 +70,18 @@ public class MinioAdapter {
                             .method(Method.GET)
                             .build()
             );
+        } catch (Exception e) {
+            throw new CseInternalException("Exception in MinIO connection.", e);
+        }
+    }
+
+    public FileResource generateFileResource(String filePath) {
+        try {
+            String fullFilePath = String.format("%s/%s", basePath, filePath);
+            String filename = FilenameUtils.getName(filePath);
+            LOGGER.info("Generates pre-signed URL for file '{}' in Minio bucket '{}'", fullFilePath, bucket);
+            String url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(bucket).object(fullFilePath).expiry(DEFAULT_DOWNLOAD_LINK_EXPIRY_IN_DAYS, TimeUnit.DAYS).method(Method.GET).build());
+            return new FileResource(filename, url);
         } catch (Exception e) {
             throw new CseInternalException("Exception in MinIO connection.", e);
         }

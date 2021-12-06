@@ -8,12 +8,14 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.runner.app.CseData;
+import com.farao_community.farao.cse.runner.app.dichotomy.DichotomyRunner;
 import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.dichotomy_runner.api.resource.*;
+import com.farao_community.farao.dichotomy.network.NetworkDichotomyResult;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.cse.runner.app.util.ItalianImport;
 import com.farao_community.farao.cse.runner.app.util.MerchantLine;
+import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,15 +48,19 @@ public class CseRunner {
 
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network);
-        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network));
+        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network).getUrl());
         double initialItalianImportFromNetwork = ItalianImport.compute(network);
         checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
         Crac crac = fileImporter.importCrac(cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network);
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac));
 
-        DichotomyResponse dichotomyResponse = dichotomyRunner.runDichotomy(cseRequest, cseData, initialItalianImportFromNetwork);
-        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResponse, crac);
+        NetworkDichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(
+            cseRequest,
+            cseData,
+            network,
+            initialItalianImportFromNetwork);
+        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult, crac);
 
         return new CseResponse(cseRequest.getId(), ttcResultUrl);
     }
