@@ -6,6 +6,26 @@ spring:
     password: ${RABBITMQ_PASSWORD:guest}
     template:
       reply-timeout: 2400000
+  cloud:
+    stream:
+      default:
+        group: cse-runner
+      bindings:
+        handleRun-in-0:
+          binder: rabbit
+          destination: cse-request
+        handleRun-out-0:
+          binder: rabbit
+          destination: cse-response
+        task-status-update:
+          binder: rabbit
+          destination: task-status-updated
+      rabbit:
+        default:
+          consumer:
+            auto-bind-dlq: true
+            max-attempts: 1
+
 
 minio:
   bucket: ${MINIO_BUCKET:cse-data}
@@ -18,12 +38,6 @@ minio:
 cse-cc:
   xnodes:
     file-path: xnodes/cvg_xnodes_20200714.xml
-  messages:
-    cse-request:
-      queue-name: ${CSE_CC_REQUEST_QUEUE_NAME:cse-request-queue}
-    cse-response:
-      exchange: ${CSE_CC_RESPONSE_EXCHANGE:cse-response}
-      expiration: 60000
   whitelist:
     - http://${MINIO_HOST:localhost}:${MINIO_PORT:9000}/
 

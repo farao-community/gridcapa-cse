@@ -68,6 +68,10 @@
             <artifactId>gridcapa-dichotomy-runner-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>gridcapa-task-manager-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-iidm-converter-api</artifactId>
         </dependency>
@@ -93,8 +97,8 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
         </dependency>
 
         <!-- Runtime dependencies -->
