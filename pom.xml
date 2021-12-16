@@ -70,7 +70,12 @@
             </dependency>
             <dependency>
                 <groupId>com.farao-community.farao</groupId>
-                <artifactId>farao-network-dichotomy</artifactId>
+                <artifactId>farao-dichotomy-api</artifactId>
+                <version>${farao.dichotomy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.farao-community.farao</groupId>
+                <artifactId>farao-dichotomy-shift</artifactId>
                 <version>${farao.dichotomy.version}</version>
             </dependency>
             <dependency>

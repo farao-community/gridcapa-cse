@@ -7,7 +7,7 @@
 package com.farao_community.farao.cse.runner.app.util;
 
 import com.farao_community.farao.cse.runner.app.dichotomy.CseIdccShiftDispatcher;
-import com.farao_community.farao.dichotomy.network.ShiftingException;
+import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

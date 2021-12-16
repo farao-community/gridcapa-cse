@@ -1,29 +1,25 @@
 /*
- *
- *  * Copyright (c) 2021, RTE (http://www.rte-france.com)
- *  * This Source Code Form is subject to the terms of the Mozilla Public
- *  * License, v. 2.0. If a copy of the MPL was not distributed with this
- *  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 package com.farao_community.farao.cse.runner.app.dichotomy;
 
-import com.farao_community.farao.cse.runner.app.services.FileExporter;
-import com.farao_community.farao.cse.runner.app.services.FileImporter;
-import com.farao_community.farao.dichotomy.api.DichotomyEngine;
-import com.farao_community.farao.dichotomy.api.Index;
-import com.farao_community.farao.dichotomy.api.StepsIndexStrategy;
-import com.farao_community.farao.dichotomy.api.ValidationStrategy;
-import com.farao_community.farao.dichotomy.network.NetworkDichotomyResult;
-import com.farao_community.farao.dichotomy.network.NetworkDichotomyStepResult;
-import com.farao_community.farao.dichotomy.network.NetworkValidator;
-import com.farao_community.farao.dichotomy.network.scaling.ScalingNetworkValidationStrategy;
-import com.farao_community.farao.dichotomy.network.scaling.ShiftDispatcher;
-import com.farao_community.farao.dichotomy.network.scaling.SplittingFactors;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
+import com.farao_community.farao.cse.runner.app.services.FileExporter;
+import com.farao_community.farao.cse.runner.app.services.FileImporter;
+import com.farao_community.farao.dichotomy.api.DichotomyEngine;
+import com.farao_community.farao.dichotomy.api.NetworkShifter;
+import com.farao_community.farao.dichotomy.api.NetworkValidator;
+import com.farao_community.farao.dichotomy.api.index.Index;
+import com.farao_community.farao.dichotomy.api.index.StepsIndexStrategy;
+import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
+import com.farao_community.farao.dichotomy.shift.LinearScaler;
+import com.farao_community.farao.dichotomy.shift.ShiftDispatcher;
+import com.farao_community.farao.dichotomy.shift.SplittingFactors;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
 import com.powsybl.iidm.network.Network;
@@ -49,36 +45,26 @@ public class DichotomyRunner {
         this.raoRunnerClient = raoRunnerClient;
     }
 
-    public NetworkDichotomyResult<RaoResponse> runDichotomy(CseRequest cseRequest,
-                                                            CseData cseData,
-                                                            Network network,
-                                                            double initialItalianImportFromNetwork) throws IOException {
-        Index<NetworkDichotomyStepResult<RaoResponse>> index = new Index<>(
+    public DichotomyResult<RaoResponse> runDichotomy(CseRequest cseRequest,
+                                                     CseData cseData,
+                                                     Network network,
+                                                     double initialItalianImportFromNetwork) throws IOException {
+        Index<RaoResponse> index = new Index<>(
             Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImportFromNetwork),
             MAX_IMPORT_VALUE,
             cseRequest.getDichotomyPrecision());
-        DichotomyEngine<NetworkDichotomyStepResult<RaoResponse>> engine = new DichotomyEngine<>(
+        DichotomyEngine<RaoResponse> engine = new DichotomyEngine<>(
             index,
             new StepsIndexStrategy(true, cseRequest.getInitialDichotomyStep()),
-            buildValidationStrategy(cseRequest, cseData, network));
-        engine.run();
-        return NetworkDichotomyResult.buildFromIndex(index);
+            getNetworkShifter(cseRequest, cseData, network),
+            getNetworkValidator(cseRequest, cseData));
+        return engine.run(network);
     }
 
-    private ValidationStrategy<NetworkDichotomyStepResult<RaoResponse>> buildValidationStrategy(CseRequest request,
-                                                                                                CseData cseData,
-                                                                                                Network network) throws IOException {
-        NetworkValidator<RaoResponse> networkValidator = new RaoRunnerValidator(
-            request.getId(),
-            cseData.getJsonCracUrl(),
-            fileExporter.saveRaoParameters(),
-            raoRunnerClient,
-            fileExporter,
-            fileImporter);
-
-        return new ScalingNetworkValidationStrategy<>(
-            network,
-            networkValidator,
+    private NetworkShifter getNetworkShifter(CseRequest request,
+                                             CseData cseData,
+                                             Network network) throws IOException {
+        return new LinearScaler(
             fileImporter.importGlsk(request.getMergedGlskUrl(), network),
             getShiftDispatcher(request.getProcessType(), cseData));
     }
@@ -93,5 +79,15 @@ public class DichotomyRunner {
                 cseData.getNtc2().getExchanges()
             );
         }
+    }
+
+    private NetworkValidator<RaoResponse> getNetworkValidator(CseRequest request, CseData cseData) {
+        return new RaoRunnerValidator(
+            request.getId(),
+            cseData.getJsonCracUrl(),
+            fileExporter.saveRaoParameters(),
+            raoRunnerClient,
+            fileExporter,
+            fileImporter);
     }
 }

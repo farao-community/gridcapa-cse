@@ -1,10 +1,8 @@
 /*
- *
- *  * Copyright (c) 2021, RTE (http://www.rte-france.com)
- *  * This Source Code Form is subject to the terms of the Mozilla Public
- *  * License, v. 2.0. If a copy of the MPL was not distributed with this
- *  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package com.farao_community.farao.cse.runner.app.dichotomy;
 
@@ -13,8 +11,9 @@ import com.farao_community.farao.cse.runner.app.services.FileExporter;
 import com.farao_community.farao.cse.runner.app.services.FileImporter;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
-import com.farao_community.farao.dichotomy.network.NetworkValidationException;
-import com.farao_community.farao.dichotomy.network.NetworkValidator;
+import com.farao_community.farao.dichotomy.api.NetworkValidator;
+import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
+import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
@@ -52,7 +51,7 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     }
 
     @Override
-    public RaoResponseValidation validateNetwork(Network network) throws NetworkValidationException {
+    public DichotomyStepResult<RaoResponse> validateNetwork(Network network) throws ValidationException {
         FileResource networkFile = fileExporter.saveNetwork(network, networkScaledFilePath(network));
         RaoRequest raoRequest = buildRaoRequest(networkFile);
         try {
@@ -61,9 +60,9 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
             LOGGER.info("RAO response received: {}", raoResponse);
             Crac crac = fileImporter.importCracFromJson(raoResponse.getCracFileUrl());
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), crac);
-            return new RaoResponseValidation(raoResult, raoResponse);
+            return DichotomyStepResult.fromNetworkValidationResult(raoResult, raoResponse);
         } catch (RuntimeException | IOException e) {
-            throw new NetworkValidationException("RAO run failed. Nested exception: " + e.getMessage());
+            throw new ValidationException("RAO run failed. Nested exception: " + e.getMessage());
         }
     }
 

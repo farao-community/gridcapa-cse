@@ -13,11 +13,10 @@ import com.farao_community.farao.cse.data.ttc_res.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.runner.app.util.ItalianImport;
 import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.rao_result_api.RaoResult;
-import com.farao_community.farao.dichotomy.network.NetworkDichotomyResult;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.configurations.XNodesConfiguration;
+import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.apache.commons.io.FilenameUtils;
@@ -42,8 +41,8 @@ public class TtcResultService {
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveTtcResult(CseRequest cseRequest, CseData cseData, NetworkDichotomyResult<RaoResponse> dichotomyResult, Crac crac) throws IOException {
-        String networkWithPraUrl = dichotomyResult.getHighestValidStep().getNetworkValidationResult().getValidationData().getNetworkWithPraFileUrl();
+    public String saveTtcResult(CseRequest cseRequest, CseData cseData, DichotomyResult<RaoResponse> dichotomyResult, Crac crac) throws IOException {
+        String networkWithPraUrl = dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl();
 
         TtcResult.TtcFiles ttcFiles = new TtcResult.TtcFiles(
             cseRequest.getCgmUrl(),
@@ -66,9 +65,7 @@ public class TtcResultService {
             cseRequest.getTargetProcessDateTime().toString()
         );
 
-        RaoResult raoResult = fileImporter.importRaoResult(dichotomyResult.getHighestValidStep().getNetworkValidationResult().getValidationData().getRaoResultFileUrl(), crac);
-
-        Timestamp timestamp = TtcResult.generate(ttcFiles, processData, new CracResultsHelper(crac, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath())));
+        Timestamp timestamp = TtcResult.generate(ttcFiles, processData, new CracResultsHelper(crac, dichotomyResult.getHighestValidStep().getRaoResult(), XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath())));
         return fileExporter.saveTtcResult(timestamp);
     }
 }
