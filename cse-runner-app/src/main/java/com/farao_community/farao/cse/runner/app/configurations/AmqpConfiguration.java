@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Optional;
+
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
@@ -27,6 +29,8 @@ public class AmqpConfiguration {
     private String cseResponseExpiration;
     @Value("${cse-cc-runner.bindings.request.destination}")
     private String cseRequestDestination;
+    @Value("${cse-cc-runner.bindings.request.routing-key}")
+    private String cseRequestRoutingKey;
     @Value("${cse-cc-runner.bindings.request.group}")
     private String cseRequestGroup;
 
@@ -42,7 +46,7 @@ public class AmqpConfiguration {
 
     @Bean
     public Binding cseRequestBinding() {
-        return BindingBuilder.bind(cseRequestQueue()).to(cseTopicExchange()).with("#");
+        return BindingBuilder.bind(cseRequestQueue()).to(cseTopicExchange()).with(Optional.ofNullable(cseRequestRoutingKey).orElse("#"));
     }
 
     @Bean

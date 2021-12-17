@@ -19,6 +19,7 @@ cse-cc-runner:
   bindings:
     request:
       destination: cse-request
+      routing-key: "#"
       group: cse-runner
     response:
       destination: cse-response
