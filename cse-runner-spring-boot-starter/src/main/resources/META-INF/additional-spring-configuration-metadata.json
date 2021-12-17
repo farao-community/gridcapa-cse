@@ -1,19 +1,24 @@
 {
   "properties": [
     {
-      "name": "cse-cc.amqp.application-id",
+      "name": "cse-cc-runner.binding.application-id",
       "type": "java.lang.String",
-      "description": "Name of the application that call cse through starter."
+      "description": "Name of the application that call CSE through starter."
     },
     {
-      "name": "cse-cc.amqp.expiration",
+      "name": "cse-cc-runner.binding.destination",
       "type": "java.lang.String",
-      "description": "Expiration time of cse requests."
+      "description": "The exchange name on which to send the CSE request."
     },
     {
-      "name": "cse-cc.amqp.queue-name",
+      "name": "cse-cc-runner.binding.routing-key",
       "type": "java.lang.String",
-      "description": "AMQP queue to be used to send cse requests."
+      "description": "The routing key to use for the binding to cse-runner instance. Default value \"#\" is used to notify all queues."
+    },
+    {
+      "name": "cse-cc-runner.binding.expiration",
+      "type": "java.lang.String",
+      "description": "Expiration time of CSE requests."
     }
   ]
 }

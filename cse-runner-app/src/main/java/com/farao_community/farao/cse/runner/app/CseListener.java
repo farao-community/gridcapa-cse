@@ -13,26 +13,33 @@ import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.cse.runner.app.configurations.AmqpConfiguration;
 import com.farao_community.farao.cse.runner.app.services.CseRunner;
+import com.farao_community.farao.gridcapa.task_manager.api.TaskStatus;
+import com.farao_community.farao.gridcapa.task_manager.api.TaskStatusUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Component
 public class CseListener implements MessageListener {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(CseListener.class);
+    private static final String TASK_STATUS_UPDATE = "task-status-update";
 
     private final AmqpTemplate amqpTemplate;
+    private final StreamBridge streamBridge;
     private final AmqpConfiguration amqpConfiguration;
     private final JsonApiConverter jsonApiConverter;
     private final CseRunner cseServer;
 
-    public CseListener(AmqpTemplate amqpTemplate, AmqpConfiguration amqpConfiguration, CseRunner cseServer) {
+    public CseListener(AmqpTemplate amqpTemplate, StreamBridge streamBridge, AmqpConfiguration amqpConfiguration, CseRunner cseServer) {
         this.amqpTemplate = amqpTemplate;
+        this.streamBridge = streamBridge;
         this.amqpConfiguration = amqpConfiguration;
         this.cseServer = cseServer;
         this.jsonApiConverter = new JsonApiConverter();
@@ -42,22 +49,24 @@ public class CseListener implements MessageListener {
     public void onMessage(Message message) {
         String replyTo = message.getMessageProperties().getReplyTo();
         String correlationId = message.getMessageProperties().getCorrelationId();
+        CseRequest cseRequest = jsonApiConverter.fromJsonMessage(message.getBody(), CseRequest.class);
         try {
-            CseRequest cseRequest = jsonApiConverter.fromJsonMessage(message.getBody(), CseRequest.class);
+            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
             CseResponse cseResponse = cseServer.run(cseRequest);
             LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
         } catch (AbstractCseException e) {
-            sendErrorResponse(e, replyTo, correlationId);
+            sendErrorResponse(cseRequest.getId(), e, replyTo, correlationId);
         } catch (Exception e) {
             CseInternalException unknownException = new CseInternalException("Unknown exception", e);
             LOGGER.error(unknownException.getDetails());
-            sendErrorResponse(unknownException, replyTo, correlationId);
+            sendErrorResponse(cseRequest.getId(), unknownException, replyTo, correlationId);
         }
     }
 
     private void sendCseResponse(CseResponse cseResponse, String replyTo, String correlationId) {
+        streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));
         if (replyTo != null) {
             amqpTemplate.send(replyTo, createMessageResponse(cseResponse, correlationId));
         } else {
@@ -65,7 +74,8 @@ public class CseListener implements MessageListener {
         }
     }
 
-    private void sendErrorResponse(AbstractCseException exception, String replyTo, String correlationId) {
+    private void sendErrorResponse(String requestId, AbstractCseException exception, String replyTo, String correlationId) {
+        streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
         if (replyTo != null) {
             amqpTemplate.send(replyTo, createErrorResponse(exception, correlationId));
         } else {

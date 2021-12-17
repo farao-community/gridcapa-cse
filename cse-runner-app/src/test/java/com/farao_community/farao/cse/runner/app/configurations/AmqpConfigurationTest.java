@@ -34,7 +34,7 @@ class AmqpConfigurationTest {
     void checkAmqpMessageConfiguration() {
         assertNotNull(amqpConfiguration);
         assertNotNull(cseRequestQueue);
-        assertEquals("cse-request-queue", cseRequestQueue.getName());
+        assertEquals("cse-request.cse-runner", cseRequestQueue.getName());
         assertNotNull(cseResponseExchange);
         assertEquals("cse-response", cseResponseExchange.getName());
         assertEquals("60000", amqpConfiguration.getCseResponseExpiration());

@@ -15,22 +15,38 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Optional;
+
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Configuration
 public class AmqpConfiguration {
 
-    @Value("${cse-cc.messages.cse-response.exchange}")
-    private String cseResponseExchange;
-    @Value("${cse-cc.messages.cse-response.expiration}")
+    @Value("${cse-cc-runner.bindings.response.destination}")
+    private String cseResponseDestination;
+    @Value("${cse-cc-runner.bindings.response.expiration}")
     private String cseResponseExpiration;
-    @Value("${cse-cc.messages.cse-request.queue-name}")
-    private String cseRequestQueueName;
+    @Value("${cse-cc-runner.bindings.request.destination}")
+    private String cseRequestDestination;
+    @Value("${cse-cc-runner.bindings.request.routing-key}")
+    private String cseRequestRoutingKey;
+    @Value("${cse-cc-runner.bindings.request.group}")
+    private String cseRequestGroup;
 
     @Bean
     public Queue cseRequestQueue() {
-        return new Queue(cseRequestQueueName);
+        return new Queue(cseRequestDestination + "." + cseRequestGroup);
+    }
+
+    @Bean
+    public TopicExchange cseTopicExchange() {
+        return new TopicExchange(cseRequestDestination);
+    }
+
+    @Bean
+    public Binding cseRequestBinding() {
+        return BindingBuilder.bind(cseRequestQueue()).to(cseTopicExchange()).with(Optional.ofNullable(cseRequestRoutingKey).orElse("#"));
     }
 
     @Bean
@@ -44,7 +60,7 @@ public class AmqpConfiguration {
 
     @Bean
     public FanoutExchange cseResponseExchange() {
-        return new FanoutExchange(cseResponseExchange);
+        return new FanoutExchange(cseResponseDestination);
     }
 
     public String getCseResponseExpiration() {
