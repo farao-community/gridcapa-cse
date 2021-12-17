@@ -13,14 +13,15 @@ minio:
     secret: minioadmin
   url: http://localhost:9000/
 
-cse-cc:
+cse-cc-runner:
   xnodes:
     file-path: xnodes/cvg_xnodes_20200714.xml
-  messages:
-    cse-request:
-      queue-name: cse-request-queue
-    cse-response:
-      exchange: cse-response
+  bindings:
+    request:
+      destination: cse-request
+      group: cse-runner
+    response:
+      destination: cse-response
       expiration: 60000
   whitelist:
     - http://localhost:9000

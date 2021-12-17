@@ -21,16 +21,28 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AmqpConfiguration {
 
-    @Value("${cse-cc.messages.cse-response.exchange}")
-    private String cseResponseExchange;
-    @Value("${cse-cc.messages.cse-response.expiration}")
+    @Value("${cse-cc-runner.bindings.response.destination}")
+    private String cseResponseDestination;
+    @Value("${cse-cc-runner.bindings.response.expiration}")
     private String cseResponseExpiration;
-    @Value("${cse-cc.messages.cse-request.queue-name}")
-    private String cseRequestQueueName;
+    @Value("${cse-cc-runner.bindings.request.destination}")
+    private String cseRequestDestination;
+    @Value("${cse-cc-runner.bindings.request.group}")
+    private String cseRequestGroup;
 
     @Bean
     public Queue cseRequestQueue() {
-        return new Queue(cseRequestQueueName);
+        return new Queue(cseRequestDestination + "." + cseRequestGroup);
+    }
+
+    @Bean
+    public TopicExchange cseTopicExchange() {
+        return new TopicExchange(cseRequestDestination);
+    }
+
+    @Bean
+    public Binding cseRequestBinding() {
+        return BindingBuilder.bind(cseRequestQueue()).to(cseTopicExchange()).with("#");
     }
 
     @Bean
@@ -44,7 +56,7 @@ public class AmqpConfiguration {
 
     @Bean
     public FanoutExchange cseResponseExchange() {
-        return new FanoutExchange(cseResponseExchange);
+        return new FanoutExchange(cseResponseDestination);
     }
 
     public String getCseResponseExpiration() {

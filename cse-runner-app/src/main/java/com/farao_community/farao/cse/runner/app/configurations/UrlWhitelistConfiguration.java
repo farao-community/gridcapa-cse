@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties("cse-cc")
+@ConfigurationProperties("cse-cc-runner")
 public class UrlWhitelistConfiguration {
     private final List<String> whitelist = new ArrayList<>();
 

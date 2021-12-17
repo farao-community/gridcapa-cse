@@ -32,7 +32,7 @@ class CseClientTest {
         Message responseMessage = Mockito.mock(Message.class);
 
         Mockito.when(responseMessage.getBody()).thenReturn(getClass().getResourceAsStream("/cseResponseMessage.json").readAllBytes());
-        Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-queue"), Mockito.any())).thenReturn(responseMessage);
+        Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any())).thenReturn(responseMessage);
         CseResponse cseResponse = cseClient.run(cseRequest);
 
         assertEquals("ttcFileUrl", cseResponse.getTtcFileUrl());
@@ -40,11 +40,12 @@ class CseClientTest {
 
     private CseClientProperties buildProperties() {
         CseClientProperties properties = new CseClientProperties();
-        CseClientProperties.AmqpConfiguration amqpConfiguration = new CseClientProperties.AmqpConfiguration();
-        amqpConfiguration.setQueueName("my-queue");
-        amqpConfiguration.setExpiration("60000");
-        amqpConfiguration.setApplicationId("application-id");
-        properties.setAmqp(amqpConfiguration);
+        CseClientProperties.BindingConfiguration bindingConfiguration = new CseClientProperties.BindingConfiguration();
+        bindingConfiguration.setDestination("my-exchange");
+        bindingConfiguration.setRoutingKey("#");
+        bindingConfiguration.setExpiration("60000");
+        bindingConfiguration.setApplicationId("application-id");
+        properties.setBinding(bindingConfiguration);
         return properties;
     }
 }

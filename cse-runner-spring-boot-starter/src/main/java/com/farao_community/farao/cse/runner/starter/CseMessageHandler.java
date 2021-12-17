@@ -35,11 +35,11 @@ public class CseMessageHandler {
 
     private MessageProperties buildMessageProperties(int priority) {
         return MessagePropertiesBuilder.newInstance()
-                .setAppId(clientProperties.getAmqp().getApplicationId())
+                .setAppId(clientProperties.getBinding().getApplicationId())
                 .setContentEncoding(CONTENT_ENCODING)
                 .setContentType(CONTENT_TYPE)
                 .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
-                .setExpiration(clientProperties.getAmqp().getExpiration())
+                .setExpiration(clientProperties.getBinding().getExpiration())
                 .setPriority(priority)
                 .build();
     }
