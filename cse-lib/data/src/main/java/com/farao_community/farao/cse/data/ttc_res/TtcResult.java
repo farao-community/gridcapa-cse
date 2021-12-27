@@ -27,20 +27,20 @@ public final class TtcResult {
     private static final String FLOW_UNIT = "A";
 
     public static class TtcFiles {
-        private final String initialCgmUrl;
-        private final String cracJsonUrl;
-        private final String mergedGlskUrl;
+        private final String initialCgmFileName;
+        private final String cracJsonFileName;
+        private final String mergedGlskFileName;
         private final String ntcReductionFilename;
         private final String ntcReductionCreationDatetime;
-        private final String finalCgmWithPraUrl;
+        private final String finalCgmWithPraFileName;
 
-        public TtcFiles(String initialCgmUrl, String cracJsonUrl, String mergedGlskUrl, String ntcReductionFilename, String ntcReductionCreationDatetime, String finalCgmWithPraUrl) {
-            this.initialCgmUrl = initialCgmUrl;
-            this.cracJsonUrl = cracJsonUrl;
-            this.mergedGlskUrl = mergedGlskUrl;
+        public TtcFiles(String initialCgmFileName, String cracJsonFileName, String mergedGlskFileName, String ntcReductionFilename, String ntcReductionCreationDatetime, String finalCgmWithPraFileName) {
+            this.initialCgmFileName = initialCgmFileName;
+            this.cracJsonFileName = cracJsonFileName;
+            this.mergedGlskFileName = mergedGlskFileName;
             this.ntcReductionFilename = ntcReductionFilename;
             this.ntcReductionCreationDatetime = ntcReductionCreationDatetime;
-            this.finalCgmWithPraUrl = finalCgmWithPraUrl;
+            this.finalCgmWithPraFileName = finalCgmWithPraFileName;
         }
     }
 
@@ -120,19 +120,19 @@ public final class TtcResult {
 
     private static void fillRequiredFiles(TtcFiles ttcFiles, Timestamp ttcResults) {
         CGMfile cgmFile = new CGMfile();
-        cgmFile.setV(ttcFiles.finalCgmWithPraUrl);
+        cgmFile.setV(ttcFiles.finalCgmWithPraFileName);
         ttcResults.setCGMfile(cgmFile);
 
         GSKfile gskFile = new GSKfile();
-        gskFile.setV(ttcFiles.mergedGlskUrl);
+        gskFile.setV(ttcFiles.mergedGlskFileName);
         ttcResults.setGSKfile(gskFile);
 
         CRACfile cracFile = new CRACfile();
-        cracFile.setV(ttcFiles.cracJsonUrl);
+        cracFile.setV(ttcFiles.cracJsonFileName);
         ttcResults.setCRACfile(cracFile);
 
         BASECASEfile baseCaseFile = new BASECASEfile();
-        baseCaseFile.setV(ttcFiles.initialCgmUrl);
+        baseCaseFile.setV(ttcFiles.initialCgmFileName);
         ttcResults.setBASECASEfile(baseCaseFile);
 
         Inputfiles inputFiles = new Inputfiles();
@@ -160,7 +160,7 @@ public final class TtcResult {
         IDCFfiles idcfFiles = new IDCFfiles();
         File idcfFile = new File();
         Filename idcfFileName = new Filename();
-        idcfFileName.setV(ttcFiles.initialCgmUrl);
+        idcfFileName.setV(ttcFiles.initialCgmFileName);
         idcfFile.setFilename(idcfFileName);
         Country idcfCountry = new Country();
         idcfCountry.setV("UX");
