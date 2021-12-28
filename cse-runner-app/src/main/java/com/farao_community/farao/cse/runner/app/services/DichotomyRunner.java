@@ -7,16 +7,20 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.dichotomy_runner.api.resource.*;
 import com.farao_community.farao.dichotomy_runner.starter.DichotomyClient;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
+import com.powsybl.iidm.network.Country;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.TreeMap;
 
 import static com.farao_community.farao.cse.runner.app.util.FileUtil.getFilenameFromUrl;
 
@@ -61,13 +65,24 @@ public class DichotomyRunner {
 
     private ShiftDispatcherConfiguration getShiftDispatcherConfiguration(ProcessType processType, CseData cseData) {
         if (processType == ProcessType.D2CC) {
-            return new SplittingFactorsConfiguration(cseData.getReducedSplittingFactors());
+            return new SplittingFactorsConfiguration(convertSplittingFactors(cseData.getReducedSplittingFactors()));
         } else {
             return new CseIdccShiftDispatcherConfiguration(
-                cseData.getReducedSplittingFactors(),
+                convertSplittingFactors(cseData.getReducedSplittingFactors()),
                 cseData.getCseReferenceExchanges().getExchanges(),
                 cseData.getNtc2().getExchanges()
             );
         }
+    }
+
+    private Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
+        Map<String, Double> splittingFactors = new TreeMap<>();
+        tSplittingFactors.forEach((key, value) -> splittingFactors.put(toEic(key), value));
+        splittingFactors.put(toEic("IT"), -splittingFactors.values().stream().reduce(0., Double::sum));
+        return splittingFactors;
+    }
+
+    private String toEic(String country) {
+        return new EICode(Country.valueOf(country)).getAreaCode();
     }
 }

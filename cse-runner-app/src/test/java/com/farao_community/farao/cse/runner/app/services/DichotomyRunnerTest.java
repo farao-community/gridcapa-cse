@@ -50,11 +50,10 @@ class DichotomyRunnerTest {
         when(cseData.getPreProcesedNetworkUrl()).thenReturn("file://preProcessedNetworkUrl.xiidm");
         when(cseData.getJsonCracUrl()).thenReturn("file://jsonCracUrl.json");
         when(cseData.getReducedSplittingFactors()).thenReturn(Map.of(
-            "10YFR-RTE------C", 0.2,
-            "10YAT-APG------L", 0.3,
-            "10YSI-ELES-----O", 0.4,
-            "10YCH-SWISSGRIDZ", 0.1,
-            "10YIT-GRTN-----B", -1.
+            "FR", 0.2,
+            "AT", 0.3,
+            "SI", 0.4,
+            "CH", 0.1
         ));
 
         cseRequest = Mockito.mock(CseRequest.class);
