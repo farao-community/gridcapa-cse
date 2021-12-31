@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_io_api.CracExporters;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
@@ -25,6 +26,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import java.io.*;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -81,7 +87,7 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
     }
 
-    String saveTtcResult(Timestamp timestamp) throws IOException {
+    String saveTtcResult(Timestamp timestamp, OffsetDateTime processTargetDate, ProcessType processType) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         StringWriter stringWriter = new StringWriter();
@@ -104,10 +110,22 @@ public class FileExporter {
         } catch (JAXBException e) {
             throw new CseInternalException("XSD matching error");
         }
-
         byte[] bytes = bos.toByteArray();
         InputStream is = new ByteArrayInputStream(bytes);
-        minioAdapter.uploadFile("outputs/ttc_res.xml", is);
-        return minioAdapter.generatePreSignedUrl("outputs/ttc_res.xml");
+        minioAdapter.uploadFile("outputs/" + getFilename(processTargetDate, processType), is);
+        return minioAdapter.generatePreSignedUrl("outputs/" + getFilename(processTargetDate, processType));
+    }
+
+    private String getFilename(OffsetDateTime processTargetDate, ProcessType processType) {
+        String filename;
+        if (processType == ProcessType.D2CC) {
+            ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of("Europe/Paris"));
+            String dateAndTime = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm").withLocale(Locale.FRANCE).format(targetDateInEuropeZone);
+            filename = "TTC_Calculation_" + dateAndTime + "_2D5_CO_CSE1.xml";
+        } else {
+            String date = DateTimeFormatter.ofPattern("yyyyMMdd").withLocale(Locale.FRANCE).format(processTargetDate);
+            filename = date + "_XBID2_TTCRes_CSE1.xml";
+        }
+        return filename;
     }
 }
