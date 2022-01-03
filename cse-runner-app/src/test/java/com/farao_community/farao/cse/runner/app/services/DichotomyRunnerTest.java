@@ -50,10 +50,10 @@ class DichotomyRunnerTest {
         when(cseData.getPreProcesedNetworkUrl()).thenReturn("file://preProcessedNetworkUrl.xiidm");
         when(cseData.getJsonCracUrl()).thenReturn("file://jsonCracUrl.json");
         when(cseData.getReducedSplittingFactors()).thenReturn(Map.of(
-            "FR", 0.2,
-            "AT", 0.3,
-            "SI", 0.4,
-            "CH", 0.1
+                "FR", 0.2,
+                "AT", 0.3,
+                "SI", 0.4,
+                "CH", 0.1
         ));
 
         cseRequest = Mockito.mock(CseRequest.class);
@@ -68,10 +68,10 @@ class DichotomyRunnerTest {
         when(cseRequest.getProcessType()).thenReturn(processType);
         if (processType == ProcessType.IDCC) {
             Map<String, Double> exchanges = Map.of(
-                "10YFR-RTE------C", 1000.,
-                "10YAT-APG------L", 700.,
-                "10YSI-ELES-----O", 800.,
-                "10YCH-SWISSGRIDZ", 200.
+                    "10YFR-RTE------C", 1000.,
+                    "10YAT-APG------L", 700.,
+                    "10YSI-ELES-----O", 800.,
+                    "10YCH-SWISSGRIDZ", 200.
             );
             CseReferenceExchanges cseReferenceExchanges = Mockito.mock(CseReferenceExchanges.class);
             when(cseReferenceExchanges.getExchanges()).thenReturn(exchanges);
@@ -86,9 +86,9 @@ class DichotomyRunnerTest {
     void testForD2cc() {
         setUpForProcess(ProcessType.D2CC);
         DichotomyRequest dichotomyRequest = dichotomyRunner.getDichotomyRequest(
-            cseRequest,
-            cseData,
-            2000
+                cseRequest,
+                cseData,
+                2000
         );
 
         assertEquals("file://jsonCracUrl.json", dichotomyRequest.getCrac().getUrl());
@@ -105,9 +105,9 @@ class DichotomyRunnerTest {
     void testForIdcc() {
         setUpForProcess(ProcessType.IDCC);
         DichotomyRequest dichotomyRequest = dichotomyRunner.getDichotomyRequest(
-            cseRequest,
-            cseData,
-            2000
+                cseRequest,
+                cseData,
+                2000
         );
 
         assertEquals("file://jsonCracUrl.json", dichotomyRequest.getCrac().getUrl());
@@ -118,5 +118,22 @@ class DichotomyRunnerTest {
         assertEquals(2000, dichotomyRequest.getParameters().getMinValue());
         assertEquals(19999, dichotomyRequest.getParameters().getMaxValue());
         assertTrue(dichotomyRequest.getParameters().getShiftDispatcherConfiguration() instanceof CseIdccShiftDispatcherConfiguration);
+    }
+
+    @Test
+    void convertSplittingFactorsTest() {
+        Map<String, Double> splittingFactors = Map.of(
+        "FR", 0.1,
+        "CH", 0.2,
+        "AT", 0.3,
+        "SI", 0.4
+        );
+
+        Map<String, Double> convertedSplittingFactors = dichotomyRunner.convertSplittingFactors(splittingFactors);
+        assertEquals(5, convertedSplittingFactors.size());
+        assertEquals(0.1, convertedSplittingFactors.get("10YFR-RTE------C"));
+        assertEquals(0.2, convertedSplittingFactors.get("10YCH-SWISSGRIDZ"));
+        assertEquals(0.3, convertedSplittingFactors.get("10YAT-APG------L"));
+        assertEquals(-1., convertedSplittingFactors.get("10YIT-GRTN-----B"));
     }
 }

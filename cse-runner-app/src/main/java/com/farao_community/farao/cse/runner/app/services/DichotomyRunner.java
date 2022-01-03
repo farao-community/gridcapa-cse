@@ -75,7 +75,7 @@ public class DichotomyRunner {
         }
     }
 
-    private Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
+    Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
         Map<String, Double> splittingFactors = new TreeMap<>();
         tSplittingFactors.forEach((key, value) -> splittingFactors.put(toEic(key), value));
         splittingFactors.put(toEic("IT"), -splittingFactors.values().stream().reduce(0., Double::sum));
