@@ -121,7 +121,7 @@ public class FileExporter {
         if (processType == ProcessType.D2CC) {
             ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of("Europe/Paris"));
             String dateAndTime = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm").withLocale(Locale.FRANCE).format(targetDateInEuropeZone);
-            filename = "TTC_Calculation_" + dateAndTime + "_2D5_CO_CSE1.xml";
+            filename = "TTC_Calculation_" + dateAndTime + "_2D0_CO_CSE1.xml";
         } else {
             String date = DateTimeFormatter.ofPattern("yyyyMMdd").withLocale(Locale.FRANCE).format(processTargetDate);
             filename = date + "_XBID2_TTCRes_CSE1.xml";
