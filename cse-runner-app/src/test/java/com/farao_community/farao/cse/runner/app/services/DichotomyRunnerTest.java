@@ -50,11 +50,10 @@ class DichotomyRunnerTest {
         when(cseData.getPreProcesedNetworkUrl()).thenReturn("file://preProcessedNetworkUrl.xiidm");
         when(cseData.getJsonCracUrl()).thenReturn("file://jsonCracUrl.json");
         when(cseData.getReducedSplittingFactors()).thenReturn(Map.of(
-            "10YFR-RTE------C", 0.2,
-            "10YAT-APG------L", 0.3,
-            "10YSI-ELES-----O", 0.4,
-            "10YCH-SWISSGRIDZ", 0.1,
-            "10YIT-GRTN-----B", -1.
+            "FR", 0.2,
+            "AT", 0.3,
+            "SI", 0.4,
+            "CH", 0.1
         ));
 
         cseRequest = Mockito.mock(CseRequest.class);
@@ -119,5 +118,22 @@ class DichotomyRunnerTest {
         assertEquals(2000, dichotomyRequest.getParameters().getMinValue());
         assertEquals(19999, dichotomyRequest.getParameters().getMaxValue());
         assertTrue(dichotomyRequest.getParameters().getShiftDispatcherConfiguration() instanceof CseIdccShiftDispatcherConfiguration);
+    }
+
+    @Test
+    void convertSplittingFactorsTest() {
+        Map<String, Double> splittingFactors = Map.of(
+            "FR", 0.1,
+            "CH", 0.2,
+            "AT", 0.3,
+            "SI", 0.4
+        );
+
+        Map<String, Double> convertedSplittingFactors = dichotomyRunner.convertSplittingFactors(splittingFactors);
+        assertEquals(5, convertedSplittingFactors.size());
+        assertEquals(0.1, convertedSplittingFactors.get("10YFR-RTE------C"));
+        assertEquals(0.2, convertedSplittingFactors.get("10YCH-SWISSGRIDZ"));
+        assertEquals(0.3, convertedSplittingFactors.get("10YAT-APG------L"));
+        assertEquals(-1., convertedSplittingFactors.get("10YIT-GRTN-----B"));
     }
 }
