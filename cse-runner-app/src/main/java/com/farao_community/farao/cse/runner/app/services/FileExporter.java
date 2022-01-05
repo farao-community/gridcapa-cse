@@ -17,6 +17,7 @@ import com.farao_community.farao.rao_api.parameters.RaoParameters;
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.network.Network;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.xml.XMLConstants;
@@ -30,7 +31,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -38,12 +38,16 @@ import java.util.Properties;
  */
 @Service
 public class FileExporter {
+
     private static final String NETWORK_FILE_NAME = "network_pre_processed.xiidm";
     private static final String JSON_CRAC_FILE_NAME = "crac.json";
     public static final String ARTIFACTS_S = "artifacts/%s";
     private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
 
     private final MinioAdapter minioAdapter;
+
+    @Value("${cse-cc-runner.zone-id}")
+    private String zoneId;
 
     public FileExporter(MinioAdapter minioAdapter) {
         this.minioAdapter = minioAdapter;
@@ -112,20 +116,20 @@ public class FileExporter {
         }
         byte[] bytes = bos.toByteArray();
         InputStream is = new ByteArrayInputStream(bytes);
-        minioAdapter.uploadFile("outputs/" + getFilename(processTargetDate, processType), is);
-        return minioAdapter.generatePreSignedUrl("outputs/" + getFilename(processTargetDate, processType));
+        minioAdapter.uploadFile(getFilePath(processTargetDate, processType), is);
+        return minioAdapter.generatePreSignedUrl(getFilePath(processTargetDate, processType));
     }
 
-    private String getFilename(OffsetDateTime processTargetDate, ProcessType processType) {
+    String getFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
         String filename;
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(zoneId));
         if (processType == ProcessType.D2CC) {
-            ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of("Europe/Paris"));
-            String dateAndTime = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm").withLocale(Locale.FRANCE).format(targetDateInEuropeZone);
+            String dateAndTime = targetDateInEuropeZone.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
             filename = "TTC_Calculation_" + dateAndTime + "_2D0_CO_CSE1.xml";
         } else {
-            String date = DateTimeFormatter.ofPattern("yyyyMMdd").withLocale(Locale.FRANCE).format(processTargetDate);
+            String date = targetDateInEuropeZone.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             filename = date + "_XBID2_TTCRes_CSE1.xml";
         }
-        return filename;
+        return "outputs/" + filename;
     }
 }
