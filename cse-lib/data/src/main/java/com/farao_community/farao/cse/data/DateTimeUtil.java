@@ -6,14 +6,12 @@
  */
 package com.farao_community.farao.cse.data;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public final class DateTimeUtil {
+    private static final int MINUTES_STEP = 15;
 
     private DateTimeUtil() {
         // Should not be instantiated
@@ -39,6 +37,22 @@ public final class DateTimeUtil {
                 endHour = 24;
             }
             return utcHour >= startHour && utcHour < endHour;
+        }
+    }
+
+    static String getVulcanusTime(OffsetDateTime offsetDateTime) {
+        if (offsetDateTime.getMinute() % MINUTES_STEP != 0) {
+            throw new CseDataException(String.format("Process datetime minutes must be a multiple of %d.", MINUTES_STEP));
+        }
+        LocalDateTime localDateTimeStart = offsetDateTime.atZoneSameInstant(ZoneId.of("CET")).toLocalDateTime();
+        LocalDateTime localDateTimeEnd = localDateTimeStart.plusMinutes(MINUTES_STEP);
+        return localDateTimeStart.format(DateTimeFormatter.ofPattern("HH.mm")) + "-" + localDateTimeEnd.format(DateTimeFormatter.ofPattern("HH.mm"));
+    }
+
+    static void checkDate(LocalDate localDate, OffsetDateTime offsetDateTime) {
+        LocalDate targetLocalDate = offsetDateTime.atZoneSameInstant(ZoneId.of("CET")).toLocalDate();
+        if (!localDate.isEqual(targetLocalDate)) {
+            throw new CseDataException("file is out of range for the target date");
         }
     }
 }
