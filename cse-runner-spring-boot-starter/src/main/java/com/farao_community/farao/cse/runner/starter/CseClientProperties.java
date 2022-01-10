@@ -8,32 +8,43 @@ package com.farao_community.farao.cse.runner.starter;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Optional;
+
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
-@ConfigurationProperties("cse-cc")
+@ConfigurationProperties("cse-cc-runner")
 public class CseClientProperties {
-    private AmqpConfiguration amqp;
+    private BindingConfiguration binding;
 
-    public CseClientProperties.AmqpConfiguration getAmqp() {
-        return amqp;
+    public BindingConfiguration getBinding() {
+        return binding;
     }
 
-    public void setAmqp(CseClientProperties.AmqpConfiguration amqp) {
-        this.amqp = amqp;
+    public void setBinding(BindingConfiguration binding) {
+        this.binding = binding;
     }
 
-    public static class AmqpConfiguration {
-        private String queueName;
+    public static class BindingConfiguration {
+        private String destination;
+        private String routingKey;
         private String expiration;
         private String applicationId;
 
-        public String getQueueName() {
-            return queueName;
+        public String getDestination() {
+            return destination;
         }
 
-        public void setQueueName(String queueName) {
-            this.queueName = queueName;
+        public void setDestination(String destination) {
+            this.destination = destination;
+        }
+
+        public String getRoutingKey() {
+            return Optional.ofNullable(routingKey).orElse("#");
+        }
+
+        public void setRoutingKey(String routingKey) {
+            this.routingKey = routingKey;
         }
 
         public String getExpiration() {

@@ -1,33 +1,41 @@
 spring:
   rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
+    host: localhost
+    port: 5672
+    username: gridcapa
+    password: gridcapa
     template:
       reply-timeout: 2400000
+  cloud:
+    stream:
+      bindings:
+        task-status-update:
+          binder: rabbit
+          destination: task-status-updated
+
+dichotomy-server:
+  amqp:
+    queue-name: dichotomy-request-queue
 
 minio:
-  bucket: ${MINIO_BUCKET:cse-data}
-  base-path: ${CSE_CC_SERVER_MINIO_BASE_PATH:default-base-path/}
+  bucket: gridcapa
+  base-path: ""
   access:
-    name: ${MINIO_USERNAME:minioadmin}
-    secret: ${MINIO_PASSWORD:minioadmin}
-  url: http://${MINIO_HOST:localhost}:${MINIO_PORT:9000}/
+    name: gridcapa
+    secret: gridcapa
+  url: http://minio:9000/
 
-cse-cc:
+cse-cc-runner:
+  zone-id: "Europe/Paris"
   xnodes:
-    file-path: xnodes/cvg_xnodes_20200714.xml
-  messages:
-    cse-request:
-      queue-name: ${CSE_CC_REQUEST_QUEUE_NAME:cse-request-queue}
-    cse-response:
-      exchange: ${CSE_CC_RESPONSE_EXCHANGE:cse-response}
+    file-path: /home/farao/xnodes/xnodes.xml
+  bindings:
+    request:
+      destination: cse-request
+      routing-key: "#"
+      group: cse-idcc-runner
+    response:
+      destination: cse-response
       expiration: 60000
   whitelist:
-    - http://${MINIO_HOST:localhost}:${MINIO_PORT:9000}/
-
-server:
-  port: ${CSE_CC_SERVER_PORT:8080}
-
-
+    - http://minio:9000/

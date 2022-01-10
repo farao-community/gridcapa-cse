@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class XNodesConfiguration {
 
-    @Value("${cse-cc.xnodes.file-path}")
+    @Value("${cse-cc-runner.xnodes.file-path}")
     private String xNodesFilePath;
 
     public String getxNodesFilePath() {

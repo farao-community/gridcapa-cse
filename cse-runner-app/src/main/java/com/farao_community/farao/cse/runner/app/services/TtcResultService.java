@@ -66,6 +66,6 @@ public class TtcResultService {
         );
 
         Timestamp timestamp = TtcResult.generate(ttcFiles, processData, new CracResultsHelper(crac, dichotomyResult.getHighestValidStep().getRaoResult(), XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath())));
-        return fileExporter.saveTtcResult(timestamp);
+        return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
     }
 }
