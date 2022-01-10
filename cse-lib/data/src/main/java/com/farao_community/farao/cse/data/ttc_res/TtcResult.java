@@ -45,7 +45,7 @@ public final class TtcResult {
     }
 
     public static class ProcessData {
-        private final Map<String, Double> referenceExchanges;
+        private final Map<String, Double> borderExchanges;
         private final Map<String, Double> reducedSplittingFactors;
         private final Map<String, Double> countryBalances;
         private final String limitingCause;
@@ -53,8 +53,8 @@ public final class TtcResult {
         private final double mniiOffsetValue;
         private final String processTargetDate;
 
-        public ProcessData(Map<String, Double> referenceExchanges, Map<String, Double> reducedSplittingFactors, Map<String, Double> countryBalances, String limitingCause, double finalItalianImport, double mniiOffsetValue, String processTargetDate) {
-            this.referenceExchanges = referenceExchanges;
+        public ProcessData(Map<String, Double> borderExchanges, Map<String, Double> reducedSplittingFactors, Map<String, Double> countryBalances, String limitingCause, double finalItalianImport, double mniiOffsetValue, String processTargetDate) {
+            this.borderExchanges = borderExchanges;
             this.reducedSplittingFactors = reducedSplittingFactors;
             this.countryBalances = countryBalances;
             this.limitingCause = limitingCause;
@@ -196,10 +196,10 @@ public final class TtcResult {
     }
 
     private static void fillBordersExchanges(ProcessData processData, Timestamp ttcResults) {
-        if (processData.referenceExchanges != null) {
+        if (processData.borderExchanges != null) {
             BorderExchanges borderExchanges = new BorderExchanges();
             List<BorderExchange> borderExchangeList = new ArrayList<>();
-            processData.referenceExchanges.forEach((boundary, exchangedFlow) -> {
+            processData.borderExchanges.forEach((boundary, exchangedFlow) -> {
                 BorderExchange borderExchange = new BorderExchange();
                 Border border = new Border();
                 border.setV(boundary);

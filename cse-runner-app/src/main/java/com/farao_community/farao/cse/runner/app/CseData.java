@@ -24,6 +24,7 @@ public class CseData {
 
     private Ntc ntc;
     private Map<String, Double> reducedSplittingFactors;
+    private Map<String, Double> borderExchanges;
     private Double mniiOffset;
     private CseReferenceExchanges cseReferenceExchanges;
     private Ntc2 ntc2;
@@ -40,6 +41,15 @@ public class CseData {
             reducedSplittingFactors = getNtc().computeReducedSplittingFactors();
         }
         return reducedSplittingFactors;
+    }
+
+    public Map<String, Double> getBorderExchanges() {
+        if (borderExchanges == null) {
+            borderExchanges = fileImporter.importBorderExchanges(
+                    cseRequest.getTargetProcessDateTime(),
+                    cseRequest.getVulcanusUrl());
+        }
+        return borderExchanges;
     }
 
     public Double getMniiOffset() {

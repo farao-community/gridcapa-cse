@@ -56,7 +56,7 @@ public class TtcResultService {
         Network networkAfterDichotomy = fileImporter.importNetwork(networkWithPraUrl);
         double finalItalianImport = ItalianImport.compute(networkAfterDichotomy);
         TtcResult.ProcessData processData = new TtcResult.ProcessData(
-            cseData.getCseReferenceExchanges().getExchanges(),
+            cseData.getBorderExchanges(),
             cseData.getReducedSplittingFactors(),
             Collections.emptyMap(),
             dichotomyResult.getLimitingCause().toString(),
