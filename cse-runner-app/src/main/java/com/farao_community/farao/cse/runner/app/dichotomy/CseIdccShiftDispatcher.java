@@ -35,9 +35,11 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
         this.referenceExchanges = referenceExchanges;
         this.ntcs2 = ntcs2;
         referenceItalianImport = referenceExchanges.values().stream().reduce(0., Double::sum);
-        LOGGER.info(String.format("Italian import reference: %.2f", referenceItalianImport));
         ntc2ItalianImport = ntcs2.values().stream().reduce(0., Double::sum);
-        LOGGER.info(String.format("Italian import in D2: %.2f", ntc2ItalianImport));
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format("Italian import reference: %.2f", referenceItalianImport));
+            LOGGER.info(String.format("Italian import in D2: %.2f", ntc2ItalianImport));
+        }
     }
 
     @Override
