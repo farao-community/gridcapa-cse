@@ -43,7 +43,7 @@
         <jsonapi.converter.version>0.10</jsonapi.converter.version>
 
         <farao.bom.version>1.1.0</farao.bom.version>
-        <farao.dichotomy.version>3.2.0-SNAPSHOT</farao.dichotomy.version>
+        <farao.dichotomy.version>4.0.0</farao.dichotomy.version>
         <gridcapa.rao.runner.version>0.1.1</gridcapa.rao.runner.version>
         <powsybl.open-loadflow.version>0.13.0</powsybl.open-loadflow.version>
     </properties>
