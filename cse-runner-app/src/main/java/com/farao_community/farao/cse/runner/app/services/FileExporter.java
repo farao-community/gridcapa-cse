@@ -50,6 +50,8 @@ public class FileExporter {
     @Value("${cse-cc-runner.zone-id}")
     private String zoneId;
 
+    private String raoParametersUrl;
+
     public FileExporter(MinioAdapter minioAdapter) {
         this.minioAdapter = minioAdapter;
     }
@@ -85,14 +87,21 @@ public class FileExporter {
         return minioAdapter.generateFileResource(networkFilePath);
     }
 
-    public String saveRaoParameters() {
+    public void saveRaoParameters() {
         RaoParameters raoParameters = RaoParameters.load();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
         String raoParametersDestinationPath = RAO_PARAMETERS_FILE_NAME;
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         minioAdapter.uploadFile(raoParametersDestinationPath, bais);
-        return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
+        raoParametersUrl = minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
+    }
+
+    public String getRaoParametersUrl() {
+        if (raoParametersUrl == null) {
+            saveRaoParameters();
+        }
+        return raoParametersUrl;
     }
 
     String saveTtcResult(Timestamp timestamp, OffsetDateTime processTargetDate, ProcessType processType) throws IOException {
