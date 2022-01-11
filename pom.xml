@@ -37,7 +37,6 @@
         <commons.io.version>2.5</commons.io.version>
         <maven.jaxb2.version>0.14.0</maven.jaxb2.version>
         <maven.jvnet.jaxb2-basics.version>1.11.1</maven.jvnet.jaxb2-basics.version>
-
         <jackson.databind.version>2.11.0</jackson.databind.version>
         <mockito.core.version>3.9.0</mockito.core.version>
         <jackson.datatype.version>2.13.0</jackson.datatype.version>
