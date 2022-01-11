@@ -64,7 +64,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Compile dependencies -->
+            <!-- COMPILE DEPENDENCIES -->
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
@@ -116,7 +116,7 @@
                 <version>${apache.poi.version}</version>
             </dependency>
 
-            <!-- RUNTIME -->
+            <!-- RUNTIME DEPENDENCIES -->
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
@@ -124,10 +124,12 @@
                 <scope>runtime</scope>
             </dependency>
 
+            <!-- TEST DEPENDENCIES -->
             <dependency>
                 <groupId>com.powsybl</groupId>
                 <artifactId>powsybl-open-loadflow</artifactId>
                 <version>${powsybl.open-loadflow.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -136,6 +138,7 @@
                 <scope>test</scope>
             </dependency>
 
+            <!-- IMPORTED DEPENDENCIES -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>

@@ -30,8 +30,10 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        </build>
+    </build>
+
     <dependencies>
+        <!-- COMPILE DEPENDENCIES -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gridcapa-cse-runner-api</artifactId>
@@ -117,7 +119,7 @@
             <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
         </dependency>
 
-        <!-- Runtime dependencies -->
+        <!-- RUNTIME DEPENDENCIES -->
         <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-creator-cse</artifactId>
@@ -160,7 +162,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Test dependencies -->
+        <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-config-test</artifactId>
