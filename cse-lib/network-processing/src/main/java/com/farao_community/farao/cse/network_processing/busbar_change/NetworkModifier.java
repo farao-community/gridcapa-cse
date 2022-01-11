@@ -280,7 +280,7 @@ public class NetworkModifier {
     }
 
     private TwoWindingsTransformerAdder initializeTwoWindingsTransformerAdderToMove(TwoWindingsTransformer twoWindingsTransformer, String newId) {
-        return twoWindingsTransformer.getSubstation().newTwoWindingsTransformer()
+        return twoWindingsTransformer.getSubstation().orElseThrow().newTwoWindingsTransformer()
             .setEnsureIdUnicity(true)
             .setId(newId)
             .setRatedU1(twoWindingsTransformer.getRatedU1())

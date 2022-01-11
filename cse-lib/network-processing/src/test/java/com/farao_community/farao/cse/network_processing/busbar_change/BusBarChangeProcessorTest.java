@@ -14,7 +14,6 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
