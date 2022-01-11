@@ -1,0 +1,41 @@
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: gridcapa
+    password: gridcapa
+    template:
+      reply-timeout: 2400000
+  cloud:
+    stream:
+      bindings:
+        task-status-update:
+          binder: rabbit
+          destination: task-status-updated
+
+dichotomy-server:
+  amqp:
+    queue-name: dichotomy-request-queue
+
+minio:
+  bucket: gridcapa
+  base-path: ""
+  access:
+    name: gridcapa
+    secret: gridcapa
+  url: http://minio:9000/
+
+cse-cc-runner:
+  zone-id: "Europe/Paris"
+  xnodes:
+    file-path: /home/farao/xnodes/xnodes.xml
+  bindings:
+    request:
+      destination: cse-request
+      routing-key: "#"
+      group: cse-idcc-runner
+    response:
+      destination: cse-response
+      expiration: 60000
+  whitelist:
+    - http://minio:9000/

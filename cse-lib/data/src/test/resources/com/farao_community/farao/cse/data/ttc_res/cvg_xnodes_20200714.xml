@@ -1,0 +1,456 @@
+<?xml version="1.0"?>
+<xnodes xmlns="http://www.rte-france.com/gsr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <xnode name="XBI_MO31" area1="AL" area2="GR" />
+    <xnode name="XZE_KA11" area1="AL" area2="GR" />
+    <xnode name="XVD_PO21" area1="AL" area2="ME" />
+    <xnode name="XFI_PR21" area1="AL" area2="RS" />
+    <xnode name="XWE_PR11" area1="AT" area2="CH" />
+    <xnode name="XWE_PR12" area1="AT" area2="CH" />
+    <xnode name="XMN_WI21" area1="AT" area2="CH" />
+    <xnode name="XMN_YR21" area1="AT" area2="CH" />
+    <xnode name="XBI_SO21" area1="AT" area2="CZ" />
+    <xnode name="XBI_SO22" area1="AT" area2="CZ" />
+    <xnode name="XDU_SL11" area1="AT" area2="CZ" />
+    <xnode name="XDU_SL12" area1="AT" area2="CZ" />
+    <xnode name="XPE_AH21" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XPE_PI21" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XPE_PT21" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XPE_SI21" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XWE_BR12" area1="AT" area2="DE" subarea2="D4" />
+    <xnode name="XWE_BR21" area1="AT" area2="DE" subarea2="D4" />
+    <xnode name="XWE_LE11" area1="AT" area2="DE" subarea2="D7" />
+    <xnode name="XWE_ME21" area1="AT" area2="DE" subarea2="D7" />
+    <xnode name="XSI_KR20" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XSI_KR21" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XSI_SI21" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XSI_SI22" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XKU_KU21" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XKU_KU22" area1="AT" area2="DE" subarea2="D2" />
+    <xnode name="XPR_PR21" area1="AT" area2="DE" subarea2="D7" />
+    <xnode name="XWE_WB21" area1="AT" area2="DE" subarea2="D4" />
+    <xnode name="XWE_WB22" area1="AT" area2="DE" subarea2="D7" />
+    <xnode name="XWA_BR21" area1="AT" area2="DE" subarea2="D4" />
+    <xnode name="XMN_BR21" area1="AT" area2="DE" subarea2="D4" />
+    <xnode name="XWA_WA21" area1="AT" area2="DE" subarea2="D4" />
+    <xnode name="XWA_WA22" area1="AT" area2="DE" subarea2="D4" />
+    <xnode name="XNE_GY21" area1="AT" area2="HU" />
+    <xnode name="XSA_GY11" area1="AT" area2="HU" />
+    <xnode name="XWI_GY21" area1="AT" area2="HU" />
+    <xnode name="XWI_SZ11" area1="AT" area2="HU" />
+    <xnode name="XLI_SO21" area1="AT" area2="IT" />
+    <xnode name="XKA_MA11" area1="AT" area2="SI" />
+    <xnode name="XKA_MA12" area1="AT" area2="SI" />
+    <xnode name="XOB_PO21" area1="AT" area2="SI" />
+    <xnode name="XGR_DA21" area1="BA" area2="HR" />
+    <xnode name="XMO_KO11" area1="BA" area2="HR" />
+    <xnode name="XMO_ZA21" area1="BA" area2="HR" />
+    <xnode name="XPR_ME21" area1="BA" area2="HR" />
+    <xnode name="XTR_PL21" area1="BA" area2="HR" />
+    <xnode name="XPR_MR21" area1="BA" area2="HR" />
+    <xnode name="XTU_DA21" area1="BA" area2="HR" />
+    <xnode name="XUG_ER11" area1="BA" area2="HR" />
+    <xnode name="XPR_SI21" area1="BA" area2="HR" />
+    <xnode name="XSA_PI21" area1="BA" area2="ME" />
+    <xnode name="XTR_HN51" area1="BA" area2="ME" />
+    <xnode name="XTR_PE21" area1="BA" area2="ME" />
+    <xnode name="XTR_PG11" area1="BA" area2="ME" />
+    <xnode name="XUG_SM11" area1="BA" area2="RS" />
+    <xnode name="XVI_VA21" area1="BA" area2="RS" />
+    <xnode name="XBE_GB1B" area1="BE" area2="GB" />
+    <xnode name="XAC_LO11" area1="BE" area2="FR" />
+    <xnode name="XAU_MO21" area1="BE" area2="FR" />
+    <xnode name="XAU_M.21" area1="BE" area2="FR" />
+    <xnode name="XAU_MO22" area1="BE" area2="FR" />
+    <xnode name="XAU_SA21" area1="BE" area2="FR" />
+    <xnode name="XSO_SO21" area1="BE" area2="FR" />
+    <xnode name="XSO_SO22" area1="BE" area2="FR" />
+    <xnode name="XAV_AV11" area1="BE" area2="FR" />
+    <xnode name="XAV_MA11" area1="BE" area2="FR" />
+    <xnode name="XMO_CH21" area1="BE" area2="FR" />
+    <xnode name="XFO_MO61" area1="FR" area2="BE" />
+    <xnode name="XFO_MO62" area1="FR" area2="BE" />
+    <xnode name="XVY_MB11" area1="BE" area2="NL" />
+    <xnode name="XVY_MB12" area1="BE" area2="NL" />
+    <xnode name="XZA_BS11" area1="BE" area2="NL" />
+    <xnode name="XZA_GT11" area1="BE" area2="NL" />
+    <xnode name="XBE_OX21" area1="BE" area2="DE" subarea2="D6" />
+    <xnode name="XSC_SC21" area1="BE" area2="DE" subarea2="D6" />
+    <xnode name="XBG_TH11" area1="BG" area2="GR" />
+    <xnode name="XCM_ST11" area1="BG" area2="MK" />
+    <xnode name="XDO_IS11" area1="BG" area2="RO" />
+    <xnode name="XVA_IS11" area1="BG" area2="RO" />
+    <xnode name="XKO_TI11" area1="BG" area2="RO" />
+    <xnode name="XKO_TI12" area1="BG" area2="RO" />
+    <xnode name="XSO_NI11" area1="BG" area2="RS" />
+    <xnode name="XAS_KU11" area1="CH" area2="DE" subarea2="D4" />
+    <xnode name="XBE_TI11" area1="CH" area2="DE" subarea2="D7" />
+    <xnode name="XBE_TI21" area1="CH" area2="DE" subarea2="D7" />
+    <xnode name="XLA_EN11" area1="CH" area2="DE" subarea2="D4" />
+    <xnode name="XLA_GU21" area1="CH" area2="DE" subarea2="D4" />
+    <xnode name="XLA_GU22" area1="CH" area2="DE" subarea2="D4" />
+    <xnode name="XLA_KU11" area1="CH" area2="DE" subarea2="D4" />
+    <xnode name="XLA_KU12" area1="CH" area2="DE" subarea2="D4" />
+    <xnode name="XLA_KU13" area1="CH" area2="DE" subarea2="D4" />
+    <xnode name="XLA_KU21" area1="CH" area2="DE" subarea2="D4" />
+    <xnode name="XLA_KU22" area1="CH" area2="DE" subarea2="D4" />
+    <xnode name="XLA_TI11" area1="CH" area2="DE" subarea2="D7" />
+    <xnode name="XAS_SI11" area1="CH" area2="FR" />
+    <xnode name="XBA_MA11" area1="CH" area2="FR" />
+    <xnode name="XBA_SI11" area1="CH" area2="FR" />
+    <xnode name="XCH_B.11" area1="CH" area2="FR" />
+    <xnode name="XLA_SI11" area1="CH" area2="FR" />
+    <xnode name="XRI_CO21" area1="CH" area2="FR" />
+    <xnode name="XS._CO21" area1="CH" area2="FR" />
+    <xnode name="XVA_PR21" area1="CH" area2="FR" />
+    <xnode name="XVE_B.11" area1="CH" area2="FR" />
+    <xnode name="XVE_GE21" area1="CH" area2="FR" />
+    <xnode name="XVE_GE22" area1="CH" area2="FR" />
+    <xnode name="XAI_PO21" area1="CH" area2="IT" />
+    <xnode name="XGO_ME21" area1="CH" area2="IT" />
+    <xnode name="XLA_MU11" area1="CH" area2="IT" />
+    <xnode name="XME_CA11" area1="CH" area2="IT" />
+    <xnode name="XRI_AV21" area1="CH" area2="IT" />
+    <xnode name="XRI_VA21" area1="CH" area2="IT" />
+    <xnode name="XRO_GO11" area1="CH" area2="IT" />
+    <xnode name="XRO_SF11" area1="CH" area2="IT" />
+    <xnode name="XSE_PA21" area1="CH" area2="IT" />
+    <xnode name="XSO_BU11" area1="CH" area2="IT" />
+    <xnode name="ICEPR120" area1="IT" area2="ME" />
+    <xnode name="XHR_ET11" area1="CZ" area2="DE" subarea2="D2" />
+    <xnode name="XHR_RO11" area1="CZ" area2="DE" subarea2="D8" />
+    <xnode name="XHR_RO12" area1="CZ" area2="DE" subarea2="D8" />
+    <xnode name="XPR_ET11" area1="CZ" area2="DE" subarea2="D2" />
+    <xnode name="XAL_DB11" area1="CZ" area2="PL" />
+    <xnode name="XLI_BU21" area1="CZ" area2="PL" />
+    <xnode name="XLI_KO21" area1="CZ" area2="PL" />
+    <xnode name="XNO_WI11" area1="CZ" area2="PL" />
+    <xnode name="XLI_PB21" area1="CZ" area2="SK" />
+    <xnode name="XNO_VA11" area1="CZ" area2="SK" />
+    <xnode name="XSO_KR11" area1="CZ" area2="SK" />
+    <xnode name="XSO_SE21" area1="CZ" area2="SK" />
+    <xnode name="XSO_ST11" area1="CZ" area2="SK" />
+    <xnode name="XAU_KA11" area1="DE" subarea1="D1" area2="DE" subarea2="D2" />
+    <xnode name="XAU_KA12" area1="DE" subarea1="D1" area2="DE" subarea2="D2" />
+    <xnode name="XFL_KA11" area1="DE" subarea1="D2" area2="DE" subarea2="D1" />
+    <xnode name="XFL_KA12" area1="DE" subarea1="D2" area2="DE" subarea2="D1" />
+    <xnode name="XFL_EN21" area1="DE" subarea1="D1" area2="DE" subarea2="D2" />
+    <xnode name="XFL_KA21" area1="DE" subarea1="D1" area2="DE" subarea2="D2" />
+    <xnode name="XAS_DA11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XBI_BI21" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XDI_DA11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XGK_DE11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XGK_UR11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XLA_WE11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XNL_ME11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XOB_ME11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XOB_ME12" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XPA_GU21" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XRH_HA11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XDO_HA11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XTW_NE11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XTW_NE12" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XFR_KR11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XBW_BJ1D" area1="DE" subarea1="D8" area2="DE" subarea2="D1" />
+    <xnode name="XDI_ME11" area1="DE" subarea1="D2" area2="NL" />
+    <xnode name="XDI_ME12" area1="DE" subarea1="D2" area2="NL" />
+    <xnode name="XBR_WB21" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XDA_MA21" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XDA_WE11" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XDA_MI11" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XDE_DS31" area1="DE" subarea1="D4" area2="DE" subarea2="D8" />
+    <xnode name="XDE_DS32" area1="DE" subarea1="D4" area2="DE" subarea2="D8" />
+    <xnode name="XDE_HV11" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XDE_VO11" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XDE_VO21" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XGR_BE21" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XGR_RH21" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XGR_HO11" area1="DE" subarea1="D4" area2="DE" subarea2="D2" />
+    <xnode name="XGR_KU11" area1="DE" subarea1="D4" area2="DE" subarea2="D2" />
+    <xnode name="XHO_HO21" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XHR_HO11" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XHR_TI11" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XKU_TI21" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XPU_HO11" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XEI_MU11" area1="DE" subarea1="D4" area2="FR" />
+    <xnode name="XEI_VO21" area1="DE" subarea1="D4" area2="FR" />
+    <xnode name="XBR_BR11" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XBR_BR13" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XKR_KR11" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XKR_KR12" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XSU_DO11" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XSU_DO12" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XNO_NO11" area1="DE" subarea1="D2" area2="DE" subarea2="D8" />
+    <xnode name="XNO_AU11" area1="DE" subarea1="D2" area2="DE" subarea2="D8" />
+    <xnode name="XNO_DO11" area1="DE" subarea1="D2" area2="DE" subarea2="D8" />
+    <xnode name="XAS_LI11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XGR_ST11" area1="DE" subarea1="D2" area2="DE" subarea2="D4" />
+    <xnode name="XEN_SA21" area1="DE" subarea1="D7" area2="FR" />
+    <xnode name="XGR_HG11" area1="DE" subarea1="D7" area2="NL" />
+    <xnode name="XGR_HG12" area1="DE" subarea1="D7" area2="NL" />
+    <xnode name="XRO_MB11" area1="DE" subarea1="D7" area2="NL" />
+    <xnode name="XOB_MB11" area1="DE" subarea1="D7" area2="NL" />
+    <xnode name="XSI_MB11" area1="DE" subarea1="D7" area2="NL" />
+    <xnode name="XNR_DT11" area1="DE" subarea1="D7" area2="NL" />
+    <xnode name="XNR_DT12" area1="DE" subarea1="D7" area2="NL" />
+    <xnode name="XEN_VI11" area1="DE" subarea1="D7" area2="FR" />
+    <xnode name="XEN_VI12" area1="DE" subarea1="D7" area2="FR" />
+    <xnode name="XHE_WO11" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XHE_WO12" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XME_EI11" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XME_VI11" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XRE_RE11" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XRE_RE12" area1="DE" subarea1="D8" area2="DE" subarea2="D2" />
+    <xnode name="XHG_MI11" area1="DE" subarea1="D8" area2="PL" />
+    <xnode name="XHG_MI12" area1="DE" subarea1="D8" area2="PL" />
+    <xnode name="XVI_KR21" area1="DE" subarea1="D8" area2="PL" />
+    <xnode name="XVI_KR22" area1="DE" subarea1="D8" area2="PL" />
+    <xnode name="XVI_KR11" area1="DE" subarea1="D8" area2="PL" />
+    <xnode name="XVI_KR12" area1="DE" subarea1="D8" area2="PL" />
+
+    <xnode name="XBR_JA58" area1="DE" subarea1="D9" area2="DE" subarea2="D4" />
+    <xnode name="XBR_RA59" area1="DE" subarea1="D9" area2="DE" subarea2="D4" />
+    <xnode name="XKR_SI20" area1="DE" subarea1="D9" area2="DE" subarea2="D2" />
+    <xnode name="XKR_SI21" area1="DE" subarea1="D9" area2="DE" subarea2="D2" />
+    <xnode name="XBE_BJ1D" area1="DE" subarea1="D8" area2="DE" subarea2="D1" />
+    <xnode name="XAR_AR21" area1="ES" area2="FR" />
+    <xnode name="XBI_PR21" area1="ES" area2="FR" />
+    <xnode name="XHE_AR11" area1="ES" area2="FR" />
+    <xnode name="XVI_BA11" area1="ES" area2="FR" />
+    <xnode name="XTA_FA11" area1="ES" area2="MA" />
+    <xnode name="XTA_XT11" area1="ES" area2="MA" />
+    <xnode name="XTA_FA12" area1="ES" area2="MA" />
+    <xnode name="XAL_LG21" area1="ES" area2="PT" />
+    <xnode name="XAL_PN21" area1="ES" area2="PT" />
+    <xnode name="XAL_PN22" area1="ES" area2="PT" />
+    <xnode name="XAL_LG22" area1="ES" area2="PT" />
+    <xnode name="XAL_LG11" area1="ES" area2="PT" />
+    <xnode name="XBR_AV11" area1="ES" area2="PT" />
+    <xnode name="XCA_AL11" area1="ES" area2="PT" />
+    <xnode name="XCA_AL12" area1="ES" area2="PT" />
+    <xnode name="XCE_FR11" area1="ES" area2="PT" />
+    <xnode name="XSA_PN21" area1="ES" area2="PT" />
+    <xnode name="XPU_TV11" area1="ES" area2="PT" />
+    <xnode name="XMA_SE11" area1="FR" area2="GB" />
+    <xnode name="XMA_SE12" area1="FR" area2="GB" />
+    <xnode name="XMA_SE13" area1="FR" area2="GB" />
+    <xnode name="XB._CA21" area1="FR" area2="IT" />
+    <xnode name="XVL_VE11" area1="FR" area2="IT" />
+    <xnode name="XAR_GA1G" area1="GR" area2="IT" />
+    <xnode name="XAL_RO11" area1="FR" area2="IT" />
+    <xnode name="XAL_RO12" area1="FR" area2="IT" />
+    <xnode name="XAR_GA1I" area1="GR" area2="IT" />
+    <xnode name="XFL_BI11" area1="GR" area2="MK" />
+    <xnode name="XTH_DU11" area1="GR" area2="MK" />
+    <xnode name="XER_PE11" area1="HR" area2="HU" />
+    <xnode name="XER_PE12" area1="HR" area2="HU" />
+    <xnode name="XZE_HE11" area1="HR" area2="HU" />
+    <xnode name="XZE_HE12" area1="HR" area2="HU" />
+    <xnode name="XER_SM11" area1="HR" area2="RS" />
+    <xnode name="XME_DI11" area1="HR" area2="SI" />
+    <xnode name="XPE_DI21" area1="HR" area2="SI" />
+    <xnode name="XTU_KR11" area1="HR" area2="SI" />
+    <xnode name="XTU_KR12" area1="HR" area2="SI" />
+    <xnode name="XZE_CI21" area1="HR" area2="SI" />
+    <xnode name="XNA_BE11" area1="HU" area2="RO" />
+    <xnode name="XSA_AR11" area1="HU" area2="RO" />
+    <xnode name="XSA_SU11" area1="HU" area2="RS" />
+    <xnode name="XGO_LE11" area1="HU" area2="SK" />
+    <xnode name="XGY_GA11" area1="HU" area2="SK" />
+    <xnode name="XAL_ZA01" area1="HU" area2="UA" />
+    <xnode name="XKI_MU21" area1="HU" area2="UA" />
+    <xnode name="XSA_MU11" area1="HU" area2="UA" />
+    <xnode name="XTI_MU21" area1="HU" area2="UA" />
+    <xnode name="XPA_DI21" area1="IT" area2="SI" />
+    <xnode name="XRE_DI11" area1="IT" area2="SI" />
+    <xnode name="XPL_BB21" area1="ME" area2="RS" />
+    <xnode name="XPL_PO21" area1="ME" area2="RS" />
+    <xnode name="XRI_KB11" area1="ME" area2="RS" />
+    <xnode name="XSK_KA21" area1="MK" area2="RS" />
+    <xnode name="XSK_KA22" area1="MK" area2="RS" />
+    <xnode name="XSK_UR11" area1="MK" area2="RS" />
+    <xnode name="XSK_KB11" area1="MK" area2="RS" />
+    <xnode name="XST_VR11" area1="MK" area2="RS" />
+    <xnode name="XKR_LE11" area1="PL" area2="SK" />
+    <xnode name="XKR_LE12" area1="PL" area2="SK" />
+    <xnode name="XPF_DJ11" area1="RO" area2="RS" />
+    <xnode name="XRO_MU11" area1="RO" area2="UA" />
+    <xnode name="XVK_MU11" area1="SK" area2="UA" />
+    <xnode name="XRI_PE11" area1="RS" area2="ME" />
+    <xnode name="XBR_WD51" area1="BY" area2="PL" />
+    <xnode name="XBR_WD52" area1="BY" area2="PL" />
+    <xnode name="XZA_DO21" area1="PL" area2="UA" />
+    <xnode name="XSL_SW11" area1="PL" area2="SE" />
+    <xnode name="XNS_BA11" area1="GR" area2="TR" />
+    <xnode name="XKA_PG11" area1="AL" area2="ME" />
+    <xnode name="XMI_HA11" area1="BG" area2="TR" />
+    <xnode name="XMI_HA12" area1="BG" area2="TR" />
+    <xnode name="XBE_NA11" area1="HU" area2="RO" />
+    <xnode name="XDO_RA11" area1="BG" area2="RO" />
+    <xnode name="XZU_GY11" area1="AT" area2="HU" />
+    <xnode name="XVA_ST11" area1="RO" area2="BG" />
+    <xnode name="XGR_MA1N" area1="NL" area2="GB" />
+    <xnode name="XEE_FE1N" area1="NL" area2="NO" />
+    <xnode name="XGR_TA21" area1="AT" area2="IT" />
+    <xnode name="XSA_SZ11" area1="AT" area2="HU" />
+    <xnode name="XZU_SZ11" area1="AT" area2="HU" />
+    <xnode name="XHW_KR1D" area1="DE" subarea1="D2" area2="SE" />
+    <xnode name="XPL_ZA51" area1="ME" area2="RS" />
+    <xnode name="XSA_GO11" area1="DE" subarea1="D1" area2="DE" subarea2="D2" />
+    <xnode name="XSA_HO11" area1="DE" subarea1="D1" area2="DE" subarea2="D2" />
+
+    <!--xnode name="XBM_AP51" area1="RS" area2="RO" / 31/08/2020 Duplicated-->
+    <xnode name="XBR_VR51" area1="RS" area2="RO" />
+    <xnode name="XVI_ZA51" area1="RS" area2="RO" />
+    <xnode name="XBI_LE51" area1="BA" area2="RS" />           <!--  GLE 06/01/2019      -->
+    <xnode name="XZV_BI51" area1="BA" area2="RS" />           <!--  GLE 06/01/2019      -->
+    <xnode name="XKU_ZA51" area1="RS" area2="RO" />
+    <!--xnode name="XNI_SI51" area1="RS" area2="RO" / 31/08/2020 Duplicated-->
+    <xnode name="XLL_EC11" area1="ES" area2="FR" />
+    <xnode name="XLL_EC12" area1="ES" area2="FR" />
+    <xnode name="XLL_BA1E" area1="ES" area2="FR" />
+    <xnode name="XLL_BA1F" area1="ES" area2="FR" />
+    <xnode name="XLL_BA1B" area1="ES" area2="FR" />
+    <xnode name="XLL_BA1L" area1="ES" area2="FR" />
+    <xnode name="XLL_BA11" area1="ES" area2="FR" />
+    <xnode name="XLL_BA12" area1="ES" area2="FR" />
+
+    <xnode name="XBE_BJ1D" area1="DE" subarea1="D8" area2="DE" subarea2="D1" />
+    <xnode name="XJA_KA11" area1="DE" subarea1="D1" area2="DE" subarea2="D2" />
+    <xnode name="XJA_KA12" area1="DE" subarea1="D1" area2="DE" subarea2="D2" />
+    <xnode name="XGK_MU21" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XGK_MU22" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XRE_AL11" area1="DE" subarea1="D2" area2="DE" subarea2="D8" />
+    <xnode name="XRE_AL12" area1="DE" subarea1="D2" area2="DE" subarea2="D8" />
+    <xnode name="XOH_WE11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XNO_NO21" area1="DE" subarea1="D2" area2="DE" subarea2="D8" />
+    <xnode name="XNO_NO22" area1="DE" subarea1="D2" area2="DE" subarea2="D8" />
+    <xnode name="XBR_WB22" area1="DE" subarea1="D4" area2="DE" subarea2="D7" />
+    <xnode name="XBE_GU11" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+    <xnode name="XBE_GU12" area1="DE" subarea1="D2" area2="DE" subarea2="D7" />
+
+    <xnode name="XKB_NI11" area1="RS" area2="KS" />
+    <xnode name="XPO_KR21" area1="RS" area2="KS" />
+
+    <xnode name="XEL_AL11" area1="PL" area2="LT" />
+    <xnode name="XEL_AL12" area1="PL" area2="LT" />
+
+    <xnode name="XXSO_B21" area1="ES" area2="FR" />
+    <xnode name="XLL_BA11" area1="ES" area2="FR" />
+    <xnode name="XLL_BA12" area1="ES" area2="FR" />
+    <xnode name="XSO_BA21" area1="ES" area2="FR" />
+    <xnode name="XEC_EC11" area1="ES" area2="FR" />
+    <xnode name="XBE_OL51" area1="ES" area2="FR" />
+    <xnode name="XIR_NL51" area1="ES" area2="FR" />
+    <xnode name="XSO_BA51" area1="FR" area2="ES" />
+
+    <xnode name="XTJ_K13K" area1="DE" subarea1="D1" area2="NO" />
+    <xnode name="XTJ_K23K" area1="DE" subarea1="D1" area2="NO" />
+    <xnode name="XTJ_K31K" area1="DE" subarea1="D1" area2="NO" />
+    <xnode name="XTJ_K41K" area1="DE" subarea1="D1" area2="NO" />
+    <xnode name="XVH_L11K" area1="DE" subarea1="D1" area2="SE" />
+    <xnode name="XVH_L21K" area1="DE" subarea1="D1" area2="SE" />
+    <xnode name="XFG_HK11" area1="DE" subarea1="D1" area2="SE" />
+
+    <xnode name="XOM_DJ51" area1="RO" area2="RS" />
+    <xnode name="XGU_SI51" area1="RO" area2="RS" />
+    <xnode name="XJI_KI51" area1="RO" area2="RS" />
+
+    <xnode name="XPE_SU51" area1="BA" area2="MK" />
+    <xnode name="XSK_KP51" area1="BA" area2="MK" />
+
+
+
+    <xnode name="XCE_SC21" area1="BE" area2="DE" subarea2="D6" />
+    <xnode name="XBA_FL21" area1="DE" subarea1="D7" area2="DE" subarea2="D6" />
+    <xnode name="XBA_RO21" area1="DE" subarea1="D7" area2="DE" subarea2="D6" />
+    <xnode name="XQU_HE21" area1="DE" subarea1="D7" area2="DE" subarea2="D6" />
+    <xnode name="XTR_BL21" area1="DE" subarea1="D7" area2="DE" subarea2="D6" />
+
+    <xnode name="XKA_KB11" area1="AL" area2="RS" />
+    <xnode name="XRO_B.11" area1="CH" area2="FR" />
+
+    <xnode name="XBR_BR12" area1="DE" subarea1="D2" area2="DE" subarea2="D8" />
+    <xnode name="XBE_BU51" area1="AL" area2="RS" />
+    <xnode name="XVA_NP51" area1="AL" area2="RS" />
+    <xnode name="XMN_RU21" area1="AT" area2="CH" />
+    <xnode name="XMN_RU22" area1="AT" area2="CH" />
+
+    <xnode name="XWE_SI2A" area1="DE" subarea1="D2" area2="AT" />
+    <xnode name="XWE_SI2B" area1="DE" subarea1="D2" area2="AT" />
+    <xnode name="XWE_SI2C" area1="DE" subarea1="D2" area2="AT" />
+    <xnode name="XYV_SI21" area1="DE" subarea1="D2" area2="AT" />
+    <xnode name="XYV_SI22" area1="DE" subarea1="D2" area2="AT" />
+    <xnode name="XWE_KE21" area1="AT" area2="DE" />
+    <xnode name="XVI_TI2O" area1="IT"  area2="ME" />
+    <xnode name="XVI_TI2I" area1="IT"  area2="ME" />
+    <xnode name="XTR_LA11" area1="BA" area2="ME" />
+    <xnode name="XKO_LA11" area1="IT"  area2="ME" />
+    <xnode name="XKO_LA12" area1="IT"  area2="ME" />
+
+    <xnode name="XBB_LI51" area1="HR" area2="BA" />
+    <xnode name="XBM_AP51" area1="HR" area2="RS" />
+    <xnode name="XBR_SL51" area1="HR" area2="BA" />
+    <xnode name="XBU_KO51" area1="HR" area2="SI" />
+    <xnode name="XCA_OP51" area1="HR" area2="BA" />
+    <xnode name="XGR_IM51" area1="HR" area2="BA" />
+    <xnode name="XGR_KN51" area1="HR" area2="BA" />
+    <xnode name="XKV_GR51" area1="HR" area2="BA" />
+    <xnode name="XMA_IB51" area1="HR" area2="SI" />
+    <xnode name="XNE_FO51" area1="HR" area2="SI" />
+    <xnode name="XNE_OP51" area1="HR" area2="BA" />
+    <xnode name="XNE_ST51" area1="HR" area2="BA" />
+    <xnode name="XNI_SI51" area1="HR" area2="RS" />
+    <xnode name="XOR_ZU51" area1="HR" area2="BA" />
+    <xnode name="XTR_KO51" area1="HR" area2="BA" />
+    <xnode name="XVR_LJ51" area1="HR" area2="BA" />
+    <xnode name="XED_EE1D"  area1="DE" subarea1="D1" area2="DE" />
+    <xnode name="XED_EE1N"  area1="NL" area2="NL" />
+    <xnode name="XBA_KF32"  area1="DE" area2="DE" />
+    <xnode name="XBA_KR31"  area1="DE" area2="DE" />
+    <xnode name="XBA_KF31"  area1="DE" area2="DE" />
+    <xnode name="XAL_PO21" area1="CH" area2="IT" />
+    <xnode name="XTO_CH11" area1="FR" area2="GB" />
+    <xnode name="XPI_GI11" area1="FR" area2="IT" />
+    <xnode name="XPI_GI12" area1="FR" area2="IT" />
+    <xnode name="XWI_ET11"  area1="DE" subarea1="D2" area2="DE" />
+    <xnode name="XWI_ET12"  area1="DE" subarea1="D2" area2="DE" />
+
+    <!--
+    XXX_XX51 is a FAKE XNODE : Created by KM for 50HzT Weekly Report
+    Do not Delete
+      -->
+    <xnode name="XXX_XX51" area1="UX" area2="??" />
+
+    <!--
+     XNODES  Created by JBO  for Y-1 2019 scenarios
+    Do not Delete
+      -->
+    <xnode name="XEC_BA11" area1="ES" area2="ES" />
+    <xnode name="XGR_PI11" area1="IT"  area2="IT" />
+    <xnode name="XGR_PI12" area1="IT"  area2="IT" />
+    <xnode name="XVI_TI10" area1="IT"  area2="IT" />
+    <xnode name="XPI_GI11" area1="FR"  area2="IT" />
+    <xnode name="XPI_GI12" area1="FR"  area2="IT" />
+    <xnode name="XBA_MU11" area1="UA"  area2="HU" />
+    <xnode name="XBA_ZA01" area1="UA"  area2="HU" />
+
+    <!--
+     XNODES  Created by JBO  for Y-1 2020 scenarios
+    Do not Delete
+      -->
+    <xnode name="XKR_ZA11" area1="NL" area2="BE" />
+    <xnode name="XKR_ZA12" area1="NL"  area2="BE" />
+    <xnode name="XMA_SE15" area1="FR" area2="GB" />
+    <xnode name="XMA_SE16" area1="GB" area2="FR" />
+    <xnode name="XBI_NI51" area1="ME" area2="BA" />
+    <xnode name="XVI_TI20" area1="ME" area2="??" />
+    <xnode name="XLI_OB1A" area1="DE" subarea1="D7" area2="DE" />
+    <xnode name="XLI_OB1B" area1="BE" area2="BE" />
+
+    <!--
+    comments block:
+      -->
+
+
+</xnodes>

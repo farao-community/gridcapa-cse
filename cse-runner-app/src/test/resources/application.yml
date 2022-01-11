@@ -1,0 +1,29 @@
+spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+minio:
+  bucket: cse-data
+  base-path: default-base-path/
+  access:
+    name: minioadmin
+    secret: minioadmin
+  url: http://localhost:9000/
+
+cse-cc-runner:
+  zone-id: "Europe/Paris"
+  xnodes:
+    file-path: xnodes/cvg_xnodes_20200714.xml
+  bindings:
+    request:
+      destination: cse-request
+      routing-key: "#"
+      group: cse-runner
+    response:
+      destination: cse-response
+      expiration: 60000
+  whitelist:
+    - http://localhost:9000

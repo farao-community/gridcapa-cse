@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <xs:element name="CapacityDocument">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="DocumentIdentification"/>
+        <xs:element ref="DocumentVersion"/>
+        <xs:element ref="DocumentType"/>
+        <xs:element ref="ProcessType"/>
+        <xs:element ref="SenderIdentification"/>
+        <xs:element ref="SenderRole"/>
+        <xs:element ref="ReceiverIdentification"/>
+        <xs:element ref="ReceiverRole"/>
+        <xs:element ref="CreationDateTime"/>
+        <xs:element ref="CapacityTimeInterval"/>
+        <xs:element ref="Domain"/>
+        <xs:element ref="CapacityTimeSeries"/>
+      </xs:sequence>
+      <xs:attribute name="DtdRelease" use="required" type="xs:integer"/>
+      <xs:attribute name="DtdVersion" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DocumentIdentification">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DocumentVersion">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DocumentType">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessType">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SenderIdentification">
+    <xs:complexType>
+      <xs:attribute name="codingScheme" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SenderRole">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReceiverIdentification">
+    <xs:complexType>
+      <xs:attribute name="codingScheme" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReceiverRole">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreationDateTime">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CapacityTimeInterval">
+    <xs:complexType>
+      <xs:attribute name="v" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Domain">
+    <xs:complexType>
+      <xs:attribute name="codingScheme" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CapacityTimeSeries">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="TimeSeriesIdentification"/>
+        <xs:element ref="BusinessType"/>
+        <xs:element ref="Product"/>
+        <xs:element ref="InArea"/>
+        <xs:element ref="OutArea"/>
+        <xs:element ref="MeasureUnit"/>
+        <xs:element ref="Period"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="TimeSeriesIdentification">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BusinessType">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Product">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InArea">
+    <xs:complexType>
+      <xs:attribute name="codingScheme" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OutArea">
+    <xs:complexType>
+      <xs:attribute name="codingScheme" use="required" type="xs:NCName"/>
+      <xs:attribute name="v" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MeasureUnit">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Period">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="TimeInterval"/>
+        <xs:element ref="Resolution"/>
+        <xs:element maxOccurs="unbounded" ref="Interval"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="TimeInterval">
+    <xs:complexType>
+      <xs:attribute name="v" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Resolution">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Interval">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Pos"/>
+        <xs:element ref="Qty"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Pos">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Qty">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

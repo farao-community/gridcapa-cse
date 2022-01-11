@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:gsr="http://www.rte-france.com/gsr"
+        targetNamespace="http://www.rte-france.com/gsr"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified">
+
+    <element name="xnodes">
+        <complexType>
+            <sequence>
+                <element name="xnode" type="gsr:xnode"  maxOccurs="unbounded">
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+
+    <complexType name="xnode">
+        <attribute name="name"  type="string" use="required"/>
+        <attribute name="area1" type="string" use="required"/>
+        <attribute name="area2" type="string" use="required"/>
+        <attribute name="subarea1" type="string"/>
+        <attribute name="subarea2" type="string"/>
+    </complexType>
+
+</schema>

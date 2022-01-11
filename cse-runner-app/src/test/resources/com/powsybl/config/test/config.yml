@@ -1,0 +1,10 @@
+load-flow:
+  default-impl-name: OpenLoadFlow
+
+load-flow-default-parameters:
+  voltageInitMode: DC_VALUES
+  dc: false
+  balanceType: PROPORTIONAL_TO_GENERATION_P
+  countriesToBalance: AT,CH,FR,IT,SI
+  phaseShifterRegulationOn: true
+  transformerVoltageControlOn: true
