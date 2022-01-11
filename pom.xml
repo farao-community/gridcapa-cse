@@ -32,9 +32,9 @@
 
     <properties>
         <!-- Dependencies versions -->
-        <apache.poi.version>3.7</apache.poi.version>
+        <apache.poi.version>5.1.0</apache.poi.version>
         <commons.lang.version>3.11</commons.lang.version>
-        <commons.io.version>2.5</commons.io.version>
+        <commons.io.version>2.11.0</commons.io.version>
         <maven.jaxb2.version>0.14.0</maven.jaxb2.version>
         <mockito.core.version>3.9.0</mockito.core.version>
         <jackson.datatype.version>2.13.0</jackson.datatype.version>
