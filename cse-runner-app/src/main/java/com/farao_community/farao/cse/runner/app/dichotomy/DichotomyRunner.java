@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.runner.app.dichotomy;
 
+import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
@@ -22,11 +23,14 @@ import com.farao_community.farao.dichotomy.shift.ShiftDispatcher;
 import com.farao_community.farao.dichotomy.shift.SplittingFactors;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
+import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -74,7 +78,7 @@ public class DichotomyRunner {
             return new SplittingFactors(cseData.getReducedSplittingFactors());
         } else {
             return new CseIdccShiftDispatcher(
-                cseData.getReducedSplittingFactors(),
+                convertSplittingFactors(cseData.getReducedSplittingFactors()),
                 cseData.getCseReferenceExchanges().getExchanges(),
                 cseData.getNtc2().getExchanges()
             );
@@ -89,5 +93,16 @@ public class DichotomyRunner {
             raoRunnerClient,
             fileExporter,
             fileImporter);
+    }
+
+    Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
+        Map<String, Double> splittingFactors = new TreeMap<>();
+        tSplittingFactors.forEach((key, value) -> splittingFactors.put(toEic(key), value));
+        splittingFactors.put(toEic("IT"), -splittingFactors.values().stream().reduce(0., Double::sum));
+        return splittingFactors;
+    }
+
+    private String toEic(String country) {
+        return new EICode(Country.valueOf(country)).getAreaCode();
     }
 }
