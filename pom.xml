@@ -7,7 +7,7 @@
     <parent>
         <artifactId>farao-parent-ws</artifactId>
         <groupId>com.farao-community.farao</groupId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.0</version>
     </parent>
 
     <artifactId>gridcapa-cse</artifactId>
@@ -45,7 +45,7 @@
         <jsonapi.converter.version>0.10</jsonapi.converter.version>
         <spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 
-        <farao.bom.version>1.2.0-SNAPSHOT</farao.bom.version>
+        <farao.bom.version>1.2.0</farao.bom.version>
         <gridcapa.dichotomy.runner.version>0.1.0</gridcapa.dichotomy.runner.version>
         <gridcapa.task-manager.version>0.1.0</gridcapa.task-manager.version>
         <powsybl.open-loadflow.version>0.13.0</powsybl.open-loadflow.version>
