@@ -85,7 +85,7 @@ public class DichotomyRunner {
         return new RaoRunnerValidator(
             request.getId(),
             cseData.getJsonCracUrl(),
-            fileExporter.saveRaoParameters(),
+            fileExporter.getRaoParametersUrl(),
             raoRunnerClient,
             fileExporter,
             fileImporter);
