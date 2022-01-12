@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.time.OffsetDateTime;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -52,17 +53,16 @@ public class CseRunner {
         double initialItalianImportFromNetwork = ItalianImport.compute(network);
         checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
-        Crac crac = fileImporter.importCrac(cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network);
-        cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac));
-
-        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(
-            cseRequest,
-            cseData,
-            network,
-            initialItalianImportFromNetwork);
-        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult, crac);
+        cseData.setJsonCracUrl(convertCracInJson(cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network));
+        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
+        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult);
 
         return new CseResponse(cseRequest.getId(), ttcResultUrl);
+    }
+
+    private String convertCracInJson(String originalCracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
+        Crac crac = fileImporter.importCrac(originalCracUrl, targetProcessDateTime, network);
+        return fileExporter.saveCracInJsonFormat(crac);
     }
 
     private void checkNetworkAndReferenceExchangesDifference(CseData cseData, double initialItalianImportFromNetwork) {
