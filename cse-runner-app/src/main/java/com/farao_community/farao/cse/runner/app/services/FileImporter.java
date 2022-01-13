@@ -7,15 +7,20 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.commons.ZonalData;
 import com.farao_community.farao.cse.data.BorderExchanges;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
+import com.farao_community.farao.cse.runner.app.util.FileUtil;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
+import com.farao_community.farao.data.crac_io_api.CracImporters;
+import com.farao_community.farao.data.glsk.api.io.GlskDocumentImporters;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
+import com.powsybl.action.util.Scalable;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
@@ -48,6 +53,15 @@ public class FileImporter {
         String cracFilename = getFilenameFromUrl(cracUrl);
         InputStream cracInputStream = urlValidationService.openUrlStream(cracUrl);
         return CracCreators.importAndCreateCrac(cracFilename, cracInputStream, network, targetProcessDateTime).getCrac();
+    }
+
+    public Crac importCracFromJson(String cracUrl) throws IOException {
+        InputStream cracResultStream = urlValidationService.openUrlStream(cracUrl);
+        return CracImporters.importCrac(FileUtil.getFilenameFromUrl(cracUrl), cracResultStream);
+    }
+
+    public ZonalData<Scalable> importGlsk(String glskUrl, Network network) throws IOException {
+        return GlskDocumentImporters.importGlsk(urlValidationService.openUrlStream(glskUrl)).getZonalScalable(network);
     }
 
     public RaoResult importRaoResult(String raoResultUrl, Crac crac) throws IOException {
