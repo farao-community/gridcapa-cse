@@ -6,20 +6,23 @@
  */
 package com.farao_community.farao.cse.runner.app.dichotomy;
 
+import com.farao_community.farao.commons.CountryEICode;
+import com.powsybl.iidm.network.Country;
+
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public enum CseCountry {
-    IT("10YIT-GRTN-----B"),
-    FR("10YFR-RTE------C"),
-    AT("10YAT-APG------L"),
-    CH("10YCH-SWISSGRIDZ"),
-    SI("10YSI-ELES-----O");
+    IT(Country.IT),
+    FR(Country.FR),
+    AT(Country.AT),
+    CH(Country.CH),
+    SI(Country.SI);
 
     private final String eiCode;
 
-    CseCountry(String eiCode) {
-        this.eiCode = eiCode;
+    CseCountry(Country country) {
+        this.eiCode = new CountryEICode(country).getCode();
     }
 
     public String getEiCode() {
