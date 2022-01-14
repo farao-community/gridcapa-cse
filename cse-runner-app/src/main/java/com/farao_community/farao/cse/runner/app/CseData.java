@@ -7,16 +7,13 @@
 
 package com.farao_community.farao.cse.runner.app;
 
-import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.app.services.FileImporter;
-import com.powsybl.iidm.network.Country;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -27,6 +24,7 @@ public class CseData {
 
     private Ntc ntc;
     private Map<String, Double> reducedSplittingFactors;
+    private Map<String, Double> borderExchanges;
     private Double mniiOffset;
     private CseReferenceExchanges cseReferenceExchanges;
     private Ntc2 ntc2;
@@ -39,11 +37,19 @@ public class CseData {
     }
 
     public Map<String, Double> getReducedSplittingFactors() {
-        if (reducedSplittingFactors != null) {
-            return reducedSplittingFactors;
+        if (reducedSplittingFactors == null) {
+            reducedSplittingFactors = getNtc().computeReducedSplittingFactors();
         }
-        reducedSplittingFactors = convertSplittingFactors(getNtc().computeReducedSplittingFactors());
         return reducedSplittingFactors;
+    }
+
+    public Map<String, Double> getBorderExchanges() {
+        if (borderExchanges == null) {
+            borderExchanges = fileImporter.importBorderExchanges(
+                    cseRequest.getTargetProcessDateTime(),
+                    cseRequest.getVulcanusUrl());
+        }
+        return borderExchanges;
     }
 
     public Double getMniiOffset() {
@@ -104,14 +110,4 @@ public class CseData {
         this.preProcesedNetworkUrl = preProcesedNetworkUrl;
     }
 
-    private Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
-        Map<String, Double> splittingFactors = new TreeMap<>();
-        tSplittingFactors.forEach((key, value) -> splittingFactors.put(toEic(key), value));
-        splittingFactors.put(toEic("IT"), -splittingFactors.values().stream().reduce(0., Double::sum));
-        return splittingFactors;
-    }
-
-    private String toEic(String country) {
-        return new EICode(Country.valueOf(country)).getAreaCode();
-    }
 }

@@ -30,8 +30,10 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        </build>
+    </build>
+
     <dependencies>
+        <!-- COMPILE DEPENDENCIES -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gridcapa-cse-runner-api</artifactId>
@@ -57,6 +59,18 @@
         </dependency>
         <dependency>
             <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-dichotomy-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-dichotomy-shift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-glsk-document-io-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-rao-api</artifactId>
         </dependency>
         <dependency>
@@ -65,7 +79,7 @@
         </dependency>
         <dependency>
             <groupId>com.farao-community.farao</groupId>
-            <artifactId>gridcapa-dichotomy-runner-spring-boot-starter</artifactId>
+            <artifactId>gridcapa-rao-runner-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.farao-community.farao</groupId>
@@ -105,7 +119,7 @@
             <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
         </dependency>
 
-        <!-- Runtime dependencies -->
+        <!-- RUNTIME DEPENDENCIES -->
         <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-creator-cse</artifactId>
@@ -120,6 +134,11 @@
         <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-io-json</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-glsk-document-cse</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -143,7 +162,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Test dependencies -->
+        <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-config-test</artifactId>
