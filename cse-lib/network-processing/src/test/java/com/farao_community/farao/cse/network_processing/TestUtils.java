@@ -22,14 +22,14 @@ public final class TestUtils {
 
     }
 
-    public static void assertNetworksAreEqual(Network network, String reference) {
+    public static void assertNetworksAreEqual(Network network, String reference, Class<?> clazz) {
         MemDataSource dataSource = new MemDataSource();
 
         UcteExporter exporter = new UcteExporter();
         exporter.export(network, new Properties(), dataSource);
 
         try (InputStream actual = dataSource.newInputStream(null, "uct");
-             InputStream expected = TestUtils.class.getResourceAsStream(reference)) {
+             InputStream expected = clazz.getResourceAsStream(reference)) {
             compareTxt(expected, actual, Arrays.asList(1, 2));
         } catch (IOException e) {
             fail(e.getMessage());

@@ -31,6 +31,10 @@ public class NetworkModifier {
         this.connectablesToRemove = new HashSet<>();
     }
 
+    public Network getNetwork() {
+        return network;
+    }
+
     /**
      * Create a bus with a given ID, on a given voltage level
      * Use a given reference bus to copy generators & loads
@@ -75,15 +79,14 @@ public class NetworkModifier {
      * @param branch the branch to move
      * @param side the side of the branch to move
      * @param bus  the new bus to connect to the side
-     * @return the new line
      */
-    public Branch<?> moveBranch(Branch<?> branch, Branch.Side side, Bus bus) {
+    public void moveBranch(Branch<?> branch, Branch.Side side, Bus bus) {
         if (branch instanceof TwoWindingsTransformer) {
-            return moveTwoWindingsTransformer((TwoWindingsTransformer) branch, side, bus);
+            moveTwoWindingsTransformer((TwoWindingsTransformer) branch, side, bus);
         } else if (branch instanceof TieLine) {
-            return moveTieLine((TieLine) branch, side, bus);
+            moveTieLine((TieLine) branch, side, bus);
         } else if (branch instanceof Line) {
-            return moveLine((Line) branch, side, bus);
+            moveLine((Line) branch, side, bus);
         } else {
             throw new FaraoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
         }
@@ -110,7 +113,7 @@ public class NetworkModifier {
         }
     }
 
-    private Line moveLine(Line line, Branch.Side side, Bus bus) {
+    private void moveLine(Line line, Branch.Side side, Bus bus) {
         String newLineId = replaceSimpleBranchNode(line, side, bus.getId());
         LineAdder adder = initializeLineAdderToMove(line, newLineId);
         setBranchAdderProperties(adder, line, side, bus);
@@ -119,10 +122,9 @@ public class NetworkModifier {
         copyProperties(line, newLine);
         LOGGER.debug("Line '{}' has been removed, new TieLine '{}' has been created", line.getId(), newLine.getId());
         connectablesToRemove.add(line);
-        return newLine;
     }
 
-    private Line moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
+    private void moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
         String newLineId = replaceTieLineNode(tieLine, side, bus.getId());
         TieLineAdder adder = initializeTieLineAdderToMove(tieLine, newLineId, side, bus);
         setBranchAdderProperties(adder, tieLine, side, bus);
@@ -131,10 +133,9 @@ public class NetworkModifier {
         copyProperties(tieLine, newTieLine);
         LOGGER.debug("TieLine '{}' has been removed, new TieLine '{}' has been created", tieLine.getId(), newTieLine.getId());
         connectablesToRemove.add(tieLine);
-        return newTieLine;
     }
 
-    private TwoWindingsTransformer moveTwoWindingsTransformer(TwoWindingsTransformer transformer, Branch.Side side, Bus bus) {
+    private void moveTwoWindingsTransformer(TwoWindingsTransformer transformer, Branch.Side side, Bus bus) {
         String newId = replaceSimpleBranchNode(transformer, side, bus.getId());
         TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(transformer, newId);
         setBranchAdderProperties(adder, transformer, side, bus);
@@ -144,7 +145,6 @@ public class NetworkModifier {
         copyTapChanger(transformer, newTransformer);
         LOGGER.debug("TwoWindingsTransformer '{}' has been removed, new transformer '{}' has been created", transformer.getId(), newTransformer.getId());
         connectablesToRemove.add(transformer);
-        return newTransformer;
     }
 
     private static void copyTapChanger(TwoWindingsTransformer transformerFrom, TwoWindingsTransformer transformerTo) {
@@ -189,20 +189,20 @@ public class NetworkModifier {
             .setName(newId);
     }
 
+    /**
+     * Sets LineAdder's attributes identical to a given side of a branch
+     * WARNING: This only works for bus breaker topology. UCTE import in PowSyBl is always done in bus breaker view.
+     */
     private static BranchAdder<?> setIdenticalToSide(Branch<?> branch, Branch.Side side, BranchAdder<?> adder) {
-        TopologyKind topologyKind = branch.getTerminal(side).getVoltageLevel().getTopologyKind();
-        if (topologyKind == TopologyKind.BUS_BREAKER) {
-            if (side == Branch.Side.ONE) {
-                return adder.setVoltageLevel1(branch.getTerminal1().getVoltageLevel().getId())
-                    .setConnectableBus1(branch.getTerminal1().getBusBreakerView().getConnectableBus().getId())
-                    .setBus1(branch.getTerminal1().getBusBreakerView().getBus() != null ? branch.getTerminal1().getBusBreakerView().getBus().getId() : null);
-            } else if (side == Branch.Side.TWO) {
-                return adder.setVoltageLevel2(branch.getTerminal2().getVoltageLevel().getId())
-                    .setConnectableBus2(branch.getTerminal2().getBusBreakerView().getConnectableBus().getId())
-                    .setBus2(branch.getTerminal2().getBusBreakerView().getBus() != null ? branch.getTerminal2().getBusBreakerView().getBus().getId() : null);
-            }
+        if (side == Branch.Side.ONE) {
+            return adder.setVoltageLevel1(branch.getTerminal1().getVoltageLevel().getId())
+                .setConnectableBus1(branch.getTerminal1().getBusBreakerView().getConnectableBus().getId())
+                .setBus1(branch.getTerminal1().getBusBreakerView().getBus() != null ? branch.getTerminal1().getBusBreakerView().getBus().getId() : null);
+        } else {
+            return adder.setVoltageLevel2(branch.getTerminal2().getVoltageLevel().getId())
+                .setConnectableBus2(branch.getTerminal2().getBusBreakerView().getConnectableBus().getId())
+                .setBus2(branch.getTerminal2().getBusBreakerView().getBus() != null ? branch.getTerminal2().getBusBreakerView().getBus().getId() : null);
         }
-        throw new AssertionError();
     }
 
     private void setBranchAdderProperties(BranchAdder<?> adder, Branch<?> branchToCopy, Branch.Side sideToUpdate, Bus busToUpdate) {
@@ -280,7 +280,7 @@ public class NetworkModifier {
     }
 
     private TwoWindingsTransformerAdder initializeTwoWindingsTransformerAdderToMove(TwoWindingsTransformer twoWindingsTransformer, String newId) {
-        return twoWindingsTransformer.getSubstation().orElseThrow().newTwoWindingsTransformer()
+        return twoWindingsTransformer.getSubstation().orElseThrow(FaraoException::new).newTwoWindingsTransformer()
             .setEnsureIdUnicity(true)
             .setId(newId)
             .setRatedU1(twoWindingsTransformer.getRatedU1())

@@ -3,9 +3,7 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 import com.farao_community.farao.cse.network_processing.TestUtils;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.SwitchPairId;
-import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.export.Exporters;
-import com.powsybl.iidm.import_.ImportConfig;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
@@ -25,16 +23,16 @@ class BusBarChangeProcessorTest {
     private Set<BusBarChangeSwitches> busBarChangeSwitchesSet;
 
     private void setUp(String networkFile, String cracFile) {
-        network = Importers.loadNetwork(networkFile, getClass().getResourceAsStream("/BusBarChange/" + networkFile), LocalComputationManager.getDefault(), new ImportConfig(), null);
-        InputStream is = getClass().getResourceAsStream("/BusBarChange/" + cracFile);
-        busBarChangeSwitchesSet = new BusBarChangeProcessor().process(network, is);
+        network = Importers.loadNetwork(networkFile, getClass().getResourceAsStream(networkFile));
+        InputStream is = getClass().getResourceAsStream(cracFile);
+        busBarChangeSwitchesSet = BusBarChangeProcessor.process(network, is);
     }
 
     @Test
     void testSimpleCase() {
         // All branches are initially connected to initial node of the RA
         setUp("BaseNetwork.uct", "BusBarChange.xml");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork.uct");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork.uct", getClass());
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("Bus bar ok test", busBarChangeSwitches.getRemedialActionId());
@@ -51,7 +49,7 @@ class BusBarChangeProcessorTest {
     void testInvertedCase() {
         // All branches are initially connected to final node of the RA
         setUp("BaseNetwork.uct", "BusBarChange_inverted.xml");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork.uct");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork.uct", getClass());
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("Bus bar ok test", busBarChangeSwitches.getRemedialActionId());
@@ -68,7 +66,7 @@ class BusBarChangeProcessorTest {
     void testMixedCase() {
         // Some branches are initially connected to initial node, others to final node of the RA
         setUp("MixedNetwork.uct", "BusBarChange.xml");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedMixedNetwork.uct");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedMixedNetwork.uct", getClass());
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("Bus bar ok test", busBarChangeSwitches.getRemedialActionId());
@@ -85,7 +83,7 @@ class BusBarChangeProcessorTest {
     void testMissingInitialAndFinalNodes() {
         // One of the 2 RAs' initial and final nodes do not exist in the network. The RA should be skipped, the other processed normally
         setUp("BaseNetwork.uct", "BusBarChange_missingInitialFinalNodes.xml");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork.uct");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork.uct", getClass());
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("RA_OK", busBarChangeSwitches.getRemedialActionId());
@@ -103,7 +101,7 @@ class BusBarChangeProcessorTest {
         // Create a switch on a dangling line
         setUp("BaseNetwork_tieline.uct", "BusBarChange_tieline.xml");
         Exporters.export("UCTE", network, new Properties(), "D:\\Users\\mitripet\\Desktop", "network");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork_tieline.uct");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork_tieline.uct", getClass());
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("RA_OK", busBarChangeSwitches.getRemedialActionId());
@@ -118,7 +116,7 @@ class BusBarChangeProcessorTest {
     void testWithPst() {
         // Create a switch on a PST
         setUp("BaseNetwork.uct", "BusBarChange_pst.xml");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork_pst.uct");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork_pst.uct", getClass());
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
         assertEquals("RA_OK", busBarChangeSwitches.getRemedialActionId());
@@ -132,7 +130,7 @@ class BusBarChangeProcessorTest {
     void testMissingBranch() {
         // The RA has a branch missing from the network. The RA should be skipped and the network should not be modified.
         setUp("BaseNetwork.uct", "BusBarChange_missingBranch.xml");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/BaseNetwork.uct");
+        TestUtils.assertNetworksAreEqual(network, "BaseNetwork.uct", getClass());
         assertEquals(0, busBarChangeSwitchesSet.size());
     }
 
@@ -140,7 +138,7 @@ class BusBarChangeProcessorTest {
     void testWrongBranchNotConnected() {
         // The RA has a branch which is not connected to the initial nor to the final node
         setUp("BaseNetwork.uct", "BusBarChange_wrongBranch2.xml");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/BaseNetwork.uct");
+        TestUtils.assertNetworksAreEqual(network, "BaseNetwork.uct", getClass());
         assertEquals(0, busBarChangeSwitchesSet.size());
     }
 
@@ -149,7 +147,7 @@ class BusBarChangeProcessorTest {
         // In this case, the 2 RAs have same initial & final node (but inverted), and some branches in common.
         // Processor should not recreate switches multiple times for common branches.
         setUp("BaseNetwork.uct", "BusBarChange_redundance.xml");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork_redundance.uct");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork_redundance.uct", getClass());
         assertEquals(2, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_1")).findAny().orElseThrow();
         Set<SwitchPairId> switchPairs = Set.of(
@@ -170,7 +168,7 @@ class BusBarChangeProcessorTest {
     @Test
     void test3NodeCase() {
         setUp("BaseNetwork.uct", "BusBarChange_3nodes.xml");
-        TestUtils.assertNetworksAreEqual(network, "/BusBarChange/ModifiedNetwork_3nodes.uct");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork_3nodes.uct", getClass());
         assertEquals(2, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_1")).findAny().orElseThrow();
         Set<SwitchPairId> switchPairs = Set.of(
