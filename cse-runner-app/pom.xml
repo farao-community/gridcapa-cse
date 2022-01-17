@@ -51,7 +51,6 @@
         <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-creation-util</artifactId>
-            <version>${farao.core.version}</version>
         </dependency>
         <dependency>
             <groupId>com.farao-community.farao</groupId>
@@ -123,7 +122,6 @@
         <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-creator-cse</artifactId>
-            <version>${farao.core.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
