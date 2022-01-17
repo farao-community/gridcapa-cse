@@ -7,7 +7,7 @@
     <parent>
         <artifactId>farao-parent-ws</artifactId>
         <groupId>com.farao-community.farao</groupId>
-        <version>1.1.0</version>
+        <version>1.3.0</version>
     </parent>
 
     <artifactId>gridcapa-cse</artifactId>
@@ -31,7 +31,7 @@
     </modules>
 
     <properties>
-        <!-- Dependencies versions -->
+        <!-- TECHNICAL DEPENDENCIES -->
         <apache.poi.version>5.1.0</apache.poi.version>
         <commons.lang.version>3.11</commons.lang.version>
         <commons.io.version>2.11.0</commons.io.version>
@@ -41,13 +41,12 @@
         <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
         <jaxb-runtime.version>2.4.0-b180830.0438</jaxb-runtime.version>
         <jsonapi.converter.version>0.10</jsonapi.converter.version>
-        <spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 
-        <farao.bom.version>1.1.0</farao.bom.version>
+        <!-- BUSINESS DEPENDENCIES -->
+        <farao.dependencies.version>1.0.0</farao.dependencies.version>
         <farao.dichotomy.version>4.0.0</farao.dichotomy.version>
         <gridcapa.rao.runner.version>0.1.1</gridcapa.rao.runner.version>
-        <gridcapa.task-manager.version>0.1.0</gridcapa.task-manager.version>
-        <powsybl.open-loadflow.version>0.13.0</powsybl.open-loadflow.version>
+        <gridcapa.task-manager.version>0.3.0</gridcapa.task-manager.version>
     </properties>
 
     <build>
@@ -65,11 +64,6 @@
     <dependencyManagement>
         <dependencies>
             <!-- COMPILE DEPENDENCIES -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>${jackson.datatype.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.farao-community.farao</groupId>
                 <artifactId>farao-dichotomy-api</artifactId>
@@ -89,6 +83,11 @@
                 <groupId>com.farao-community.farao</groupId>
                 <artifactId>gridcapa-task-manager-api</artifactId>
                 <version>${gridcapa.task-manager.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.datatype.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.jasminb</groupId>
@@ -126,12 +125,6 @@
 
             <!-- TEST DEPENDENCIES -->
             <dependency>
-                <groupId>com.powsybl</groupId>
-                <artifactId>powsybl-open-loadflow</artifactId>
-                <version>${powsybl.open-loadflow.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.core.version}</version>
@@ -140,16 +133,9 @@
 
             <!-- IMPORTED DEPENDENCIES -->
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>com.farao-community.farao</groupId>
-                <artifactId>farao-bom</artifactId>
-                <version>${farao.bom.version}</version>
+                <artifactId>farao-dependencies</artifactId>
+                <version>${farao.dependencies.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
