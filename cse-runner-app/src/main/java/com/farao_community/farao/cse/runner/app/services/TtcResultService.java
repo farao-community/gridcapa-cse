@@ -42,16 +42,15 @@ public class TtcResultService {
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveTtcResult(CseRequest cseRequest, CseData cseData, DichotomyResult<RaoResponse> dichotomyResult) throws IOException {
+    public String saveTtcResult(CseRequest cseRequest, CseData cseData, DichotomyResult<RaoResponse> dichotomyResult, String finalCgmUrl) throws IOException {
         String networkWithPraUrl = dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl();
-
         TtcResult.TtcFiles ttcFiles = new TtcResult.TtcFiles(
             FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
-            FileUtil.getFilenameFromUrl(cseData.getJsonCracUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getMergedCracUrl()),
             FileUtil.getFilenameFromUrl(cseRequest.getMergedGlskUrl()),
             FileUtil.getFilenameFromUrl(cseRequest.getNtcReductionsUrl()),
             "ntcReductionCreationDatetime",
-            networkWithPraUrl
+            FileUtil.getFilenameFromUrl(finalCgmUrl)
         );
 
         Network networkAfterDichotomy = fileImporter.importNetwork(networkWithPraUrl);

@@ -37,4 +37,18 @@ class FileExporterTest {
         String expectedFilePath = "outputs/20210914_XBID2_TTCRes_CSE1.xml";
         assertEquals(expectedFilePath, actualFilePath);
     }
+
+    @Test
+    void getFinalNetworkFilePathForD2ccProcesTest() {
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC);
+        String expectedFilePath = "outputs/20210913_1430_2D1_CO_Final_CSE1.uct";
+        assertEquals(expectedFilePath, actualFilePath);
+    }
+
+    @Test
+    void getFinalNetworkFilePathForIdccProcesTest() {
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T23:30Z"), ProcessType.IDCC);
+        String expectedFilePath = "outputs/20210914_0130_122_CSE1.uct";
+        assertEquals(expectedFilePath, actualFilePath);
+    }
 }

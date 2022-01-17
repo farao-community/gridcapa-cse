@@ -55,9 +55,12 @@ public class CseRunner {
 
         cseData.setJsonCracUrl(convertCracInJson(cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network));
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
-        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult);
-
-        return new CseResponse(cseRequest.getId(), ttcResultUrl);
+        String finalCgmUrl = fileExporter.saveFinalNetworkInUcteFormat(
+                fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl()),
+                cseRequest.getTargetProcessDateTime(),
+                cseRequest.getProcessType());
+        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult, finalCgmUrl);
+        return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
     private String convertCracInJson(String originalCracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
