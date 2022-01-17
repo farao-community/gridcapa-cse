@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package com.farao_community.farao.cse.network_processing;
 
 import com.powsybl.commons.datasource.MemDataSource;
@@ -16,6 +22,9 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * @author Peter Mitri {@literal <peter.mitri@rte-france.com>}
+ */
 public final class TestUtils {
 
     private TestUtils() {
