@@ -81,7 +81,6 @@ public final class BusBarChangeProcessor {
      * - switches, to be able to move the line from the initial to the final node (info stored in switchesToCreatePerRa)
      */
     private static void computeBusesAndSwitchesToCreate(TRemedialAction tRemedialAction, UcteNetworkAnalyzer ucteNetworkAnalyzer, SortedSet<BusToCreate> busesToCreate, Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa) {
-        String raId = tRemedialAction.getName().getV();
         Optional<BusToCreate> raBusToCreate = Optional.empty();
         Set<SwitchPairToCreate> raSwitchesToCreate = new HashSet<>();
 
@@ -114,7 +113,7 @@ public final class BusBarChangeProcessor {
 
         // If everything is OK with the RA, store what should be created
         raBusToCreate.ifPresent(busesToCreate::add);
-        switchesToCreatePerRa.put(raId, raSwitchesToCreate);
+        switchesToCreatePerRa.put(tRemedialAction.getName().getV(), raSwitchesToCreate);
     }
 
     /**
@@ -142,15 +141,24 @@ public final class BusBarChangeProcessor {
         // Loop through the RAs and add switch pairs IDs to the set
         switchesToCreatePerRa.forEach((raId, switchPairsToCreateForRa) -> {
             // Loop through the branches of RA and fetch switch pair IDs
-            Set<SwitchPairId> switchPairs = switchPairsToCreateForRa.stream().map(switchPairToCreate -> {
-                String switchPairId = switchPairToCreate.uniqueId();
-                // OPEN switch between branch and initial node, CLOSE switch between branch and final node
-                return new SwitchPairId(createdSwitches.get(switchPairId).get(switchPairToCreate.initialNodeId), createdSwitches.get(switchPairId).get(switchPairToCreate.finalNodeId));
-            }).collect(Collectors.toSet());
-
+            Set<SwitchPairId> switchPairs = switchPairsToCreateForRa.stream()
+                .map(switchPairToCreate -> getCreatedSwitchPairId(switchPairToCreate, createdSwitches))
+                .collect(Collectors.toSet());
             busBarChangeSwitches.add(new BusBarChangeSwitches(raId, switchPairs));
         });
         return busBarChangeSwitches;
+    }
+
+    /**
+     * Fetches the IDs of the created switches to open & close, for a given SwitchPairToCreate
+     */
+    private static SwitchPairId getCreatedSwitchPairId(SwitchPairToCreate switchPairToCreate, Map<String, Map<String, String>> createdSwitches) {
+        String switchPairToCreateId = switchPairToCreate.uniqueId();
+        // OPEN switch between branch and initial node, CLOSE switch between branch and final node
+        return new SwitchPairId(
+            createdSwitches.get(switchPairToCreateId).get(switchPairToCreate.initialNodeId),
+            createdSwitches.get(switchPairToCreateId).get(switchPairToCreate.finalNodeId)
+        );
     }
 
     /**

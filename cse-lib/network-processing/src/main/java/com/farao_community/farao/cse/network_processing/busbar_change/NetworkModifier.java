@@ -7,12 +7,14 @@
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.farao_community.farao.commons.FaraoException;
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.ucte.converter.util.UcteConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -40,15 +42,19 @@ public class NetworkModifier {
      * Use a given reference bus to copy generators & loads
      */
     public Bus createBus(String newBusId, String voltageLevelId) {
-        VoltageLevel voltageLevel = network.getVoltageLevel(voltageLevelId);
-        Bus newBus = voltageLevel.getBusBreakerView().newBus()
-            .setId(newBusId)
-            .setFictitious(false)
-            .setEnsureIdUnicity(true)
-            .add();
-        findAndSetGeographicalName(newBus, voltageLevel);
-        LOGGER.debug("New bus '{}' has been created", newBus.getId());
-        return newBus;
+        try {
+            VoltageLevel voltageLevel = network.getVoltageLevel(voltageLevelId);
+            Bus newBus = voltageLevel.getBusBreakerView().newBus()
+                .setId(newBusId)
+                .setFictitious(false)
+                .setEnsureIdUnicity(true)
+                .add();
+            findAndSetGeographicalName(newBus, voltageLevel);
+            LOGGER.debug("New bus '{}' has been created", newBus.getId());
+            return newBus;
+        } catch (PowsyblException e) {
+            throw new FaraoException(String.format("Could not create bus %s: %s", newBusId, e.getMessage()));
+        }
     }
 
     /**
@@ -56,20 +62,24 @@ public class NetworkModifier {
      * Set its current limit to a given value & its open/close status to a given status
      */
     public Switch createSwitch(VoltageLevel voltageLevel, String bus1Id, String bus2Id, Double currentLimit, boolean open) {
-        String switchId = String.format("%s %s 1", bus2Id, bus1Id);
-        Switch newSwitch = voltageLevel.getBusBreakerView().newSwitch()
-            .setId(switchId)
-            .setBus1(bus1Id)
-            .setBus2(bus2Id)
-            .setOpen(open)
-            .setFictitious(false)
-            .setEnsureIdUnicity(true)
-            .add();
-        if (currentLimit != null) {
-            newSwitch.setProperty(UcteConstants.CURRENT_LIMIT_PROPERTY_KEY, String.valueOf((int) currentLimit.doubleValue()));
+        try {
+            String switchId = String.format("%s %s 1", bus2Id, bus1Id);
+            Switch newSwitch = voltageLevel.getBusBreakerView().newSwitch()
+                .setId(switchId)
+                .setBus1(bus1Id)
+                .setBus2(bus2Id)
+                .setOpen(open)
+                .setFictitious(false)
+                .setEnsureIdUnicity(true)
+                .add();
+            if (currentLimit != null) {
+                newSwitch.setProperty(UcteConstants.CURRENT_LIMIT_PROPERTY_KEY, String.valueOf((int) currentLimit.doubleValue()));
+            }
+            LOGGER.debug("New switch '{}' has been created", newSwitch.getId());
+            return newSwitch;
+        } catch (PowsyblException e) {
+            throw new FaraoException(String.format("Could not create switch between %s and %s: %s", bus1Id, bus2Id, e.getMessage()));
         }
-        LOGGER.debug("New switch '{}' has been created", newSwitch.getId());
-        return newSwitch;
     }
 
     /**
@@ -77,18 +87,22 @@ public class NetworkModifier {
      * (The method actually copies the branch to a new one then deletes it)
      *
      * @param branch the branch to move
-     * @param side the side of the branch to move
-     * @param bus  the new bus to connect to the side
+     * @param side   the side of the branch to move
+     * @param bus    the new bus to connect to the side
      */
     public void moveBranch(Branch<?> branch, Branch.Side side, Bus bus) {
-        if (branch instanceof TwoWindingsTransformer) {
-            moveTwoWindingsTransformer((TwoWindingsTransformer) branch, side, bus);
-        } else if (branch instanceof TieLine) {
-            moveTieLine((TieLine) branch, side, bus);
-        } else if (branch instanceof Line) {
-            moveLine((Line) branch, side, bus);
-        } else {
-            throw new FaraoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
+        try {
+            if (branch instanceof TwoWindingsTransformer) {
+                moveTwoWindingsTransformer((TwoWindingsTransformer) branch, side, bus);
+            } else if (branch instanceof TieLine) {
+                moveTieLine((TieLine) branch, side, bus);
+            } else if (branch instanceof Line) {
+                moveLine((Line) branch, side, bus);
+            } else {
+                throw new FaraoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
+            }
+        } catch (PowsyblException e) {
+            throw new FaraoException(String.format("Could not move line %s: %s", branch.getId(), e.getMessage()));
         }
     }
 
@@ -157,7 +171,10 @@ public class NetworkModifier {
             .setTapPosition(pst.getTapPosition())
             .setRegulationValue(pst.getRegulationValue())
             .setRegulationMode(pst.getRegulationMode());
-        pst.getAllSteps().values().forEach(step ->
+        // NB: it is very important to sort the map when copying steps so as to keep the same positions
+        pst.getAllSteps().entrySet()
+            .stream().sorted(Map.Entry.comparingByKey())
+            .map(Map.Entry::getValue).forEach(step ->
             ptca.beginStep()
                 .setRho(step.getRho())
                 .setAlpha(step.getAlpha())
@@ -310,7 +327,11 @@ public class NetworkModifier {
      * Call this function when you want to remove these objects
      */
     public void commitAllChanges() {
-        connectablesToRemove.forEach(Connectable::remove);
-        connectablesToRemove = new HashSet<>();
+        try {
+            connectablesToRemove.forEach(Connectable::remove);
+            connectablesToRemove = new HashSet<>();
+        } catch (PowsyblException e) {
+            throw new FaraoException(String.format("Could not apply all changes to network: %s", e.getMessage()));
+        }
     }
 }
