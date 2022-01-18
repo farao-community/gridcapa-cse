@@ -7,7 +7,7 @@ spring:
 
 minio:
   bucket: cse-data
-  base-path: default-base-path/
+  base-path: default-base-path
   access:
     name: minioadmin
     secret: minioadmin

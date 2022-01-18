@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -30,6 +31,7 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RaoRunnerValidator.class);
 
     private final String requestId;
+    private final OffsetDateTime processTargetDateTime;
     private final String cracUrl;
     private final String raoParametersUrl;
     private final RaoRunnerClient raoRunnerClient;
@@ -37,12 +39,14 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     private final FileImporter fileImporter;
 
     public RaoRunnerValidator(String requestId,
+                              OffsetDateTime processTargetDateTime,
                               String cracUrl,
                               String raoParametersUrl,
                               RaoRunnerClient raoRunnerClient,
                               FileExporter fileExporter,
                               FileImporter fileImporter) {
         this.requestId = requestId;
+        this.processTargetDateTime = processTargetDateTime;
         this.cracUrl = cracUrl;
         this.raoParametersUrl = raoParametersUrl;
         this.raoRunnerClient = raoRunnerClient;
@@ -52,7 +56,7 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
 
     @Override
     public DichotomyStepResult<RaoResponse> validateNetwork(Network network) throws ValidationException {
-        FileResource networkFile = fileExporter.saveNetwork(network, networkScaledFilePath(network));
+        FileResource networkFile = fileExporter.saveNetwork(processTargetDateTime, network, networkScaledFilePath(network));
         RaoRequest raoRequest = buildRaoRequest(networkFile);
         try {
             LOGGER.info("RAO request sent: {}", raoRequest);
@@ -68,12 +72,12 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
 
     private RaoRequest buildRaoRequest(FileResource networkFile) {
         String raoRequestId = String.format("%s-%s", requestId, networkFile.getFilename());
-        return new RaoRequest(raoRequestId, networkFile.getUrl(), cracUrl, raoParametersUrl);
+        return new RaoRequest(raoRequestId, networkFile.getUrl(), cracUrl, raoParametersUrl,
+            fileExporter.getMinioBaseProcessTargetDatePath(processTargetDateTime) + "artifacts/rao-runner/" + raoRequestId);
     }
 
     private String networkScaledFilePath(Network network) {
         String variantName = network.getVariantManager().getWorkingVariantId();
-        String networkFilename = String.format("%s-%s.xiidm", network.getNameOrId(), variantName);
-        return String.format("%s/%s", requestId, networkFilename);
+        return String.format("%s-%s.xiidm", network.getNameOrId(), variantName);
     }
 }

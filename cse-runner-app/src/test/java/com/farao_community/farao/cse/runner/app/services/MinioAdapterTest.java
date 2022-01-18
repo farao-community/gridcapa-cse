@@ -4,9 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.cse.runner.app;
+package com.farao_community.farao.cse.runner.app.services;
 
-import com.farao_community.farao.cse.runner.app.services.MinioAdapter;
 import io.minio.MinioClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +37,7 @@ class MinioAdapterTest {
 
     @Test
     void checkThatUploadFileActuallyPutObject() throws Exception {
+        Mockito.when(minioClient.getPresignedObjectUrl(Mockito.any())).thenReturn("http://url");
         minioAdapter.uploadFile("file/path", new ByteArrayInputStream("File content".getBytes()));
         Mockito.verify(minioClient, Mockito.times(1)).putObject(Mockito.any());
     }

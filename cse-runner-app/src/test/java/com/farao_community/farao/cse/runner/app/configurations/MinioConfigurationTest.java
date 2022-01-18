@@ -28,7 +28,7 @@ class MinioConfigurationTest {
         assertNotNull(minioConfiguration);
         MinioClient minioClient = minioConfiguration.generateMinioClient();
         assertNotNull(minioClient);
-        assertEquals("default-base-path/", minioConfiguration.getBasePath());
+        assertEquals("default-base-path", minioConfiguration.getBasePath());
         assertEquals("cse-data", minioConfiguration.getBucket());
     }
 }

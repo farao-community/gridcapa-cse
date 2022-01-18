@@ -49,7 +49,7 @@ public class CseRunner {
 
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network);
-        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network).getUrl());
+        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(cseRequest.getTargetProcessDateTime(), network).getUrl());
         double initialItalianImportFromNetwork = ItalianImport.compute(network);
         checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
@@ -62,7 +62,7 @@ public class CseRunner {
 
     private String convertCracInJson(String originalCracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
         Crac crac = fileImporter.importCrac(originalCracUrl, targetProcessDateTime, network);
-        return fileExporter.saveCracInJsonFormat(crac);
+        return fileExporter.saveCracInJsonFormat(targetProcessDateTime, crac);
     }
 
     private void checkNetworkAndReferenceExchangesDifference(CseData cseData, double initialItalianImportFromNetwork) {
