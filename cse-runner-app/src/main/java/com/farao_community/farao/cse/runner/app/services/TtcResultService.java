@@ -42,9 +42,10 @@ public class TtcResultService {
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveTtcResult(CseRequest cseRequest, CseData cseData, DichotomyResult<RaoResponse> dichotomyResult, String finalCgmUrl) throws IOException {
+    public String saveTtcResult(CseRequest cseRequest, CseData cseData, DichotomyResult<RaoResponse> dichotomyResult, String baseCaseFileUrl, String finalCgmUrl) throws IOException {
         String networkWithPraUrl = dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl();
         TtcResult.TtcFiles ttcFiles = new TtcResult.TtcFiles(
+            FileUtil.getFilenameFromUrl(baseCaseFileUrl),
             FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
             FileUtil.getFilenameFromUrl(cseRequest.getMergedCracUrl()),
             FileUtil.getFilenameFromUrl(cseRequest.getMergedGlskUrl()),

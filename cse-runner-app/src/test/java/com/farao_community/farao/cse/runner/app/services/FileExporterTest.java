@@ -47,8 +47,22 @@ class FileExporterTest {
 
     @Test
     void getFinalNetworkFilePathForIdccProcesTest() {
-        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T23:30Z"), ProcessType.IDCC);
-        String expectedFilePath = "outputs/20210914_0130_122_CSE1.uct";
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC);
+        String expectedFilePath = "outputs/20210901_1930_173_CSE1.uct";
+        assertEquals(expectedFilePath, actualFilePath);
+    }
+
+    @Test
+    void getBaseCaseFilePathForIdccProcesTest() {
+        String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T15:30Z"), ProcessType.IDCC);
+        String expectedFilePath = "outputs/20210101_1630_155_Initial_CSE1.uct";
+        assertEquals(expectedFilePath, actualFilePath);
+    }
+
+    @Test
+    void getBaseCaseFilePathForD2ccProcesTest() {
+        String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC);
+        String expectedFilePath = "outputs/20210101_1330_2D5_CO_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 }

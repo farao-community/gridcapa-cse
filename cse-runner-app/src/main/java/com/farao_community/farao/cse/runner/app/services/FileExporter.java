@@ -140,9 +140,9 @@ public class FileExporter {
         return "outputs/" + filename;
     }
 
-    String saveFinalNetworkInUcteFormat(Network network, OffsetDateTime processTargetDate, ProcessType processType) {
-        exportAndUploadFile(network, getFinalNetworkFilePath(processTargetDate, processType), "UCTE", "uct");
-        return minioAdapter.generatePreSignedUrl(getFinalNetworkFilePath(processTargetDate, processType));
+    String saveNetworkInUcteFormat(Network network, String filePath) {
+        exportAndUploadFile(network, filePath, "UCTE", "uct");
+        return minioAdapter.generatePreSignedUrl(filePath);
     }
 
     private void exportAndUploadFile(Network network, String filePath, String format, String ext) {
@@ -163,7 +163,20 @@ public class FileExporter {
         if (processType == ProcessType.D2CC) {
             filename = dateAndTime + "_2D" + dayOfWeek + "_CO_Final_CSE1.uct";
         } else {
-            filename = dateAndTime + "_1" + dayOfWeek + dayOfWeek + "_CSE1.uct";
+            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_CSE1.uct";
+        }
+        return "outputs/" + filename;
+    }
+
+    String getBaseCaseFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
+        String filename;
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(zoneId));
+        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
+        String dateAndTime = targetDateInEuropeZone.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+        if (processType == ProcessType.D2CC) {
+            filename = dateAndTime + "_2D" + dayOfWeek + "_CO_CSE1.uct";
+        } else {
+            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_Initial_CSE1.uct";
         }
         return "outputs/" + filename;
     }

@@ -27,6 +27,7 @@ public final class TtcResult {
     private static final String FLOW_UNIT = "A";
 
     public static class TtcFiles {
+        private final String baseCaseFileName;
         private final String initialCgmFileName;
         private final String cracJsonFileName;
         private final String mergedGlskFileName;
@@ -34,7 +35,8 @@ public final class TtcResult {
         private final String ntcReductionCreationDatetime;
         private final String finalCgmWithPraFileName;
 
-        public TtcFiles(String initialCgmFileName, String cracJsonFileName, String mergedGlskFileName, String ntcReductionFilename, String ntcReductionCreationDatetime, String finalCgmWithPraFileName) {
+        public TtcFiles(String baseCaseFileName, String initialCgmFileName, String cracJsonFileName, String mergedGlskFileName, String ntcReductionFilename, String ntcReductionCreationDatetime, String finalCgmWithPraFileName) {
+            this.baseCaseFileName = baseCaseFileName;
             this.initialCgmFileName = initialCgmFileName;
             this.cracJsonFileName = cracJsonFileName;
             this.mergedGlskFileName = mergedGlskFileName;
@@ -132,7 +134,7 @@ public final class TtcResult {
         ttcResults.setCRACfile(cracFile);
 
         BASECASEfile baseCaseFile = new BASECASEfile();
-        baseCaseFile.setV(ttcFiles.initialCgmFileName);
+        baseCaseFile.setV(ttcFiles.baseCaseFileName);
         ttcResults.setBASECASEfile(baseCaseFile);
 
         Inputfiles inputFiles = new Inputfiles();

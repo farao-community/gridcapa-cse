@@ -45,6 +45,7 @@ class TtcResultTest {
         String raoResultFilename = "raoResultMonitoredBranches.json";
         RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream(raoResultFilename), crac);
         ttcFiles = new TtcResult.TtcFiles(
+            "20210101_1930_185_Initial_CSE1.uct",
             "20210101_1930_185_CSE1.uct",
             "mockCrac.json",
             "20210101_1930_185_GSK_CO_CSE1.xml",

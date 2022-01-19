@@ -55,11 +55,13 @@ public class CseRunner {
 
         cseData.setJsonCracUrl(convertCracInJson(cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network));
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
-        String finalCgmUrl = fileExporter.saveFinalNetworkInUcteFormat(
+        String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+        String baseCaseFileUrl = fileExporter.saveNetworkInUcteFormat(network, baseCaseFilePath);
+        String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+        String finalCgmUrl = fileExporter.saveNetworkInUcteFormat(
                 fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl()),
-                cseRequest.getTargetProcessDateTime(),
-                cseRequest.getProcessType());
-        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult, finalCgmUrl);
+                finalCgmPath);
+        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult, baseCaseFileUrl,  finalCgmUrl);
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
