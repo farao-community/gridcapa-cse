@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
+import com.farao_community.farao.cse.runner.api.resource.FileResource;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_io_api.CracExporters;
@@ -49,11 +50,13 @@ public class FileExporter {
     @Value("${cse-cc-runner.zone-id}")
     private String zoneId;
 
+    private String raoParametersUrl;
+
     public FileExporter(MinioAdapter minioAdapter) {
         this.minioAdapter = minioAdapter;
     }
 
-    String saveCracInJsonFormat(Crac crac) {
+    public String saveCracInJsonFormat(Crac crac) {
         MemDataSource memDataSource = new MemDataSource();
         try (OutputStream os = memDataSource.newOutputStream(JSON_CRAC_FILE_NAME, false)) {
             CracExporters.exportCrac(crac, "Json", os);
@@ -69,26 +72,36 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(cracPath);
     }
 
-    String saveNetwork(Network network) {
-        String networkPath = String.format(ARTIFACTS_S, NETWORK_FILE_NAME);
+    public FileResource saveNetwork(Network network) {
+        return saveNetwork(network, String.format(ARTIFACTS_S, NETWORK_FILE_NAME));
+    }
+
+    public FileResource saveNetwork(Network network, String networkFilePath) {
         MemDataSource memDataSource = new MemDataSource();
         Exporters.export("XIIDM", network, new Properties(), memDataSource);
         try (InputStream is = memDataSource.newInputStream("", "xiidm")) {
-            minioAdapter.uploadFile(networkPath, is);
+            minioAdapter.uploadFile(networkFilePath, is);
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to save pre-processed network", e);
         }
-        return minioAdapter.generatePreSignedUrl(networkPath);
+        return minioAdapter.generateFileResource(networkFilePath);
     }
 
-    String saveRaoParameters() {
+    public void saveRaoParameters() {
         RaoParameters raoParameters = RaoParameters.load();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
         String raoParametersDestinationPath = RAO_PARAMETERS_FILE_NAME;
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         minioAdapter.uploadFile(raoParametersDestinationPath, bais);
-        return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
+        raoParametersUrl = minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
+    }
+
+    public String getRaoParametersUrl() {
+        if (raoParametersUrl == null) {
+            saveRaoParameters();
+        }
+        return raoParametersUrl;
     }
 
     String saveTtcResult(Timestamp timestamp, OffsetDateTime processTargetDate, ProcessType processType) throws IOException {
