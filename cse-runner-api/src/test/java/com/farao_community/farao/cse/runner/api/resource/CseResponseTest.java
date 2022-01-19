@@ -18,7 +18,7 @@ class CseResponseTest {
 
     @Test
     void checkCseResponse() {
-        CseResponse cseResponse = new CseResponse("id", "ttcFileUrl");
+        CseResponse cseResponse = new CseResponse("id", "ttcFileUrl", "cgmUrl");
         assertNotNull(cseResponse);
         assertEquals("id", cseResponse.getId());
         assertEquals("ttcFileUrl", cseResponse.getTtcFileUrl());

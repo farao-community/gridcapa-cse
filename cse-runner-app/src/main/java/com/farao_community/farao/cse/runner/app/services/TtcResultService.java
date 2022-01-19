@@ -11,6 +11,7 @@ import com.farao_community.farao.cse.data.ttc_res.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.data.ttc_res.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
+import com.farao_community.farao.cse.runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.app.util.ItalianImport;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
@@ -20,7 +21,6 @@ import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -42,16 +42,16 @@ public class TtcResultService {
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveTtcResult(CseRequest cseRequest, CseData cseData, DichotomyResult<RaoResponse> dichotomyResult) throws IOException {
+    public String saveTtcResult(CseRequest cseRequest, CseData cseData, DichotomyResult<RaoResponse> dichotomyResult, String baseCaseFileUrl, String finalCgmUrl) throws IOException {
         String networkWithPraUrl = dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl();
-
         TtcResult.TtcFiles ttcFiles = new TtcResult.TtcFiles(
-            cseRequest.getCgmUrl(),
-            cseData.getJsonCracUrl(),
-            cseRequest.getMergedGlskUrl(),
-            FilenameUtils.getName(cseRequest.getNtcReductionsUrl()),
+            FileUtil.getFilenameFromUrl(baseCaseFileUrl),
+            FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getMergedCracUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getMergedGlskUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getNtcReductionsUrl()),
             "ntcReductionCreationDatetime",
-            networkWithPraUrl
+            FileUtil.getFilenameFromUrl(finalCgmUrl)
         );
 
         Network networkAfterDichotomy = fileImporter.importNetwork(networkWithPraUrl);
