@@ -9,7 +9,6 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 import com.farao_community.farao.cse.network_processing.TestUtils;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.SwitchPairId;
-import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
@@ -18,7 +17,6 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
-import java.util.Properties;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -109,7 +107,6 @@ class BusBarChangeProcessorTest {
     void testWithTieLine() {
         // Create a switch on a dangling line
         setUp("BaseNetwork_tieline.uct", "BusBarChange_tieline.xml");
-        Exporters.export("UCTE", network, new Properties(), "D:\\Users\\mitripet\\Desktop", "network");
         TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork_tieline.uct", getClass());
         assertEquals(1, busBarChangeSwitchesSet.size());
         BusBarChangeSwitches busBarChangeSwitches = busBarChangeSwitchesSet.iterator().next();
