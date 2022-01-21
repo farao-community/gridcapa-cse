@@ -85,6 +85,7 @@ public final class NetworkHelper {
      * The switches are open or closed depending on the initial state of the branch
      *
      * @param switchPairToCreate: object containing ID of the branch, ID of node1, ID of node2
+     * @param  networkModifier: object that modifies a network
      * @return a map, mapping initial and final node IDs to the two created switches' IDs
      */
     public static Map<String, String> createSwitchPair(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier) {
