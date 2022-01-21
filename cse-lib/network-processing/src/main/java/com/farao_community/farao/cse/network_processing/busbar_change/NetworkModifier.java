@@ -39,7 +39,10 @@ public class NetworkModifier {
 
     /**
      * Create a bus with a given ID, on a given voltage level
-     * Use a given reference bus to copy generators & loads
+     * Use a given reference bus to copy generators and loads
+     * @param newBusId: the ID of the new bus
+     * @param voltageLevelId: the ID of the voltage level
+     * @return the bus created
      */
     public Bus createBus(String newBusId, String voltageLevelId) {
         try {
@@ -59,7 +62,13 @@ public class NetworkModifier {
 
     /**
      * Create a switch on a given voltage level between two given buses
-     * Set its current limit to a given value & its open/close status to a given status
+     * Set its current limit to a given value and its open/close status to a given status
+     * @param voltageLevel: the voltage level object
+     * @param bus1Id: the id of the first bus
+     * @param bus2Id:  the id of the second bus
+     * @param currentLimit: the value of the currentLimit
+     * @param open: a boolean that describes if the switch is open or close
+     * @return the switch object created
      */
     public Switch createSwitch(VoltageLevel voltageLevel, String bus1Id, String bus2Id, Double currentLimit, boolean open) {
         try {
