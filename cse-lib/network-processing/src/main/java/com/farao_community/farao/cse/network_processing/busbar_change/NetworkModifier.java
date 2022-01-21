@@ -64,8 +64,8 @@ public class NetworkModifier {
      * Create a switch on a given voltage level between two given buses
      * Set its current limit to a given value and its open/close status to a given status
      * @param voltageLevel: the voltage level object
-     * @param bus1Id: the id of the first bus
-     * @param bus2Id:  the id of the second bus
+     * @param bus1Id: the ID of the first bus
+     * @param bus2Id:  the ID of the second bus
      * @param currentLimit: the value of the currentLimit
      * @param open: a boolean that describes if the switch is open or close
      * @return the switch object created
