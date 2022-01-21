@@ -13,9 +13,9 @@ spring:
           binder: rabbit
           destination: task-status-updated
 
-dichotomy-server:
+rao-runner-server:
   amqp:
-    queue-name: dichotomy-request-queue
+    queue-name: rao-request-queue
 
 minio:
   bucket: gridcapa
