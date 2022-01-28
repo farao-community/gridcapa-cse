@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.dichotomy.DichotomyRunner;
 import com.farao_community.farao.data.crac_api.Crac;
@@ -49,20 +50,20 @@ public class CseRunner {
 
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network);
-        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network).getUrl());
+        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()).getUrl());
         double initialItalianImportFromNetwork = ItalianImport.compute(network);
         checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
-        cseData.setJsonCracUrl(convertCracInJson(cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network));
+        cseData.setJsonCracUrl(convertCracInJson(cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network, cseRequest.getProcessType()));
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
         String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult);
 
         return new CseResponse(cseRequest.getId(), ttcResultUrl);
     }
 
-    private String convertCracInJson(String originalCracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
+    private String convertCracInJson(String originalCracUrl, OffsetDateTime targetProcessDateTime, Network network, ProcessType processType) throws IOException {
         Crac crac = fileImporter.importCrac(originalCracUrl, targetProcessDateTime, network);
-        return fileExporter.saveCracInJsonFormat(crac);
+        return fileExporter.saveCracInJsonFormat(crac, targetProcessDateTime, processType);
     }
 
     private void checkNetworkAndReferenceExchangesDifference(CseData cseData, double initialItalianImportFromNetwork) {

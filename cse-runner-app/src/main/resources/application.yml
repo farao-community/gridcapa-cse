@@ -13,10 +13,6 @@ spring:
           binder: rabbit
           destination: task-status-updated
 
-dichotomy-server:
-  amqp:
-    queue-name: dichotomy-request-queue
-
 minio:
   bucket: gridcapa
   base-path: ""

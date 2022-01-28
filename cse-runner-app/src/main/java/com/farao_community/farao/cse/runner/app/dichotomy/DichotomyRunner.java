@@ -87,9 +87,11 @@ public class DichotomyRunner {
 
     private NetworkValidator<RaoResponse> getNetworkValidator(CseRequest request, CseData cseData) {
         return new RaoRunnerValidator(
+            request.getProcessType(),
             request.getId(),
+            request.getTargetProcessDateTime(),
             cseData.getJsonCracUrl(),
-            fileExporter.getRaoParametersUrl(),
+            fileExporter.getRaoParametersUrl(request.getProcessType()),
             raoRunnerClient,
             fileExporter,
             fileImporter);
