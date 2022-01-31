@@ -7,7 +7,6 @@
 package com.farao_community.farao.cse.runner.app.util;
 
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;

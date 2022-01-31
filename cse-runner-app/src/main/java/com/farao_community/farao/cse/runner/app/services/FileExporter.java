@@ -124,11 +124,11 @@ public class FileExporter {
         }
         byte[] bytes = bos.toByteArray();
         InputStream is = new ByteArrayInputStream(bytes);
-        minioAdapter.uploadFile(getFilePath(processTargetDate, processType), is);
-        return minioAdapter.generatePreSignedUrl(getFilePath(processTargetDate, processType));
+        minioAdapter.uploadFile(getTtcResultsFilePath(processTargetDate, processType), is);
+        return minioAdapter.generatePreSignedUrl(getTtcResultsFilePath(processTargetDate, processType));
     }
 
-    String getFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
+    String getTtcResultsFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
         String filename;
         ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(zoneId));
         if (processType == ProcessType.D2CC) {
@@ -166,7 +166,7 @@ public class FileExporter {
         } else {
             filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_CSE1.uct";
         }
-        return "outputs/" + filename;
+        return  MinioStorageHelper.makeOutputsMinioDestination(processTargetDate, processType) + filename;
     }
 
     String getBaseCaseFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
@@ -179,6 +179,6 @@ public class FileExporter {
         } else {
             filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_Initial_CSE1.uct";
         }
-        return "outputs/" + filename;
+        return  MinioStorageHelper.makeOutputsMinioDestination(processTargetDate, processType) + filename;
     }
 }
