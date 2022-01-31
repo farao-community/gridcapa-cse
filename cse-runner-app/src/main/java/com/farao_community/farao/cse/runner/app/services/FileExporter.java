@@ -10,6 +10,7 @@ package com.farao_community.farao.cse.runner.app.services;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.runner.api.resource.FileResource;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.cse.runner.app.util.MinioStorageHelper;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_io_api.CracExporters;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
@@ -42,7 +43,6 @@ public class FileExporter {
 
     private static final String NETWORK_FILE_NAME = "network_pre_processed.xiidm";
     private static final String JSON_CRAC_FILE_NAME = "crac.json";
-    public static final String ARTIFACTS_S = "artifacts/%s";
     private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
 
     private final MinioAdapter minioAdapter;
@@ -56,14 +56,14 @@ public class FileExporter {
         this.minioAdapter = minioAdapter;
     }
 
-    public String saveCracInJsonFormat(Crac crac) {
+    public String saveCracInJsonFormat(Crac crac, OffsetDateTime processTargetDateTime, ProcessType processType) {
         MemDataSource memDataSource = new MemDataSource();
         try (OutputStream os = memDataSource.newOutputStream(JSON_CRAC_FILE_NAME, false)) {
             CracExporters.exportCrac(crac, "Json", os);
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to save converted CRAC file.", e);
         }
-        String cracPath = String.format(ARTIFACTS_S, JSON_CRAC_FILE_NAME);
+        String cracPath = MinioStorageHelper.makeArtifactsMinioDestinationPath(processTargetDateTime, processType) + JSON_CRAC_FILE_NAME;
         try (InputStream is = memDataSource.newInputStream(JSON_CRAC_FILE_NAME)) {
             minioAdapter.uploadFile(cracPath, is);
         } catch (IOException e) {
@@ -72,8 +72,9 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(cracPath);
     }
 
-    public FileResource saveNetwork(Network network) {
-        return saveNetwork(network, String.format(ARTIFACTS_S, NETWORK_FILE_NAME));
+    public FileResource saveNetwork(Network network, OffsetDateTime processTargetDateTime, ProcessType processType) {
+        String networkPath = MinioStorageHelper.makeArtifactsMinioDestinationPath(processTargetDateTime, processType) + NETWORK_FILE_NAME;
+        return saveNetwork(network, networkPath);
     }
 
     public FileResource saveNetwork(Network network, String networkFilePath) {
@@ -81,19 +82,19 @@ public class FileExporter {
         return minioAdapter.generateFileResource(networkFilePath);
     }
 
-    public void saveRaoParameters() {
+    public void saveRaoParameters(ProcessType processType) {
         RaoParameters raoParameters = RaoParameters.load();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
-        String raoParametersDestinationPath = RAO_PARAMETERS_FILE_NAME;
+        String raoParametersDestinationPath = MinioStorageHelper.makeGlobalConfigurationsDestinationPath(processType) + RAO_PARAMETERS_FILE_NAME;
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         minioAdapter.uploadFile(raoParametersDestinationPath, bais);
         raoParametersUrl = minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
     }
 
-    public String getRaoParametersUrl() {
+    public String getRaoParametersUrl(ProcessType processType) {
         if (raoParametersUrl == null) {
-            saveRaoParameters();
+            saveRaoParameters(processType);
         }
         return raoParametersUrl;
     }
@@ -137,7 +138,7 @@ public class FileExporter {
             String date = targetDateInEuropeZone.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             filename = date + "_XBID2_TTCRes_CSE1.xml";
         }
-        return "outputs/" + filename;
+        return MinioStorageHelper.makeOutputsMinioDestination(processTargetDate, processType) + filename;
     }
 
     String saveNetworkInUcteFormat(Network network, String filePath) {

@@ -27,14 +27,14 @@ class FileExporterTest {
     @Test
     void getTTcFilePathForD2ccProcessTest() {
         String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC);
-        String expectedFilePath = "outputs/TTC_Calculation_20210913_1430_2D0_CO_CSE1.xml";
+        String expectedFilePath = "CSE/D2CC/2021/9/13/12:30Z/OUTPUTS/TTC_Calculation_20210913_1430_2D0_CO_CSE1.xml";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getTTcFilePathForIdccProcessTest() {
         String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T23:30Z"), ProcessType.IDCC);
-        String expectedFilePath = "outputs/20210914_XBID2_TTCRes_CSE1.xml";
+        String expectedFilePath = "CSE/D2CC/2021/9/13/23:30Z/OUTPUTS/20210914_XBID2_TTCRes_CSE1.xml";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
