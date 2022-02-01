@@ -15,6 +15,8 @@ import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.runner.app.util.FileUtil;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.data.glsk.api.io.GlskDocumentImporters;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
@@ -50,9 +52,10 @@ public class FileImporter {
     }
 
     public Crac importCrac(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
-        String cracFilename = getFilenameFromUrl(cracUrl);
+        CseCracImporter importer = new CseCracImporter();
         InputStream cracInputStream = urlValidationService.openUrlStream(cracUrl);
-        return CracCreators.importAndCreateCrac(cracFilename, cracInputStream, network, targetProcessDateTime).getCrac();
+        CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
+        return CracCreators.createCrac(cseCrac, network, targetProcessDateTime).getCrac();
     }
 
     public Crac importCracFromJson(String cracUrl) throws IOException {
