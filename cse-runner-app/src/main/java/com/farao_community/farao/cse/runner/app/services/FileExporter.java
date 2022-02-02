@@ -78,13 +78,7 @@ public class FileExporter {
     }
 
     public FileResource saveNetwork(Network network, String networkFilePath) {
-        MemDataSource memDataSource = new MemDataSource();
-        Exporters.export("XIIDM", network, new Properties(), memDataSource);
-        try (InputStream is = memDataSource.newInputStream("", "xiidm")) {
-            minioAdapter.uploadFile(networkFilePath, is);
-        } catch (IOException e) {
-            throw new CseInternalException("Error while trying to save pre-processed network", e);
-        }
+        exportAndUploadFile(network, networkFilePath, "XIIDM", "xiidm");
         return minioAdapter.generateFileResource(networkFilePath);
     }
 
@@ -147,4 +141,44 @@ public class FileExporter {
         return MinioStorageHelper.makeOutputsMinioDestination(processTargetDate, processType) + filename;
     }
 
+    String saveNetworkInUcteFormat(Network network, String filePath) {
+        exportAndUploadFile(network, filePath, "UCTE", "uct");
+        return minioAdapter.generatePreSignedUrl(filePath);
+    }
+
+    private void exportAndUploadFile(Network network, String filePath, String format, String ext) {
+        MemDataSource memDataSource = new MemDataSource();
+        Exporters.export(format, network, new Properties(), memDataSource);
+        try (InputStream is = memDataSource.newInputStream("", ext)) {
+            minioAdapter.uploadFile(filePath, is);
+        } catch (IOException e) {
+            throw new CseInternalException("Error while trying to save network", e);
+        }
+    }
+
+    String getFinalNetworkFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
+        String filename;
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(zoneId));
+        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
+        String dateAndTime = targetDateInEuropeZone.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+        if (processType == ProcessType.D2CC) {
+            filename = dateAndTime + "_2D" + dayOfWeek + "_CO_Final_CSE1.uct";
+        } else {
+            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_CSE1.uct";
+        }
+        return "outputs/" + filename;
+    }
+
+    String getBaseCaseFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
+        String filename;
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(zoneId));
+        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
+        String dateAndTime = targetDateInEuropeZone.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+        if (processType == ProcessType.D2CC) {
+            filename = dateAndTime + "_2D" + dayOfWeek + "_CO_CSE1.uct";
+        } else {
+            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_Initial_CSE1.uct";
+        }
+        return "outputs/" + filename;
+    }
 }
