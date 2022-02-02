@@ -20,11 +20,13 @@ public class CseResponse {
     @Id
     private final String id;
     private final String ttcFileUrl;
+    private final String finalCgmFileUrl;
 
     @JsonCreator
-    public CseResponse(@JsonProperty("id") String id, @JsonProperty("ttcFileUrl") String ttcFileUrl) {
+    public CseResponse(@JsonProperty("id") String id, @JsonProperty("ttcFileUrl") String ttcFileUrl, @JsonProperty("finalCgmFileUrl") String finalCgmFileUrl) {
         this.id = id;
         this.ttcFileUrl = ttcFileUrl;
+        this.finalCgmFileUrl = finalCgmFileUrl;
     }
 
     public String getId() {
@@ -33,6 +35,10 @@ public class CseResponse {
 
     public String getTtcFileUrl() {
         return ttcFileUrl;
+    }
+
+    public String getFinalCgmFileUrl() {
+        return finalCgmFileUrl;
     }
 
     @Override

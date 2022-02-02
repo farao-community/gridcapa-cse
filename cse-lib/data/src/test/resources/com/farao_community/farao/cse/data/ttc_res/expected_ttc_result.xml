@@ -64,7 +64,7 @@
     <CGMfile v="secure_CGM_with_PRA.uct"/>
     <GSKfile v="20210101_1930_185_GSK_CO_CSE1.xml"/>
     <CRACfile v="mockCrac.json"/>
-    <BASECASEfile v="20210101_1930_185_CSE1.uct"/>
+    <BASECASEfile v="20210101_1930_185_Initial_CSE1.uct"/>
     <SplittingFactors>
         <SplittingFactor>
             <Factor v="0.02"/>
