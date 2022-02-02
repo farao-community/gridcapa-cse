@@ -67,8 +67,7 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     }
 
     private RaoRequest buildRaoRequest(FileResource networkFile) {
-        String raoRequestId = String.format("%s-%s", requestId, networkFile.getFilename());
-        return new RaoRequest(raoRequestId, networkFile.getUrl(), cracUrl, raoParametersUrl);
+        return new RaoRequest(requestId, networkFile.getUrl(), cracUrl, raoParametersUrl);
     }
 
     private String networkScaledFilePath(Network network) {
