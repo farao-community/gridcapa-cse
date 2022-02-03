@@ -91,7 +91,7 @@ public class DichotomyRunner {
             request.getId(),
             request.getTargetProcessDateTime(),
             cseData.getJsonCracUrl(),
-            fileExporter.getRaoParametersUrl(request.getProcessType()),
+            fileExporter.getRaoParametersUrl(request.getTargetProcessDateTime(), request.getProcessType()),
             raoRunnerClient,
             fileExporter,
             fileImporter);

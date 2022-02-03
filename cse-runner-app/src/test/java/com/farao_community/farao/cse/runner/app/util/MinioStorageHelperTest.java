@@ -7,10 +7,10 @@
 package com.farao_community.farao.cse.runner.app.util;
 
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,16 +21,16 @@ class MinioStorageHelperTest {
 
     @Test
     void makeArtifactsMinioDestinationPathTest() {
-        assertEquals("CSE/D2CC/ARTIFACTS/2022/01/28/10:30Z/", MinioStorageHelper.makeArtifactsMinioDestinationPath(OffsetDateTime.parse("2022-01-28T10:30Z"), ProcessType.D2CC));
+        assertEquals("CSE/D2CC/2022/01/28/11_30/ARTIFACTS/", MinioStorageHelper.makeDestinationMinioPath(OffsetDateTime.parse("2022-01-28T10:30Z"), ProcessType.D2CC, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of("Europe/Paris")));
     }
 
     @Test
     void makeOutputsMinioDestinationPathTest() {
-        assertEquals("CSE/IDCC/OUTPUTS/2022/01/28/15:30Z/", MinioStorageHelper.makeOutputsMinioDestination(OffsetDateTime.parse("2022-01-28T15:30Z"), ProcessType.IDCC));
+        assertEquals("CSE/IDCC/2022/01/28/16_30/OUTPUTS/", MinioStorageHelper.makeDestinationMinioPath(OffsetDateTime.parse("2022-01-28T15:30Z"), ProcessType.IDCC, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of("Europe/Paris")));
     }
 
     @Test
     void makeAConfigurationsMinioDestinationPathTest() {
-        assertEquals("CSE/D2CC/CONFIGURATIONS/", MinioStorageHelper.makeGlobalConfigurationsDestinationPath(ProcessType.D2CC));
+        assertEquals("CSE/D2CC/2022/01/28/20_30/ARTIFACTS/", MinioStorageHelper.makeDestinationMinioPath(OffsetDateTime.parse("2022-01-28T19:30Z"), ProcessType.D2CC, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of("Europe/Paris")));
     }
 }

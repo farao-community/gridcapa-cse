@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -62,8 +63,10 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
 
     @Override
     public DichotomyStepResult<RaoResponse> validateNetwork(Network network) throws ValidationException {
-        FileResource networkFile = fileExporter.saveNetwork(network, networkScaledFilePath(network));
-        RaoRequest raoRequest = buildRaoRequest(networkFile);
+        String scaledNetworkDirPath = generateScaledNetworkDirPath(network);
+        String scaledNetworkName = network.getNameOrId() + ".xiidm";
+        FileResource networkFile = fileExporter.saveNetwork(network, scaledNetworkName);
+        RaoRequest raoRequest = buildRaoRequest(networkFile, scaledNetworkDirPath);
         try {
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
@@ -76,14 +79,13 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
         }
     }
 
-    private RaoRequest buildRaoRequest(FileResource networkFile) {
-        return new RaoRequest(requestId, networkFile.getUrl(), cracUrl, raoParametersUrl, MinioStorageHelper.makeArtifactsMinioDestinationPath(processTargetDateTime, processType));
+    private RaoRequest buildRaoRequest(FileResource networkFile, String scaledNetworkDirPath) {
+        return new RaoRequest(requestId, networkFile.getUrl(), cracUrl, raoParametersUrl, scaledNetworkDirPath);
     }
 
-    private String networkScaledFilePath(Network network) {
-        String basePath = MinioStorageHelper.makeArtifactsMinioDestinationPath(processTargetDateTime, processType);
-        variantCounter++;
-        String networkFilename = String.format("%s-%s.xiidm", network.getNameOrId(), variantCounter);
-        return basePath + networkFilename;
+    private String generateScaledNetworkDirPath(Network network) {
+        String basePath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(fileExporter.getZoneId()));
+        String variantName = network.getVariantManager().getWorkingVariantId();
+        return String.format("%s/%s-%s/", basePath, ++variantCounter, variantName);
     }
 }

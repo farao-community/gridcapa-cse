@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,42 +28,43 @@ class FileExporterTest {
     @Test
     void getTTcFilePathForD2ccProcessTest() {
         String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC);
-        String expectedFilePath = "CSE/D2CC/2021/9/13/12:30Z/OUTPUTS/TTC_Calculation_20210913_1430_2D0_CO_CSE1.xml";
+        String expectedFilePath = "CSE/D2CC/2021/09/13/14_30/OUTPUTS/TTC_Calculation_20210913_1430_2D0_CO_CSE1.xml";
         assertEquals(expectedFilePath, actualFilePath);
+        FilenameUtils.getPathNoEndSeparator("CSE/D2CC/2021/");
     }
 
     @Test
     void getTTcFilePathForIdccProcessTest() {
         String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T23:30Z"), ProcessType.IDCC);
-        String expectedFilePath = "CSE/D2CC/2021/9/13/23:30Z/OUTPUTS/20210914_XBID2_TTCRes_CSE1.xml";
+        String expectedFilePath = "CSE/IDCC/2021/09/14/01_30/OUTPUTS/20210914_XBID2_TTCRes_CSE1.xml";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getFinalNetworkFilePathForD2ccProcesTest() {
         String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC);
-        String expectedFilePath = "outputs/20210913_1430_2D1_CO_Final_CSE1.uct";
+        String expectedFilePath = "CSE/D2CC/2021/09/13/14_30/OUTPUTS/20210913_1430_2D1_CO_Final_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getFinalNetworkFilePathForIdccProcesTest() {
         String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC);
-        String expectedFilePath = "outputs/20210901_1930_173_CSE1.uct";
+        String expectedFilePath = "CSE/IDCC/2021/09/01/19_30/OUTPUTS/20210901_1930_173_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForIdccProcesTest() {
         String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T15:30Z"), ProcessType.IDCC);
-        String expectedFilePath = "outputs/20210101_1630_155_Initial_CSE1.uct";
+        String expectedFilePath = "CSE/IDCC/2021/01/01/16_30/OUTPUTS/20210101_1630_155_Initial_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForD2ccProcesTest() {
         String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC);
-        String expectedFilePath = "outputs/20210101_1330_2D5_CO_CSE1.uct";
+        String expectedFilePath = "CSE/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_CO_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 }
