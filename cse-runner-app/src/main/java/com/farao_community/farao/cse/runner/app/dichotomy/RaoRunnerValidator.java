@@ -65,7 +65,7 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     public DichotomyStepResult<RaoResponse> validateNetwork(Network network) throws ValidationException {
         String scaledNetworkDirPath = generateScaledNetworkDirPath(network);
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
-        FileResource networkFile = fileExporter.saveNetwork(network, scaledNetworkName);
+        FileResource networkFile = fileExporter.saveNetwork(network, scaledNetworkDirPath + scaledNetworkName);
         RaoRequest raoRequest = buildRaoRequest(networkFile, scaledNetworkDirPath);
         try {
             LOGGER.info("RAO request sent: {}", raoRequest);
