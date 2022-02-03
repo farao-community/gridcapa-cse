@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: cse-cc-runner
   rabbitmq:
     host: localhost
     port: 5672
@@ -15,6 +17,7 @@ spring:
 
 rao-runner-server:
   amqp:
+    client-app-id: cse-cc-runner  # should be overridden with value of app name
     queue-name: rao-request-queue
 
 minio:
