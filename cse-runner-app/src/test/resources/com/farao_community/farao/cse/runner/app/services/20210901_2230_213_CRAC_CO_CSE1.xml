@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CRACDocument DtdVersion="4" DtdRelease="3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="crac-document.xsd">
+  <DocumentIdentification v="20210901_2230_2D3_CO_CRAC_CSE"/>
+  <DocumentVersion v="1"/>
+  <DocumentType v="Z03"/>
+  <ProcessType v="Z03"/>
+  <SenderIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
+  <SenderRole v="A36"/>
+  <ReceiverIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
+  <ReceiverRole v="A04"/>
+  <CreationDateTime v="2021-09-01T00:00:00Z"/>
+  <TimeInterval v="2021-09-01T20:00Z/2021-09-01T21:00Z"/>
+  <Domain v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
+  <CRACSeries>
+    <Outages>
+      <Outage>
+        <Name v="400kV italy-swiss"/>
+        <Branch>
+          <FromNode v="XSWISS11"/>
+          <ToNode v="ITALY311"/>
+          <Order v="1"/>
+        </Branch>
+      </Outage>
+    </Outages>
+    <RemedialActions/>
+    <CriticalBranches>
+    	<BaseCaseBranches>
+    	    <TimeInterval v="2021-09-01T20:00Z/2021-09-01T21:00Z"/>
+			<Branch>
+				<Name v="SI2-IT1"/>
+				<FromNode v="XSLOVE11"/>
+				<ToNode v="ITALY11*"/>
+				<Order v="1"/>
+				<Imax unit="A" v="2585"/>
+				<Direction v="DIRECT"/>
+			</Branch>
+			<Branch>
+				<Name v="FR1-IT1"/>
+				<FromNode v="XFRANC11"/>
+				<ToNode v="ITALY111"/>
+				<Order v="1"/>
+				<Imax unit="A" v="3800"/>
+				<Direction v="DIRECT"/>
+			</Branch>
+		</BaseCaseBranches>
+		<CriticalBranch>
+			<TimeInterval v="2021-09-01T20:00Z/2021-09-01T21:00Z"/>
+			<Outage v="400kV italy-swiss"/>
+			<Branch>
+				<Name v="SI2-IT1"/>
+				<FromNode v="XSLOVE11"/>
+				<ToNode v="ITALY11*"/>
+				<Order v="1"/>
+				<ImaxAfterOutage unit="A" v="3071"/>
+				<ImaxAfterCRA unit="A" v="2585"/>
+				<Direction v="DIRECT"/>
+			</Branch>
+		</CriticalBranch>
+    </CriticalBranches>
+  </CRACSeries>
+</CRACDocument>

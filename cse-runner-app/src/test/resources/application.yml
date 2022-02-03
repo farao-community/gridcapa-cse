@@ -27,3 +27,4 @@ cse-cc-runner:
       expiration: 60000
   whitelist:
     - http://localhost:9000
+    - file:/

@@ -45,8 +45,17 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gridcapa-cse-network-processing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-creator-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-crac-creator-cse</artifactId>
         </dependency>
         <dependency>
             <groupId>com.farao-community.farao</groupId>
@@ -55,10 +64,6 @@
         <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-io-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-creator-cse</artifactId>
         </dependency>
         <dependency>
             <groupId>com.farao-community.farao</groupId>
