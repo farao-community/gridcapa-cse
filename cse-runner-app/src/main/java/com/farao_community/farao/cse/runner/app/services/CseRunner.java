@@ -53,12 +53,12 @@ public class CseRunner {
 
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network);
-        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network).getUrl());
+        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()).getUrl());
         double initialItalianImportFromNetwork = ItalianImport.compute(network);
         checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
         Crac crac = preProcessNetworkAndImportCrac(cseRequest.getMergedCracUrl(), network, cseRequest.getTargetProcessDateTime());
-        cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac));
+        cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
 
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());

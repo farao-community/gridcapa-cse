@@ -7,8 +7,10 @@
 package com.farao_community.farao.cse.runner.app.dichotomy;
 
 import com.farao_community.farao.cse.runner.api.resource.FileResource;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.services.FileExporter;
 import com.farao_community.farao.cse.runner.app.services.FileImporter;
+import com.farao_community.farao.cse.runner.app.util.MinioStorageHelper;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
@@ -22,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -29,20 +33,27 @@ import java.io.IOException;
 public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RaoRunnerValidator.class);
 
+    private final ProcessType processType;
     private final String requestId;
+    private final OffsetDateTime processTargetDateTime;
     private final String cracUrl;
     private final String raoParametersUrl;
     private final RaoRunnerClient raoRunnerClient;
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
+    private int variantCounter = 0;
 
-    public RaoRunnerValidator(String requestId,
+    public RaoRunnerValidator(ProcessType processType,
+                              String requestId,
+                              OffsetDateTime processTargetDateTime,
                               String cracUrl,
                               String raoParametersUrl,
                               RaoRunnerClient raoRunnerClient,
                               FileExporter fileExporter,
                               FileImporter fileImporter) {
+        this.processType = processType;
         this.requestId = requestId;
+        this.processTargetDateTime = processTargetDateTime;
         this.cracUrl = cracUrl;
         this.raoParametersUrl = raoParametersUrl;
         this.raoRunnerClient = raoRunnerClient;
@@ -52,8 +63,10 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
 
     @Override
     public DichotomyStepResult<RaoResponse> validateNetwork(Network network) throws ValidationException {
-        FileResource networkFile = fileExporter.saveNetwork(network, networkScaledFilePath(network));
-        RaoRequest raoRequest = buildRaoRequest(networkFile);
+        String scaledNetworkDirPath = generateScaledNetworkDirPath(network);
+        String scaledNetworkName = network.getNameOrId() + ".xiidm";
+        FileResource networkFile = fileExporter.saveNetwork(network, scaledNetworkDirPath + scaledNetworkName);
+        RaoRequest raoRequest = buildRaoRequest(networkFile, scaledNetworkDirPath);
         try {
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
@@ -66,13 +79,13 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
         }
     }
 
-    private RaoRequest buildRaoRequest(FileResource networkFile) {
-        return new RaoRequest(requestId, networkFile.getUrl(), cracUrl, raoParametersUrl);
+    private RaoRequest buildRaoRequest(FileResource networkFile, String scaledNetworkDirPath) {
+        return new RaoRequest(requestId, networkFile.getUrl(), cracUrl, raoParametersUrl, scaledNetworkDirPath);
     }
 
-    private String networkScaledFilePath(Network network) {
+    private String generateScaledNetworkDirPath(Network network) {
+        String basePath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(fileExporter.getZoneId()));
         String variantName = network.getVariantManager().getWorkingVariantId();
-        String networkFilename = String.format("%s-%s.xiidm", network.getNameOrId(), variantName);
-        return String.format("%s/%s", requestId, networkFilename);
+        return String.format("%s/%s-%s/", basePath, ++variantCounter, variantName);
     }
 }
