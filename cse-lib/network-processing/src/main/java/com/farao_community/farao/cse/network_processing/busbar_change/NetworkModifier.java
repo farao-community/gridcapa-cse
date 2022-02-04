@@ -246,8 +246,8 @@ public class NetworkModifier {
     }
 
     private String replaceSimpleBranchNode(Branch<?> branch, Branch.Side side, String newNodeId) {
-        String from = (side == Branch.Side.ONE) ? newNodeId : branch.getTerminal1().getBusBreakerView().getBus().getId();
-        String to = (side == Branch.Side.ONE) ? branch.getTerminal2().getBusBreakerView().getBus().getId() : newNodeId;
+        String from = (side == Branch.Side.ONE) ? newNodeId : branch.getTerminal1().getBusBreakerView().getConnectableBus().getId();
+        String to = (side == Branch.Side.ONE) ? branch.getTerminal2().getBusBreakerView().getConnectableBus().getId() : newNodeId;
         if (branch instanceof TwoWindingsTransformer) {
             // convention is inverted
             return generateUcteId(to, from, getOrderCode(branch));
