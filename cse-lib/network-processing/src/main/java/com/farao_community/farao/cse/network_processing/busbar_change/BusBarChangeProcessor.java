@@ -45,7 +45,10 @@ public final class BusBarChangeProcessor {
     public static Set<BusBarChangeSwitches> process(Network network, InputStream cracInputStream) {
         CseCracImporter importer = new CseCracImporter();
         CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
+        return process(network, cseCrac);
+    }
 
+    public static Set<BusBarChangeSwitches> process(Network network, CseCrac cseCrac) {
         UcteNetworkAnalyzer ucteNetworkAnalyzer = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         NetworkModifier networkModifier = new NetworkModifier(network);
 

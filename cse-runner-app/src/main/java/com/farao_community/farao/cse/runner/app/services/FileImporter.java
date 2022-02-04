@@ -17,6 +17,9 @@ import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
+import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
+import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
+import com.farao_community.farao.data.crac_creation.creator.cse.parameters.CseCracCreationParameters;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.data.glsk.api.io.GlskDocumentImporters;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
@@ -32,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.Set;
 
 import static com.farao_community.farao.cse.runner.app.util.FileUtil.getFilenameFromUrl;
 
@@ -51,11 +55,18 @@ public class FileImporter {
         return Importers.loadNetwork(getFilenameFromUrl(cgmUrl), urlValidationService.openUrlStream(cgmUrl));
     }
 
-    public Crac importCrac(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
-        CseCracImporter importer = new CseCracImporter();
+    public CseCrac importCseCrac(String cracUrl) throws IOException {
         InputStream cracInputStream = urlValidationService.openUrlStream(cracUrl);
-        CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
-        return CracCreators.createCrac(cseCrac, network, targetProcessDateTime).getCrac();
+        CseCracImporter cseCracImporter = new CseCracImporter();
+        return cseCracImporter.importNativeCrac(cracInputStream);
+    }
+
+    public Crac importCrac(CseCrac cseCrac, Set<BusBarChangeSwitches> busBarChangeSwitchesSet, OffsetDateTime targetProcessDateTime, Network network) {
+        CracCreationParameters cracCreationParameters = CracCreationParameters.load();
+        CseCracCreationParameters cseCracCreationParameters = new CseCracCreationParameters();
+        cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
+        cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
+        return CracCreators.createCrac(cseCrac, network, targetProcessDateTime, cracCreationParameters).getCrac();
     }
 
     public Crac importCracFromJson(String cracUrl) throws IOException {

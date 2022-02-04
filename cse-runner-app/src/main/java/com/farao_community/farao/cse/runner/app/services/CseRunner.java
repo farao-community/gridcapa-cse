@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.dichotomy.DichotomyRunner;
 import com.farao_community.farao.data.crac_api.Crac;
@@ -15,6 +16,8 @@ import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.cse.runner.app.util.ItalianImport;
 import com.farao_community.farao.cse.runner.app.util.MerchantLine;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
+import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -54,7 +58,9 @@ public class CseRunner {
         double initialItalianImportFromNetwork = ItalianImport.compute(network);
         checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
-        cseData.setJsonCracUrl(convertCracInJson(cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network, cseRequest.getProcessType()));
+        Crac crac = preProcessNetworkAndImportCrac(cseRequest.getMergedCracUrl(), network, cseRequest.getTargetProcessDateTime());
+        cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
+
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String baseCaseFileUrl = fileExporter.saveNetworkInUcteFormat(network, baseCaseFilePath);
@@ -66,9 +72,10 @@ public class CseRunner {
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
-    private String convertCracInJson(String originalCracUrl, OffsetDateTime targetProcessDateTime, Network network, ProcessType processType) throws IOException {
-        Crac crac = fileImporter.importCrac(originalCracUrl, targetProcessDateTime, network);
-        return fileExporter.saveCracInJsonFormat(crac, targetProcessDateTime, processType);
+    Crac preProcessNetworkAndImportCrac(String mergedCracUrl, Network initialNetwork, OffsetDateTime targetProcessDateTime) throws IOException {
+        CseCrac cseCrac = fileImporter.importCseCrac(mergedCracUrl);
+        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangeProcessor.process(initialNetwork, cseCrac);
+        return fileImporter.importCrac(cseCrac, busBarChangeSwitchesSet, targetProcessDateTime, initialNetwork);
     }
 
     private void checkNetworkAndReferenceExchangesDifference(CseData cseData, double initialItalianImportFromNetwork) {
