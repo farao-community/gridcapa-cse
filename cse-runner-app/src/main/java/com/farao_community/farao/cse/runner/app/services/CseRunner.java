@@ -7,7 +7,6 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.dichotomy.DichotomyRunner;

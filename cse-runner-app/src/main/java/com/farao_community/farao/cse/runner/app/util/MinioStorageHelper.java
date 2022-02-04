@@ -36,7 +36,6 @@ public final class MinioStorageHelper {
             + filekind + MINIO_SEPARATOR;
     }
 
-    // TODO discuss me create an enum FilesKind in task-manager api
     public enum FileKind {
         ARTIFACTS,
         OUTPUTS

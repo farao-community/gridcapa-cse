@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class MinioAdapter {
     private static final int DEFAULT_DOWNLOAD_LINK_EXPIRY_IN_DAYS = 7;
     private static final Logger LOGGER = LoggerFactory.getLogger(MinioAdapter.class);
-    private static final String FILE_PATH = "%s/%s";
+    private static final String MINIO_PATH_SEPARATOR = "/";
 
     private final MinioClient minioClient;
     private final String bucket;
@@ -51,10 +51,10 @@ public class MinioAdapter {
     }
 
     public void uploadFile(String filePath, InputStream sourceInputStream) {
-        String fullPath = String.format(FILE_PATH, basePath, filePath);
+        String targetPath = getTargetFilePath(filePath);
         try {
             createBucketIfDoesNotExist();
-            minioClient.putObject(PutObjectArgs.builder().bucket(bucket).object(fullPath).stream(sourceInputStream, -1, 50000000).build());
+            minioClient.putObject(PutObjectArgs.builder().bucket(bucket).object(targetPath).stream(sourceInputStream, -1, 50000000).build());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             throw new CseInternalException(String.format("Exception occurred while uploading file: %s, to minio server", filePath));
@@ -62,11 +62,11 @@ public class MinioAdapter {
     }
 
     public String generatePreSignedUrl(String filePath) {
-        String fullPath = String.format(FILE_PATH, basePath, filePath);
+        String targetPath = getTargetFilePath(filePath);
         try {
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
-                            .bucket(bucket).object(fullPath)
+                            .bucket(bucket).object(targetPath)
                             .expiry(DEFAULT_DOWNLOAD_LINK_EXPIRY_IN_DAYS, TimeUnit.DAYS)
                             .method(Method.GET)
                             .build()
@@ -78,13 +78,26 @@ public class MinioAdapter {
 
     public FileResource generateFileResource(String filePath) {
         try {
-            String fullFilePath = String.format(FILE_PATH, basePath, filePath);
+            String targetPath = getTargetFilePath(filePath);
             String filename = FilenameUtils.getName(filePath);
-            LOGGER.info("Generates pre-signed URL for file '{}' in Minio bucket '{}'", fullFilePath, bucket);
-            String url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(bucket).object(fullFilePath).expiry(DEFAULT_DOWNLOAD_LINK_EXPIRY_IN_DAYS, TimeUnit.DAYS).method(Method.GET).build());
+            LOGGER.info("Generates pre-signed URL for file '{}' in Minio bucket '{}'", targetPath, bucket);
+            String url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(bucket).object(targetPath).expiry(DEFAULT_DOWNLOAD_LINK_EXPIRY_IN_DAYS, TimeUnit.DAYS).method(Method.GET).build());
             return new FileResource(filename, url);
         } catch (Exception e) {
             throw new CseInternalException("Exception in MinIO connection.", e);
         }
     }
+
+    private String getTargetFilePath(String filePath) {
+        if (basePath.isEmpty()) {
+            return filePath;
+        } else {
+            if (basePath.endsWith(MINIO_PATH_SEPARATOR)) {
+                return basePath + filePath;
+            } else {
+                return basePath + MINIO_PATH_SEPARATOR + filePath;
+            }
+        }
+    }
+
 }

@@ -80,7 +80,7 @@ public class FileExporter {
         return minioAdapter.generateFileResource(networkFilePath);
     }
 
-    public String getRaoParametersUrl(OffsetDateTime offsetDateTime, ProcessType processType) {
+    public String saveRaoParameters(OffsetDateTime offsetDateTime, ProcessType processType) {
         RaoParameters raoParameters = RaoParameters.load();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
