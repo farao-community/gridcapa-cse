@@ -2,8 +2,8 @@
 <Timestamp>
     <Time v="2021-01-01T18:30Z"/>
     <Valid v="1"/>
-    <TTC v="8125.0"/>
-    <MNII v="4200.0"/>
+    <TTC v="8125"/>
+    <MNII v="4200"/>
     <TTCLimitedBy v="Critical Branch"/>
     <CountryBalances>
         <CountryBalance>
@@ -67,19 +67,19 @@
     <BASECASEfile v="20210101_1930_185_Initial_CSE1.uct"/>
     <SplittingFactors>
         <SplittingFactor>
-            <Factor v="0.02"/>
+            <Factor v="0.020000"/>
             <Country v="AT"/>
         </SplittingFactor>
         <SplittingFactor>
-            <Factor v="0.5"/>
+            <Factor v="0.500000"/>
             <Country v="CH"/>
         </SplittingFactor>
         <SplittingFactor>
-            <Factor v="0.08"/>
+            <Factor v="0.080000"/>
             <Country v="SI"/>
         </SplittingFactor>
         <SplittingFactor>
-            <Factor v="0.3"/>
+            <Factor v="0.300000"/>
             <Country v="FR"/>
         </SplittingFactor>
     </SplittingFactors>

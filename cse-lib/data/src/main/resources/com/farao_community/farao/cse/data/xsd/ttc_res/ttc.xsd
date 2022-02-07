@@ -42,12 +42,12 @@
   </xs:element>
   <xs:element name="TTC">
     <xs:complexType>
-      <xs:attribute name="v" use="required" type="xs:double"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="MNII">
     <xs:complexType>
-      <xs:attribute name="v" use="required" type="xs:double"/>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="TTCLimitedBy">

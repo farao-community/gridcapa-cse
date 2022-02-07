@@ -12,6 +12,7 @@ import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
+import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import javax.xml.bind.Marshaller;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +58,7 @@ class TtcResultTest {
         cracResultsHelper = new CracResultsHelper(crac, raoResult, Mockito.mock(List.class));
     }
 
-    private TtcResult.ProcessData initProcessData(String limitingCause, double finalItalianImport, double mniiOffsetValue) {
+    private TtcResult.ProcessData initProcessData(LimitingCause limitingCause, double finalItalianImport, double mniiOffsetValue) {
         Map<String, Double> countryBalances = new HashMap<>();
         countryBalances.put("FR", -1839.0);
         countryBalances.put("CH", 320.0);
@@ -101,7 +103,7 @@ class TtcResultTest {
 
     @Test
     void validateTtcResultCreation() throws JAXBException {
-        TtcResult.ProcessData processData = initProcessData("Critical Branch", 4200, 3925);
+        TtcResult.ProcessData processData = initProcessData(LimitingCause.CRITICAL_BRANCH, 4200, 3925);
         Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
 
         assertEquals("2021-01-01T18:30Z", ttcResults.getTime().getV());
@@ -113,28 +115,28 @@ class TtcResultTest {
 
     @Test
     void testTtcAndMniiValuesForGlskLimitationWithPositiveValues() {
-        TtcResult.ProcessData processData = initProcessData("GLSK_LIMITATION", 1200, 700);
+        TtcResult.ProcessData processData = initProcessData(LimitingCause.GLSK_LIMITATION, 1200, 700);
         Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
 
-        assertEquals(1200, ttcResults.getTTC().getV());
-        assertEquals(500, ttcResults.getMNII().getV());
+        assertEquals(BigInteger.valueOf(1200), ttcResults.getTTC().getV());
+        assertEquals(BigInteger.valueOf(500), ttcResults.getMNII().getV());
     }
 
     @Test
     void testTtcAndMniiValuesForGlskLimitationWithNegativeMniiValue() {
-        TtcResult.ProcessData processData = initProcessData("GLSK_LIMITATION", 700, 2100);
+        TtcResult.ProcessData processData = initProcessData(LimitingCause.GLSK_LIMITATION, 700, 2100);
         Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
 
-        assertEquals(700, ttcResults.getTTC().getV());
-        assertEquals(-1400, ttcResults.getMNII().getV());
+        assertEquals(BigInteger.valueOf(700), ttcResults.getTTC().getV());
+        assertEquals(BigInteger.valueOf(-1400), ttcResults.getMNII().getV());
     }
 
     @Test
     void testTtcAndMniiValuesForCriticalBranch() {
-        TtcResult.ProcessData processData = initProcessData("Critical Branch", 700, 2100);
+        TtcResult.ProcessData processData = initProcessData(LimitingCause.CRITICAL_BRANCH, 700, 2100);
         Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
 
-        assertEquals(2800, ttcResults.getTTC().getV());
-        assertEquals(700, ttcResults.getMNII().getV());
+        assertEquals(BigInteger.valueOf(2800), ttcResults.getTTC().getV());
+        assertEquals(BigInteger.valueOf(700), ttcResults.getMNII().getV());
     }
 }
