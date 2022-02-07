@@ -19,8 +19,10 @@ import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.configurations.XNodesConfiguration;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
+import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -60,7 +62,7 @@ public class TtcResultService {
             cseData.getBorderExchanges(),
             cseData.getReducedSplittingFactors(),
             Collections.emptyMap(),
-            dichotomyResult.getLimitingCause().toString(),
+            limitingCauseToString(dichotomyResult.getLimitingCause()),
             finalItalianImport,
             cseData.getMniiOffset(),
             cseRequest.getTargetProcessDateTime().toString()
@@ -72,5 +74,19 @@ public class TtcResultService {
         RaoResult raoResult = fileImporter.importRaoResult(dichotomyResult.getHighestValidStep().getValidationData().getRaoResultFileUrl(), crac);
         Timestamp timestamp = TtcResult.generate(ttcFiles, processData, new CracResultsHelper(crac, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath())));
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+    }
+
+    private static String limitingCauseToString(LimitingCause limitingCause) {
+        switch (limitingCause) {
+            case CRITICAL_BRANCH:
+                return "Critical Branch";
+            case GLSK_LIMITATION:
+                return "GLSK Limitation";
+            case COMPUTATION_FAILURE:
+            case INDEX_EVALUATION_OR_MAX_ITERATION:
+                return "Failure";
+            default:
+                throw new NotImplementedException(String.format("Limiting cause %s has no description", limitingCause));
+        }
     }
 }
