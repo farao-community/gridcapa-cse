@@ -60,7 +60,7 @@ public class TtcResultService {
             cseData.getBorderExchanges(),
             cseData.getReducedSplittingFactors(),
             Collections.emptyMap(),
-            dichotomyResult.getLimitingCause().toString(),
+            dichotomyResult.getLimitingCause(),
             finalItalianImport,
             cseData.getMniiOffset(),
             cseRequest.getTargetProcessDateTime().toString()

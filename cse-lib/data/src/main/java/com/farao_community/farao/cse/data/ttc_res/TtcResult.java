@@ -12,9 +12,12 @@ import com.farao_community.farao.data.crac_api.Contingency;
 import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
+import com.farao_community.farao.dichotomy.api.results.LimitingCause;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,12 +53,12 @@ public final class TtcResult {
         private final Map<String, Double> borderExchanges;
         private final Map<String, Double> reducedSplittingFactors;
         private final Map<String, Double> countryBalances;
-        private final String limitingCause;
+        private final LimitingCause limitingCause;
         private final double finalItalianImport;
         private final double mniiOffsetValue;
         private final String processTargetDate;
 
-        public ProcessData(Map<String, Double> borderExchanges, Map<String, Double> reducedSplittingFactors, Map<String, Double> countryBalances, String limitingCause, double finalItalianImport, double mniiOffsetValue, String processTargetDate) {
+        public ProcessData(Map<String, Double> borderExchanges, Map<String, Double> reducedSplittingFactors, Map<String, Double> countryBalances, LimitingCause limitingCause, double finalItalianImport, double mniiOffsetValue, String processTargetDate) {
             this.borderExchanges = borderExchanges;
             this.reducedSplittingFactors = reducedSplittingFactors;
             this.countryBalances = countryBalances;
@@ -75,9 +78,9 @@ public final class TtcResult {
         Time time = new Time();
         time.setV(processData.processTargetDate);
         ttcResults.setTime(time);
-        if (processData.limitingCause.equalsIgnoreCase("COMPUTATION_FAILURE")
-            || (processData.limitingCause.equalsIgnoreCase("INDEX_EVALUATION_OR_MAX_ITERATION"))) {
-            fillFailureReason(processData.limitingCause, ttcResults);
+        if (processData.limitingCause == LimitingCause.COMPUTATION_FAILURE
+            || processData.limitingCause == LimitingCause.INDEX_EVALUATION_OR_MAX_ITERATION) {
+            fillFailureReason(limitingCauseToString(processData.limitingCause), ttcResults);
         } else {
             Valid valid = new Valid();
             valid.setV(BigInteger.ONE);
@@ -86,7 +89,7 @@ public final class TtcResult {
             calculateAndFillTtcAndMnii(processData, ttcResults);
 
             TTCLimitedBy ttcLimitedBy = new TTCLimitedBy();
-            ttcLimitedBy.setV(processData.limitingCause);
+            ttcLimitedBy.setV(limitingCauseToString(processData.limitingCause));
             ttcResults.setTTCLimitedBy(ttcLimitedBy);
             fillCountriesBalance(processData, ttcResults);
             fillBordersExchanges(processData, ttcResults);
@@ -104,7 +107,7 @@ public final class TtcResult {
     private static void calculateAndFillTtcAndMnii(ProcessData processData, Timestamp ttcResults) {
         double mniiValue;
         double ttcValue;
-        if (processData.limitingCause.equalsIgnoreCase("GLSK_LIMITATION")) {
+        if (processData.limitingCause == LimitingCause.GLSK_LIMITATION) {
             ttcValue = processData.finalItalianImport;
             mniiValue = processData.finalItalianImport - processData.mniiOffsetValue;
         } else {
@@ -112,11 +115,11 @@ public final class TtcResult {
             mniiValue = processData.finalItalianImport;
         }
         TTC ttc = new TTC();
-        ttc.setV(ttcValue);
+        ttc.setV(BigInteger.valueOf((int) ttcValue));
         ttcResults.setTTC(ttc);
 
         MNII mnii = new MNII();
-        mnii.setV(mniiValue);
+        mnii.setV(BigInteger.valueOf((int) mniiValue));
         ttcResults.setMNII(mnii);
     }
 
@@ -187,7 +190,7 @@ public final class TtcResult {
                 Country country = new Country();
                 country.setV(countryString);
                 Factor factorType = new Factor();
-                factorType.setV(BigDecimal.valueOf(factor));
+                factorType.setV(BigDecimal.valueOf(factor).setScale(6, RoundingMode.HALF_EVEN));
                 splittingFactor.setCountry(country);
                 splittingFactor.setFactor(factorType);
                 splittingFactorList.add(splittingFactor);
@@ -225,7 +228,7 @@ public final class TtcResult {
                 Country countryType = new Country();
                 countryType.setV(country);
                 BalanceValue balanceValue = new BalanceValue();
-                balanceValue.setV(BigDecimal.valueOf(balancedFlow));
+                balanceValue.setV(BigDecimal.valueOf(balancedFlow).setScale(1, RoundingMode.HALF_EVEN));
                 countryBalance.setCountry(countryType);
                 countryBalance.setBalanceValue(balanceValue);
                 countryBalanceList.add(countryBalance);
@@ -459,5 +462,19 @@ public final class TtcResult {
         });
         preventive.getAction().addAll(actionList);
         results.setPreventive(preventive);
+    }
+
+    private static String limitingCauseToString(LimitingCause limitingCause) {
+        switch (limitingCause) {
+            case CRITICAL_BRANCH:
+                return "Critical Branch";
+            case GLSK_LIMITATION:
+                return "GLSK Limitation";
+            case COMPUTATION_FAILURE:
+            case INDEX_EVALUATION_OR_MAX_ITERATION:
+                return "Failure";
+            default:
+                throw new NotImplementedException(String.format("Limiting cause %s has no description", limitingCause));
+        }
     }
 }
