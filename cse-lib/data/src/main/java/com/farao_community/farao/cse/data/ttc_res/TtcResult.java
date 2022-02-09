@@ -207,7 +207,7 @@ public final class TtcResult {
             processData.borderExchanges.forEach((boundary, exchangedFlow) -> {
                 BorderExchange borderExchange = new BorderExchange();
                 Border border = new Border();
-                border.setV(boundary.replace(" ", ""));
+                border.setV(boundary);
                 ExchangeValue exchangeValue = new ExchangeValue();
                 exchangeValue.setV(BigDecimal.valueOf(exchangedFlow).toBigInteger());
                 borderExchange.setBorder(border);

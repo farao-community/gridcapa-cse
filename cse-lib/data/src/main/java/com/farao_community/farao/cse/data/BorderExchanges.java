@@ -65,25 +65,25 @@ public final class BorderExchanges {
             String exchangeStr = worksheet.getRow(LABEL_ROW).getCell(colIndex).getStringCellValue();
             switch (exchangeStr) {
                 case "CH > IT":
-                    bordersExchanges.put("CH - IT", row.getCell(colIndex).getNumericCellValue());
+                    bordersExchanges.put("IT-CH", row.getCell(colIndex).getNumericCellValue());
                     break;
                 case "FR > IT":
-                    bordersExchanges.put("FR - IT", row.getCell(colIndex).getNumericCellValue());
+                    bordersExchanges.put("IT-FR", row.getCell(colIndex).getNumericCellValue());
                     break;
                 case "IT > APG":
-                    bordersExchanges.put("AT - IT", -row.getCell(colIndex).getNumericCellValue());
+                    bordersExchanges.put("IT-AT", -row.getCell(colIndex).getNumericCellValue());
                     break;
                 case "IT > SHB":
-                    bordersExchanges.put("SI - IT", -row.getCell(colIndex).getNumericCellValue());
+                    bordersExchanges.put("IT-SI", -row.getCell(colIndex).getNumericCellValue());
                     break;
                 case "CH > FR":
-                    bordersExchanges.put("CH - FR", row.getCell(colIndex).getNumericCellValue());
+                    bordersExchanges.put("CH-FR", row.getCell(colIndex).getNumericCellValue());
                     break;
                 case "FR > DE":
-                    bordersExchanges.put("FR - DE", row.getCell(colIndex).getNumericCellValue());
+                    bordersExchanges.put("FR-DE", row.getCell(colIndex).getNumericCellValue());
                     break;
                 case "CH > DE+":
-                    bordersExchanges.put("CH - DE", row.getCell(colIndex).getNumericCellValue());
+                    bordersExchanges.put("CH-DE", row.getCell(colIndex).getNumericCellValue());
                     break;
                 default:
                     break;

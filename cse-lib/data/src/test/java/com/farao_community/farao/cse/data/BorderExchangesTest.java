@@ -20,21 +20,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class BorderExchangesTest {
     private static final double DOUBLE_TOLERANCE = 0.01;
 
-    private BorderExchanges bordersExchanges;
-
     @Test
     void getBordersFlowsfromVulcanusFileTest() throws IOException {
-        Map<String, Double> exchanges = bordersExchanges.fromVulcanusFile(OffsetDateTime.parse("2019-12-28T14:30Z"),
+        Map<String, Double> exchanges = BorderExchanges.fromVulcanusFile(OffsetDateTime.parse("2019-12-28T14:30Z"),
                 getClass().getResourceAsStream("vulcanus_28122019_96.xls"));
 
         assertEquals(7, exchanges.size());
-        assertEquals(633, exchanges.get("CH - IT"), DOUBLE_TOLERANCE);
-        assertEquals(3021, exchanges.get("FR - IT"), DOUBLE_TOLERANCE);
-        assertEquals(0, exchanges.get("AT - IT"), DOUBLE_TOLERANCE);
-        assertEquals(-44, exchanges.get("SI - IT"), DOUBLE_TOLERANCE);
-        assertEquals(2694, exchanges.get("FR - DE"), DOUBLE_TOLERANCE);
-        assertEquals(2208, exchanges.get("CH - DE"), DOUBLE_TOLERANCE);
-        assertEquals(-3000, exchanges.get("CH - FR"), DOUBLE_TOLERANCE);
+        assertEquals(633, exchanges.get("IT-CH"), DOUBLE_TOLERANCE);
+        assertEquals(3021, exchanges.get("IT-FR"), DOUBLE_TOLERANCE);
+        assertEquals(0, exchanges.get("IT-AT"), DOUBLE_TOLERANCE);
+        assertEquals(-44, exchanges.get("IT-SI"), DOUBLE_TOLERANCE);
+        assertEquals(2694, exchanges.get("FR-DE"), DOUBLE_TOLERANCE);
+        assertEquals(2208, exchanges.get("CH-DE"), DOUBLE_TOLERANCE);
+        assertEquals(-3000, exchanges.get("CH-FR"), DOUBLE_TOLERANCE);
 
     }
 }
