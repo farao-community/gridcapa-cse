@@ -25,6 +25,7 @@ import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -38,28 +39,32 @@ import java.util.TreeMap;
 @Service
 public class DichotomyRunner {
     private static final double MAX_IMPORT_VALUE = 19999;
+    private static final String DICHOTOMY_PARAMETERS_MSG = "Starting dichotomy index: {}, Maximum dichotomy index: {}, Initial dichotomy step: {}, Dichotomy precision: {}";
 
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
     private final RaoRunnerClient raoRunnerClient;
+    private final Logger logger;
 
-    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, RaoRunnerClient raoRunnerClient) {
+    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, RaoRunnerClient raoRunnerClient, Logger logger) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
         this.raoRunnerClient = raoRunnerClient;
+        this.logger = logger;
     }
 
     public DichotomyResult<RaoResponse> runDichotomy(CseRequest cseRequest,
                                                      CseData cseData,
                                                      Network network,
                                                      double initialItalianImportFromNetwork) throws IOException {
-        Index<RaoResponse> index = new Index<>(
-            Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImportFromNetwork),
-            MAX_IMPORT_VALUE,
-            cseRequest.getDichotomyPrecision());
+        double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImportFromNetwork);
+        double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
+        double dichotomyPrecision = cseRequest.getDichotomyPrecision();
+        logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
+        Index<RaoResponse> index = new Index<>(initialIndexValue, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<RaoResponse> engine = new DichotomyEngine<>(
             index,
-            new StepsIndexStrategy(true, cseRequest.getInitialDichotomyStep()),
+            new StepsIndexStrategy(true, initialDichotomyStep),
             getNetworkShifter(cseRequest, cseData, network),
             getNetworkValidator(cseRequest, cseData));
         return engine.run(network);
