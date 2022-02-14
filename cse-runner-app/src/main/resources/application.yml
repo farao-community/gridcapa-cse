@@ -15,6 +15,11 @@ spring:
           binder: rabbit
           destination: task-status-updated
 
+logback:
+  amqp:
+    exchange: task-manager-events
+    routing-key: "#"
+
 rao-runner-server:
   amqp:
     client-app-id: cse-cc-runner  # should be overridden with value of app name
