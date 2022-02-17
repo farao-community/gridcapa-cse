@@ -3,8 +3,6 @@ load-flow:
 
 load-flow-default-parameters:
   voltageInitMode: DC_VALUES
-  dc: false
   balanceType: PROPORTIONAL_TO_GENERATION_P
-  countriesToBalance: AT,CH,FR,IT,SI
   phaseShifterRegulationOn: true
-  transformerVoltageControlOn: true
+  countriesToBalance: AL,AT,BA,BE,BG,CH,CZ,DE,ES,FR,GR,HR,HU,IT,ME,MK,NL,PL,PT,RO,RS,SI,SK,UA

@@ -61,10 +61,11 @@ public class CseListener implements MessageListener {
             LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
         } catch (AbstractCseException e) {
+            LOGGER.error(e.getDetails(), e);
             sendErrorResponse(cseRequest.getId(), e, replyTo, correlationId);
         } catch (Exception e) {
             CseInternalException unknownException = new CseInternalException("Unknown exception", e);
-            LOGGER.error(unknownException.getDetails());
+            LOGGER.error(unknownException.getDetails(), e);
             sendErrorResponse(cseRequest.getId(), unknownException, replyTo, correlationId);
         }
     }

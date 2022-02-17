@@ -8,7 +8,6 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.commons.ZonalData;
-import com.farao_community.farao.cse.data.BorderExchanges;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
@@ -113,14 +112,6 @@ public class FileImporter {
             return CseReferenceExchanges.fromVulcanusFile(targetProcessDateTime, vulcanusStream);
         } catch (IOException e) {
             throw new CseInvalidDataException("Impossible to create CseReferenceExchanges", e);
-        }
-    }
-
-    public Map<String, Double> importBorderExchanges(OffsetDateTime targetProcessDateTime, String vulcanusUrl) {
-        try (InputStream vulcanusStream = urlValidationService.openUrlStream(vulcanusUrl)) {
-            return BorderExchanges.fromVulcanusFile(targetProcessDateTime, vulcanusStream);
-        } catch (IOException e) {
-            throw new CseInvalidDataException("Impossible to import border exchanges from vulcanus file", e);
         }
     }
 }

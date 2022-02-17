@@ -36,7 +36,7 @@
         <!-- COMPILE DEPENDENCIES -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>gridcapa-cse-runner-api</artifactId>
+            <artifactId>gridcapa-cse-computation</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -47,6 +47,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gridcapa-cse-network-processing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gridcapa-cse-runner-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

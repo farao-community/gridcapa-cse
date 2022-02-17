@@ -16,6 +16,7 @@
     <modules>
         <module>data</module>
         <module>network-processing</module>
+        <module>computation</module>
     </modules>
 
 </project>
