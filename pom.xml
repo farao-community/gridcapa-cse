@@ -46,11 +46,10 @@
         <logstash.version>7.0.1</logstash.version>
 
         <!-- BUSINESS DEPENDENCIES -->
-        <farao.dependencies.version>1.1.0</farao.dependencies.version>
+        <farao.dependencies.version>1.2.0</farao.dependencies.version>
         <farao.dichotomy.version>4.1.0</farao.dichotomy.version>
         <gridcapa.rao.runner.version>0.3.0</gridcapa.rao.runner.version>
         <gridcapa.task-manager.version>0.3.0</gridcapa.task-manager.version>
-        <powsybl.open-loadflow.version>0.13.0</powsybl.open-loadflow.version>
         <powsybl.balances-adjustment.version>1.10.0</powsybl.balances-adjustment.version>
     </properties>
 
