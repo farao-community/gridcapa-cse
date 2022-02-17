@@ -38,6 +38,7 @@ import java.util.TreeMap;
  */
 @Service
 public class DichotomyRunner {
+    private static final double SHIFT_TOLERANCE = 1;
     private static final double MAX_IMPORT_VALUE = 19999;
     private static final String DICHOTOMY_PARAMETERS_MSG = "Starting dichotomy index: {}, Maximum dichotomy index: {}, Initial dichotomy step: {}, Dichotomy precision: {}";
 
@@ -75,7 +76,8 @@ public class DichotomyRunner {
                                              Network network) throws IOException {
         return new LinearScaler(
             fileImporter.importGlsk(request.getMergedGlskUrl(), network),
-            getShiftDispatcher(request.getProcessType(), cseData));
+            getShiftDispatcher(request.getProcessType(), cseData),
+            SHIFT_TOLERANCE);
     }
 
     private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData) {
