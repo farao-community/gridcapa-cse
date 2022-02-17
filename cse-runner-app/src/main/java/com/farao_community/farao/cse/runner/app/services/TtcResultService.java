@@ -7,12 +7,12 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.data.ttc_res.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.data.ttc_res.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.runner.app.util.FileUtil;
-import com.farao_community.farao.cse.runner.app.util.ItalianImport;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.app.CseData;
@@ -24,7 +24,6 @@ import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.Collections;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -55,11 +54,11 @@ public class TtcResultService {
         );
 
         Network networkAfterDichotomy = fileImporter.importNetwork(networkWithPraUrl);
-        double finalItalianImport = ItalianImport.compute(networkAfterDichotomy);
+        double finalItalianImport = BorderExchanges.computeItalianImport(networkAfterDichotomy);
         TtcResult.ProcessData processData = new TtcResult.ProcessData(
-            cseData.getBorderExchanges(),
+            BorderExchanges.computeCseBordersExchanges(networkAfterDichotomy),
             cseData.getReducedSplittingFactors(),
-            Collections.emptyMap(),
+            BorderExchanges.computeCseCountriesBalances(networkAfterDichotomy),
             dichotomyResult.getLimitingCause(),
             finalItalianImport,
             cseData.getMniiOffset(),
