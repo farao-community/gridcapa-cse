@@ -27,7 +27,7 @@ import static com.farao_community.farao.cse.data.DateTimeUtil.*;
  */
 public final class CseReferenceExchanges {
     private static final String REFERENCE_SHEET = "Sheet 31";
-    private static final String POSTFIX_VULCANUS_NAME_OLD_VERSION = "_96.xls";
+    private static final String POSTFIX_VULCANUS_FILE_NAME_WITH_MINUTES_STEP = "_96.xls";
     private static final int DATE_ROW = 3;
     private static final int DATE_COL = 1;
     private static final int LABEL_ROW = 5;
@@ -42,7 +42,7 @@ public final class CseReferenceExchanges {
     public static CseReferenceExchanges fromVulcanusFile(OffsetDateTime targetDateTime, InputStream vulcanusFile, String vulcanusName) throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook(vulcanusFile);
         HSSFSheet worksheet = workbook.getSheet(REFERENCE_SHEET);
-        String vulcanusTime = vulcanusName.toLowerCase().contains(POSTFIX_VULCANUS_NAME_OLD_VERSION) ? getVulcanusTimeFromVulcanusFileOldVersion(targetDateTime) : getVulcanusTimeFromVulcanusFileNewVersion(targetDateTime);
+        String vulcanusTime = vulcanusName.toLowerCase().contains(POSTFIX_VULCANUS_FILE_NAME_WITH_MINUTES_STEP) ? getVulcanusTimeFromVulcanusFileWithMinutesStep(targetDateTime) : getVulcanusTimeFromVulcanusFileWithHourStep(targetDateTime);
         LocalDate vulcanusDate = LocalDate.parse(
                 worksheet.getRow(DATE_ROW).getCell(DATE_COL).getStringCellValue(),
                 DateTimeFormatter.ofPattern("dd.MM.yyyy")

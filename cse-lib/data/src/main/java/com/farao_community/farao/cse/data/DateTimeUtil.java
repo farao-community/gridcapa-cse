@@ -40,7 +40,7 @@ public final class DateTimeUtil {
         }
     }
 
-    static String getVulcanusTimeFromVulcanusFileOldVersion(OffsetDateTime offsetDateTime) {
+    static String getVulcanusTimeFromVulcanusFileWithMinutesStep(OffsetDateTime offsetDateTime) {
         if (offsetDateTime.getMinute() % MINUTES_STEP != 0) {
             throw new CseDataException(String.format("Process datetime minutes must be a multiple of %d.", MINUTES_STEP));
         }
@@ -49,7 +49,7 @@ public final class DateTimeUtil {
         return localDateTimeStart.format(DateTimeFormatter.ofPattern("HH.mm")) + "-" + localDateTimeEnd.format(DateTimeFormatter.ofPattern("HH.mm"));
     }
 
-    static String getVulcanusTimeFromVulcanusFileNewVersion(OffsetDateTime offsetDateTime) {
+    static String getVulcanusTimeFromVulcanusFileWithHourStep(OffsetDateTime offsetDateTime) {
         LocalDateTime localDateTimeStart = offsetDateTime.atZoneSameInstant(ZoneId.of("CET")).toLocalDateTime();
         LocalDateTime localDateTimeEnd = localDateTimeStart.plusHours(1);
         return localDateTimeStart.format(DateTimeFormatter.ofPattern("HH")) + "-" + localDateTimeEnd.format(DateTimeFormatter.ofPattern("HH"));
