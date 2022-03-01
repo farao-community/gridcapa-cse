@@ -20,14 +20,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.farao_community.farao.cse.data.DateTimeUtil.checkDate;
-import static com.farao_community.farao.cse.data.DateTimeUtil.getVulcanusTime;
+import static com.farao_community.farao.cse.data.DateTimeUtil.*;
 
 /**
  * @author Belgacem Najjari {@literal <belgacem.najjari at rte-france.com>}
  */
 public final class CseReferenceExchanges {
     private static final String REFERENCE_SHEET = "Sheet 31";
+    private static final String POSTFIX_VULCANUS_FILE_NAME_WITH_MINUTES_STEP = "_96.xls";
     private static final int DATE_ROW = 3;
     private static final int DATE_COL = 1;
     private static final int LABEL_ROW = 5;
@@ -39,11 +39,10 @@ public final class CseReferenceExchanges {
         this.exchanges = exchanges;
     }
 
-    public static CseReferenceExchanges fromVulcanusFile(OffsetDateTime targetDateTime, InputStream vulcanusFile) throws IOException {
+    public static CseReferenceExchanges fromVulcanusFile(OffsetDateTime targetDateTime, InputStream vulcanusFile, String vulcanusName) throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook(vulcanusFile);
         HSSFSheet worksheet = workbook.getSheet(REFERENCE_SHEET);
-        String vulcanusTime = getVulcanusTime(targetDateTime);
-
+        String vulcanusTime = vulcanusName.toLowerCase().contains(POSTFIX_VULCANUS_FILE_NAME_WITH_MINUTES_STEP) ? getVulcanusTimeFromVulcanusFileWithMinutesStep(targetDateTime) : getVulcanusTimeFromVulcanusFileWithHourStep(targetDateTime);
         LocalDate vulcanusDate = LocalDate.parse(
                 worksheet.getRow(DATE_ROW).getCell(DATE_COL).getStringCellValue(),
                 DateTimeFormatter.ofPattern("dd.MM.yyyy")

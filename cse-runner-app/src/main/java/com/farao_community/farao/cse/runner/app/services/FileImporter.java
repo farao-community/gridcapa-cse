@@ -109,7 +109,7 @@ public class FileImporter {
 
     public CseReferenceExchanges importCseReferenceExchanges(OffsetDateTime targetProcessDateTime, String vulcanusUrl) {
         try (InputStream vulcanusStream = urlValidationService.openUrlStream(vulcanusUrl)) {
-            return CseReferenceExchanges.fromVulcanusFile(targetProcessDateTime, vulcanusStream);
+            return CseReferenceExchanges.fromVulcanusFile(targetProcessDateTime, vulcanusStream, getFilenameFromUrl(vulcanusUrl));
         } catch (IOException e) {
             throw new CseInvalidDataException("Impossible to create CseReferenceExchanges", e);
         }

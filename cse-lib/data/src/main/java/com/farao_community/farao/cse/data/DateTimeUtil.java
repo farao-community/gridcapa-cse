@@ -40,13 +40,19 @@ public final class DateTimeUtil {
         }
     }
 
-    static String getVulcanusTime(OffsetDateTime offsetDateTime) {
+    static String getVulcanusTimeFromVulcanusFileWithMinutesStep(OffsetDateTime offsetDateTime) {
         if (offsetDateTime.getMinute() % MINUTES_STEP != 0) {
             throw new CseDataException(String.format("Process datetime minutes must be a multiple of %d.", MINUTES_STEP));
         }
         LocalDateTime localDateTimeStart = offsetDateTime.atZoneSameInstant(ZoneId.of("CET")).toLocalDateTime();
         LocalDateTime localDateTimeEnd = localDateTimeStart.plusMinutes(MINUTES_STEP);
         return localDateTimeStart.format(DateTimeFormatter.ofPattern("HH.mm")) + "-" + localDateTimeEnd.format(DateTimeFormatter.ofPattern("HH.mm"));
+    }
+
+    static String getVulcanusTimeFromVulcanusFileWithHourStep(OffsetDateTime offsetDateTime) {
+        LocalDateTime localDateTimeStart = offsetDateTime.atZoneSameInstant(ZoneId.of("CET")).toLocalDateTime();
+        LocalDateTime localDateTimeEnd = localDateTimeStart.plusHours(1);
+        return localDateTimeStart.format(DateTimeFormatter.ofPattern("HH")) + "-" + localDateTimeEnd.format(DateTimeFormatter.ofPattern("HH"));
     }
 
     static void checkDate(LocalDate localDate, OffsetDateTime offsetDateTime) {

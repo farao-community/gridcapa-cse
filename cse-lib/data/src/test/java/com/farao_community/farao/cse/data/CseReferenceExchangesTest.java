@@ -32,7 +32,8 @@ class CseReferenceExchangesTest {
             CseDataException.class,
             () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
                 OffsetDateTime.parse("2019-12-28T14:05Z"),
-                getClass().getResourceAsStream("vulcanus_28122019_96.xls")
+                getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
+                    "vulcanus_28122019_96.xls"
             )
         );
     }
@@ -43,7 +44,8 @@ class CseReferenceExchangesTest {
             CseDataException.class,
             () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
                 OffsetDateTime.parse("2019-12-29T14:30Z"),
-                getClass().getResourceAsStream("vulcanus_28122019_96.xls")
+                getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
+                    "vulcanus_28122019_96.xls"
             )
         );
     }
@@ -52,7 +54,8 @@ class CseReferenceExchangesTest {
     void getExchangedFlow1() throws IOException {
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.parse("2019-12-28T14:30Z"),
-            getClass().getResourceAsStream("vulcanus_28122019_96.xls")
+            getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
+                "vulcanus_28122019_96.xls"
         );
         assertEquals(4, cseReferenceExchanges.getExchanges().size());
         assertEquals(633, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
@@ -65,7 +68,8 @@ class CseReferenceExchangesTest {
     void getExchangedFlow2() throws IOException {
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.parse("2019-12-28T07:00Z"),
-            getClass().getResourceAsStream("vulcanus_28122019_96.xls")
+            getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
+                "vulcanus_28122019_96.xls"
         );
         assertEquals(4, cseReferenceExchanges.getExchanges().size());
         assertEquals(2129, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
@@ -80,7 +84,8 @@ class CseReferenceExchangesTest {
         ZoneOffset zoneOffset = ZoneId.of("CET").getRules().getOffset(localDateTime);
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.of(localDateTime, zoneOffset),
-            getClass().getResourceAsStream("vulcanus_01012021_96.xls")
+            getClass().getResourceAsStream("vulcanus_01012021_96.xls"),
+                "vulcanus_01012021_96.xls"
         );
         assertEquals(880, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
         assertEquals(-502, cseReferenceExchanges.getExchange(Country.FR), DOUBLE_TOLERANCE);
@@ -94,7 +99,8 @@ class CseReferenceExchangesTest {
         ZoneOffset zoneOffset = ZoneId.of("CET").getRules().getOffset(localDateTime);
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.of(localDateTime, zoneOffset),
-            getClass().getResourceAsStream("vulcanus_01012021_96.xls")
+            getClass().getResourceAsStream("vulcanus_01012021_96.xls"),
+                "vulcanus_01012021_96.xls"
         );
         assertEquals(756, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
         assertEquals(-611, cseReferenceExchanges.getExchange(Country.FR), DOUBLE_TOLERANCE);
@@ -108,7 +114,8 @@ class CseReferenceExchangesTest {
         ZoneOffset zoneOffset = ZoneId.of("CET").getRules().getOffset(localDateTime);
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.of(localDateTime, zoneOffset),
-            getClass().getResourceAsStream("vulcanus_01032021_96.xls")
+            getClass().getResourceAsStream("vulcanus_01032021_96.xls"),
+                "vulcanus_01032021_96.xls"
         );
         assertEquals(-1000, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
         assertEquals(-50, cseReferenceExchanges.getExchange(Country.FR), DOUBLE_TOLERANCE);
@@ -122,7 +129,8 @@ class CseReferenceExchangesTest {
         ZoneOffset zoneOffset = ZoneId.of("CET").getRules().getOffset(localDateTime);
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.of(localDateTime, zoneOffset),
-            getClass().getResourceAsStream("vulcanus_01032021_96.xls")
+            getClass().getResourceAsStream("vulcanus_01032021_96.xls"),
+                "vulcanus_01032021_96.xls"
         );
         assertEquals(-500, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
         assertEquals(-2000, cseReferenceExchanges.getExchange(Country.FR), DOUBLE_TOLERANCE);
