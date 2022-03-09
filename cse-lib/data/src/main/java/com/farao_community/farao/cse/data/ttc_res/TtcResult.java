@@ -69,8 +69,47 @@ public final class TtcResult {
         }
     }
 
+    public static class FailedProcessData {
+        private final FailedProcessReason failedProcessReason;
+        private final String processTargetDate;
+
+        public FailedProcessData(FailedProcessReason failedProcessReason, String processTargetDate) {
+            this.failedProcessReason = failedProcessReason;
+            this.processTargetDate = processTargetDate;
+        }
+
+        public enum FailedProcessReason {
+            NO_SECURE_TTC("A98", "No secure TTC found");
+
+            private final String reasonCode;
+            private final String reasonText;
+
+            FailedProcessReason(String reasonCode, String reasonText) {
+                this.reasonCode = reasonCode;
+                this.reasonText = reasonText;
+            }
+
+            public String getReasonCode() {
+                return reasonCode;
+            }
+
+            public String getReasonText() {
+                return reasonText;
+            }
+        }
+    }
+
     private TtcResult() {
         // Should not be instantiated
+    }
+
+    public static Timestamp generate(FailedProcessData failedProcessData) {
+        Timestamp ttcResults = new Timestamp();
+        Time time = new Time();
+        time.setV(failedProcessData.processTargetDate);
+        ttcResults.setTime(time);
+        fillFailureReason(failedProcessData.failedProcessReason, ttcResults);
+        return ttcResults;
     }
 
     public static Timestamp generate(TtcFiles ttcFiles, ProcessData processData, CracResultsHelper cracResultsHelper) {
@@ -78,29 +117,25 @@ public final class TtcResult {
         Time time = new Time();
         time.setV(processData.processTargetDate);
         ttcResults.setTime(time);
-        if (processData.limitingCause == LimitingCause.COMPUTATION_FAILURE
-            || processData.limitingCause == LimitingCause.INDEX_EVALUATION_OR_MAX_ITERATION) {
-            fillFailureReason(limitingCauseToString(processData.limitingCause), ttcResults);
-        } else {
-            Valid valid = new Valid();
-            valid.setV(BigInteger.ONE);
-            ttcResults.setValid(valid);
+        Valid valid = new Valid();
+        valid.setV(BigInteger.ONE);
+        ttcResults.setValid(valid);
 
-            calculateAndFillTtcAndMnii(processData, ttcResults);
+        calculateAndFillTtcAndMnii(processData, ttcResults);
 
-            TTCLimitedBy ttcLimitedBy = new TTCLimitedBy();
-            ttcLimitedBy.setV(limitingCauseToString(processData.limitingCause));
-            ttcResults.setTTCLimitedBy(ttcLimitedBy);
-            fillCountriesBalance(processData, ttcResults);
-            fillBordersExchanges(processData, ttcResults);
-            fillSplittingFactors(processData, ttcResults);
-            fillRequiredFiles(ttcFiles, ttcResults);
-            fillLimitingElement(cracResultsHelper, ttcResults);
-            Results results = new Results();
-            fillActivatedPreventiveRemedialActions(cracResultsHelper, results);
-            fillCriticalBranches(cracResultsHelper, results);
-            ttcResults.setResults(results);
-        }
+        TTCLimitedBy ttcLimitedBy = new TTCLimitedBy();
+        // It is still unclear what to do if the TTC is limited by computation failure in the dichotomy or by reaching max iteration
+        ttcLimitedBy.setV(limitingCauseToString(processData.limitingCause));
+        ttcResults.setTTCLimitedBy(ttcLimitedBy);
+        fillCountriesBalance(processData, ttcResults);
+        fillBordersExchanges(processData, ttcResults);
+        fillSplittingFactors(processData, ttcResults);
+        fillRequiredFiles(ttcFiles, ttcResults);
+        fillLimitingElement(cracResultsHelper, ttcResults);
+        Results results = new Results();
+        fillActivatedPreventiveRemedialActions(cracResultsHelper, results);
+        fillCriticalBranches(cracResultsHelper, results);
+        ttcResults.setResults(results);
         return ttcResults;
     }
 
@@ -238,13 +273,13 @@ public final class TtcResult {
         }
     }
 
-    private static void fillFailureReason(String limitingCause, Timestamp ttcResults) {
+    private static void fillFailureReason(FailedProcessData.FailedProcessReason failedProcessReason, Timestamp ttcResults) {
         Valid valid = new Valid();
         valid.setV(BigInteger.ZERO);
         ttcResults.setValid(valid);
         ReasonType reasonType = new ReasonType();
-        reasonType.setReason(limitingCause);
-        reasonType.setReasonCode("01");   // not Known at the moment the dev is done, set to 01 by developer choice.
+        reasonType.setReason(failedProcessReason.getReasonText());
+        reasonType.setReasonCode(failedProcessReason.getReasonCode());
         ttcResults.setReasonType(reasonType);
     }
 

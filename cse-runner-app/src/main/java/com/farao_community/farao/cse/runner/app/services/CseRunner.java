@@ -60,14 +60,25 @@ public class CseRunner {
         Crac crac = preProcessNetworkAndImportCrac(cseRequest.getMergedCracUrl(), network, cseRequest.getTargetProcessDateTime());
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
 
-        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String baseCaseFileUrl = fileExporter.saveNetworkInUcteFormat(network, baseCaseFilePath);
-        String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-        String finalCgmUrl = fileExporter.saveNetworkInUcteFormat(
+
+        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
+        String ttcResultUrl;
+        String finalCgmUrl;
+        if (dichotomyResult.hasValidStep()) {
+            String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+            finalCgmUrl = fileExporter.saveNetworkInUcteFormat(
                 fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl()),
                 finalCgmPath);
-        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult, baseCaseFileUrl,  finalCgmUrl);
+            ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData,
+                dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
+                baseCaseFileUrl,  finalCgmUrl);
+        } else {
+            ttcResultUrl = ttcResultService.saveFailedTtcResult(cseRequest);
+            finalCgmUrl = baseCaseFileUrl;
+        }
+
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
