@@ -18,10 +18,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -70,16 +67,29 @@ public final class TtcResult {
     }
 
     public static class FailedProcessData {
-        private final FailedProcessReason failedProcessReason;
         private final String processTargetDate;
+        private final FailedProcessReason failedProcessReason;
+        private final Optional<String> additionalFailureMessage;
 
-        public FailedProcessData(FailedProcessReason failedProcessReason, String processTargetDate) {
-            this.failedProcessReason = failedProcessReason;
+        public FailedProcessData(String processTargetDate, FailedProcessReason failedProcessReason, String additionalFailureMessage) {
             this.processTargetDate = processTargetDate;
+            this.failedProcessReason = failedProcessReason;
+            this.additionalFailureMessage = Optional.of(additionalFailureMessage);
+        }
+
+        public FailedProcessData(String processTargetDate, FailedProcessReason failedProcessReason) {
+            this.processTargetDate = processTargetDate;
+            this.failedProcessReason = failedProcessReason;
+            this.additionalFailureMessage = Optional.empty();
         }
 
         public enum FailedProcessReason {
-            NO_SECURE_TTC("A98", "No secure TTC found");
+            NO_SECURE_TTC("A98", "No secure TTC found"),
+            MISSING_FILES("A91", "Some input files are missing: "),
+            INVALID_FILES("A94", "Some input files are invalid: "),
+            LOAD_FLOW_FAILURE("A42", "Load flow divergence"),
+            IT_ISSUE("A93", ""),
+            OTHER("B18", "");
 
             private final String reasonCode;
             private final String reasonText;
@@ -103,12 +113,13 @@ public final class TtcResult {
         // Should not be instantiated
     }
 
-    public static Timestamp generate(FailedProcessData failedProcessData) {
+    public static Timestamp generate(TtcFiles ttcFiles, FailedProcessData failedProcessData) {
         Timestamp ttcResults = new Timestamp();
         Time time = new Time();
         time.setV(failedProcessData.processTargetDate);
         ttcResults.setTime(time);
-        fillFailureReason(failedProcessData.failedProcessReason, ttcResults);
+        fillFailureReason(failedProcessData, ttcResults);
+        fillRequiredFiles(ttcFiles, ttcResults);
         return ttcResults;
     }
 
@@ -273,13 +284,16 @@ public final class TtcResult {
         }
     }
 
-    private static void fillFailureReason(FailedProcessData.FailedProcessReason failedProcessReason, Timestamp ttcResults) {
+    private static void fillFailureReason(FailedProcessData failedProcessData, Timestamp ttcResults) {
         Valid valid = new Valid();
         valid.setV(BigInteger.ZERO);
         ttcResults.setValid(valid);
         ReasonType reasonType = new ReasonType();
-        reasonType.setReason(failedProcessReason.getReasonText());
-        reasonType.setReasonCode(failedProcessReason.getReasonCode());
+        StringBuilder reasonTextBuilder = new StringBuilder();
+        reasonTextBuilder.append(failedProcessData.failedProcessReason.getReasonText());
+        failedProcessData.additionalFailureMessage.ifPresent(reasonTextBuilder::append);
+        reasonType.setReason(reasonTextBuilder.toString());
+        reasonType.setReasonCode(failedProcessData.failedProcessReason.getReasonCode());
         ttcResults.setReasonType(reasonType);
     }
 

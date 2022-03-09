@@ -75,7 +75,7 @@ public class CseRunner {
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
                 baseCaseFileUrl,  finalCgmUrl);
         } else {
-            ttcResultUrl = ttcResultService.saveFailedTtcResult(cseRequest);
+            ttcResultUrl = ttcResultService.saveFailedTtcResult(cseRequest, baseCaseFileUrl);
             finalCgmUrl = baseCaseFileUrl;
         }
 

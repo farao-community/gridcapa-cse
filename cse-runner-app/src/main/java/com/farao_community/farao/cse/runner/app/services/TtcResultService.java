@@ -41,26 +41,18 @@ public class TtcResultService {
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveFailedTtcResult(CseRequest cseRequest) throws IOException {
+    public String saveFailedTtcResult(CseRequest cseRequest, String baseCaseFileUrl) throws IOException {
+        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl);
         Timestamp timestamp = TtcResult.generate(
+            ttcFiles,
             new TtcResult.FailedProcessData(
-                TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC,
-                cseRequest.getTargetProcessDateTime().toString()
-            ));
+                cseRequest.getTargetProcessDateTime().toString(),
+                TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC));
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
     }
 
     public String saveTtcResult(CseRequest cseRequest, CseData cseData, RaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String baseCaseFileUrl, String finalCgmUrl) throws IOException {
-        TtcResult.TtcFiles ttcFiles = new TtcResult.TtcFiles(
-            FileUtil.getFilenameFromUrl(baseCaseFileUrl),
-            FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
-            FileUtil.getFilenameFromUrl(cseRequest.getMergedCracUrl()),
-            FileUtil.getFilenameFromUrl(cseRequest.getMergedGlskUrl()),
-            FileUtil.getFilenameFromUrl(cseRequest.getNtcReductionsUrl()),
-            "ntcReductionCreationDatetime",
-            FileUtil.getFilenameFromUrl(finalCgmUrl)
-        );
-
+        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, finalCgmUrl);
         String networkWithPraUrl = highestSecureStepRaoResponse.getNetworkWithPraFileUrl();
         Network networkAfterDichotomy = fileImporter.importNetwork(networkWithPraUrl);
         double finalItalianImport = BorderExchanges.computeItalianImport(networkAfterDichotomy);
@@ -80,5 +72,21 @@ public class TtcResultService {
         RaoResult raoResult = fileImporter.importRaoResult(highestSecureStepRaoResponse.getRaoResultFileUrl(), crac);
         Timestamp timestamp = TtcResult.generate(ttcFiles, processData, new CracResultsHelper(crac, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath())));
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+    }
+
+    private static TtcResult.TtcFiles createTtcFiles(CseRequest cseRequest, String baseCaseFileUrl, String finalCgmUrl) {
+        return new TtcResult.TtcFiles(
+            FileUtil.getFilenameFromUrl(baseCaseFileUrl),
+            FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getMergedCracUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getMergedGlskUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getNtcReductionsUrl()),
+            "ntcReductionCreationDatetime",
+            FileUtil.getFilenameFromUrl(finalCgmUrl)
+        );
+    }
+
+    private static TtcResult.TtcFiles createTtcFiles(CseRequest cseRequest, String baseCaseFileUrl) {
+        return createTtcFiles(cseRequest, baseCaseFileUrl, null);
     }
 }
