@@ -300,10 +300,10 @@ public final class TtcResult {
         valid.setV(BigInteger.ZERO);
         ttcResults.setValid(valid);
         ReasonType reasonType = new ReasonType();
-        StringBuilder reasonTextBuilder = new StringBuilder();
-        reasonTextBuilder.append(failedProcessData.failedProcessReason.getReasonText());
-        failedProcessData.additionalFailureMessage.ifPresent(reasonTextBuilder::append);
-        reasonType.setReason(reasonTextBuilder.toString());
+        String reasonText = failedProcessData.additionalFailureMessage
+            .map(s -> failedProcessData.failedProcessReason.getReasonText() + s)
+            .orElseGet(failedProcessData.failedProcessReason::getReasonText);
+        reasonType.setReason(reasonText);
         reasonType.setReasonCode(failedProcessData.failedProcessReason.getReasonCode());
         ttcResults.setReasonType(reasonType);
     }

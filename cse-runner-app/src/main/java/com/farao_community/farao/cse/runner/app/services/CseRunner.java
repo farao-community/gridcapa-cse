@@ -98,7 +98,7 @@ public class CseRunner {
                 finalCgmPath);
             ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData,
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
-                baseCaseFileUrl,  finalCgmUrl);
+                baseCaseFileUrl, finalCgmUrl);
         } else {
             ttcResultUrl = ttcResultService.saveFailedTtcResult(
                 cseRequest,
