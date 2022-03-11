@@ -24,7 +24,6 @@ import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.Optional;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -42,18 +41,8 @@ public class TtcResultService {
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveFailedTtcResult(CseRequest cseRequest, String baseCaseFileUrl, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason, String additionalMessage) throws IOException {
-        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, null);
-        Timestamp timestamp = TtcResult.generate(ttcFiles, new TtcResult.FailedProcessData(
-            cseRequest.getTargetProcessDateTime().toString(),
-            failedProcessReason,
-            additionalMessage
-        ));
-        return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-    }
-
     public String saveFailedTtcResult(CseRequest cseRequest, String baseCaseFileUrl, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason) throws IOException {
-        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, null);
+        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, baseCaseFileUrl);
         Timestamp timestamp = TtcResult.generate(ttcFiles, new TtcResult.FailedProcessData(
             cseRequest.getTargetProcessDateTime().toString(),
             failedProcessReason
@@ -86,13 +75,13 @@ public class TtcResultService {
 
     private static TtcResult.TtcFiles createTtcFiles(CseRequest cseRequest, String baseCaseFileUrl, String finalCgmUrl) {
         return new TtcResult.TtcFiles(
-            Optional.ofNullable(baseCaseFileUrl).map(FileUtil::getFilenameFromUrl).orElse(null),
-            Optional.ofNullable(cseRequest.getCgmUrl()).map(FileUtil::getFilenameFromUrl).orElse(null),
-            Optional.ofNullable(cseRequest.getMergedCracUrl()).map(FileUtil::getFilenameFromUrl).orElse(null),
-            Optional.ofNullable(cseRequest.getMergedGlskUrl()).map(FileUtil::getFilenameFromUrl).orElse(null),
-            Optional.ofNullable(cseRequest.getNtcReductionsUrl()).map(FileUtil::getFilenameFromUrl).orElse(null),
+            FileUtil.getFilenameFromUrl(baseCaseFileUrl),
+            FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getMergedCracUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getMergedGlskUrl()),
+            FileUtil.getFilenameFromUrl(cseRequest.getNtcReductionsUrl()),
             "ntcReductionCreationDatetime",
-            Optional.ofNullable(finalCgmUrl).map(FileUtil::getFilenameFromUrl).orElse(null)
+            FileUtil.getFilenameFromUrl(finalCgmUrl)
         );
     }
 }

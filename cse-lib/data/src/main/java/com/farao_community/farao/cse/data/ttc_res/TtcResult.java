@@ -85,7 +85,6 @@ public final class TtcResult {
 
         public enum FailedProcessReason {
             NO_SECURE_TTC("A98", "No secure TTC found"),
-            MISSING_FILES("A91", "Some input files are missing: "),
             INVALID_FILES("A94", "Some input files are invalid: "),
             LOAD_FLOW_FAILURE("A42", "Load flow divergence"),
             IT_ISSUE("A93", ""),
@@ -170,71 +169,59 @@ public final class TtcResult {
     }
 
     private static void fillRequiredFiles(TtcFiles ttcFiles, Timestamp ttcResults) {
-        if (ttcFiles.finalCgmWithPraFileName != null) {
-            CGMfile cgmFile = new CGMfile();
-            cgmFile.setV(ttcFiles.finalCgmWithPraFileName);
-            ttcResults.setCGMfile(cgmFile);
-        }
+        CGMfile cgmFile = new CGMfile();
+        cgmFile.setV(ttcFiles.finalCgmWithPraFileName);
+        ttcResults.setCGMfile(cgmFile);
 
-        if (ttcFiles.mergedGlskFileName != null) {
-            GSKfile gskFile = new GSKfile();
-            gskFile.setV(ttcFiles.mergedGlskFileName);
-            ttcResults.setGSKfile(gskFile);
-        }
+        GSKfile gskFile = new GSKfile();
+        gskFile.setV(ttcFiles.mergedGlskFileName);
+        ttcResults.setGSKfile(gskFile);
 
-        if (ttcFiles.cracJsonFileName != null) {
-            CRACfile cracFile = new CRACfile();
-            cracFile.setV(ttcFiles.cracJsonFileName);
-            ttcResults.setCRACfile(cracFile);
-        }
+        CRACfile cracFile = new CRACfile();
+        cracFile.setV(ttcFiles.cracJsonFileName);
+        ttcResults.setCRACfile(cracFile);
 
-        if (ttcFiles.baseCaseFileName != null) {
-            BASECASEfile baseCaseFile = new BASECASEfile();
-            baseCaseFile.setV(ttcFiles.baseCaseFileName);
-            ttcResults.setBASECASEfile(baseCaseFile);
-        }
+        BASECASEfile baseCaseFile = new BASECASEfile();
+        baseCaseFile.setV(ttcFiles.baseCaseFileName);
+        ttcResults.setBASECASEfile(baseCaseFile);
 
         Inputfiles inputFiles = new Inputfiles();
         CRACfiles cracFiles = new CRACfiles();
         inputFiles.setCRACfiles(cracFiles);
         GSKfiles gskFiles = new GSKfiles();
         inputFiles.setGSKfiles(gskFiles);
-        if (ttcFiles.ntcReductionFilename != null) {
-            NTCRedfiles ntcRedFiles = new NTCRedfiles();
-            File ntcRedFile = new File();
-            Filename ntcRedFileName = new Filename();
-            ntcRedFileName.setV(ttcFiles.ntcReductionFilename);
-            ntcRedFile.setFilename(ntcRedFileName);
-            Country ntcRedCountry = new Country();
-            ntcRedCountry.setV("IT");
-            ntcRedFile.setCountry(ntcRedCountry);
-            CreationDateTime ntcRedCreationDateTime = new CreationDateTime();
-            ntcRedCreationDateTime.setV(ttcFiles.ntcReductionCreationDatetime);
-            ntcRedFile.setCreationDateTime(ntcRedCreationDateTime);
-            Backupfile ntcRedBackupFile = new Backupfile();
-            ntcRedBackupFile.setV("A02");
-            ntcRedFile.setBackupfile(ntcRedBackupFile);
-            ntcRedFiles.setFile(ntcRedFile);
-            inputFiles.setNTCRedfiles(ntcRedFiles);
-        }
-        if (ttcFiles.initialCgmFileName != null) {
-            IDCFfiles idcfFiles = new IDCFfiles();
-            File idcfFile = new File();
-            Filename idcfFileName = new Filename();
-            idcfFileName.setV(ttcFiles.initialCgmFileName);
-            idcfFile.setFilename(idcfFileName);
-            Country idcfCountry = new Country();
-            idcfCountry.setV("UX");
-            idcfFile.setCountry(idcfCountry);
-            CreationDateTime idcfCreationDateTime = new CreationDateTime();
-            idcfCreationDateTime.setV("");
-            idcfFile.setCreationDateTime(idcfCreationDateTime);
-            Backupfile idcfBackupFile = new Backupfile();
-            idcfBackupFile.setV("A02");
-            idcfFile.setBackupfile(idcfBackupFile);
-            idcfFiles.setFile(idcfFile);
-            inputFiles.setIDCFfiles(idcfFiles);
-        }
+        NTCRedfiles ntcRedFiles = new NTCRedfiles();
+        File ntcRedFile = new File();
+        Filename ntcRedFileName = new Filename();
+        ntcRedFileName.setV(ttcFiles.ntcReductionFilename);
+        ntcRedFile.setFilename(ntcRedFileName);
+        Country ntcRedCountry = new Country();
+        ntcRedCountry.setV("IT");
+        ntcRedFile.setCountry(ntcRedCountry);
+        CreationDateTime ntcRedCreationDateTime = new CreationDateTime();
+        ntcRedCreationDateTime.setV(ttcFiles.ntcReductionCreationDatetime);
+        ntcRedFile.setCreationDateTime(ntcRedCreationDateTime);
+        Backupfile ntcRedBackupFile = new Backupfile();
+        ntcRedBackupFile.setV("A02");
+        ntcRedFile.setBackupfile(ntcRedBackupFile);
+        ntcRedFiles.setFile(ntcRedFile);
+        inputFiles.setNTCRedfiles(ntcRedFiles);
+        IDCFfiles idcfFiles = new IDCFfiles();
+        File idcfFile = new File();
+        Filename idcfFileName = new Filename();
+        idcfFileName.setV(ttcFiles.initialCgmFileName);
+        idcfFile.setFilename(idcfFileName);
+        Country idcfCountry = new Country();
+        idcfCountry.setV("UX");
+        idcfFile.setCountry(idcfCountry);
+        CreationDateTime idcfCreationDateTime = new CreationDateTime();
+        idcfCreationDateTime.setV("");
+        idcfFile.setCreationDateTime(idcfCreationDateTime);
+        Backupfile idcfBackupFile = new Backupfile();
+        idcfBackupFile.setV("A02");
+        idcfFile.setBackupfile(idcfBackupFile);
+        idcfFiles.setFile(idcfFile);
+        inputFiles.setIDCFfiles(idcfFiles);
         ttcResults.setInputfiles(inputFiles);
     }
 
