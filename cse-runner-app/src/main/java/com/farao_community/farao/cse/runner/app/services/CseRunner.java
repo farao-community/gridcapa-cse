@@ -8,6 +8,8 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.computation.BorderExchanges;
+import com.farao_community.farao.cse.computation.CseComputationException;
+import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.dichotomy.DichotomyRunner;
@@ -54,20 +56,45 @@ public class CseRunner {
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network);
         cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()).getUrl());
-        double initialItalianImportFromNetwork = BorderExchanges.computeItalianImport(network);
+
+        double initialItalianImportFromNetwork;
+        try {
+            initialItalianImportFromNetwork = BorderExchanges.computeItalianImport(network);
+        } catch (CseComputationException e) {
+            String ttcResultUrl = ttcResultService.saveFailedTtcResult(
+                cseRequest,
+                cseRequest.getCgmUrl(),
+                TtcResult.FailedProcessData.FailedProcessReason.LOAD_FLOW_FAILURE);
+            return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
+        }
+
         checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
         Crac crac = preProcessNetworkAndImportCrac(cseRequest.getMergedCracUrl(), network, cseRequest.getTargetProcessDateTime());
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
 
-        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String baseCaseFileUrl = fileExporter.saveNetworkInUcteFormat(network, baseCaseFilePath);
-        String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-        String finalCgmUrl = fileExporter.saveNetworkInUcteFormat(
+
+        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
+        String ttcResultUrl;
+        String finalCgmUrl;
+        if (dichotomyResult.hasValidStep()) {
+            String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+            finalCgmUrl = fileExporter.saveNetworkInUcteFormat(
                 fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl()),
                 finalCgmPath);
-        String ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, dichotomyResult, baseCaseFileUrl,  finalCgmUrl);
+            ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData,
+                dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
+                baseCaseFileUrl, finalCgmUrl);
+        } else {
+            ttcResultUrl = ttcResultService.saveFailedTtcResult(
+                cseRequest,
+                baseCaseFileUrl,
+                TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC);
+            finalCgmUrl = baseCaseFileUrl;
+        }
+
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
