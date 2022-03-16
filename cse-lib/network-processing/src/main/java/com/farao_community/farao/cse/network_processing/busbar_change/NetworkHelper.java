@@ -88,7 +88,7 @@ public final class NetworkHelper {
      * @param  networkModifier: object that modifies a network
      * @return a map, mapping initial and final node IDs to the two created switches' IDs
      */
-    public static BusBarEquivalentModel createSwitchPair(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier, String fictitiousBusId) {
+    public static BusBarEquivalentModel createSwitchPair(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier, String fictitiousBusIdToUse) {
         LOGGER.debug("Creating switch pair: {}", switchPairToCreate.uniqueId);
         String node1 = switchPairToCreate.initialNodeId;
         String node2 = switchPairToCreate.finalNodeId;
@@ -109,8 +109,9 @@ public final class NetworkHelper {
             branchIsOnNode1 = bus2.equals(node1);
         }
 
+        String fictitiousBusId;
         Bus fictitiousBus;
-        if (fictitiousBusId == null) {
+        if (fictitiousBusIdToUse == null) {
             // Create fictitious bus
             fictitiousBusId = generateFictitiousBusId(voltageLevel, network);
             fictitiousBus = networkModifier.createBus(fictitiousBusId, voltageLevel.getId());
@@ -122,6 +123,7 @@ public final class NetworkHelper {
                 networkModifier.moveBranch(branch, Branch.Side.TWO, fictitiousBus);
             }
         } else {
+            fictitiousBusId = fictitiousBusIdToUse;
             fictitiousBus = (Bus) network.getIdentifiable(fictitiousBusId);
         }
 
