@@ -88,7 +88,7 @@ public final class NetworkHelper {
      * @param  networkModifier: object that modifies a network
      * @return a map, mapping initial and final node IDs to the two created switches' IDs
      */
-    public static Map<String, String> createSwitchPair(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier) {
+    public static BusBarEquivalentModel createSwitchPair(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier, String fictitiousBusId) {
         LOGGER.debug("Creating switch pair: {}", switchPairToCreate.uniqueId);
         String node1 = switchPairToCreate.initialNodeId;
         String node2 = switchPairToCreate.finalNodeId;
@@ -99,20 +99,31 @@ public final class NetworkHelper {
 
         VoltageLevel voltageLevel = ((Bus) network.getIdentifiable(node1)).getVoltageLevel();
 
-        // Create fictitious bus
-        String busId = generateFictitiousBusId(voltageLevel, network);
-        Bus fictitiousBus = networkModifier.createBus(busId, voltageLevel.getId());
+        boolean moveSide1 = bus1.equals(node1) || bus1.equals(node2);
+        boolean moveSide2 = bus2.equals(node1) || bus2.equals(node2);
 
-        // Move one branch end to the fictitious bus
         boolean branchIsOnNode1 = true; // check if branch is initially on node1
-        if (bus1.equals(node1) || bus1.equals(node2)) {
-            networkModifier.moveBranch(branch, Branch.Side.ONE, fictitiousBus);
+        if (moveSide1) {
             branchIsOnNode1 = bus1.equals(node1);
-        } else if (bus2.equals(node1) || bus2.equals(node2)) {
-            networkModifier.moveBranch(branch, Branch.Side.TWO, fictitiousBus);
+        } else if (moveSide2) {
             branchIsOnNode1 = bus2.equals(node1);
         }
-        // else: should not happen, a check was done before
+
+        Bus fictitiousBus;
+        if (fictitiousBusId == null) {
+            // Create fictitious bus
+            fictitiousBusId = generateFictitiousBusId(voltageLevel, network);
+            fictitiousBus = networkModifier.createBus(fictitiousBusId, voltageLevel.getId());
+
+            // Move one branch end to the fictitious bus
+            if (moveSide1) {
+                networkModifier.moveBranch(branch, Branch.Side.ONE, fictitiousBus);
+            } else if (moveSide2) {
+                networkModifier.moveBranch(branch, Branch.Side.TWO, fictitiousBus);
+            }
+        } else {
+            fictitiousBus = (Bus) network.getIdentifiable(fictitiousBusId);
+        }
 
         // Create switches
         // Set OPEN/CLOSED status depending on the branch's initially connected node
@@ -120,7 +131,11 @@ public final class NetworkHelper {
         String switch1 = networkModifier.createSwitch(voltageLevel, node1, fictitiousBus.getId(), currentLimit, !branchIsOnNode1).getId();
         String switch2 = networkModifier.createSwitch(voltageLevel, node2, fictitiousBus.getId(), currentLimit, branchIsOnNode1).getId();
 
-        return Map.of(node1, switch1, node2, switch2);
+        return new BusBarEquivalentModel(fictitiousBusId, Map.of(node1, switch1, node2, switch2));
+    }
+
+    public static BusBarEquivalentModel createSwitchPair(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier) {
+        return createSwitchPair(switchPairToCreate, networkModifier, null);
     }
 
     private static Double getMinimumCurrentLimit(Branch<?> branch) {
@@ -199,6 +214,24 @@ public final class NetworkHelper {
         @Override
         public int compareTo(SwitchPairToCreate other) {
             return uniqueId.compareTo(other.uniqueId);
+        }
+    }
+
+    public static class BusBarEquivalentModel {
+        private String fictitiousBusId;
+        private Map<String, String> switchesId;
+
+        public BusBarEquivalentModel(String fictitiousBusId, Map<String, String> switchesId) {
+            this.fictitiousBusId = fictitiousBusId;
+            this.switchesId = switchesId;
+        }
+
+        public String getFictitiousBusId() {
+            return fictitiousBusId;
+        }
+
+        public String getSwitchId(String busId) {
+            return switchesId.get(busId);
         }
     }
 }

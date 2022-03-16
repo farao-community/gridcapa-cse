@@ -54,7 +54,7 @@ public final class BusBarChangeProcessor {
 
         Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa = new HashMap<>();
         SortedSet<BusToCreate> busesToCreate = new TreeSet<>();
-        Map<String, Map<String, String>> createdSwitches = new HashMap<>();
+        Map<String, NetworkHelper.BusBarEquivalentModel> createdSwitches = new HashMap<>();
 
         TCRACSeries tcracSeries = CseCracCreator.getCracSeries(cseCrac.getCracDocument());
         List<TRemedialActions> tRemedialActionsList = tcracSeries.getRemedialActions();
@@ -130,15 +130,28 @@ public final class BusBarChangeProcessor {
      * Creates switches needed in switchesToCreatePerRa
      * Stores info about created switches in createdSwitches, per connected node (initial/final)
      */
-    private static void createSwitches(Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa, Map<String, Map<String, String>> createdSwitches, NetworkModifier networkModifier) {
-        Set<SwitchPairToCreate> uniqueSwitchPairsToCreate = switchesToCreatePerRa.values().stream().flatMap(Set::stream).collect(Collectors.toSet());
-        uniqueSwitchPairsToCreate.stream().sorted().forEach(switchPairToCreate -> createdSwitches.put(switchPairToCreate.uniqueId, NetworkHelper.createSwitchPair(switchPairToCreate, networkModifier)));
+    private static void createSwitches(Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa, Map<String, NetworkHelper.BusBarEquivalentModel> createdSwitches, NetworkModifier networkModifier) {
+        List<SwitchPairToCreate> uniqueSwitchPairsToCreate = switchesToCreatePerRa.values().stream().flatMap(Set::stream).sorted().collect(Collectors.toList());
+        for (SwitchPairToCreate switchPairToCreate: uniqueSwitchPairsToCreate) {
+            // First, search if there is any other RA (switch pair) operating on the same line, that has already been treated
+            Optional<SwitchPairToCreate> otherSwitchPairOnSameBranch = uniqueSwitchPairsToCreate.stream()
+                .filter(otherSwitchPair -> createdSwitches.containsKey(otherSwitchPair.uniqueId))
+                .filter(otherSwitchPair -> otherSwitchPair.branchId.equals(switchPairToCreate.branchId))
+                .findAny();
+            if (otherSwitchPairOnSameBranch.isPresent()) {
+                // If there is, use the same fictitious bus that has already been created
+                NetworkHelper.BusBarEquivalentModel createdSwitchesForOtherPair = createdSwitches.get(otherSwitchPairOnSameBranch.get().uniqueId);
+                createdSwitches.put(switchPairToCreate.uniqueId, NetworkHelper.createSwitchPair(switchPairToCreate, networkModifier, createdSwitchesForOtherPair.getFictitiousBusId()));
+            } else {
+                createdSwitches.put(switchPairToCreate.uniqueId, NetworkHelper.createSwitchPair(switchPairToCreate, networkModifier));
+            }
+        }
     }
 
     /**
      * Maps info in createdSwitches to needed switches for RAs, and creates a BusBarChangeSwitches set
      */
-    private static Set<BusBarChangeSwitches> computeBusBarChangeSwitches(Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa, Map<String, Map<String, String>> createdSwitches) {
+    private static Set<BusBarChangeSwitches> computeBusBarChangeSwitches(Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa, Map<String, NetworkHelper.BusBarEquivalentModel> createdSwitches) {
         Set<BusBarChangeSwitches> busBarChangeSwitches = new HashSet<>();
 
         // Loop through the RAs and add switch pairs IDs to the set
@@ -155,12 +168,12 @@ public final class BusBarChangeProcessor {
     /**
      * Fetches the IDs of the created switches to open & close, for a given SwitchPairToCreate
      */
-    private static SwitchPairId getCreatedSwitchPairId(SwitchPairToCreate switchPairToCreate, Map<String, Map<String, String>> createdSwitches) {
+    private static SwitchPairId getCreatedSwitchPairId(SwitchPairToCreate switchPairToCreate, Map<String, NetworkHelper.BusBarEquivalentModel> createdSwitches) {
         String switchPairToCreateId = switchPairToCreate.uniqueId();
         // OPEN switch between branch and initial node, CLOSE switch between branch and final node
         return new SwitchPairId(
-            createdSwitches.get(switchPairToCreateId).get(switchPairToCreate.initialNodeId),
-            createdSwitches.get(switchPairToCreateId).get(switchPairToCreate.finalNodeId)
+            createdSwitches.get(switchPairToCreateId).getSwitchId(switchPairToCreate.initialNodeId),
+            createdSwitches.get(switchPairToCreateId).getSwitchId(switchPairToCreate.finalNodeId)
         );
     }
 
