@@ -128,23 +128,26 @@ public final class BusBarChangeProcessor {
 
     /**
      * Creates switches needed in switchesToCreatePerRa
-     * Stores info about created switches in createdSwitches, per connected node (initial/final)
+     * Stores info about created switches in createdSwitches, SwitchPairToCreate ID
      */
     private static void createSwitches(Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa, Map<String, NetworkHelper.BusBarEquivalentModel> createdSwitches, NetworkModifier networkModifier) {
+        // Get a list of all switch paris to create, some of them may be in common for different RAs
         List<SwitchPairToCreate> uniqueSwitchPairsToCreate = switchesToCreatePerRa.values().stream().flatMap(Set::stream).sorted().collect(Collectors.toList());
+        // Store information about created fictitious buses for moving branches
+        Map<String, String> fictitiousBusIdPerBranchId = new HashMap<>();
         for (SwitchPairToCreate switchPairToCreate: uniqueSwitchPairsToCreate) {
-            // First, search if there is any other RA (switch pair) operating on the same line, that has already been treated
-            Optional<SwitchPairToCreate> otherSwitchPairOnSameBranch = uniqueSwitchPairsToCreate.stream()
-                .filter(otherSwitchPair -> createdSwitches.containsKey(otherSwitchPair.uniqueId))
-                .filter(otherSwitchPair -> otherSwitchPair.branchId.equals(switchPairToCreate.branchId))
-                .findAny();
-            if (otherSwitchPairOnSameBranch.isPresent()) {
-                // If there is, use the same fictitious bus that has already been created
-                NetworkHelper.BusBarEquivalentModel createdSwitchesForOtherPair = createdSwitches.get(otherSwitchPairOnSameBranch.get().uniqueId);
-                createdSwitches.put(switchPairToCreate.uniqueId, NetworkHelper.createSwitchPair(switchPairToCreate, networkModifier, createdSwitchesForOtherPair.getFictitiousBusId()));
+            String fictitiousBusId;
+            // First, see if the branch has already been moved to a fictitious bus by a previous switch pair creation
+            if (fictitiousBusIdPerBranchId.containsKey(switchPairToCreate.branchId)) {
+                // If yes, re-use the same fictitious bus
+                fictitiousBusId = fictitiousBusIdPerBranchId.get(switchPairToCreate.branchId);
             } else {
-                createdSwitches.put(switchPairToCreate.uniqueId, NetworkHelper.createSwitchPair(switchPairToCreate, networkModifier));
+                // If not, create a new fictitious bus and store the info
+                fictitiousBusId = NetworkHelper.moveBranchToNewFictitiousBus(switchPairToCreate, networkModifier);
+                fictitiousBusIdPerBranchId.put(switchPairToCreate.branchId, fictitiousBusId);
             }
+            // Then create the switch pair
+            createdSwitches.put(switchPairToCreate.uniqueId, NetworkHelper.createSwitchPair(switchPairToCreate, networkModifier, fictitiousBusId));
         }
     }
 
