@@ -140,7 +140,7 @@ public final class NetworkHelper {
 
         VoltageLevel voltageLevel = ((Bus) network.getIdentifiable(node1)).getVoltageLevel();
 
-        boolean moveSide1 = (getBranchSideToMove(switchPairToCreate, network) == Branch.Side.ONE);
+        boolean moveSide1 = getBranchSideToMove(switchPairToCreate, network) == Branch.Side.ONE;
         // check if branch is initially on node1
         boolean branchIsOnNode1 = moveSide1 ? bus1.equals(node1) : bus2.equals(node1);
 
