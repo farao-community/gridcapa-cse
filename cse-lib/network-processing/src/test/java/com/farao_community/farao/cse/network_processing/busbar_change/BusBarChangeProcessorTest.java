@@ -179,14 +179,14 @@ class BusBarChangeProcessorTest {
         BusBarChangeSwitches bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_1")).findAny().orElseThrow();
         Set<SwitchPairId> switchPairs = Set.of(
             new SwitchPairId("BBE1AA1Z BBE1AA11 1", "BBE1AA1Z BBE1AA12 1"),
-            new SwitchPairId("BBE1AA1W BBE1AA11 1", "BBE1AA1W BBE1AA12 1")
+            new SwitchPairId("BBE1AA1X BBE1AA11 1", "BBE1AA1X BBE1AA12 1")
         );
         assertEquals(switchPairs, bbcs.getSwitchPairs());
         bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_2")).findAny().orElseThrow();
         switchPairs = Set.of(
             new SwitchPairId("BBE1AA1Y BBE1AA13 1", "BBE1AA1Y BBE1AA11 1"),
-            new SwitchPairId("BBE1AA1V BBE1AA13 1", "BBE1AA1V BBE1AA11 1"),
-            new SwitchPairId("BBE1AA1X BBE1AA13 1", "BBE1AA1X BBE1AA11 1")
+            new SwitchPairId("BBE1AA1X BBE1AA13 1", "BBE1AA1X BBE1AA11 1"),
+            new SwitchPairId("BBE1AA1Z BBE1AA13 1", "BBE1AA1Z BBE1AA11 1")
         );
         assertEquals(switchPairs, bbcs.getSwitchPairs());
     }

@@ -80,15 +80,56 @@ public final class NetworkHelper {
     }
 
     /**
-     * Creates a switch pair between a branch and two nodes, by creating an intermediary fictitious switch
+     * Depending on the contents of the "SwitchPairToCreate" and on the network object, returns the side of the branch
+     * to move to the fictitious bus
+     * @param switchPairToCreate: the SwitchPairToCreate object
+     * @param network: the Network
+     * @return the Branch.Side of the Branch to move to the fictitious bus
+     */
+    private static Branch.Side getBranchSideToMove(SwitchPairToCreate switchPairToCreate, Network network) {
+        String node1 = switchPairToCreate.initialNodeId;
+        String node2 = switchPairToCreate.finalNodeId;
+        Branch<?> branch = network.getBranch(switchPairToCreate.branchId);
+        String bus1 = branch.getTerminal1().getBusBreakerView().getConnectableBus().getId();
+        String bus2 = branch.getTerminal2().getBusBreakerView().getConnectableBus().getId();
+
+        if (bus1.equals(node1) || bus1.equals(node2)) {
+            return Branch.Side.ONE;
+        } else if (bus2.equals(node1) || bus2.equals(node2)) {
+            return Branch.Side.TWO;
+        } else {
+            // Should not happen
+            throw new FaraoException(String.format("The SwitchPairToCreate %s is not coherent", switchPairToCreate.uniqueId));
+        }
+    }
+
+    public static String moveBranchToNewFictitiousBus(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier) {
+        Network network = networkModifier.getNetwork();
+        Branch<?> branch = network.getBranch(switchPairToCreate.branchId);
+
+        VoltageLevel voltageLevel = ((Bus) network.getIdentifiable(switchPairToCreate.initialNodeId)).getVoltageLevel();
+
+        // Create fictitious bus
+        String fictitiousBusId = generateFictitiousBusId(voltageLevel, network);
+        Bus fictitiousBus = networkModifier.createBus(fictitiousBusId, voltageLevel.getId());
+
+        // Move one branch end to the fictitious bus
+        networkModifier.moveBranch(branch, getBranchSideToMove(switchPairToCreate, network), fictitiousBus);
+
+        return fictitiousBusId;
+    }
+
+    /**
+     * Creates a switch pair between a branch and two nodes, by creating two switches on an intermediary fictitious bus
      * The branch should be initially connected to one of the two nodes
      * The switches are open or closed depending on the initial state of the branch
      *
      * @param switchPairToCreate: object containing ID of the branch, ID of node1, ID of node2
      * @param  networkModifier: object that modifies a network
-     * @return a map, mapping initial and final node IDs to the two created switches' IDs
+     * @param fictitiousBusId: the fictitious bus ID to put the switch pair on
+     * @return a BusBarEquivalentModel object, mapping initial and final node IDs to the two created switches' IDs
      */
-    public static Map<String, String> createSwitchPair(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier) {
+    public static BusBarEquivalentModel createSwitchPair(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier, String fictitiousBusId) {
         LOGGER.debug("Creating switch pair: {}", switchPairToCreate.uniqueId);
         String node1 = switchPairToCreate.initialNodeId;
         String node2 = switchPairToCreate.finalNodeId;
@@ -99,28 +140,17 @@ public final class NetworkHelper {
 
         VoltageLevel voltageLevel = ((Bus) network.getIdentifiable(node1)).getVoltageLevel();
 
-        // Create fictitious bus
-        String busId = generateFictitiousBusId(voltageLevel, network);
-        Bus fictitiousBus = networkModifier.createBus(busId, voltageLevel.getId());
-
-        // Move one branch end to the fictitious bus
-        boolean branchIsOnNode1 = true; // check if branch is initially on node1
-        if (bus1.equals(node1) || bus1.equals(node2)) {
-            networkModifier.moveBranch(branch, Branch.Side.ONE, fictitiousBus);
-            branchIsOnNode1 = bus1.equals(node1);
-        } else if (bus2.equals(node1) || bus2.equals(node2)) {
-            networkModifier.moveBranch(branch, Branch.Side.TWO, fictitiousBus);
-            branchIsOnNode1 = bus2.equals(node1);
-        }
-        // else: should not happen, a check was done before
+        boolean moveSide1 = getBranchSideToMove(switchPairToCreate, network) == Branch.Side.ONE;
+        // check if branch is initially on node1
+        boolean branchIsOnNode1 = moveSide1 ? bus1.equals(node1) : bus2.equals(node1);
 
         // Create switches
         // Set OPEN/CLOSED status depending on the branch's initially connected node
         Double currentLimit = getMinimumCurrentLimit(branch);
-        String switch1 = networkModifier.createSwitch(voltageLevel, node1, fictitiousBus.getId(), currentLimit, !branchIsOnNode1).getId();
-        String switch2 = networkModifier.createSwitch(voltageLevel, node2, fictitiousBus.getId(), currentLimit, branchIsOnNode1).getId();
+        String switch1 = networkModifier.createSwitch(voltageLevel, node1, fictitiousBusId, currentLimit, !branchIsOnNode1).getId();
+        String switch2 = networkModifier.createSwitch(voltageLevel, node2, fictitiousBusId, currentLimit, branchIsOnNode1).getId();
 
-        return Map.of(node1, switch1, node2, switch2);
+        return new BusBarEquivalentModel(Map.of(node1, switch1, node2, switch2));
     }
 
     private static Double getMinimumCurrentLimit(Branch<?> branch) {
@@ -199,6 +229,18 @@ public final class NetworkHelper {
         @Override
         public int compareTo(SwitchPairToCreate other) {
             return uniqueId.compareTo(other.uniqueId);
+        }
+    }
+
+    public static class BusBarEquivalentModel {
+        private Map<String, String> switchesId;
+
+        public BusBarEquivalentModel(Map<String, String> switchesId) {
+            this.switchesId = switchesId;
+        }
+
+        public String getSwitchId(String busId) {
+            return switchesId.get(busId);
         }
     }
 }

@@ -73,6 +73,10 @@ public class NetworkModifier {
     public Switch createSwitch(VoltageLevel voltageLevel, String bus1Id, String bus2Id, Double currentLimit, boolean open) {
         try {
             String switchId = String.format("%s %s 1", bus2Id, bus1Id);
+            if (voltageLevel.getBusBreakerView().getSwitch(switchId) != null) {
+                // Switch has already been created (by other RA)
+                return voltageLevel.getBusBreakerView().getSwitch(switchId);
+            }
             Switch newSwitch = voltageLevel.getBusBreakerView().newSwitch()
                 .setId(switchId)
                 .setBus1(bus1Id)
