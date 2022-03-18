@@ -83,10 +83,6 @@
             <artifactId>powsybl-glsk-document-io-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-glsk-document-cse</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-rao-api</artifactId>
         </dependency>
@@ -159,6 +155,11 @@
         <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-config-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-glsk-document-cse</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
