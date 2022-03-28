@@ -89,7 +89,7 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
     }
 
-    String saveTtcResult(Timestamp timestamp, OffsetDateTime processTargetDate, ProcessType processType) throws IOException {
+    String saveTtcResult(Timestamp timestamp, OffsetDateTime processTargetDate, ProcessType processType) {
         StringWriter stringWriter = new StringWriter();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(Timestamp.class);
