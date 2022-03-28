@@ -22,7 +22,6 @@ import com.powsybl.iidm.network.Network;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -91,8 +90,6 @@ public class FileExporter {
     }
 
     String saveTtcResult(Timestamp timestamp, OffsetDateTime processTargetDate, ProcessType processType) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
         StringWriter stringWriter = new StringWriter();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(Timestamp.class);
@@ -101,20 +98,15 @@ public class FileExporter {
             // format the XML output
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-            QName qName = new QName(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "Timestamp");
+            QName qName = new QName("Timestamp");
             JAXBElement<Timestamp> root = new JAXBElement<>(qName, Timestamp.class, timestamp);
 
             jaxbMarshaller.marshal(root, stringWriter);
-            String result = stringWriter.toString()
-                .replace("xsi:Timestamp", "Timestamp");
-
-            bos.write(result.getBytes());
 
         } catch (JAXBException e) {
             throw new CseInternalException("XSD matching error");
         }
-        byte[] bytes = bos.toByteArray();
-        InputStream is = new ByteArrayInputStream(bytes);
+        InputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
         minioAdapter.uploadFile(getFilePath(processTargetDate, processType), is);
         return minioAdapter.generatePreSignedUrl(getFilePath(processTargetDate, processType));
     }
