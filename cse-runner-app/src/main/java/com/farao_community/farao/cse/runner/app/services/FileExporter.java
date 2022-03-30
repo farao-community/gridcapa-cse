@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.runner.api.resource.FileResource;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -16,6 +17,8 @@ import com.farao_community.farao.data.crac_io_api.CracExporters;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.rao_api.json.JsonRaoParameters;
 import com.farao_community.farao.rao_api.parameters.RaoParameters;
+import com.farao_community.farao.search_tree_rao.castor.parameters.SearchTreeRaoParameters;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.network.Network;
@@ -32,6 +35,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -45,12 +49,14 @@ public class FileExporter {
     private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
     private static final DateTimeFormatter OUTPUTS_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
     private final MinioAdapter minioAdapter;
+    private final String combinedRasFilePath;
 
     @Value("${cse-cc-runner.zone-id}")
     private String zoneId;
 
-    public FileExporter(MinioAdapter minioAdapter) {
+    public FileExporter(MinioAdapter minioAdapter, String combinedRasFilePath) {
         this.minioAdapter = minioAdapter;
+        this.combinedRasFilePath = combinedRasFilePath;
     }
 
     public String saveCracInJsonFormat(Crac crac, OffsetDateTime processTargetDateTime, ProcessType processType) {
@@ -80,13 +86,29 @@ public class FileExporter {
     }
 
     public String saveRaoParameters(OffsetDateTime offsetDateTime, ProcessType processType) {
-        RaoParameters raoParameters = RaoParameters.load();
+        RaoParameters raoParameters = getRaoParameters();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
         String raoParametersDestinationPath = MinioStorageHelper.makeDestinationMinioPath(offsetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(zoneId)) + RAO_PARAMETERS_FILE_NAME;
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         minioAdapter.uploadFile(raoParametersDestinationPath, bais);
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
+    }
+
+    RaoParameters getRaoParameters() {
+        RaoParameters raoParameters = RaoParameters.load();
+        try {
+            InputStream is = new FileInputStream(combinedRasFilePath);
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<List<String>> combinedRas = objectMapper.readValue(is.readAllBytes(), List.class);
+            SearchTreeRaoParameters searchTreeRaoParameters = raoParameters.getExtension(SearchTreeRaoParameters.class);
+            if (searchTreeRaoParameters != null) {
+                searchTreeRaoParameters.setNetworkActionIdCombinations(combinedRas);
+            }
+        } catch (IOException e) {
+            throw new CseDataException(String.format("Impossible to read combined RAs file: %s", combinedRasFilePath));
+        }
+        return raoParameters;
     }
 
     String saveTtcResult(Timestamp timestamp, OffsetDateTime processTargetDate, ProcessType processType) {
