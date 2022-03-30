@@ -97,8 +97,7 @@ public class FileExporter {
 
     RaoParameters getRaoParameters() {
         RaoParameters raoParameters = RaoParameters.load();
-        try {
-            InputStream is = new FileInputStream(combinedRasFilePath);
+        try (InputStream is = new FileInputStream(combinedRasFilePath)) {
             ObjectMapper objectMapper = new ObjectMapper();
             List<List<String>> combinedRas = objectMapper.readValue(is.readAllBytes(), List.class);
             SearchTreeRaoParameters searchTreeRaoParameters = raoParameters.getExtension(SearchTreeRaoParameters.class);
