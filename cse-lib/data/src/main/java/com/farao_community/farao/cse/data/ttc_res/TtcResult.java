@@ -489,7 +489,8 @@ public final class TtcResult {
         Preventive preventive = new Preventive();
         List<Action> actionList = new ArrayList<>();
         List<String> topoPreventiveRas = cracResultsHelper.getPreventiveNetworkActionIds();
-        List<String> pstPreventiveRas = cracResultsHelper.getPreventiveRangeActionIds();
+        List<String> pstPreventiveRas = cracResultsHelper.getPreventivePstRangeActionIds();
+        List<String> hvdcPreventiveRas = cracResultsHelper.getPreventiveHvdcRangeActionIds();
         topoPreventiveRas.forEach(parade -> {
             Action action = new Action();
             Name name = new Name();
@@ -504,6 +505,16 @@ public final class TtcResult {
             PSTtap pstTap = new PSTtap();
             pstTap.setV(BigInteger.valueOf(cracResultsHelper.getTapOfPstRangeActionInPreventive(parade)));
             action.setPSTtap(pstTap);
+            action.setName(name);
+            actionList.add(action);
+        });
+        hvdcPreventiveRas.forEach(parade -> {
+            Action action = new Action();
+            Name name = new Name();
+            name.setV(parade);
+            HVDCsetpoint hvdcSetpoint = new HVDCsetpoint();
+            hvdcSetpoint.setV(BigInteger.valueOf(cracResultsHelper.getSetpointOfHvdcRangeActionInPreventive(parade)));
+            action.setHVDCsetpoint(hvdcSetpoint);
             action.setName(name);
             actionList.add(action);
         });

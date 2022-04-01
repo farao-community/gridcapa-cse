@@ -37,6 +37,13 @@ cse-cc-runner:
   zone-id: "Europe/Paris"
   xnodes:
     file-path: /home/farao/xnodes/xnodes.xml
+  pisa:
+    link1:
+      node-fr: FFG.IL12
+      node-it: FFG.IL11
+    link2:
+      node-fr: FFG.IL14
+      node-it: FFG.IL13
   bindings:
     request:
       destination: cse-request

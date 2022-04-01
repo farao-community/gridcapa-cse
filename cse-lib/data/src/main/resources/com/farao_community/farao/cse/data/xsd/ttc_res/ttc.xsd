@@ -205,10 +205,16 @@
       <xs:sequence>
         <xs:element ref="Name"/>
         <xs:element minOccurs="0" ref="PSTtap"/>
+        <xs:element minOccurs="0" ref="HVDCsetpoint"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="PSTtap">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="HVDCsetpoint">
     <xs:complexType>
       <xs:attribute name="v" use="required" type="xs:integer"/>
     </xs:complexType>

@@ -11,6 +11,8 @@ import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.data.crac_api.*;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_api.cnec.Side;
+import com.farao_community.farao.data.crac_api.range_action.InjectionRangeAction;
+import com.farao_community.farao.data.crac_api.range_action.PstRangeAction;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.powsybl.ucte.network.UcteCountryCode;
@@ -44,14 +46,26 @@ public class CracResultsHelper {
                 .collect(Collectors.toList());
     }
 
-    public List<String> getPreventiveRangeActionIds() {
+    public List<String> getPreventivePstRangeActionIds() {
         return raoResult.getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream()
-                .map(Identifiable::getId)
-                .collect(Collectors.toList());
+            .filter(PstRangeAction.class::isInstance)
+            .map(Identifiable::getId)
+            .collect(Collectors.toList());
+    }
+
+    public List<String> getPreventiveHvdcRangeActionIds() {
+        return raoResult.getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream()
+            .filter(InjectionRangeAction.class::isInstance)
+            .map(Identifiable::getId)
+            .collect(Collectors.toList());
     }
 
     public int getTapOfPstRangeActionInPreventive(String pstRangeActionId) {
         return raoResult.getOptimizedTapOnState(crac.getPreventiveState(), crac.getPstRangeAction(pstRangeActionId));
+    }
+
+    public int getSetpointOfHvdcRangeActionInPreventive(String hvdcRangeActionId) {
+        return (int) raoResult.getOptimizedSetPointOnState(crac.getPreventiveState(), crac.getInjectionRangeAction(hvdcRangeActionId));
     }
 
     public List<FlowCnec> getMonitoredBranchesForOutage(String contingencyId) {

@@ -17,6 +17,13 @@ cse-cc-runner:
   zone-id: "Europe/Paris"
   xnodes:
     file-path: xnodes/cvg_xnodes_20200714.xml
+  pisa:
+    link1:
+      node-fr: SWISS111
+      node-it: SWISS211
+    link2:
+      node-fr: SWISS311
+      node-it: SWISS131
   bindings:
     request:
       destination: cse-request
