@@ -7,20 +7,37 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.rao_api.parameters.RaoParameters;
+import com.farao_community.farao.search_tree_rao.castor.parameters.SearchTreeRaoParameters;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @SpringBootTest
 class FileExporterTest {
+
+    @TestConfiguration
+    public static class MockCombinedRasConfiguration {
+
+        @Bean("combinedRasFilePath")
+        @Primary
+        public String getMockCombinedRasFilePath() {
+            return getClass().getResource("/combinedRAs.json").getPath();
+        }
+    }
 
     @Autowired
     FileExporter fileExporter;
@@ -66,5 +83,15 @@ class FileExporterTest {
         String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC);
         String expectedFilePath = "CSE/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_CO_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
+    }
+
+    @Test
+    void getRaoParametersTest() {
+        RaoParameters raoParameters = fileExporter.getRaoParameters();
+        assertEquals(1, raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().size());
+        List<String> raCombination = raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().get(0);
+        assertEquals(2, raCombination.size());
+        assertTrue(raCombination.contains("PRA_2N_VALPELLINE"));
+        assertTrue(raCombination.contains("PRA_2N_AVISE"));
     }
 }
