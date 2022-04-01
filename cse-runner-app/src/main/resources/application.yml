@@ -37,6 +37,8 @@ cse-cc-runner:
   zone-id: "Europe/Paris"
   xnodes:
     file-path: /home/farao/xnodes/xnodes.xml
+  combined-ras:
+    file-path: /home/farao/combinedRAs/combinedRAs.json
   pisa:
     link1:
       node-fr: FFG.IL12
