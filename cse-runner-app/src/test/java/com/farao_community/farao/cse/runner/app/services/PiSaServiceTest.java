@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.runner.app.configurations.PiSaConfiguration;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
@@ -29,20 +30,44 @@ class PiSaServiceTest {
     private PiSaService piSaService;
 
     @Test
+    void testCheckPiSaWithMissingElement() {
+        String networkFilename = "20210901_2230_test_network_pisa_uncomplete_model_test.uct";
+        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+
+        assertThrows(CseDataException.class, () -> piSaService.isPiSaPresent(network));
+    }
+
+    @Test
+    void testCheckPiSaWithModel() {
+        String networkFilename = "20210901_2230_test_network_pisa_test.uct";
+        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+
+        assertTrue(piSaService.isPiSaPresent(network));
+    }
+
+    @Test
+    void testCheckPiSaWithNoModel() {
+        String networkFilename = "20210901_2230_test_network_pisa_no_model_test.uct";
+        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+
+        assertFalse(piSaService.isPiSaPresent(network));
+    }
+
+    @Test
     void testGeneratorAlignment() {
         String networkFilename = "20210901_2230_test_network_pisa_test.uct";
         Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
 
-        assertEquals(1000, piSaService.getGenerator(network, piSaConfiguration.getPiSaLink1NodeFr()).getTargetP());
-        assertEquals(-987, piSaService.getGenerator(network, piSaConfiguration.getPiSaLink1NodeIt()).getTargetP());
-        assertEquals(482, piSaService.getGenerator(network, piSaConfiguration.getPiSaLink2NodeFr()).getTargetP());
-        assertEquals(-500, piSaService.getGenerator(network, piSaConfiguration.getPiSaLink2NodeIt()).getTargetP());
+        assertEquals(1000, PiSaService.getGenerator(network, piSaConfiguration.getPiSaLink1NodeFr()).getTargetP());
+        assertEquals(-987, PiSaService.getGenerator(network, piSaConfiguration.getPiSaLink1NodeIt()).getTargetP());
+        assertEquals(482, PiSaService.getGenerator(network, piSaConfiguration.getPiSaLink2NodeFr()).getTargetP());
+        assertEquals(-500, PiSaService.getGenerator(network, piSaConfiguration.getPiSaLink2NodeIt()).getTargetP());
 
         piSaService.alignFictiveGenerators(network);
 
-        assertEquals(1000, piSaService.getGenerator(network, piSaConfiguration.getPiSaLink1NodeFr()).getTargetP());
-        assertEquals(-1000, piSaService.getGenerator(network, piSaConfiguration.getPiSaLink1NodeIt()).getTargetP());
-        assertEquals(500, piSaService.getGenerator(network, piSaConfiguration.getPiSaLink2NodeFr()).getTargetP());
-        assertEquals(-500, piSaService.getGenerator(network, piSaConfiguration.getPiSaLink2NodeIt()).getTargetP());
+        assertEquals(1000, PiSaService.getGenerator(network, piSaConfiguration.getPiSaLink1NodeFr()).getTargetP());
+        assertEquals(-1000, PiSaService.getGenerator(network, piSaConfiguration.getPiSaLink1NodeIt()).getTargetP());
+        assertEquals(500, PiSaService.getGenerator(network, piSaConfiguration.getPiSaLink2NodeFr()).getTargetP());
+        assertEquals(-500, PiSaService.getGenerator(network, piSaConfiguration.getPiSaLink2NodeIt()).getTargetP());
     }
 }

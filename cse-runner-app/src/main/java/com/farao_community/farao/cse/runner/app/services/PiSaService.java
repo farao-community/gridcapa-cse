@@ -7,10 +7,15 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.runner.app.configurations.PiSaConfiguration;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -22,6 +27,22 @@ public class PiSaService {
 
     public PiSaService(PiSaConfiguration piSaConfiguration) {
         this.piSaConfiguration = piSaConfiguration;
+    }
+
+    public boolean isPiSaPresent(Network network) {
+        List<Boolean> fictiveGeneratorPresence = Stream.of(
+            piSaConfiguration.getPiSaLink1NodeFr(),
+            piSaConfiguration.getPiSaLink1NodeIt(),
+            piSaConfiguration.getPiSaLink2NodeFr(),
+            piSaConfiguration.getPiSaLink2NodeIt()
+        ).map(nodeId -> getGenerator(network, nodeId) != null).collect(Collectors.toList());
+        if (fictiveGeneratorPresence.stream().allMatch(presence -> presence)) {
+            return true;
+        } else if (fictiveGeneratorPresence.stream().noneMatch(presence -> presence)) {
+            return false;
+        } else {
+            throw new CseDataException("Incomplete HVDC PiSa model. Impossible to compute.");
+        }
     }
 
     public void alignFictiveGenerators(Network network) {
