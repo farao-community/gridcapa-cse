@@ -19,6 +19,13 @@ cse-cc-runner:
     file-path: xnodes/cvg_xnodes_20200714.xml
   combined-ras:
     file-path: /home/farao/combinedRAs/combinedRAs.json
+  pisa:
+    link1:
+      node-fr: SWISS111
+      node-it: SWISS211
+    link2:
+      node-fr: SWISS311
+      node-it: SWISS131
   bindings:
     request:
       destination: cse-request

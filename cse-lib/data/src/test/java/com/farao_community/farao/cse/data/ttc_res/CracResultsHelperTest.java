@@ -27,10 +27,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class CracResultsHelperTest {
 
     @Test
-    void preventiveRangeActionsRetrievingTest() {
+    void preventivePstRangeActionsRetrievingTest() {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("crac.json", "raoResult.json");
-        assertEquals(1, cracResultsHelper.getPreventiveRangeActionIds().size());
-        assertEquals("PRA_PST_BE", cracResultsHelper.getPreventiveRangeActionIds().get(0));
+        assertEquals(1, cracResultsHelper.getPreventivePstRangeActionIds().size());
+        assertEquals("PRA_PST_BE", cracResultsHelper.getPreventivePstRangeActionIds().get(0));
+    }
+
+    @Test
+    void preventiveHvdcRangeActionsRetrievingTest() {
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("crac_with_HVDC.json", "raoResult_with_HVDC.json");
+        assertEquals(1, cracResultsHelper.getPreventiveHvdcRangeActionIds().size());
+        assertEquals("PRA_HVDC_GILE_PIOSSASCO_2", cracResultsHelper.getPreventiveHvdcRangeActionIds().get(0));
     }
 
     @Test
@@ -44,6 +51,12 @@ class CracResultsHelperTest {
     void pstTapPositionRetrievingTest() {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("crac.json", "raoResult.json");
         assertEquals(-16, cracResultsHelper.getTapOfPstRangeActionInPreventive("PRA_PST_BE"));
+    }
+
+    @Test
+    void pstHvdcSetpointRetrievingTest() {
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("crac_with_HVDC.json", "raoResult_with_HVDC.json");
+        assertEquals(600, cracResultsHelper.getSetpointOfHvdcRangeActionInPreventive("PRA_HVDC_GILE_PIOSSASCO_2"));
     }
 
     @Test

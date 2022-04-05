@@ -42,12 +42,14 @@ public class CseRunner {
     private final FileExporter fileExporter;
     private final DichotomyRunner dichotomyRunner;
     private final TtcResultService ttcResultService;
+    private final PiSaService piSaService;
 
-    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService) {
+    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.dichotomyRunner = dichotomyRunner;
         this.ttcResultService = ttcResultService;
+        this.piSaService = piSaService;
     }
 
     public CseResponse run(CseRequest cseRequest) throws IOException {
@@ -55,6 +57,9 @@ public class CseRunner {
 
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network);
+        if (piSaService.isPiSaPresent(network)) {
+            piSaService.alignFictiveGenerators(network);
+        }
         cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()).getUrl());
 
         double initialItalianImportFromNetwork;
