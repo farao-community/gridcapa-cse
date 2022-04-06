@@ -82,14 +82,13 @@ public class CseRequest {
                                          String mergedGlskUrl,
                                          String ntcReductionsUrl,
                                          String targetChUrl,
-                                         String vulcanusUrl,
                                          String yearlyNtcUrl,
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex) {
         return new CseRequest(
             id, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
-            null, null, null, targetChUrl, vulcanusUrl, yearlyNtcUrl,
+            null, null, null, targetChUrl, null, yearlyNtcUrl,
             dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
