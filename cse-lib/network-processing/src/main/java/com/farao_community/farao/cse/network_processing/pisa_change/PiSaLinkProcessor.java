@@ -67,7 +67,7 @@ public class PiSaLinkProcessor {
         Generator piSaGeneratorLinkNodeFr = getFrFictiveGenerator(network);
         Generator piSaGeneratorLinkNodeIt = getItFictiveGenerator(network);
 
-        adjustGenerators(piSaGeneratorLinkNodeFr, piSaGeneratorLinkNodeIt);
+        alignGenerators(piSaGeneratorLinkNodeFr, piSaGeneratorLinkNodeIt);
     }
 
     /**
@@ -158,7 +158,7 @@ public class PiSaLinkProcessor {
      * @param generator1: First generator to align.
      * @param generator2: Second generator to align.
      */
-    static void adjustGenerators(Generator generator1, Generator generator2) {
+    static void alignGenerators(Generator generator1, Generator generator2) {
         if (Math.abs(generator1.getTargetP()) > Math.abs(generator2.getTargetP())) {
             generator2.setTargetP(-generator1.getTargetP());
         } else {
