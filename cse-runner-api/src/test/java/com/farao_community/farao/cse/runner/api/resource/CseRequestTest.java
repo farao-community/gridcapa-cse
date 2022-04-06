@@ -27,7 +27,6 @@ class CseRequestTest {
             "mergedGlskUrl",
             "ntcReductionsUrl",
             "targetChUrl",
-            "vulcanusUrl",
             "yearlyNtcUrl",
             50,
             650,
