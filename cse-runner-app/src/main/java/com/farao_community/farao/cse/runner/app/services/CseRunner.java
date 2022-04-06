@@ -57,9 +57,7 @@ public class CseRunner {
 
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network);
-        if (piSaService.isPiSaPresent(network)) {
-            piSaService.alignFictiveGenerators(network);
-        }
+        piSaService.process(cseRequest.getProcessType(), network);
         cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()).getUrl());
 
         double initialItalianImportFromNetwork;

@@ -6,14 +6,17 @@
  */
 package com.farao_community.farao.cse.runner.app;
 
+import com.farao_community.farao.cse.runner.app.configurations.PiSaConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @SuppressWarnings("HideUtilityClassConstructor")
 @SpringBootApplication
+@EnableConfigurationProperties(PiSaConfiguration.class)
 public class CseApplication {
     public static void main(String[] args) {
         SpringApplication.run(CseApplication.class, args);
