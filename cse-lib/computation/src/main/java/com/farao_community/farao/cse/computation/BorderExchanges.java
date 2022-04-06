@@ -28,6 +28,13 @@ import java.util.stream.Stream;
  */
 public final class BorderExchanges {
     private static final Logger LOGGER = LoggerFactory.getLogger(BorderExchanges.class);
+    public static final String IT_CH = "IT-CH";
+    public static final String IT_FR = "IT-FR";
+    public static final String IT_AT = "IT-AT";
+    public static final String IT_SI = "IT-SI";
+    public static final String CH_FR = "CH-FR";
+    public static final String FR_DE = "FR-DE";
+    public static final String CH_DE = "CH-DE";
 
     private BorderExchanges() {
         // Should not be instantiated
@@ -42,20 +49,26 @@ public final class BorderExchanges {
     }
 
     public static Map<String, Double> computeCseBordersExchanges(Network network) {
-        runLoadFlow(network);
+        return computeCseBordersExchanges(network, true);
+    }
+
+    public static Map<String, Double> computeCseBordersExchanges(Network network, boolean withLoadflow) {
+        if (withLoadflow) {
+            runLoadFlow(network);
+        }
         Map<String, Double> borderExchanges = new HashMap<>();
         Map<Country, CountryArea> countryAreaPerCountry = Stream.of(Country.FR, Country.AT, Country.CH, Country.SI, Country.IT, Country.DE)
             .collect(Collectors.toMap(
                 Function.identity(),
                 country -> new CountryAreaFactory(country).create(network)
             ));
-        borderExchanges.put("IT-CH", getBorderExchange(Country.IT, Country.CH, countryAreaPerCountry));
-        borderExchanges.put("IT-FR", getBorderExchange(Country.IT, Country.FR, countryAreaPerCountry));
-        borderExchanges.put("IT-AT", getBorderExchange(Country.IT, Country.AT, countryAreaPerCountry));
-        borderExchanges.put("IT-SI", getBorderExchange(Country.IT, Country.SI, countryAreaPerCountry));
-        borderExchanges.put("CH-FR", getBorderExchange(Country.CH, Country.FR, countryAreaPerCountry));
-        borderExchanges.put("FR-DE", getBorderExchange(Country.FR, Country.DE, countryAreaPerCountry));
-        borderExchanges.put("CH-DE", getBorderExchange(Country.CH, Country.DE, countryAreaPerCountry));
+        borderExchanges.put(IT_CH, getBorderExchange(Country.IT, Country.CH, countryAreaPerCountry));
+        borderExchanges.put(IT_FR, getBorderExchange(Country.IT, Country.FR, countryAreaPerCountry));
+        borderExchanges.put(IT_AT, getBorderExchange(Country.IT, Country.AT, countryAreaPerCountry));
+        borderExchanges.put(IT_SI, getBorderExchange(Country.IT, Country.SI, countryAreaPerCountry));
+        borderExchanges.put(CH_FR, getBorderExchange(Country.CH, Country.FR, countryAreaPerCountry));
+        borderExchanges.put(FR_DE, getBorderExchange(Country.FR, Country.DE, countryAreaPerCountry));
+        borderExchanges.put(CH_DE, getBorderExchange(Country.CH, Country.DE, countryAreaPerCountry));
         return borderExchanges;
     }
 

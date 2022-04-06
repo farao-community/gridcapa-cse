@@ -56,6 +56,10 @@ public final class Ntc {
         return getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
     }
 
+    public Map<String, Double> getFlowPerCountryOnMerchantLines() {
+        return getFlowPerCountry(TLine::isMerchantLine);
+    }
+
     Map<String, Double> getFlowPerCountry(Predicate<TLine> lineSelector) {
         Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocument.getLineInformationPerLineId(lineSelector);
         Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocument.getLineInformationPerLineId(lineSelector);

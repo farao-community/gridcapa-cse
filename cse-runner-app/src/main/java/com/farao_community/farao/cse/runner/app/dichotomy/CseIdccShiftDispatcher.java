@@ -58,7 +58,7 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
 
     private Map<String, Double> initWithItalianShift(double targetValue) {
         Map<String, Double> shifts = new HashMap<>();
-        shifts.put(CseCountry.IT.getEiCode(), referenceItalianImport - targetValue);
+        shifts.put(IT.getEiCode(), referenceItalianImport - targetValue);
         return shifts;
     }
 

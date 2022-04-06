@@ -50,7 +50,7 @@ public class CseData {
         return mniiOffset;
     }
 
-    private Ntc getNtc() {
+    public Ntc getNtc() {
         if (ntc != null) {
             return ntc;
         }
