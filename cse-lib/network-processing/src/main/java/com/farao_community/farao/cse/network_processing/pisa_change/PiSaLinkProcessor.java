@@ -39,7 +39,7 @@ public class PiSaLinkProcessor {
             piSaLinkConfiguration.getPiSaLinkFictiveNodeFr(),
             piSaLinkConfiguration.getPiSaLinkFictiveNodeIt()
         ).map(nodeId -> getGenerator(network, nodeId) != null).collect(Collectors.toList());
-        // Gather presence information of the fictive lines of link 1
+        // Gather presence information of the fictive lines
         elementsPresence.addAll(
             piSaLinkConfiguration.getPiSaLinkFictiveLines().stream()
                 .map(lineId -> network.getLine(lineId) != null)
@@ -67,8 +67,8 @@ public class PiSaLinkProcessor {
 
     /**
      * There are 2 accepted configurations :
-     * - AC emulation : both groups must be disconnected and one the fictive lines connected
-     * - Set-point : both groups must be connected and all fictive lines must be disconnected
+     * - AC emulation : One the fictive line is connected
+     * - Set-point : All fictive lines must be disconnected
      * Otherwise the topology is not correct.
      *
      * @param network: Network on which to check the link mode.
