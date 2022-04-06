@@ -45,7 +45,7 @@ class PiSaServiceTest {
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink2Processor().isLinkInACEmulation(network));
 
-        piSaService.alignGenerators(ProcessType.IDCC, network);
+        piSaService.alignGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
         CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
         Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
@@ -77,7 +77,7 @@ class PiSaServiceTest {
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkInACEmulation(network));
 
-        piSaService.alignGenerators(ProcessType.IDCC, network);
+        piSaService.alignGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
         CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
         Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
@@ -107,7 +107,7 @@ class PiSaServiceTest {
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink2Processor().isLinkInACEmulation(network));
 
-        piSaService.alignGenerators(ProcessType.D2CC, network);
+        piSaService.alignGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
         CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
         Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
@@ -139,7 +139,7 @@ class PiSaServiceTest {
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkInACEmulation(network));
 
-        piSaService.alignGenerators(ProcessType.D2CC, network);
+        piSaService.alignGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
         CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
         Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();

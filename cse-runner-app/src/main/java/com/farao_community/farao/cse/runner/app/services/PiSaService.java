@@ -36,9 +36,9 @@ public class PiSaService {
         return piSaLink2Processor;
     }
 
-    public void alignGenerators(ProcessType processType, Network network) {
-        alignGenerators(processType, network, piSaLink1Processor);
-        alignGenerators(processType, network, piSaLink2Processor);
+    public void alignGenerators(Network network) {
+        alignGenerators(network, piSaLink1Processor);
+        alignGenerators(network, piSaLink2Processor);
     }
 
     public void forceSetPoint(ProcessType processType, Network network, Crac crac) {
@@ -46,7 +46,7 @@ public class PiSaService {
         forceSetPoint(processType, network, crac, piSaLink2Processor);
     }
 
-    static void alignGenerators(ProcessType processType, Network network, PiSaLinkProcessor piSaLinkProcessor) {
+    static void alignGenerators(Network network, PiSaLinkProcessor piSaLinkProcessor) {
         if (piSaLinkProcessor.isLinkPresent(network) && piSaLinkProcessor.isLinkConnected(network)) {
             piSaLinkProcessor.alignFictiveGenerators(network);
         }

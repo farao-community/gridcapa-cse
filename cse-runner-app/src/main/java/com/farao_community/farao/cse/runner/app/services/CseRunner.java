@@ -71,7 +71,7 @@ public class CseRunner {
 
         checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
-        piSaService.alignGenerators(cseRequest.getProcessType(), network);
+        piSaService.alignGenerators(network);
         Crac crac = preProcessNetworkForBusBarsAndImportCrac(cseRequest.getMergedCracUrl(), network, cseRequest.getTargetProcessDateTime());
         piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);
 
