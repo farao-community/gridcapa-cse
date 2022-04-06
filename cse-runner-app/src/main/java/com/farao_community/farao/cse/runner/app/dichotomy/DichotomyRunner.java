@@ -147,7 +147,7 @@ public class DichotomyRunner {
         return convertedFlowOnMerchantLinesPerCountry;
     }
 
-    static private String toEic(String country) {
+    private static String toEic(String country) {
         return new EICode(Country.valueOf(country)).getAreaCode();
     }
 }
