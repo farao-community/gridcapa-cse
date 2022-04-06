@@ -107,16 +107,17 @@ public class DichotomyRunner {
             fileImporter);
     }
 
-    Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
+    static Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
         Map<String, Double> splittingFactors = new TreeMap<>();
         tSplittingFactors.forEach((key, value) -> splittingFactors.put(toEic(key), value));
         splittingFactors.put(toEic("IT"), -splittingFactors.values().stream().reduce(0., Double::sum));
         return splittingFactors;
     }
 
-    Map<String, Double> convertBorderExchanges(Map<String, Double> borderExchanges) {
+    static Map<String, Double> convertBorderExchanges(Map<String, Double> borderExchanges) {
         Map<String, Double> convertedBorderExchanges = new HashMap<>();
         borderExchanges.forEach((key, value) -> {
+            // We take -value because we want flow towards Italy
             switch (key) {
                 case BorderExchanges.IT_AT:
                     convertedBorderExchanges.put(CseCountry.AT.getEiCode(), -value);
@@ -137,7 +138,7 @@ public class DichotomyRunner {
         return convertedBorderExchanges;
     }
 
-    Map<String, Double> convertFlowsOnMerchantLines(Map<String, Double> flowOnMerchantLinesPerCountry) {
+    static Map<String, Double> convertFlowsOnMerchantLines(Map<String, Double> flowOnMerchantLinesPerCountry) {
         Map<String, Double> convertedFlowOnMerchantLinesPerCountry = new HashMap<>();
         Set.of(FR, CH, AT, SI).forEach(country -> {
             double exchange = flowOnMerchantLinesPerCountry.getOrDefault(country.getName(), 0.);
@@ -146,7 +147,7 @@ public class DichotomyRunner {
         return convertedFlowOnMerchantLinesPerCountry;
     }
 
-    private String toEic(String country) {
+    static private String toEic(String country) {
         return new EICode(Country.valueOf(country)).getAreaCode();
     }
 }
