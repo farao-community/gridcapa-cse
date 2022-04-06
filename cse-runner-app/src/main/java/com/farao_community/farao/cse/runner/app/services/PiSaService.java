@@ -10,6 +10,7 @@ package com.farao_community.farao.cse.runner.app.services;
 import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkConfiguration;
 import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkProcessor;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.data.crac_api.Crac;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
@@ -35,17 +36,27 @@ public class PiSaService {
         return piSaLink2Processor;
     }
 
-    public void process(ProcessType processType, Network network) {
-        process(processType, network, piSaLink1Processor);
-        process(processType, network, piSaLink2Processor);
+    public void alignGenerators(ProcessType processType, Network network) {
+        alignGenerators(processType, network, piSaLink1Processor);
+        alignGenerators(processType, network, piSaLink2Processor);
     }
 
-    static void process(ProcessType processType, Network network, PiSaLinkProcessor piSaLinkProcessor) {
+    public void forceSetPoint(ProcessType processType, Network network, Crac crac) {
+        forceSetPoint(processType, network, crac, piSaLink1Processor);
+        forceSetPoint(processType, network, crac, piSaLink2Processor);
+    }
+
+    static void alignGenerators(ProcessType processType, Network network, PiSaLinkProcessor piSaLinkProcessor) {
         if (piSaLinkProcessor.isLinkPresent(network) && piSaLinkProcessor.isLinkConnected(network)) {
             piSaLinkProcessor.alignFictiveGenerators(network);
-            if (processType == ProcessType.IDCC && piSaLinkProcessor.isLinkInACEmulation(network)) {
-                piSaLinkProcessor.setLinkInSetpointMode(network);
-            }
+        }
+    }
+
+    static void forceSetPoint(ProcessType processType, Network network, Crac crac, PiSaLinkProcessor piSaLinkProcessor) {
+        if (piSaLinkProcessor.isLinkPresent(network)
+            && piSaLinkProcessor.isLinkConnected(network)
+            && processType == ProcessType.IDCC && piSaLinkProcessor.isLinkInACEmulation(network)) {
+            piSaLinkProcessor.setLinkInSetpointMode(network, crac);
         }
     }
 }

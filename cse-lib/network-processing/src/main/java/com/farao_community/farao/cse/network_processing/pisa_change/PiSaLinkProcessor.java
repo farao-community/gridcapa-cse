@@ -7,11 +7,16 @@
 
 package com.farao_community.farao.cse.network_processing.pisa_change;
 
+import com.farao_community.farao.data.crac_api.Crac;
+import com.farao_community.farao.data.crac_api.Identifiable;
+import com.farao_community.farao.data.crac_api.range_action.InjectionRangeAction;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
 
 import java.util.List;
+import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,22 +95,44 @@ public class PiSaLinkProcessor {
                 piSaLinkConfiguration.getPiSaLinkFictiveNodeFr(), piSaLinkConfiguration.getPiSaLinkFictiveNodeIt()));
     }
 
-    public void setLinkInSetpointMode(Network network) {
+    public void setLinkInSetpointMode(Network network, Crac crac) {
         List<Line> connectingLines = piSaLinkConfiguration.getPiSaLinkFictiveLines().stream()
             .map(network::getLine)
             .collect(Collectors.toList());
         Generator generatorFr = getFrFictiveGenerator(network);
         Generator generatorIt = getItFictiveGenerator(network);
 
+        Set<InjectionRangeAction> hvdcRangeAction = getRelatedHvdcRangeActions(crac);
+        double minFr = hvdcRangeAction.stream()
+            .map(ra -> ra.getMinAdmissibleSetpoint(generatorFr.getMinP()))
+            .reduce(generatorFr.getMinP(), BinaryOperator.maxBy(Double::compareTo));
+        double maxIt = hvdcRangeAction.stream()
+            .map(ra -> ra.getMaxAdmissibleSetpoint(generatorIt.getMaxP()))
+            .reduce(generatorIt.getMaxP(), BinaryOperator.minBy(Double::compareTo));
+        double setPointIt = Math.min(Math.abs(minFr), Math.abs(maxIt));
+
         generatorFr.getTerminal().connect();
-        generatorFr.setTargetP(generatorFr.getMinP());
+        generatorFr.setTargetP(-setPointIt);
         generatorIt.getTerminal().connect();
-        generatorIt.setTargetP(generatorIt.getMaxP());
+        generatorIt.setTargetP(setPointIt);
 
         connectingLines.forEach(line -> {
             line.getTerminal1().disconnect();
             line.getTerminal2().disconnect();
         });
+    }
+
+    Set<InjectionRangeAction> getRelatedHvdcRangeActions(Crac crac) {
+        Set<String> fictiveGeneratorIds = Stream.of(piSaLinkConfiguration.getPiSaLinkFictiveNodeFr(), piSaLinkConfiguration.getPiSaLinkFictiveNodeIt())
+            .map(PiSaLinkProcessor::getGeneratorId)
+            .collect(Collectors.toSet());
+
+        return crac.getInjectionRangeActions().stream()
+            .filter(injectionRangeAction -> injectionRangeAction.getInjectionDistributionKeys().keySet().stream()
+                .map(Identifiable::getId)
+                .collect(Collectors.toSet())
+                .containsAll(fictiveGeneratorIds))
+            .collect(Collectors.toSet());
     }
 
     public Generator getFrFictiveGenerator(Network network) {
@@ -117,7 +144,11 @@ public class PiSaLinkProcessor {
     }
 
     static Generator getGenerator(Network network, String nodeId) {
-        return network.getGenerator(nodeId + "_generator");
+        return network.getGenerator(getGeneratorId(nodeId));
+    }
+
+    static String getGeneratorId(String nodeId) {
+        return nodeId + "_generator";
     }
 
     /**

@@ -57,8 +57,6 @@ public class CseRunner {
 
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network);
-        piSaService.process(cseRequest.getProcessType(), network);
-        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()).getUrl());
 
         double initialItalianImportFromNetwork;
         try {
@@ -73,7 +71,11 @@ public class CseRunner {
 
         checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
-        Crac crac = preProcessNetworkAndImportCrac(cseRequest.getMergedCracUrl(), network, cseRequest.getTargetProcessDateTime());
+        piSaService.alignGenerators(cseRequest.getProcessType(), network);
+        Crac crac = preProcessNetworkForBusBarsAndImportCrac(cseRequest.getMergedCracUrl(), network, cseRequest.getTargetProcessDateTime());
+        piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);
+
+        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()).getUrl());
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
 
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
@@ -101,7 +103,7 @@ public class CseRunner {
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
-    Crac preProcessNetworkAndImportCrac(String mergedCracUrl, Network initialNetwork, OffsetDateTime targetProcessDateTime) throws IOException {
+    Crac preProcessNetworkForBusBarsAndImportCrac(String mergedCracUrl, Network initialNetwork, OffsetDateTime targetProcessDateTime) throws IOException {
         CseCrac cseCrac = fileImporter.importCseCrac(mergedCracUrl);
         Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangeProcessor.process(initialNetwork, cseCrac);
         return fileImporter.importCrac(cseCrac, busBarChangeSwitchesSet, targetProcessDateTime, initialNetwork);
