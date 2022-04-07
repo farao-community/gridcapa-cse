@@ -32,10 +32,11 @@ import java.util.Optional;
  */
 public final class MerchantLine {
     private static final Logger LOGGER = LoggerFactory.getLogger(MerchantLine.class);
-    static final String MENDRISIO_ID = "SMENDR3T SMENDR32 1";
-    static final String MENDRISIO_CAGNO_CODE_IN_NTC_FILE = "ml_mendrisio-cagno";
     private static final String MENDRISIO_CAGNO_ID_IN_NETWORK = "SMENDR11 XME_CA11 1";
     private static final String MENDRISIO_CAGNO_CODE_IN_TARGET_CH_FILE = "ml_0001";
+
+    static final String MENDRISIO_ID = "SMENDR3T SMENDR32 1";
+    static final String MENDRISIO_CAGNO_CODE_IN_NTC_FILE = "ml_mendrisio-cagno";
 
     private MerchantLine() {
         // Should not be instantiated
