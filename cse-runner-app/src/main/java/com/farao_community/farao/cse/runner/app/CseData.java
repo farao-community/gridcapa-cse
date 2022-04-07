@@ -10,7 +10,9 @@ package com.farao_community.farao.cse.runner.app;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
+import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.services.FileImporter;
 
 import java.util.Map;
@@ -29,6 +31,7 @@ public class CseData {
     private Ntc2 ntc2;
     private String jsonCracUrl;
     private String preProcesedNetworkUrl;
+    private LineFixedFlows lineFixedFlows; // only for d2cc process
 
     public CseData(CseRequest cseRequest, FileImporter fileImporter) {
         this.cseRequest = cseRequest;
@@ -40,6 +43,13 @@ public class CseData {
             reducedSplittingFactors = getNtc().computeReducedSplittingFactors();
         }
         return reducedSplittingFactors;
+    }
+
+    public LineFixedFlows getLineFixedFlows() {
+        if (cseRequest.getProcessType() == ProcessType.D2CC && lineFixedFlows == null) {
+            lineFixedFlows = fileImporter.importLineFixedFlowFromTargetChFile(cseRequest.getTargetProcessDateTime(), cseRequest.getTargetChUrl());
+        }
+        return lineFixedFlows;
     }
 
     public Double getMniiOffset() {

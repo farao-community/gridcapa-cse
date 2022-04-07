@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class NtcFilesTest {
     private static final double DOUBLE_PRECISION = 0.001;
+    private static final String MENDRISIO_CAGNO_ID = "ml_mendrisio-cagno";
 
     private Ntc ntc;
 
@@ -33,7 +34,7 @@ class NtcFilesTest {
     void getFixedFlow() {
         Map<String, Double> fixedFlowLines = ntc.getFlowOnFixedFlowLines();
         assertEquals(1, fixedFlowLines.size());
-        assertEquals(150, fixedFlowLines.get("ml_mendrisio-cagno"), DOUBLE_PRECISION);
+        assertEquals(150, fixedFlowLines.get(MENDRISIO_CAGNO_ID), DOUBLE_PRECISION);
     }
 
     @Test
@@ -50,5 +51,14 @@ class NtcFilesTest {
         assertEquals(0.409, splittingFactors.get("CH"), DOUBLE_PRECISION);
         assertEquals(0.035, splittingFactors.get("AT"), DOUBLE_PRECISION);
         assertEquals(0.089, splittingFactors.get("SI"), DOUBLE_PRECISION);
+    }
+
+    @Test
+    void checkDefaultFlowForMendrisioCagno() throws JAXBException {
+        Map<String, Double> fixedFlowLines = Ntc.create(OffsetDateTime.parse("2021-09-13T12:30Z"),
+                                                        getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1.xml"),
+                                                        getClass().getResourceAsStream("20210913_2D1_NTC_reductions_CSE1.xml")
+                                                        ).getFlowOnFixedFlowLines();
+        assertEquals(75, fixedFlowLines.get(MENDRISIO_CAGNO_ID), DOUBLE_PRECISION);
     }
 }

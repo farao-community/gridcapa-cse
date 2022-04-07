@@ -56,7 +56,7 @@ public class CseRunner {
         CseData cseData = new CseData(cseRequest, fileImporter);
 
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
-        MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network);
+        MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network, cseData);
 
         double initialItalianImportFromNetwork;
         try {
