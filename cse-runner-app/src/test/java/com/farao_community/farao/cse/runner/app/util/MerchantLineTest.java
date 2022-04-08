@@ -51,7 +51,7 @@ class MerchantLineTest {
     @BeforeEach
     void setUp() {
         String filename = "network_with_mendrisio.uct";
-        String filenameNetworkWithMendrisioCagnoLine = "20210913_1630_184_Initial_CSE1.uct";
+        String filenameNetworkWithMendrisioCagnoLine = "network_with_mendrisio_cagno_line.uct";
         network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
         networkWithMendrisioCagnoLine = Importers.loadNetwork(filenameNetworkWithMendrisioCagnoLine, getClass().getResourceAsStream(filenameNetworkWithMendrisioCagnoLine));
     }
