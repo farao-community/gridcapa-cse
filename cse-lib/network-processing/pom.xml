@@ -22,6 +22,10 @@
             <artifactId>farao-crac-creator-cse</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-crac-impl</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-ucte-converter</artifactId>
         </dependency>

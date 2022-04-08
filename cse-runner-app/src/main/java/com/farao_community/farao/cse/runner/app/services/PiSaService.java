@@ -7,15 +7,12 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
-import com.farao_community.farao.cse.data.CseDataException;
-import com.farao_community.farao.cse.runner.app.configurations.PiSaConfiguration;
-import com.powsybl.iidm.network.Generator;
+import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkConfiguration;
+import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkProcessor;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.data.crac_api.Crac;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -23,54 +20,43 @@ import java.util.stream.Stream;
 @Service
 public class PiSaService {
 
-    private final PiSaConfiguration piSaConfiguration;
+    private final PiSaLinkProcessor piSaLink1Processor;
+    private final PiSaLinkProcessor piSaLink2Processor;
 
-    public PiSaService(PiSaConfiguration piSaConfiguration) {
-        this.piSaConfiguration = piSaConfiguration;
+    public PiSaService(PiSaLinkConfiguration piSaLink1Configuration, PiSaLinkConfiguration piSaLink2Configuration) {
+        this.piSaLink1Processor = new PiSaLinkProcessor(piSaLink1Configuration);
+        this.piSaLink2Processor = new PiSaLinkProcessor(piSaLink2Configuration);
     }
 
-    public boolean isPiSaPresent(Network network) {
-        List<Boolean> fictiveGeneratorPresence = Stream.of(
-            piSaConfiguration.getPiSaLink1NodeFr(),
-            piSaConfiguration.getPiSaLink1NodeIt(),
-            piSaConfiguration.getPiSaLink2NodeFr(),
-            piSaConfiguration.getPiSaLink2NodeIt()
-        ).map(nodeId -> getGenerator(network, nodeId) != null).collect(Collectors.toList());
-        if (fictiveGeneratorPresence.stream().allMatch(presence -> presence)) {
-            return true;
-        } else if (fictiveGeneratorPresence.stream().noneMatch(presence -> presence)) {
-            return false;
-        } else {
-            throw new CseDataException("Incomplete HVDC PiSa model. Impossible to compute.");
+    PiSaLinkProcessor getPiSaLink1Processor() {
+        return piSaLink1Processor;
+    }
+
+    PiSaLinkProcessor getPiSaLink2Processor() {
+        return piSaLink2Processor;
+    }
+
+    public void alignGenerators(Network network) {
+        alignGenerators(network, piSaLink1Processor);
+        alignGenerators(network, piSaLink2Processor);
+    }
+
+    public void forceSetPoint(ProcessType processType, Network network, Crac crac) {
+        forceSetPoint(processType, network, crac, piSaLink1Processor);
+        forceSetPoint(processType, network, crac, piSaLink2Processor);
+    }
+
+    static void alignGenerators(Network network, PiSaLinkProcessor piSaLinkProcessor) {
+        if (piSaLinkProcessor.isLinkPresent(network) && piSaLinkProcessor.isLinkConnected(network)) {
+            piSaLinkProcessor.alignFictiveGenerators(network);
         }
     }
 
-    public void alignFictiveGenerators(Network network) {
-        Generator piSaGeneratorLink1NodeFr = getGenerator(network, piSaConfiguration.getPiSaLink1NodeFr());
-        Generator piSaGeneratorLink1NodeIt = getGenerator(network, piSaConfiguration.getPiSaLink1NodeIt());
-        Generator piSaGeneratorLink2NodeFr = getGenerator(network, piSaConfiguration.getPiSaLink2NodeFr());
-        Generator piSaGeneratorLink2NodeIt = getGenerator(network, piSaConfiguration.getPiSaLink2NodeIt());
-
-        adjustGenerators(piSaGeneratorLink1NodeFr, piSaGeneratorLink1NodeIt);
-        adjustGenerators(piSaGeneratorLink2NodeFr, piSaGeneratorLink2NodeIt);
-    }
-
-    static Generator getGenerator(Network network, String nodeId) {
-        return network.getGenerator(nodeId + "_generator");
-    }
-
-    /**
-     * Put both generators at same absolute value of target P but opposite sign. It is aligned on the highest
-     * absolute value of target P.
-     *
-     * @param generator1: First generator to align.
-     * @param generator2: Second generator to align.
-     */
-    static void adjustGenerators(Generator generator1, Generator generator2) {
-        if (Math.abs(generator1.getTargetP()) > Math.abs(generator2.getTargetP())) {
-            generator2.setTargetP(-generator1.getTargetP());
-        } else {
-            generator1.setTargetP(-generator2.getTargetP());
+    static void forceSetPoint(ProcessType processType, Network network, Crac crac, PiSaLinkProcessor piSaLinkProcessor) {
+        if (piSaLinkProcessor.isLinkPresent(network)
+            && piSaLinkProcessor.isLinkConnected(network)
+            && processType == ProcessType.IDCC && piSaLinkProcessor.isLinkInACEmulation(network)) {
+            piSaLinkProcessor.setLinkInSetpointMode(network, crac);
         }
     }
 }

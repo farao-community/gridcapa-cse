@@ -7,40 +7,80 @@
 
 package com.farao_community.farao.cse.runner.app.configurations;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+
+import java.util.List;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-@Configuration
+@ConfigurationProperties("cse-cc-runner.pisa")
 public class PiSaConfiguration {
 
-    @Value("${cse-cc-runner.pisa.link1.node-fr}")
-    private String piSaLink1NodeFr;
+    private Link link1;
+    private Link link2;
 
-    @Value("${cse-cc-runner.pisa.link1.node-it}")
-    private String piSaLink1NodeIt;
-
-    @Value("${cse-cc-runner.pisa.link2.node-fr}")
-    private String piSaLink2NodeFr;
-
-    @Value("${cse-cc-runner.pisa.link2.node-it}")
-    private String piSaLink2NodeIt;
-
-    public String getPiSaLink1NodeFr() {
-        return piSaLink1NodeFr;
+    public Link getLink1() {
+        return link1;
     }
 
-    public String getPiSaLink1NodeIt() {
-        return piSaLink1NodeIt;
+    public Link getLink2() {
+        return link2;
     }
 
-    public String getPiSaLink2NodeFr() {
-        return piSaLink2NodeFr;
+    public void setLink1(Link link1) {
+        this.link1 = link1;
     }
 
-    public String getPiSaLink2NodeIt() {
-        return piSaLink2NodeIt;
+    public void setLink2(Link link2) {
+        this.link2 = link2;
+    }
+
+    private static class Link {
+        private String nodeFr;
+        private String nodeIt;
+        private List<String> fictiveLines;
+
+        public String getNodeFr() {
+            return nodeFr;
+        }
+
+        public String getNodeIt() {
+            return nodeIt;
+        }
+
+        public List<String> getFictiveLines() {
+            return fictiveLines;
+        }
+
+        public void setNodeFr(String nodeFr) {
+            this.nodeFr = nodeFr;
+        }
+
+        public void setNodeIt(String nodeIt) {
+            this.nodeIt = nodeIt;
+        }
+
+        public void setFictiveLines(List<String> fictiveLines) {
+            this.fictiveLines = fictiveLines;
+        }
+    }
+
+    @Bean(name = "piSaLink1Configuration")
+    public PiSaLinkConfiguration getPiSaLink1Configuration() {
+        return new PiSaLinkConfiguration(
+            getLink1().getNodeFr(),
+            getLink1().getNodeIt(),
+            getLink1().getFictiveLines());
+    }
+
+    @Bean(name = "piSaLink2Configuration")
+    public PiSaLinkConfiguration getPiSaLink2Configuration() {
+        return new PiSaLinkConfiguration(
+            getLink2().getNodeFr(),
+            getLink2().getNodeIt(),
+            getLink2().getFictiveLines());
     }
 }

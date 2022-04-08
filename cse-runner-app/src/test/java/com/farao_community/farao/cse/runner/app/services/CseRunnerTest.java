@@ -38,7 +38,7 @@ class CseRunnerTest {
         // Initially only one bus in this voltage level ITALY111
         assertEquals(1, Stream.of(network.getVoltageLevel("ITALY11").getBusBreakerView().getBuses()).count());
 
-        Crac crac = cseRunner.preProcessNetworkAndImportCrac(cracUrl, network, OffsetDateTime.parse("2021-09-01T20:30Z"));
+        Crac crac = cseRunner.preProcessNetworkForBusBarsAndImportCrac(cracUrl, network, OffsetDateTime.parse("2021-09-01T20:30Z"));
 
         // After pre-processing 4 buses in this voltage level ITALY111, ITALY112, ITALY11Z and ITALY11Y
         assertEquals(4, StreamSupport.stream(network.getVoltageLevel("ITALY11").getBusBreakerView().getBuses().spliterator(), true).count());
