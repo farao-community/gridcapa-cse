@@ -13,20 +13,26 @@ import com.powsybl.iidm.network.Country;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public enum CseCountry {
-    IT(Country.IT),
-    FR(Country.FR),
-    AT(Country.AT),
-    CH(Country.CH),
-    SI(Country.SI);
+    IT(Country.IT, "IT"),
+    FR(Country.FR, "FR"),
+    AT(Country.AT, "AT"),
+    CH(Country.CH, "CH"),
+    SI(Country.SI, "SI");
 
     private final String eiCode;
+    private final String name;
 
-    CseCountry(Country country) {
+    CseCountry(Country country, String name) {
         this.eiCode = new CountryEICode(country).getCode();
+        this.name = name;
     }
 
     public String getEiCode() {
         return eiCode;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
