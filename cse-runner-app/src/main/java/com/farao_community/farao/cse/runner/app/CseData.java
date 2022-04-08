@@ -33,6 +33,7 @@ public class CseData {
     private String jsonCracUrl;
     private String preProcesedNetworkUrl;
     private LineFixedFlows lineFixedFlows; // only for D2CC process
+    private Map<String, Double> ntcPerCountry;
 
     public CseData(CseRequest cseRequest, FileImporter fileImporter) {
         this.cseRequest = cseRequest;
@@ -62,6 +63,13 @@ public class CseData {
         }
         mniiOffset = getNtc().computeMniiOffset();
         return mniiOffset;
+    }
+
+    public Map<String, Double> getNtcPerCountry() {
+        if (ntcPerCountry == null) {
+            return getNtc().getNtcPerCountry();
+        }
+        return ntcPerCountry;
     }
 
     public Ntc getNtc() {

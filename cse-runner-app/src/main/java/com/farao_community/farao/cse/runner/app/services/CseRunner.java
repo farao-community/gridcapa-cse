@@ -11,6 +11,8 @@ import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
+import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.dichotomy.DichotomyRunner;
 import com.farao_community.farao.data.crac_api.Crac;
@@ -24,6 +26,7 @@ import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -44,6 +47,9 @@ public class CseRunner {
     private final TtcResultService ttcResultService;
     private final PiSaService piSaService;
 
+    @Value("${cse-cc-runner.trm}")
+    private Double trm;
+
     public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
@@ -53,23 +59,28 @@ public class CseRunner {
     }
 
     public CseResponse run(CseRequest cseRequest) throws IOException {
+        double initialItalianImport;
         CseData cseData = new CseData(cseRequest, fileImporter);
 
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network, cseData);
 
-        double initialItalianImportFromNetwork;
-        try {
-            initialItalianImportFromNetwork = BorderExchanges.computeItalianImport(network);
-        } catch (CseComputationException e) {
-            String ttcResultUrl = ttcResultService.saveFailedTtcResult(
-                cseRequest,
-                cseRequest.getCgmUrl(),
-                TtcResult.FailedProcessData.FailedProcessReason.LOAD_FLOW_FAILURE);
-            return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
+        if (cseRequest.getProcessType() == ProcessType.IDCC) {
+            try {
+                initialItalianImport = BorderExchanges.computeItalianImport(network);
+            } catch (CseComputationException e) {
+                String ttcResultUrl = ttcResultService.saveFailedTtcResult(
+                        cseRequest,
+                        cseRequest.getCgmUrl(),
+                        TtcResult.FailedProcessData.FailedProcessReason.LOAD_FLOW_FAILURE);
+                return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
+            }
+            checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImport);
+        } else if (cseRequest.getProcessType() == ProcessType.D2CC) {
+            initialItalianImport = getInitialItalianImportForD2ccProcess(cseData);
+        } else {
+            throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
-
-        checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImportFromNetwork);
 
         piSaService.alignGenerators(network);
         Crac crac = preProcessNetworkForBusBarsAndImportCrac(cseRequest.getMergedCracUrl(), network, cseRequest.getTargetProcessDateTime());
@@ -81,7 +92,7 @@ public class CseRunner {
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String baseCaseFileUrl = fileExporter.saveNetworkInUcteFormat(network, baseCaseFilePath);
 
-        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
+        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
@@ -101,6 +112,10 @@ public class CseRunner {
         }
 
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
+    }
+
+    double getInitialItalianImportForD2ccProcess(CseData cseData) {
+        return cseData.getNtcPerCountry().values().stream().reduce(0., Double::sum) + trm;
     }
 
     Crac preProcessNetworkForBusBarsAndImportCrac(String mergedCracUrl, Network initialNetwork, OffsetDateTime targetProcessDateTime) throws IOException {
