@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @SpringBootTest
 class PiSaServiceTest {
+    private static final double DOUBLE_TOLERANCE = 1;
 
     @Autowired
     private PiSaService piSaService;
@@ -37,10 +38,10 @@ class PiSaServiceTest {
         String networkFilename = "20210901_2230_test_network_pisa_test_one_link_connected_and_setpoint.uct";
         Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
 
-        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(482, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-500, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(482, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-500, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertFalse(piSaService.getPiSaLink1Processor().isLinkConnected(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink2Processor().isLinkInACEmulation(network));
@@ -53,11 +54,11 @@ class PiSaServiceTest {
         piSaService.forceSetPoint(ProcessType.IDCC, network, crac);
 
         // Not aligned because not connected
-        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         // Aligned because connected
-        assertEquals(500, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-500, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(500, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-500, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertFalse(piSaService.getPiSaLink1Processor().isLinkConnected(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink2Processor().isLinkInACEmulation(network));
@@ -65,13 +66,13 @@ class PiSaServiceTest {
 
     @Test
     void testPiSaPreProcessInIdccWithBothLinksSetpointAndACEmulation() {
-        String networkFilename = "20210901_2230_test_network_pisa_test_both_link_connected_setpoint_and_emulation.uct";
+        String networkFilename = "20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation.uct";
         Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
 
-        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(0, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(0, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(0, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(0, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertTrue(piSaService.getPiSaLink1Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink1Processor().isLinkInACEmulation(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
@@ -84,10 +85,10 @@ class PiSaServiceTest {
         // Link 1 already in set-point so nothing is done but link 2 is forced
         piSaService.forceSetPoint(ProcessType.IDCC, network, crac);
 
-        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-1000, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-200, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(200, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-1000, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-200, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(200, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertTrue(piSaService.getPiSaLink1Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink1Processor().isLinkInACEmulation(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
@@ -99,10 +100,10 @@ class PiSaServiceTest {
         String networkFilename = "20210901_2230_test_network_pisa_test_one_link_connected_and_setpoint.uct";
         Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
 
-        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(482, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-500, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(482, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-500, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertFalse(piSaService.getPiSaLink1Processor().isLinkConnected(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink2Processor().isLinkInACEmulation(network));
@@ -115,11 +116,11 @@ class PiSaServiceTest {
         piSaService.forceSetPoint(ProcessType.D2CC, network, crac);
 
         // Not aligned because not connected
-        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         // Aligned because connected
-        assertEquals(500, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-500, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(500, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-500, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertFalse(piSaService.getPiSaLink1Processor().isLinkConnected(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink2Processor().isLinkInACEmulation(network));
@@ -127,13 +128,13 @@ class PiSaServiceTest {
 
     @Test
     void testPiSaPreProcessInD2ccWithBothLinksSetpointAndACEmulation() {
-        String networkFilename = "20210901_2230_test_network_pisa_test_both_link_connected_setpoint_and_emulation.uct";
+        String networkFilename = "20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation.uct";
         Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
 
-        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(0, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(0, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(0, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(0, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertTrue(piSaService.getPiSaLink1Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink1Processor().isLinkInACEmulation(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
@@ -146,10 +147,10 @@ class PiSaServiceTest {
         // In D2CC nothing is done
         piSaService.forceSetPoint(ProcessType.D2CC, network, crac);
 
-        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(-1000, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(0, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), 1);
-        assertEquals(0, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), 1);
+        assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(-1000, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(0, piSaService.getPiSaLink2Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
+        assertEquals(0, piSaService.getPiSaLink2Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertTrue(piSaService.getPiSaLink1Processor().isLinkConnected(network));
         assertFalse(piSaService.getPiSaLink1Processor().isLinkInACEmulation(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
