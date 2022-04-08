@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 class CseD2ccShiftDispatcherTest {
+    private static final double DOUBLE_TOLERANCE = 1;
 
     @Test
     void testD2ccShift() {
@@ -44,10 +45,10 @@ class CseD2ccShiftDispatcherTest {
         CseD2ccShiftDispatcher dispatcher = new CseD2ccShiftDispatcher(splittingFactors, referenceExchanges, flowOnMerchantLinesPerCountry);
         Map<String, Double> shifts = dispatcher.dispatch(3000);
 
-        assertEquals(-857, shifts.get(CseCountry.FR.getEiCode()), 1);
-        assertEquals(1023, shifts.get(CseCountry.CH.getEiCode()), 1);
-        assertEquals(-839, shifts.get(CseCountry.AT.getEiCode()), 1);
-        assertEquals(-2326, shifts.get(CseCountry.SI.getEiCode()), 1);
-        assertEquals(3000, shifts.get(CseCountry.IT.getEiCode()), 1);
+        assertEquals(-857, shifts.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(1023, shifts.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-839, shifts.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-2326, shifts.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(3000, shifts.get(CseCountry.IT.getEiCode()), DOUBLE_TOLERANCE);
     }
 }

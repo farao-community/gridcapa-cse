@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 class DichotomyRunnerTest {
+    private static final double DOUBLE_TOLERANCE = 0.01;
 
     @Test
     void testSplittingFactorsConversion() {
@@ -30,11 +31,11 @@ class DichotomyRunnerTest {
             "SI", 0.4
         );
         Map<String, Double> convertedSplittingFactors = DichotomyRunner.convertSplittingFactors(splittingFactors);
-        assertEquals(0.1, convertedSplittingFactors.get(CseCountry.AT.getEiCode()), 0.01);
-        assertEquals(0.2, convertedSplittingFactors.get(CseCountry.CH.getEiCode()), 0.01);
-        assertEquals(0.3, convertedSplittingFactors.get(CseCountry.FR.getEiCode()), 0.01);
-        assertEquals(0.4, convertedSplittingFactors.get(CseCountry.SI.getEiCode()), 0.01);
-        assertEquals(-1.0, convertedSplittingFactors.get(CseCountry.IT.getEiCode()), 0.01);
+        assertEquals(0.1, convertedSplittingFactors.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(0.2, convertedSplittingFactors.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(0.3, convertedSplittingFactors.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(0.4, convertedSplittingFactors.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-1.0, convertedSplittingFactors.get(CseCountry.IT.getEiCode()), DOUBLE_TOLERANCE);
     }
 
     @Test
@@ -46,10 +47,10 @@ class DichotomyRunnerTest {
             BorderExchanges.IT_SI, 400.
         );
         Map<String, Double> convertedBorderExchanges = DichotomyRunner.convertBorderExchanges(borderExchanges);
-        assertEquals(-100, convertedBorderExchanges.get(CseCountry.AT.getEiCode()), 0.01);
-        assertEquals(-200, convertedBorderExchanges.get(CseCountry.CH.getEiCode()), 0.01);
-        assertEquals(-300, convertedBorderExchanges.get(CseCountry.FR.getEiCode()), 0.01);
-        assertEquals(-400, convertedBorderExchanges.get(CseCountry.SI.getEiCode()), 0.01);
+        assertEquals(-100, convertedBorderExchanges.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-200, convertedBorderExchanges.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-300, convertedBorderExchanges.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-400, convertedBorderExchanges.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
     }
 
     @Test
@@ -60,9 +61,9 @@ class DichotomyRunnerTest {
             "SI", 400.
         );
         Map<String, Double> convertedFlowOnMerchantLinesPerCountry = DichotomyRunner.convertFlowsOnMerchantLines(flowOnMerchantLinesPerCountry);
-        assertEquals(100, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.AT.getEiCode()), 0.01);
-        assertEquals(0, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.CH.getEiCode()), 0.01);
-        assertEquals(300, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.FR.getEiCode()), 0.01);
-        assertEquals(400, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.SI.getEiCode()), 0.01);
+        assertEquals(100, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(0, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(300, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(400, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
     }
 }
