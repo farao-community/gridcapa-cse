@@ -37,13 +37,15 @@ public class CseListener implements MessageListener {
     private final AmqpConfiguration amqpConfiguration;
     private final JsonApiConverter jsonApiConverter;
     private final CseRunner cseServer;
+    private final Logger businessLogger;
 
-    public CseListener(AmqpTemplate amqpTemplate, StreamBridge streamBridge, AmqpConfiguration amqpConfiguration, CseRunner cseServer) {
+    public CseListener(AmqpTemplate amqpTemplate, StreamBridge streamBridge, AmqpConfiguration amqpConfiguration, CseRunner cseServer, Logger businessLogger) {
         this.amqpTemplate = amqpTemplate;
         this.streamBridge = streamBridge;
         this.amqpConfiguration = amqpConfiguration;
         this.cseServer = cseServer;
         this.jsonApiConverter = new JsonApiConverter();
+        this.businessLogger = businessLogger;
     }
 
     @Override
@@ -61,12 +63,10 @@ public class CseListener implements MessageListener {
             LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
         } catch (AbstractCseException e) {
-            LOGGER.error(e.getDetails(), e);
-            sendErrorResponse(cseRequest.getId(), e, replyTo, correlationId);
+            handleError(e, cseRequest.getId(), replyTo, correlationId);
         } catch (Exception e) {
             CseInternalException unknownException = new CseInternalException("Unknown exception", e);
-            LOGGER.error(unknownException.getDetails(), e);
-            sendErrorResponse(cseRequest.getId(), unknownException, replyTo, correlationId);
+            handleError(unknownException, cseRequest.getId(), replyTo, correlationId);
         }
     }
 
@@ -77,6 +77,12 @@ public class CseListener implements MessageListener {
         } else {
             amqpTemplate.send(amqpConfiguration.cseResponseExchange().getName(), "", createMessageResponse(cseResponse, correlationId));
         }
+    }
+
+    private void handleError(AbstractCseException e, String requestId, String replyTo, String correlationId) {
+        LOGGER.error(e.getDetails(), e);
+        businessLogger.error(e.getDetails(), e);
+        sendErrorResponse(requestId, e, replyTo, correlationId);
     }
 
     private void sendErrorResponse(String requestId, AbstractCseException exception, String replyTo, String correlationId) {
