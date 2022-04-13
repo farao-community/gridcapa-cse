@@ -62,11 +62,8 @@ public class CseListener implements MessageListener {
             CseResponse cseResponse = cseServer.run(cseRequest);
             LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
-        } catch (AbstractCseException e) {
-            handleError(e, cseRequest.getId(), replyTo, correlationId);
         } catch (Exception e) {
-            CseInternalException unknownException = new CseInternalException("Unknown exception", e);
-            handleError(unknownException, cseRequest.getId(), replyTo, correlationId);
+            handleError(e, cseRequest.getId(), replyTo, correlationId);
         }
     }
 
@@ -79,10 +76,11 @@ public class CseListener implements MessageListener {
         }
     }
 
-    private void handleError(AbstractCseException e, String requestId, String replyTo, String correlationId) {
-        LOGGER.error(e.getDetails(), e);
-        businessLogger.error(e.getDetails(), e);
-        sendErrorResponse(requestId, e, replyTo, correlationId);
+    private void handleError(Exception e, String requestId, String replyTo, String correlationId) {
+        AbstractCseException cseException = new CseInternalException("CSE run failed", e);
+        LOGGER.error(cseException.getDetails(), cseException);
+        businessLogger.error(cseException.getDetails());
+        sendErrorResponse(requestId, cseException, replyTo, correlationId);
     }
 
     private void sendErrorResponse(String requestId, AbstractCseException exception, String replyTo, String correlationId) {

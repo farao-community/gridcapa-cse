@@ -31,15 +31,16 @@ public abstract class AbstractCseException extends RuntimeException  {
 
     public final String getDetails() {
         String message = getMessage();
-        Throwable cause = getCause();
-        if (cause == null) {
-            return message;
-        }
-        StringBuilder sb = new StringBuilder(64);
         if (message != null) {
-            sb.append(message).append("; ");
+            StringBuilder sb = new StringBuilder(message);
+            Throwable cause = getCause();
+            while (cause != null) {
+                sb.append("; nested exception is ").append(cause);
+                cause = cause.getCause();
+            }
+            return sb.toString();
+        } else {
+            return "No details";
         }
-        sb.append("nested exception is ").append(cause);
-        return sb.toString();
     }
 }
