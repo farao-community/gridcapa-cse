@@ -10,6 +10,7 @@ package com.farao_community.farao.cse.runner.app.services;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
+import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.runner.app.util.FileUtil;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
@@ -112,6 +113,14 @@ public class FileImporter {
             return CseReferenceExchanges.fromVulcanusFile(targetProcessDateTime, vulcanusStream, getFilenameFromUrl(vulcanusUrl));
         } catch (IOException e) {
             throw new CseInvalidDataException("Impossible to create CseReferenceExchanges", e);
+        }
+    }
+
+    public LineFixedFlows importLineFixedFlowFromTargetChFile(OffsetDateTime targetProcessDateTime, String targetChUrl) {
+        try (InputStream targetChStream = urlValidationService.openUrlStream(targetChUrl)) {
+            return LineFixedFlows.create(targetProcessDateTime, targetChStream);
+        } catch (Exception e) {
+            throw new CseInvalidDataException("Impossible to import LineFixedFlow from Target ch file", e);
         }
     }
 }
