@@ -36,7 +36,7 @@ public class PiSaConfiguration {
         return link2;
     }
 
-    private static final class Link {
+    public static final class Link {
         private final String nodeFr;
         private final String nodeIt;
         private final List<String> fictiveLines;

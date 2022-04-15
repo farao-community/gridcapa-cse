@@ -66,8 +66,10 @@ public class MerchantLineService {
         double pstSetPoint = mendrisioCagnoTargetFlow + offset;
 
         phaseTapChanger.setRegulationValue(pstSetPoint);
-        LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
                 mendrisioConfiguration.getMendrisioPstId(), pstSetPoint));
+        }
     }
 
     private double getMendrisioTargetFlowForD2cc(Network network, CseData cseData) {
