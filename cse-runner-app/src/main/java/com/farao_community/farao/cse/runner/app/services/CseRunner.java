@@ -19,7 +19,6 @@ import com.farao_community.farao.cse.runner.app.dichotomy.DichotomyRunner;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
-import com.farao_community.farao.cse.runner.app.util.MerchantLine;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
@@ -46,15 +45,18 @@ public class CseRunner {
     private final DichotomyRunner dichotomyRunner;
     private final TtcResultService ttcResultService;
     private final PiSaService piSaService;
+    private final MerchantLineService merchantLineService;
     private final ProcessConfiguration processConfiguration;
 
     public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner,
-                     TtcResultService ttcResultService, PiSaService piSaService, ProcessConfiguration processConfiguration) {
+                     TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
+                     ProcessConfiguration processConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.dichotomyRunner = dichotomyRunner;
         this.ttcResultService = ttcResultService;
         this.piSaService = piSaService;
+        this.merchantLineService = merchantLineService;
         this.processConfiguration = processConfiguration;
     }
 
@@ -63,7 +65,7 @@ public class CseRunner {
 
         // CRAC import and network pre-processing
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
-        MerchantLine.activateMerchantLine(cseRequest.getProcessType(), network, cseData);
+        merchantLineService.activateMerchantLine(cseRequest.getProcessType(), network, cseData);
         piSaService.alignGenerators(network);
         Crac crac = preProcessNetworkForBusBarsAndImportCrac(cseRequest.getMergedCracUrl(), network, cseRequest.getTargetProcessDateTime());
         piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);

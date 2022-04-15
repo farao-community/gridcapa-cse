@@ -1,21 +1,23 @@
 /*
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package com.farao_community.farao.cse.runner.app.util;
+package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
+import com.farao_community.farao.cse.runner.app.configurations.MendrisioConfiguration;
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzerProperties;
 import com.powsybl.iidm.network.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
@@ -23,19 +25,17 @@ import java.util.Optional;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
-public final class MerchantLine {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MerchantLine.class);
+@Service
+public class MerchantLineService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MerchantLineService.class);
 
-    static final String MENDRISIO_CAGNO_CODE_IN_TARGET_CH_FILE = "ml_0001";
-    static final String MENDRISIO_ID = "SMENDR3T SMENDR32 1";
-    static final String MENDRISIO_NODE = "SMENDR3T";
-    static final String MENDRISIO_CAGNO_CODE_IN_NTC_FILE = "ml_mendrisio-cagno";
+    private final MendrisioConfiguration mendrisioConfiguration;
 
-    private MerchantLine() {
-        // Should not be instantiated
+    public MerchantLineService(MendrisioConfiguration mendrisioConfiguration) {
+        this.mendrisioConfiguration = mendrisioConfiguration;
     }
 
-    public static void activateMerchantLine(ProcessType processType, Network network, CseData cseData) {
+    public void activateMerchantLine(ProcessType processType, Network network, CseData cseData) {
         if (processType == ProcessType.IDCC) {
             activateMerchantLineForIdcc(network);
         } else if (processType == ProcessType.D2CC) {
@@ -45,20 +45,20 @@ public final class MerchantLine {
         }
     }
 
-    private static void activateMerchantLineForIdcc(Network network) {
+    private void activateMerchantLineForIdcc(Network network) {
         PhaseTapChanger phaseTapChanger = forcePhaseTapChangerInActivePowerRegulation(network);
         // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
         phaseTapChanger.setRegulationValue(-phaseTapChanger.getRegulationValue());
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
-                MENDRISIO_ID, phaseTapChanger.getRegulationValue()));
+                mendrisioConfiguration.getMendrisioPstId(), phaseTapChanger.getRegulationValue()));
         }
     }
 
-    private static void activateMerchantLineForD2cc(Network network, CseData cseData) {
+    private void activateMerchantLineForD2cc(Network network, CseData cseData) {
         PhaseTapChanger phaseTapChanger = forcePhaseTapChangerInActivePowerRegulation(network);
 
-        double offset = Optional.ofNullable(network.getLoad(MENDRISIO_NODE + "_load"))
+        double offset = Optional.ofNullable(network.getLoad(mendrisioConfiguration.getMendrisioNodeId() + "_load"))
             .map(Load::getP0)
             .orElse(0.);
 
@@ -67,13 +67,18 @@ public final class MerchantLine {
 
         phaseTapChanger.setRegulationValue(pstSetPoint);
         LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
-                MENDRISIO_ID, pstSetPoint));
+                mendrisioConfiguration.getMendrisioPstId(), pstSetPoint));
     }
 
-    private static double getMendrisioTargetFlowForD2cc(Network network, CseData cseData) {
-        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(MENDRISIO_CAGNO_CODE_IN_NTC_FILE);
-        UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
-        Optional<Double> reducedFlow = cseData.getLineFixedFlows().getFixedFlow(MENDRISIO_CAGNO_CODE_IN_TARGET_CH_FILE, network, ucteNetworkHelper);
+    private double getMendrisioTargetFlowForD2cc(Network network, CseData cseData) {
+        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(mendrisioConfiguration.getMendrisioCagnoLine().getNtcId());
+        UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(
+            network,
+            new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+        Optional<Double> reducedFlow = cseData.getLineFixedFlows().getFixedFlow(
+            mendrisioConfiguration.getMendrisioCagnoLine().getTargetChId(),
+            network,
+            ucteNetworkHelper);
         double mendrisioCagnoTargetFlow = reducedFlow.isEmpty() ? defaultFlow : Math.min(defaultFlow, reducedFlow.get());
 
         if (LOGGER.isInfoEnabled()) {
@@ -82,16 +87,16 @@ public final class MerchantLine {
         return mendrisioCagnoTargetFlow;
     }
 
-    private static PhaseTapChanger forcePhaseTapChangerInActivePowerRegulation(Network network) {
-        TwoWindingsTransformer mendrisioTransformer = network.getTwoWindingsTransformer(MENDRISIO_ID);
+    private PhaseTapChanger forcePhaseTapChangerInActivePowerRegulation(Network network) {
+        TwoWindingsTransformer mendrisioTransformer = network.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
         if (mendrisioTransformer == null) {
             throw new CseInvalidDataException(String.format(
-                "Mendrisio transformer is not present in the network with the following ID : %s", MENDRISIO_ID));
+                "Mendrisio transformer is not present in the network with the following ID : %s", mendrisioConfiguration.getMendrisioPstId()));
         }
         PhaseTapChanger phaseTapChanger = mendrisioTransformer.getPhaseTapChanger();
         if (phaseTapChanger == null) {
             throw new CseInvalidDataException(String.format(
-                "Mendrisio transformer (%s) has no phase tap changer", MENDRISIO_ID));
+                "Mendrisio transformer (%s) has no phase tap changer", mendrisioConfiguration.getMendrisioPstId()));
         }
 
         phaseTapChanger.setRegulationTerminal(getRegulatedTerminal(mendrisioTransformer));
@@ -110,8 +115,8 @@ public final class MerchantLine {
      * @param mendrisioTransformer: Mendrisio tranformer on which to find proper terminal.
      * @return The terminal of Mendrisio PST that on the opposite side of the mendrisio-cagno line.
      */
-    private static Terminal getRegulatedTerminal(TwoWindingsTransformer mendrisioTransformer) {
-        if (mendrisioTransformer.getTerminal1().getBusBreakerView().getBus().getId().equals(MENDRISIO_NODE)) {
+    private Terminal getRegulatedTerminal(TwoWindingsTransformer mendrisioTransformer) {
+        if (mendrisioTransformer.getTerminal1().getBusBreakerView().getBus().getId().equals(mendrisioConfiguration.getMendrisioNodeId())) {
             return mendrisioTransformer.getTerminal2();
         } else {
             return mendrisioTransformer.getTerminal1();

@@ -1,16 +1,17 @@
 /*
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package com.farao_community.farao.cse.runner.app.util;
+package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
+import com.farao_community.farao.cse.runner.app.configurations.MendrisioConfiguration;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Map;
@@ -35,7 +37,7 @@ import static org.mockito.Mockito.when;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @SpringBootTest
-class MerchantLineTest {
+class MerchantLineServiceTest {
     private static final double DOUBLE_PRECISION = 0.1;
     private static final double DOUBLE_PRECISION_FOR_REGULATED_FLOW = 20;
 
@@ -44,6 +46,12 @@ class MerchantLineTest {
 
     @Mock
     CseData cseData;
+
+    @Autowired
+    private MendrisioConfiguration mendrisioConfiguration;
+
+    @Autowired
+    private MerchantLineService merchantLineService;
 
     @BeforeEach
     void setUp() {
@@ -55,8 +63,8 @@ class MerchantLineTest {
 
     @Test
     void testTransformerSettings() {
-        MerchantLine.activateMerchantLine(ProcessType.IDCC, network, cseData);
-        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer(MerchantLine.MENDRISIO_ID);
+        merchantLineService.activateMerchantLine(ProcessType.IDCC, network, cseData);
+        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL, phaseTapChanger.getRegulationMode());
         assertEquals(-300, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
@@ -66,8 +74,8 @@ class MerchantLineTest {
 
     @Test
     void testWithLoadFlow() {
-        MerchantLine.activateMerchantLine(ProcessType.IDCC, network, cseData);
-        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer(MerchantLine.MENDRISIO_ID);
+        merchantLineService.activateMerchantLine(ProcessType.IDCC, network, cseData);
+        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(0, phaseTapChanger.getTapPosition());
         LoadFlow.run(network, LoadFlowParameters.load());
@@ -78,9 +86,9 @@ class MerchantLineTest {
     @Test
     void testTransformerSettingsForD2ccProcess() {
         Map<String, Double> fixedFlowLines = Map.of(
-                MerchantLine.MENDRISIO_CAGNO_CODE_IN_NTC_FILE, 75.
+                mendrisioConfiguration.getMendrisioCagnoLine().getNtcId(), 75.
         );
-        TwoWindingsTransformer twoWindingsTransformer = networkWithMendrisioCagnoLine.getTwoWindingsTransformer(MerchantLine.MENDRISIO_ID);
+        TwoWindingsTransformer twoWindingsTransformer = networkWithMendrisioCagnoLine.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
 
         Ntc ntc = Mockito.mock(Ntc.class);
@@ -89,7 +97,7 @@ class MerchantLineTest {
         Mockito.when(cseData.getNtc().getFlowOnFixedFlowLines()).thenReturn(fixedFlowLines);
         Mockito.when(cseData.getLineFixedFlows()).thenReturn(lineFixedFlows);
         when(cseData.getLineFixedFlows().getFixedFlow(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
-        MerchantLine.activateMerchantLine(ProcessType.D2CC, networkWithMendrisioCagnoLine, cseData);
+        merchantLineService.activateMerchantLine(ProcessType.D2CC, networkWithMendrisioCagnoLine, cseData);
 
         LoadFlow.run(networkWithMendrisioCagnoLine, LoadFlowParameters.load());
         assertEquals(175, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
