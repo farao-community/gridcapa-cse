@@ -15,6 +15,7 @@ minio:
 
 cse-cc-runner:
   zone-id: "Europe/Paris"
+  trm: 500
   xnodes:
     file-path: xnodes/cvg_xnodes_20200714.xml
   combined-ras:

@@ -35,6 +35,7 @@ minio:
 
 cse-cc-runner:
   zone-id: "Europe/Paris"
+  trm: 500
   xnodes:
     file-path: /home/farao/xnodes/xnodes.xml
   combined-ras:

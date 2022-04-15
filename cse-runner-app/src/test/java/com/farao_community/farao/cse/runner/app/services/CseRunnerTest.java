@@ -7,15 +7,18 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -43,5 +46,19 @@ class CseRunnerTest {
         // After pre-processing 4 buses in this voltage level ITALY111, ITALY112, ITALY11Z and ITALY11Y
         assertEquals(4, StreamSupport.stream(network.getVoltageLevel("ITALY11").getBusBreakerView().getBuses().spliterator(), true).count());
         assertEquals(1, crac.getRemedialActions().size());
+    }
+
+    @Test
+    void getInitialItalianImportForD2ccProcess() {
+        CseData cseData = Mockito.mock(CseData.class);
+        Map<String, Double> ntcPerCountry = Map.of(
+                "FR", 2470.,
+                "CH", 3000.,
+                "AT", 255.,
+                "SI", 375.
+        );
+        Mockito.when(cseData.getNtcPerCountry()).thenReturn(ntcPerCountry);
+        assertEquals(6600., cseRunner.getInitialItalianImportForD2ccProcess(cseData));
+
     }
 }
