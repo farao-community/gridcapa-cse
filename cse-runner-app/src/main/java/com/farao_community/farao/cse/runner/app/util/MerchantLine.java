@@ -7,20 +7,13 @@
 
 package com.farao_community.farao.cse.runner.app.util;
 
-import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzerProperties;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.PhaseTapChanger;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.loadflow.LoadFlow;
-import com.powsybl.loadflow.LoadFlowParameters;
-import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.iidm.network.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +25,10 @@ import java.util.Optional;
  */
 public final class MerchantLine {
     private static final Logger LOGGER = LoggerFactory.getLogger(MerchantLine.class);
-    private static final String MENDRISIO_CAGNO_ID_IN_NETWORK = "SMENDR11 XME_CA11 1";
-    private static final String MENDRISIO_CAGNO_CODE_IN_TARGET_CH_FILE = "ml_0001";
 
+    static final String MENDRISIO_CAGNO_CODE_IN_TARGET_CH_FILE = "ml_0001";
     static final String MENDRISIO_ID = "SMENDR3T SMENDR32 1";
+    static final String MENDRISIO_NODE = "SMENDR3T";
     static final String MENDRISIO_CAGNO_CODE_IN_NTC_FILE = "ml_mendrisio-cagno";
 
     private MerchantLine() {
@@ -43,7 +36,6 @@ public final class MerchantLine {
     }
 
     public static void activateMerchantLine(ProcessType processType, Network network, CseData cseData) {
-
         if (processType == ProcessType.IDCC) {
             activateMerchantLineForIdcc(network);
         } else if (processType == ProcessType.D2CC) {
@@ -54,7 +46,43 @@ public final class MerchantLine {
     }
 
     private static void activateMerchantLineForIdcc(Network network) {
+        PhaseTapChanger phaseTapChanger = forcePhaseTapChangerInActivePowerRegulation(network);
+        // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
+        phaseTapChanger.setRegulationValue(-phaseTapChanger.getRegulationValue());
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
+                MENDRISIO_ID, phaseTapChanger.getRegulationValue()));
+        }
+    }
 
+    private static void activateMerchantLineForD2cc(Network network, CseData cseData) {
+        PhaseTapChanger phaseTapChanger = forcePhaseTapChangerInActivePowerRegulation(network);
+
+        double offset = Optional.ofNullable(network.getLoad(MENDRISIO_NODE + "_load"))
+            .map(Load::getP0)
+            .orElse(0.);
+
+        double mendrisioCagnoTargetFlow = getMendrisioTargetFlowForD2cc(network, cseData);
+        double pstSetPoint = mendrisioCagnoTargetFlow + offset;
+
+        phaseTapChanger.setRegulationValue(pstSetPoint);
+        LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
+                MENDRISIO_ID, pstSetPoint));
+    }
+
+    private static double getMendrisioTargetFlowForD2cc(Network network, CseData cseData) {
+        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(MENDRISIO_CAGNO_CODE_IN_NTC_FILE);
+        UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
+        Optional<Double> reducedFlow = cseData.getLineFixedFlows().getFixedFlow(MENDRISIO_CAGNO_CODE_IN_TARGET_CH_FILE, network, ucteNetworkHelper);
+        double mendrisioCagnoTargetFlow = reducedFlow.isEmpty() ? defaultFlow : Math.min(defaultFlow, reducedFlow.get());
+
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format("Target flow for Mendrisio-Cagno is %.0f MW", mendrisioCagnoTargetFlow));
+        }
+        return mendrisioCagnoTargetFlow;
+    }
+
+    private static PhaseTapChanger forcePhaseTapChangerInActivePowerRegulation(Network network) {
         TwoWindingsTransformer mendrisioTransformer = network.getTwoWindingsTransformer(MENDRISIO_ID);
         if (mendrisioTransformer == null) {
             throw new CseInvalidDataException(String.format(
@@ -65,63 +93,28 @@ public final class MerchantLine {
             throw new CseInvalidDataException(String.format(
                 "Mendrisio transformer (%s) has no phase tap changer", MENDRISIO_ID));
         }
-        // In UCTE format regulated terminal is node 2 but PowSyBl inverts transformer nodes in UCTE import
-        phaseTapChanger.setRegulationTerminal(mendrisioTransformer.getTerminal1());
-        phaseTapChanger.setRegulationValue(-phaseTapChanger.getRegulationValue());
 
+        phaseTapChanger.setRegulationTerminal(getRegulatedTerminal(mendrisioTransformer));
         phaseTapChanger.setRegulationMode(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL);
         phaseTapChanger.setTargetDeadband(5);
         phaseTapChanger.setRegulating(true);
-        LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
-            MENDRISIO_ID, phaseTapChanger.getRegulationValue()));
+        return phaseTapChanger;
     }
 
-    private static void activateMerchantLineForD2cc(Network network, CseData cseData) {
-        runLoadFlow(network);
-        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(MENDRISIO_CAGNO_CODE_IN_NTC_FILE);
-        UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
-        Optional<Double> reducedFlow = cseData.getLineFixedFlows().getFixedFlow(MENDRISIO_CAGNO_CODE_IN_TARGET_CH_FILE, network, ucteNetworkHelper);
-        double mendrisioCagnoTargetFlow = reducedFlow.isEmpty() ? defaultFlow : Math.min(defaultFlow, reducedFlow.get());
-
-        LOGGER.info(String.format("Target flow for Mendrisio-Cagno is %.0f MW", mendrisioCagnoTargetFlow));
-
-        // Offset Calculation
-        TwoWindingsTransformer mendrisioTransformer = network.getTwoWindingsTransformer(MENDRISIO_ID);
-        if (mendrisioTransformer == null) {
-            throw new CseInvalidDataException(String.format(
-                    "Mendrisio transformer is not present in the network with the following ID : %s", MENDRISIO_ID));
-        }
-        PhaseTapChanger phaseTapChanger = mendrisioTransformer.getPhaseTapChanger();
-        if (phaseTapChanger == null) {
-            throw new CseInvalidDataException(String.format(
-                    "Mendrisio transformer (%s) has no phase tap changer", MENDRISIO_ID));
-        }
-
-        double mendrisioPstFlow = phaseTapChanger.getRegulationValue();
-        Optional<Line> mendrisioCagnoLine = network.getLineStream().filter(line -> line.getId().contains(MENDRISIO_CAGNO_ID_IN_NETWORK)).findFirst();
-        if (mendrisioCagnoLine.isEmpty()) {
-            throw new CseInvalidDataException(String.format(
-                    "Mendrisio Cagno line is not present in the network with the following ID : %s", MENDRISIO_CAGNO_ID_IN_NETWORK));
-        }
-        double mendrisioCagnoFlow = mendrisioCagnoLine.get().getTerminal1().getP();
-        double offset = mendrisioCagnoFlow - mendrisioPstFlow;
-
-        double pstSetPoint = mendrisioCagnoTargetFlow - offset;
-
-        phaseTapChanger.setRegulationTerminal(mendrisioTransformer.getTerminal1());
-        phaseTapChanger.setRegulationValue(pstSetPoint);
-        phaseTapChanger.setRegulationMode(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL);
-        phaseTapChanger.setTargetDeadband(5);
-        phaseTapChanger.setRegulating(true);
-        LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
-                MENDRISIO_ID, pstSetPoint));
-    }
-
-    private static void runLoadFlow(Network network) {
-        LoadFlowResult result = LoadFlow.run(network, LoadFlowParameters.load());
-        if (!result.isOk()) {
-            LOGGER.error("Loadflow computation diverged on network '{}'", network.getId());
-            throw new CseComputationException(String.format("Loadflow computation diverged on network %s", network.getId()));
+    /**
+     * We want to make sure to set regulation on the good terminal with the following convention:
+     * positive set-point on mendrisio PST will cause a positive flow on mendrisio-cagno line.
+     * As mendrisio node is in-between mendrisio-cagno line and mendrisio PST, we don't want to use this terminal,
+     * because sign of set-point would be inverted.
+     *
+     * @param mendrisioTransformer: Mendrisio tranformer on which to find proper terminal.
+     * @return The terminal of Mendrisio PST that on the opposite side of the mendrisio-cagno line.
+     */
+    private static Terminal getRegulatedTerminal(TwoWindingsTransformer mendrisioTransformer) {
+        if (mendrisioTransformer.getTerminal1().getBusBreakerView().getBus().getId().equals(MENDRISIO_NODE)) {
+            return mendrisioTransformer.getTerminal2();
+        } else {
+            return mendrisioTransformer.getTerminal1();
         }
     }
 }

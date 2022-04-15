@@ -12,6 +12,7 @@ import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.powsybl.iidm.import_.Importers;
+import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.PhaseTapChanger;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
@@ -43,10 +44,6 @@ class MerchantLineTest {
 
     @Mock
     CseData cseData;
-    @Mock
-    Ntc ntc;
-    @Mock
-    LineFixedFlows lineFixedFlows;
 
     @BeforeEach
     void setUp() {
@@ -85,12 +82,19 @@ class MerchantLineTest {
         );
         TwoWindingsTransformer twoWindingsTransformer = networkWithMendrisioCagnoLine.getTwoWindingsTransformer(MerchantLine.MENDRISIO_ID);
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
+
+        Ntc ntc = Mockito.mock(Ntc.class);
+        LineFixedFlows lineFixedFlows = Mockito.mock(LineFixedFlows.class);
         Mockito.when(cseData.getNtc()).thenReturn(ntc);
         Mockito.when(cseData.getNtc().getFlowOnFixedFlowLines()).thenReturn(fixedFlowLines);
         Mockito.when(cseData.getLineFixedFlows()).thenReturn(lineFixedFlows);
         when(cseData.getLineFixedFlows().getFixedFlow(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
         MerchantLine.activateMerchantLine(ProcessType.D2CC, networkWithMendrisioCagnoLine, cseData);
-        assertEquals(95.58, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
+
+        LoadFlow.run(networkWithMendrisioCagnoLine, LoadFlowParameters.load());
+        assertEquals(175, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
+        Line mendrisioCagnoLine = networkWithMendrisioCagnoLine.getLine("SMENDR11 XME_CA11 1 + XME_CA11 NNL1AA1  1");
+        assertEquals(75, mendrisioCagnoLine.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
     }
 
 }
