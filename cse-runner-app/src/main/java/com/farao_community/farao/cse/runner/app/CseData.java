@@ -66,9 +66,10 @@ public class CseData {
     }
 
     public Map<String, Double> getNtcPerCountry() {
-        if (ntcPerCountry == null) {
-            return getNtc().getNtcPerCountry();
+        if (ntcPerCountry != null) {
+            return ntcPerCountry;
         }
+        ntcPerCountry = getNtc().getNtcPerCountry();
         return ntcPerCountry;
     }
 

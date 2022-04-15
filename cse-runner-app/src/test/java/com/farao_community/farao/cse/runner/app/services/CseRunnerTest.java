@@ -12,7 +12,6 @@ import com.farao_community.farao.data.crac_api.Crac;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,8 +33,6 @@ class CseRunnerTest {
 
     @Autowired
     private CseRunner cseRunner;
-    @Mock
-    private CseData cseData;
 
     @Test
     void testCracImportAndBusbarPreprocess() throws IOException {
@@ -53,6 +50,7 @@ class CseRunnerTest {
 
     @Test
     void getInitialItalianImportForD2ccProcess() {
+        CseData cseData = Mockito.mock(CseData.class);
         Map<String, Double> ntcPerCountry = Map.of(
                 "FR", 2470.,
                 "CH", 3000.,
