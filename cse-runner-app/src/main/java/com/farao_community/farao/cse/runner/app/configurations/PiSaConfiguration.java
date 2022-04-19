@@ -12,52 +12,26 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.context.annotation.Bean;
 
-import java.util.List;
-
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @ConfigurationProperties(prefix = "cse-cc-runner.pisa")
 @ConstructorBinding
 public class PiSaConfiguration {
-    private final Link link1;
-    private final Link link2;
+    private final PisaLinkProperties link1;
+    private final PisaLinkProperties link2;
 
-    public PiSaConfiguration(Link link1, Link link2) {
+    public PiSaConfiguration(PisaLinkProperties link1, PisaLinkProperties link2) {
         this.link1 = link1;
         this.link2 = link2;
     }
 
-    public Link getLink1() {
+    public PisaLinkProperties getLink1() {
         return link1;
     }
 
-    public Link getLink2() {
+    public PisaLinkProperties getLink2() {
         return link2;
-    }
-
-    public static final class Link {
-        private final String nodeFr;
-        private final String nodeIt;
-        private final List<String> fictiveLines;
-
-        public Link(String nodeFr, String nodeIt, List<String> fictiveLines) {
-            this.nodeFr = nodeFr;
-            this.nodeIt = nodeIt;
-            this.fictiveLines = fictiveLines;
-        }
-
-        public String getNodeFr() {
-            return nodeFr;
-        }
-
-        public String getNodeIt() {
-            return nodeIt;
-        }
-
-        public List<String> getFictiveLines() {
-            return fictiveLines;
-        }
     }
 
     @Bean(name = "piSaLink1Configuration")

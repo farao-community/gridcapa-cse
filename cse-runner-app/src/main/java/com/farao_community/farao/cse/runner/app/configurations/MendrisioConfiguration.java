@@ -38,21 +38,11 @@ public class MendrisioConfiguration {
         return mendrisioNodeId;
     }
 
-    public static final class MendrisioCagnoLineProperties {
-        private final String targetChId;
-        private final String ntcId;
+    public String getMendrisioCagnoTargetChId() {
+        return mendrisioCagnoLine.getTargetChId();
+    }
 
-        public MendrisioCagnoLineProperties(String targetChId, String ntcId) {
-            this.targetChId = targetChId;
-            this.ntcId = ntcId;
-        }
-
-        public String getTargetChId() {
-            return targetChId;
-        }
-
-        public String getNtcId() {
-            return ntcId;
-        }
+    public String getMendrisioCagnoNtcId() {
+        return mendrisioCagnoLine.getNtcId();
     }
 }

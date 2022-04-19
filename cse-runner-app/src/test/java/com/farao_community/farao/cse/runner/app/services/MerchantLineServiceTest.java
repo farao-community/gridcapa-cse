@@ -86,7 +86,7 @@ class MerchantLineServiceTest {
     @Test
     void testTransformerSettingsForD2ccProcess() {
         Map<String, Double> fixedFlowLines = Map.of(
-                mendrisioConfiguration.getMendrisioCagnoLine().getNtcId(), 75.
+                mendrisioConfiguration.getMendrisioCagnoNtcId(), 75.
         );
         TwoWindingsTransformer twoWindingsTransformer = networkWithMendrisioCagnoLine.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();

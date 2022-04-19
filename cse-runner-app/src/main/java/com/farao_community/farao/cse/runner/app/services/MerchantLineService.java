@@ -73,12 +73,12 @@ public class MerchantLineService {
     }
 
     private double getMendrisioTargetFlowForD2cc(Network network, CseData cseData) {
-        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(mendrisioConfiguration.getMendrisioCagnoLine().getNtcId());
+        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(mendrisioConfiguration.getMendrisioCagnoNtcId());
         UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(
             network,
             new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         Optional<Double> reducedFlow = cseData.getLineFixedFlows().getFixedFlow(
-            mendrisioConfiguration.getMendrisioCagnoLine().getTargetChId(),
+            mendrisioConfiguration.getMendrisioCagnoTargetChId(),
             network,
             ucteNetworkHelper);
         double mendrisioCagnoTargetFlow = reducedFlow.isEmpty() ? defaultFlow : Math.min(defaultFlow, reducedFlow.get());
