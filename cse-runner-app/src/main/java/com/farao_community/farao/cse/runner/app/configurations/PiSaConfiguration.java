@@ -41,7 +41,7 @@ public class PiSaConfiguration {
         private final String nodeIt;
         private final List<String> fictiveLines;
 
-        private Link(String nodeFr, String nodeIt, List<String> fictiveLines) {
+        public Link(String nodeFr, String nodeIt, List<String> fictiveLines) {
             this.nodeFr = nodeFr;
             this.nodeIt = nodeIt;
             this.fictiveLines = fictiveLines;
