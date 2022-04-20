@@ -16,6 +16,8 @@ import java.time.ZonedDateTime;
 /**
  * @author Mohamed Ben Rejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
  */
+
+//TODO REFACTOR
 public final class MinioStorageHelper {
 
     private static final String MINIO_SEPARATOR = "/";

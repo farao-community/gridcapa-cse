@@ -20,6 +20,7 @@ import com.farao_community.farao.cse.runner.app.util.MerchantLine;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
+import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
@@ -79,14 +80,14 @@ public class CseRunner {
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
 
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-        String baseCaseFileUrl = fileExporter.saveNetworkInUcteFormat(network, baseCaseFilePath);
+        String baseCaseFileUrl = fileExporter.saveNetworkInUcteFormat(GridcapaFileGroup.OUTPUT, network, baseCaseFilePath);
 
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
             String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-            finalCgmUrl = fileExporter.saveNetworkInUcteFormat(
+            finalCgmUrl = fileExporter.saveNetworkInUcteFormat(GridcapaFileGroup.OUTPUT,
                 fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl()),
                 finalCgmPath);
             ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData,
