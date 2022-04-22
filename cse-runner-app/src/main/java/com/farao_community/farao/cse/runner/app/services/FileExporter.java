@@ -79,7 +79,7 @@ public class FileExporter {
         }
         String cracPath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(zoneId)) + JSON_CRAC_FILE_NAME;
         try (InputStream is = memDataSource.newInputStream(JSON_CRAC_FILE_NAME)) {
-            minioAdapter.uploadArtifact(cracPath, is);
+            minioAdapter.uploadArtifactForTimestamp(cracPath, is, processId, "", processTargetDateTime);
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to upload converted CRAC file.", e);
         }
@@ -102,7 +102,7 @@ public class FileExporter {
         JsonRaoParameters.write(raoParameters, baos);
         String raoParametersDestinationPath = MinioStorageHelper.makeDestinationMinioPath(offsetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(zoneId)) + RAO_PARAMETERS_FILE_NAME;
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        minioAdapter.uploadArtifact(raoParametersDestinationPath, bais);
+        minioAdapter.uploadArtifactForTimestamp(raoParametersDestinationPath, bais, processId, "", offsetDateTime);
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
     }
 
@@ -140,7 +140,7 @@ public class FileExporter {
         }
         InputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
         String outputFilePath = getFilePath(processTargetDate, processType);
-        minioAdapter.uploadOutput(outputFilePath, is, processId, ttcRes, processTargetDate + "/" + processTargetDate.plusHours(1));
+        minioAdapter.uploadOutputForTimestamp(outputFilePath, is, processId, ttcRes, processTargetDate);
         return minioAdapter.generatePreSignedUrl(outputFilePath);
     }
 
@@ -169,16 +169,16 @@ public class FileExporter {
         try (InputStream is = memDataSource.newInputStream("", ext)) {
             switch (fileGroup) {
                 case INPUT:
-                    minioAdapter.uploadInput(filePath, is, processId, fileType, offsetDateTime + "/" + offsetDateTime.plusHours(1));
+                    minioAdapter.uploadInputForTimestamp(filePath, is, processId, fileType, offsetDateTime);
                     break;
                 case ARTIFACT:
-                    minioAdapter.uploadArtifact(filePath, is, processId, fileType, offsetDateTime + "/" + offsetDateTime.plusHours(1));
+                    minioAdapter.uploadArtifactForTimestamp(filePath, is, processId, fileType, offsetDateTime);
                     break;
                 case OUTPUT:
-                    minioAdapter.uploadOutput(filePath, is, processId, fileType, offsetDateTime + "/" + offsetDateTime.plusHours(1));
+                    minioAdapter.uploadOutputForTimestamp(filePath, is, processId, fileType, offsetDateTime);
                     break;
                 case EXTENDED_OUTPUT:
-                    minioAdapter.uploadExtendedOutput(filePath, is, processId, fileType, offsetDateTime + "/" + offsetDateTime.plusHours(1));
+                    minioAdapter.uploadExtendedOutputForTimestamp(filePath, is, processId, fileType, offsetDateTime);
                     break;
                 default:
                     throw new UnsupportedOperationException(String.format("File group %s not supported", fileGroup));
