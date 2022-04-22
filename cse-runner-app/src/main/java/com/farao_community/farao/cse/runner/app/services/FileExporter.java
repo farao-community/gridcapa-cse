@@ -60,6 +60,10 @@ public class FileExporter {
     private String minioBasePath;
     @Value("${cse-cc-runner.zone-id}")
     private String zoneId;
+    @Value("${cse-cc-runner.files-metadata.process-id}")
+    private String processId;
+    @Value("${cse-cc-runner.files-metadata.outputs.ttc-res}")
+    private String ttcRes;
 
     public FileExporter(MinioAdapter minioAdapter, String combinedRasFilePath) {
         this.minioAdapter = minioAdapter;
@@ -82,13 +86,13 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(cracPath);
     }
 
-    public FileResource saveNetwork(Network network, OffsetDateTime processTargetDateTime, ProcessType processType) {
+    public FileResource saveNetworkInArtifact(Network network, OffsetDateTime processTargetDateTime, String fileType, ProcessType processType) {
         String networkPath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(zoneId)) + NETWORK_FILE_NAME;
-        return saveNetwork(GridcapaFileGroup.ARTIFACT, network, networkPath);
+        return saveNetwork(network, networkPath, GridcapaFileGroup.ARTIFACT, fileType, processTargetDateTime);
     }
 
-    public FileResource saveNetwork(GridcapaFileGroup fileGroup, Network network, String networkFilePath) {
-        exportAndUploadFile(fileGroup, network, networkFilePath, "XIIDM", "xiidm");
+    public FileResource saveNetwork(Network network, String networkFilePath, GridcapaFileGroup fileGroup, String fileType, OffsetDateTime processTargetDateTime) {
+        exportAndUploadFile(network, networkFilePath, "XIIDM", "xiidm", fileGroup, fileType, processTargetDateTime);
         return generateFileResource(networkFilePath);
     }
 
@@ -136,7 +140,7 @@ public class FileExporter {
         }
         InputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
         String outputFilePath = getFilePath(processTargetDate, processType);
-        minioAdapter.uploadOutput(outputFilePath, is);
+        minioAdapter.uploadOutput(outputFilePath, is, processId, ttcRes, processTargetDate + "/" + processTargetDate.plusHours(1));
         return minioAdapter.generatePreSignedUrl(outputFilePath);
     }
 
@@ -153,28 +157,31 @@ public class FileExporter {
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(zoneId)) + filename;
     }
 
-    String saveNetworkInUcteFormat(GridcapaFileGroup fileGroup, Network network, String filePath) {
-        exportAndUploadFile(fileGroup, network, filePath, "UCTE", "uct");
+    String saveNetworkInUcteFormat(Network network, String filePath, GridcapaFileGroup fileGroup, String fileType, OffsetDateTime offsetDateTime) {
+        exportAndUploadFile(network, filePath, "UCTE", "uct", fileGroup, fileType, offsetDateTime);
         return minioAdapter.generatePreSignedUrl(filePath);
     }
 
-    private void exportAndUploadFile(GridcapaFileGroup fileGroup, Network network, String filePath, String format, String ext) {
+    private void exportAndUploadFile(Network network, String filePath, String format, String ext,
+                                     GridcapaFileGroup fileGroup, String fileType, OffsetDateTime offsetDateTime) {
         MemDataSource memDataSource = new MemDataSource();
         Exporters.export(format, network, new Properties(), memDataSource);
         try (InputStream is = memDataSource.newInputStream("", ext)) {
             switch (fileGroup) {
                 case INPUT:
-                    minioAdapter.uploadInput(filePath, is);
+                    minioAdapter.uploadInput(filePath, is, processId, fileType, offsetDateTime + "/" + offsetDateTime.plusHours(1));
                     break;
                 case ARTIFACT:
-                    minioAdapter.uploadArtifact(filePath, is);
+                    minioAdapter.uploadArtifact(filePath, is, processId, fileType, offsetDateTime + "/" + offsetDateTime.plusHours(1));
                     break;
                 case OUTPUT:
-                    minioAdapter.uploadOutput(filePath, is);
+                    minioAdapter.uploadOutput(filePath, is, processId, fileType, offsetDateTime + "/" + offsetDateTime.plusHours(1));
                     break;
                 case EXTENDED_OUTPUT:
-                    minioAdapter.uploadExtendedOutput(filePath, is);
+                    minioAdapter.uploadExtendedOutput(filePath, is, processId, fileType, offsetDateTime + "/" + offsetDateTime.plusHours(1));
                     break;
+                default:
+                    throw new UnsupportedOperationException(String.format("File group %s not supported", fileGroup));
             }
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to save network", e);

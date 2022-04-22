@@ -62,3 +62,9 @@ cse-cc-runner:
   whitelist:
     - http://minio:9000/
     - http://localhost:9000/
+  files-metadata:
+    process-id: CSE_IDCC
+    outputs:
+      initial-cgm: INITIAL_CGM
+      final-cgm: FINAL_CGM
+      ttc-res: TTC_RES
