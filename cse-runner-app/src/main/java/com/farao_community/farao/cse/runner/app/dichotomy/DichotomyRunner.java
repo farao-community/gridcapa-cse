@@ -85,7 +85,7 @@ public class DichotomyRunner {
         if (processType == ProcessType.D2CC) {
             return new CseD2ccShiftDispatcher(
                 convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, false)),
+                convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true)),
                 convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
         } else {
             return new CseIdccShiftDispatcher(
