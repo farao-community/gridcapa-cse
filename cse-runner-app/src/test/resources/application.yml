@@ -44,9 +44,7 @@ cse-cc-runner:
   whitelist:
     - http://localhost:9000
     - file:/
-  files-metadata:
-    process-id: CSE_IDCC
-    outputs:
-      initial-cgm: INITIAL_CGM
-      final-cgm: FINAL_CGM
-      ttc-res: TTC_RES
+outputs:
+  initial-cgm: INITIAL_CGM
+  final-cgm: FINAL_CGM
+  ttc-res: TTC_RES

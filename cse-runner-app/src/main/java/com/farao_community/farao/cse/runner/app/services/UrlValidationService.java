@@ -8,7 +8,6 @@ package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.cse.runner.app.configurations.UrlWhitelistConfiguration;
-import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.net.URL;
 public class UrlValidationService {
     private final UrlWhitelistConfiguration urlWhitelistConfiguration;
 
-    public UrlValidationService(UrlWhitelistConfiguration urlWhitelistConfiguration, MinioAdapter minioAdapter) {
+    public UrlValidationService(UrlWhitelistConfiguration urlWhitelistConfiguration) {
         this.urlWhitelistConfiguration = urlWhitelistConfiguration;
     }
 
