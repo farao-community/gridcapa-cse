@@ -15,7 +15,6 @@ import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
-import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
@@ -65,7 +64,7 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     public DichotomyStepResult<RaoResponse> validateNetwork(Network network) throws ValidationException {
         String scaledNetworkDirPath = generateScaledNetworkDirPath(network);
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
-        String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, scaledNetworkDirPath + scaledNetworkName, GridcapaFileGroup.ARTIFACT, "", processTargetDateTime, processType);
+        String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, scaledNetworkDirPath + scaledNetworkName, "", processTargetDateTime, processType);
         RaoRequest raoRequest = buildRaoRequest(networkPresignedUrl, scaledNetworkDirPath);
         try {
             LOGGER.info("RAO request sent: {}", raoRequest);

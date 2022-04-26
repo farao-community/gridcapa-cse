@@ -85,11 +85,11 @@ public class FileExporter {
 
     public String saveNetworkInArtifact(Network network, OffsetDateTime processTargetDateTime, String fileType, ProcessType processType) {
         String networkPath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(zoneId)) + NETWORK_FILE_NAME;
-        return saveNetworkInArtifact(network, networkPath, GridcapaFileGroup.ARTIFACT, fileType, processTargetDateTime, processType);
+        return saveNetworkInArtifact(network, networkPath, fileType, processTargetDateTime, processType);
     }
 
-    public String saveNetworkInArtifact(Network network, String networkFilePath, GridcapaFileGroup fileGroup, String fileType, OffsetDateTime processTargetDateTime, ProcessType processType) {
-        exportAndUploadNetwork(network, "XIIDM", fileGroup, networkFilePath, fileType, processTargetDateTime, processType);
+    public String saveNetworkInArtifact(Network network, String networkFilePath, String fileType, OffsetDateTime processTargetDateTime, ProcessType processType) {
+        exportAndUploadNetwork(network, "XIIDM", GridcapaFileGroup.ARTIFACT, networkFilePath, fileType, processTargetDateTime, processType);
         return minioAdapter.generatePreSignedUrl(networkFilePath);
     }
 
