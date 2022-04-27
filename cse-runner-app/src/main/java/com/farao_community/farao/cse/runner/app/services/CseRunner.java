@@ -13,12 +13,8 @@ import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.configurations.ProcessConfiguration;
-import com.farao_community.farao.cse.runner.app.configurations.OutputsConfiguration;
-
 import com.farao_community.farao.cse.runner.app.dichotomy.DichotomyRunner;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
@@ -50,18 +46,16 @@ public class CseRunner {
     private final DichotomyRunner dichotomyRunner;
     private final TtcResultService ttcResultService;
     private final PiSaService piSaService;
-    private final OutputsConfiguration outputsConfiguration;
     private final MerchantLineService merchantLineService;
     private final ProcessConfiguration processConfiguration;
 
-    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, , MerchantLineService merchantLineService,
-                     ProcessConfiguration processConfiguration, OutputsConfiguration outputsConfiguration) {
+    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
+                     ProcessConfiguration processConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.dichotomyRunner = dichotomyRunner;
         this.ttcResultService = ttcResultService;
         this.piSaService = piSaService;
-        this.outputsConfiguration = outputsConfiguration;
         this.merchantLineService = merchantLineService;
         this.processConfiguration = processConfiguration;
 
@@ -78,10 +72,10 @@ public class CseRunner {
         piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);
 
         // Saving pre-processed network in IIDM and CRAC in JSON format
-        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()).getUrl());
+        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetworkInArtifact(network, cseRequest.getTargetProcessDateTime(), "", cseRequest.getProcessType()));
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-        String baseCaseFileUrl = fileExporter.saveNetworkInUcteFormat(network, baseCaseFilePath);
+        String baseCaseFileUrl = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, baseCaseFilePath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
 
         double initialItalianImport;
         if (cseRequest.getProcessType() == ProcessType.IDCC) {
@@ -102,20 +96,12 @@ public class CseRunner {
         }
 
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
-
-        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetworkInArtifact(network, cseRequest.getTargetProcessDateTime(), "", cseRequest.getProcessType()));
-        cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
-
-        String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-        String baseCaseFileUrl = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, baseCaseFilePath, outputsConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-
-        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImportFromNetwork);
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
             String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
             Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl());
-            finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, outputsConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+            finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
             ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData,
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
                 baseCaseFileUrl, finalCgmUrl);

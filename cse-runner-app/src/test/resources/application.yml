@@ -15,6 +15,10 @@ minio-adapter:
 cse-cc-runner:
   zone-id: "Europe/Paris"
   trm: 500
+  outputs:
+    initial-cgm: INITIAL_CGM
+    final-cgm: FINAL_CGM
+    ttc-res: TTC_RES
   xnodes:
     file-path: xnodes/cvg_xnodes_20200714.xml
   combined-ras:
@@ -51,7 +55,3 @@ cse-cc-runner:
   whitelist:
     - http://localhost:9000
     - file:/
-outputs:
-  initial-cgm: INITIAL_CGM
-  final-cgm: FINAL_CGM
-  ttc-res: TTC_RES

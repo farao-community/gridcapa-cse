@@ -16,10 +16,36 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ProcessConfiguration {
 
+    @Value("${cse-cc-runner.zone-id}")
+    private String zoneId;
+
     @Value("${cse-cc-runner.trm}")
     private Double trm;
 
+    @Value("${cse-cc-runner.outputs.initial-cgm}")
+    private String initialCgm;
+    @Value("${cse-cc-runner.outputs.final-cgm}")
+    private String finalCgm;
+    @Value("${cse-cc-runner.outputs.ttc-res}")
+    private String ttcRes;
+
+    public String getZoneId() {
+        return zoneId;
+    }
+
     public Double getTrm() {
         return trm;
+    }
+
+    public String getInitialCgm() {
+        return initialCgm;
+    }
+
+    public String getFinalCgm() {
+        return finalCgm;
+    }
+
+    public String getTtcRes() {
+        return ttcRes;
     }
 }

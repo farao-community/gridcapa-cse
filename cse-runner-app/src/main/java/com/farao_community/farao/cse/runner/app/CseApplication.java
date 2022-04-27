@@ -7,7 +7,6 @@
 package com.farao_community.farao.cse.runner.app;
 
 import com.farao_community.farao.cse.runner.app.configurations.MendrisioConfiguration;
-import com.farao_community.farao.cse.runner.app.configurations.OutputsConfiguration;
 import com.farao_community.farao.cse.runner.app.configurations.PiSaConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +17,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  */
 @SuppressWarnings("HideUtilityClassConstructor")
 @SpringBootApplication
-@EnableConfigurationProperties({PiSaConfiguration.class, OutputsConfiguration.class,  MendrisioConfiguration.class})
+@EnableConfigurationProperties({PiSaConfiguration.class, MendrisioConfiguration.class})
 public class CseApplication {
     public static void main(String[] args) {
         SpringApplication.run(CseApplication.class, args);
