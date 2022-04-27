@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2021, RTE (http://www.rte-france.com)
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<Targets_document DtdVersion="4" DtdRelease="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../targets-document_v2.xsd">
+    <DocumentIdentification v="Targets_2020_v0"/>
+    <DocumentVersion v="1"/>
+    <DocumentType v="Z02"/>
+    <ProcessType v="Z02"/>
+    <SenderIdentification v="SWISSGRID" codingScheme="A01"/>
+    <SenderRole v="A04"/>
+    <CreationDateTime v="2020-12-05T12:25:00Z"/>
+    <Target_data>
+        <SpecialLines>
+            <Line code="BBE2AA1  BBE3AA1  1" name="BE2-BE3" modelized="true" fixed_flow="true" n_from="BE" n_to="BE" c_ntc="BE">
+                <Period tini="2021-01-01T00:00Z" tfin="2022-01-01T00:00Z" description="year">
+                    <Outages>
+                        <Outage node_from="BBE1AA1*" node_to="BBE2AA1*" order="1" name="BE1-BE2" modelized="true">
+                            <DayOfWeek daynum="8" description="everyday">
+                                <TimeInterval tini="T00:00Z" tfin="T00:00Z">
+                                    <NTC type="relative">0</NTC>
+                                    <FixedFlow type="absolute">100</FixedFlow>
+                                </TimeInterval>
+                            </DayOfWeek>
+                        </Outage>
+                        <Outage node_from="FFR2AA1*" node_to="DDE3AA1*" order="1" name="FR2-DE3" modelized="true">
+                            <DayOfWeek daynum="8" description="everyday">
+                                <TimeInterval tini="T00:00Z" tfin="T00:00Z">
+                                    <NTC type="relative">0</NTC>
+                                    <FixedFlow type="absolute">50</FixedFlow>
+                                </TimeInterval>
+                            </DayOfWeek>
+                        </Outage>
+                    </Outages>
+                </Period>
+            </Line>
+        </SpecialLines>
+    </Target_data>
+</Targets_document>

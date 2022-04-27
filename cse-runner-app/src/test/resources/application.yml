@@ -14,10 +14,17 @@ minio-adapter:
 
 cse-cc-runner:
   zone-id: "Europe/Paris"
+  trm: 500
   xnodes:
     file-path: xnodes/cvg_xnodes_20200714.xml
   combined-ras:
     file-path: /home/farao/combinedRAs/combinedRAs.json
+  mendrisio:
+    mendrisio-cagno-line:
+      target-ch-id: ml_0001
+      ntc-id: ml_mendrisio-cagno
+    mendrisio-pst-id: SMENDR3T SMENDR32 1
+    mendrisio-node-id: SMENDR3T
   pisa:
     link1:
       node-fr: SWISS111

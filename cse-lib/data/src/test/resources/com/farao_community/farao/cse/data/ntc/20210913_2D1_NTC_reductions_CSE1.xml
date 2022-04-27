@@ -1,0 +1,601 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<NTC_reductions_document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ntc-document.xsd" DtdVersion="4" DtdRelease="0">
+	<DocumentIdentification v="20210913_2D1_NTC_reductions_CSE" />
+	<DocumentVersion v="01" />
+	<DocumentType v="A36" />
+	<ProcessType v="A15" />
+	<SenderIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01" />
+	<SenderRole v="A04" />
+	<ReceiverIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01" />
+	<ReceiverRole v="A36" />
+	<CreationDateTime v="2021-09-06T17:07:28Z" />
+	<Domain v="XXXXXXXXXXXXXXXX" codingScheme="A01" />
+	<NTCreductions>
+		<Period description="NTC 2021-09-12T23:00Z/2021-09-13T00:00Z" dtini="2021-09-12T23:00Z" dtfin="2021-09-13T00:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+					<NTC v="2995" country="FR" type="absolute" />
+					<NTC v="3635" country="CH" type="absolute" />
+					<NTC v="295" country="AT" type="absolute" />
+					<NTC v="620" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T00:00Z/2021-09-13T01:00Z" dtini="2021-09-13T00:00Z" dtfin="2021-09-13T01:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T00:00Z" tfin="T01:00Z">
+					<NTC v="2995" country="FR" type="absolute" />
+					<NTC v="3635" country="CH" type="absolute" />
+					<NTC v="295" country="AT" type="absolute" />
+					<NTC v="620" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T01:00Z/2021-09-13T02:00Z" dtini="2021-09-13T01:00Z" dtfin="2021-09-13T02:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T01:00Z" tfin="T02:00Z">
+					<NTC v="2995" country="FR" type="absolute" />
+					<NTC v="3635" country="CH" type="absolute" />
+					<NTC v="295" country="AT" type="absolute" />
+					<NTC v="620" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T02:00Z/2021-09-13T03:00Z" dtini="2021-09-13T02:00Z" dtfin="2021-09-13T03:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T02:00Z" tfin="T03:00Z">
+					<NTC v="2995" country="FR" type="absolute" />
+					<NTC v="3635" country="CH" type="absolute" />
+					<NTC v="295" country="AT" type="absolute" />
+					<NTC v="620" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T03:00Z/2021-09-13T04:00Z" dtini="2021-09-13T03:00Z" dtfin="2021-09-13T04:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T03:00Z" tfin="T04:00Z">
+					<NTC v="2995" country="FR" type="absolute" />
+					<NTC v="3635" country="CH" type="absolute" />
+					<NTC v="295" country="AT" type="absolute" />
+					<NTC v="620" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T04:00Z/2021-09-13T05:00Z" dtini="2021-09-13T04:00Z" dtfin="2021-09-13T05:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T04:00Z" tfin="T05:00Z">
+					<NTC v="2995" country="FR" type="absolute" />
+					<NTC v="3635" country="CH" type="absolute" />
+					<NTC v="295" country="AT" type="absolute" />
+					<NTC v="620" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T05:00Z/2021-09-13T06:00Z" dtini="2021-09-13T05:00Z" dtfin="2021-09-13T06:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T05:00Z" tfin="T06:00Z">
+					<NTC v="2995" country="FR" type="absolute" />
+					<NTC v="3635" country="CH" type="absolute" />
+					<NTC v="295" country="AT" type="absolute" />
+					<NTC v="620" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T06:00Z/2021-09-13T07:00Z" dtini="2021-09-13T06:00Z" dtfin="2021-09-13T07:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T06:00Z" tfin="T07:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T07:00Z/2021-09-13T08:00Z" dtini="2021-09-13T07:00Z" dtfin="2021-09-13T08:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T07:00Z" tfin="T08:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T08:00Z/2021-09-13T09:00Z" dtini="2021-09-13T08:00Z" dtfin="2021-09-13T09:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T08:00Z" tfin="T09:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T09:00Z/2021-09-13T10:00Z" dtini="2021-09-13T09:00Z" dtfin="2021-09-13T10:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T09:00Z" tfin="T10:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T10:00Z/2021-09-13T11:00Z" dtini="2021-09-13T10:00Z" dtfin="2021-09-13T11:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T10:00Z" tfin="T11:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T11:00Z/2021-09-13T12:00Z" dtini="2021-09-13T11:00Z" dtfin="2021-09-13T12:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T11:00Z" tfin="T12:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T12:00Z/2021-09-13T13:00Z" dtini="2021-09-13T12:00Z" dtfin="2021-09-13T13:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T12:00Z" tfin="T13:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T13:00Z/2021-09-13T14:00Z" dtini="2021-09-13T13:00Z" dtfin="2021-09-13T14:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T13:00Z" tfin="T14:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T14:00Z/2021-09-13T15:00Z" dtini="2021-09-13T14:00Z" dtfin="2021-09-13T15:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T14:00Z" tfin="T15:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T15:00Z/2021-09-13T16:00Z" dtini="2021-09-13T15:00Z" dtfin="2021-09-13T16:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T15:00Z" tfin="T16:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T16:00Z/2021-09-13T17:00Z" dtini="2021-09-13T16:00Z" dtfin="2021-09-13T17:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T16:00Z" tfin="T17:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T17:00Z/2021-09-13T18:00Z" dtini="2021-09-13T17:00Z" dtfin="2021-09-13T18:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T17:00Z" tfin="T18:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T18:00Z/2021-09-13T19:00Z" dtini="2021-09-13T18:00Z" dtfin="2021-09-13T19:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T18:00Z" tfin="T19:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T19:00Z/2021-09-13T20:00Z" dtini="2021-09-13T19:00Z" dtfin="2021-09-13T20:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T19:00Z" tfin="T20:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T20:00Z/2021-09-13T21:00Z" dtini="2021-09-13T20:00Z" dtfin="2021-09-13T21:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T20:00Z" tfin="T21:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T21:00Z/2021-09-13T22:00Z" dtini="2021-09-13T21:00Z" dtfin="2021-09-13T22:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T21:00Z" tfin="T22:00Z">
+					<NTC v="3150" country="FR" type="absolute" />
+					<NTC v="4165" country="CH" type="absolute" />
+					<NTC v="315" country="AT" type="absolute" />
+					<NTC v="730" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-09-13T22:00Z/2021-09-13T23:00Z" dtini="2021-09-13T22:00Z" dtfin="2021-09-13T23:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T22:00Z" tfin="T23:00Z">
+					<NTC v="2995" country="FR" type="absolute" />
+					<NTC v="3635" country="CH" type="absolute" />
+					<NTC v="295" country="AT" type="absolute" />
+					<NTC v="620" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+	</NTCreductions>
+	<SplittingFactors>
+		<Period description="SplittingFactor 2021-09-12T23:00Z/2021-09-13T00:00Z" dtini="2021-09-12T23:00Z" dtfin="2021-09-13T00:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+					<SplittingFactor v="0.408038" country="FR" type="absolute" />
+					<SplittingFactor v="0.478202" country="CH" type="absolute" />
+					<SplittingFactor v="0.029292" country="AT" type="absolute" />
+					<SplittingFactor v="0.084469" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T00:00Z/2021-09-13T01:00Z" dtini="2021-09-13T00:00Z" dtfin="2021-09-13T01:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T00:00Z" tfin="T01:00Z">
+					<SplittingFactor v="0.408038" country="FR" type="absolute" />
+					<SplittingFactor v="0.478202" country="CH" type="absolute" />
+					<SplittingFactor v="0.029292" country="AT" type="absolute" />
+					<SplittingFactor v="0.084469" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T01:00Z/2021-09-13T02:00Z" dtini="2021-09-13T01:00Z" dtfin="2021-09-13T02:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T01:00Z" tfin="T02:00Z">
+					<SplittingFactor v="0.408038" country="FR" type="absolute" />
+					<SplittingFactor v="0.478202" country="CH" type="absolute" />
+					<SplittingFactor v="0.029292" country="AT" type="absolute" />
+					<SplittingFactor v="0.084469" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T02:00Z/2021-09-13T03:00Z" dtini="2021-09-13T02:00Z" dtfin="2021-09-13T03:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T02:00Z" tfin="T03:00Z">
+					<SplittingFactor v="0.408038" country="FR" type="absolute" />
+					<SplittingFactor v="0.478202" country="CH" type="absolute" />
+					<SplittingFactor v="0.029292" country="AT" type="absolute" />
+					<SplittingFactor v="0.084469" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T03:00Z/2021-09-13T04:00Z" dtini="2021-09-13T03:00Z" dtfin="2021-09-13T04:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T03:00Z" tfin="T04:00Z">
+					<SplittingFactor v="0.408038" country="FR" type="absolute" />
+					<SplittingFactor v="0.478202" country="CH" type="absolute" />
+					<SplittingFactor v="0.029292" country="AT" type="absolute" />
+					<SplittingFactor v="0.084469" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T04:00Z/2021-09-13T05:00Z" dtini="2021-09-13T04:00Z" dtfin="2021-09-13T05:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T04:00Z" tfin="T05:00Z">
+					<SplittingFactor v="0.408038" country="FR" type="absolute" />
+					<SplittingFactor v="0.478202" country="CH" type="absolute" />
+					<SplittingFactor v="0.029292" country="AT" type="absolute" />
+					<SplittingFactor v="0.084469" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T05:00Z/2021-09-13T06:00Z" dtini="2021-09-13T05:00Z" dtfin="2021-09-13T06:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T05:00Z" tfin="T06:00Z">
+					<SplittingFactor v="0.408038" country="FR" type="absolute" />
+					<SplittingFactor v="0.478202" country="CH" type="absolute" />
+					<SplittingFactor v="0.029292" country="AT" type="absolute" />
+					<SplittingFactor v="0.084469" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T06:00Z/2021-09-13T07:00Z" dtini="2021-09-13T06:00Z" dtfin="2021-09-13T07:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T06:00Z" tfin="T07:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T07:00Z/2021-09-13T08:00Z" dtini="2021-09-13T07:00Z" dtfin="2021-09-13T08:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T07:00Z" tfin="T08:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T08:00Z/2021-09-13T09:00Z" dtini="2021-09-13T08:00Z" dtfin="2021-09-13T09:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T08:00Z" tfin="T09:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T09:00Z/2021-09-13T10:00Z" dtini="2021-09-13T09:00Z" dtfin="2021-09-13T10:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T09:00Z" tfin="T10:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T10:00Z/2021-09-13T11:00Z" dtini="2021-09-13T10:00Z" dtfin="2021-09-13T11:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T10:00Z" tfin="T11:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T11:00Z/2021-09-13T12:00Z" dtini="2021-09-13T11:00Z" dtfin="2021-09-13T12:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T11:00Z" tfin="T12:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T12:00Z/2021-09-13T13:00Z" dtini="2021-09-13T12:00Z" dtfin="2021-09-13T13:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T12:00Z" tfin="T13:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T13:00Z/2021-09-13T14:00Z" dtini="2021-09-13T13:00Z" dtfin="2021-09-13T14:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T13:00Z" tfin="T14:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T14:00Z/2021-09-13T15:00Z" dtini="2021-09-13T14:00Z" dtfin="2021-09-13T15:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T14:00Z" tfin="T15:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T15:00Z/2021-09-13T16:00Z" dtini="2021-09-13T15:00Z" dtfin="2021-09-13T16:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T15:00Z" tfin="T16:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T16:00Z/2021-09-13T17:00Z" dtini="2021-09-13T16:00Z" dtfin="2021-09-13T17:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T16:00Z" tfin="T17:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T17:00Z/2021-09-13T18:00Z" dtini="2021-09-13T17:00Z" dtfin="2021-09-13T18:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T17:00Z" tfin="T18:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T18:00Z/2021-09-13T19:00Z" dtini="2021-09-13T18:00Z" dtfin="2021-09-13T19:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T18:00Z" tfin="T19:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T19:00Z/2021-09-13T20:00Z" dtini="2021-09-13T19:00Z" dtfin="2021-09-13T20:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T19:00Z" tfin="T20:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T20:00Z/2021-09-13T21:00Z" dtini="2021-09-13T20:00Z" dtfin="2021-09-13T21:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T20:00Z" tfin="T21:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T21:00Z/2021-09-13T22:00Z" dtini="2021-09-13T21:00Z" dtfin="2021-09-13T22:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T21:00Z" tfin="T22:00Z">
+					<SplittingFactor v="0.386503" country="FR" type="absolute" />
+					<SplittingFactor v="0.495706" country="CH" type="absolute" />
+					<SplittingFactor v="0.028221" country="AT" type="absolute" />
+					<SplittingFactor v="0.089571" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-09-13T22:00Z/2021-09-13T23:00Z" dtini="2021-09-13T22:00Z" dtfin="2021-09-13T23:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T22:00Z" tfin="T23:00Z">
+					<SplittingFactor v="0.408038" country="FR" type="absolute" />
+					<SplittingFactor v="0.478202" country="CH" type="absolute" />
+					<SplittingFactor v="0.029292" country="AT" type="absolute" />
+					<SplittingFactor v="0.084469" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+	</SplittingFactors>
+	<SpecialLines>
+		<Line code="ml_mendrisio-cagno" name="mendrisio-cagno" modelized="true" fixed_flow="true" n_from="CH" n_to="IT" c_ntc="CH" merchant_line="true">
+			<Period description="mendrisio-cagno" dtini="2021-09-12T23:00Z" dtfin="2021-09-13T23:00Z">
+				<DayOfWeek description="Everyday" daynum="0">
+					<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T00:00Z" tfin="T01:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T01:00Z" tfin="T02:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T02:00Z" tfin="T03:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T03:00Z" tfin="T04:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T04:00Z" tfin="T05:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T05:00Z" tfin="T06:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T06:00Z" tfin="T07:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T07:00Z" tfin="T08:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T08:00Z" tfin="T09:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T09:00Z" tfin="T10:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T10:00Z" tfin="T11:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T11:00Z" tfin="T12:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T12:00Z" tfin="T13:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T13:00Z" tfin="T14:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T14:00Z" tfin="T15:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T15:00Z" tfin="T16:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T16:00Z" tfin="T17:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T17:00Z" tfin="T18:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T18:00Z" tfin="T19:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T19:00Z" tfin="T20:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T20:00Z" tfin="T21:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T21:00Z" tfin="T22:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+					<TimeInterval tini="T22:00Z" tfin="T23:00Z">
+						<NTC v="-75" type="relative" />
+						<FixedFlow v="-75" type="relative" />
+					</TimeInterval>
+				</DayOfWeek>
+			</Period>
+		</Line>
+	</SpecialLines>
+</NTC_reductions_document>

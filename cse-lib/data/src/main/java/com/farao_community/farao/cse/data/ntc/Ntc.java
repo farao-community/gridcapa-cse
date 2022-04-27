@@ -76,7 +76,7 @@ public final class Ntc {
         return flowPerCountry;
     }
 
-    Map<String, Double> getNtcPerCountry() {
+    public Map<String, Double> getNtcPerCountry() {
         Map<String, Double> ntcPerCountry = yearlyNtcDocument.getNtcInformationPerCountry().entrySet().stream()
                 .collect(Collectors.toMap(
                     Map.Entry::getKey,

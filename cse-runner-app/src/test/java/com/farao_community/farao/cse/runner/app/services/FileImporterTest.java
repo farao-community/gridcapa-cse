@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.powsybl.iidm.import_.Importers;
@@ -43,5 +44,13 @@ class FileImporterTest {
         Network network = Importers.loadNetwork("20210901_2230_test_network.uct", getClass().getResourceAsStream("20210901_2230_test_network.uct"));
         Crac crac = fileImporter.importCrac(cseCrac, Collections.emptySet(), OffsetDateTime.parse("2021-09-01T20:30Z"), network);
         assertEquals(4, crac.getFlowCnecs().size());
+    }
+
+    @Test
+    void testTargetChImport() {
+        LineFixedFlows lineFixedFlows = fileImporter.importLineFixedFlowFromTargetChFile(
+            OffsetDateTime.parse("2021-01-01T00:00Z"),
+            Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
+        assertNotNull(lineFixedFlows);
     }
 }
