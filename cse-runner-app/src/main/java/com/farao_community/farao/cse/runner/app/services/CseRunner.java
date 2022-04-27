@@ -22,6 +22,7 @@ import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
+import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
@@ -48,8 +49,7 @@ public class CseRunner {
     private final MerchantLineService merchantLineService;
     private final ProcessConfiguration processConfiguration;
 
-    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner,
-                     TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
+    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
                      ProcessConfiguration processConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
@@ -58,6 +58,7 @@ public class CseRunner {
         this.piSaService = piSaService;
         this.merchantLineService = merchantLineService;
         this.processConfiguration = processConfiguration;
+
     }
 
     public CseResponse run(CseRequest cseRequest) throws IOException {
@@ -71,10 +72,10 @@ public class CseRunner {
         piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);
 
         // Saving pre-processed network in IIDM and CRAC in JSON format
-        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetwork(network, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()).getUrl());
+        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetworkInArtifact(network, cseRequest.getTargetProcessDateTime(), "", cseRequest.getProcessType()));
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-        String baseCaseFileUrl = fileExporter.saveNetworkInUcteFormat(network, baseCaseFilePath);
+        String baseCaseFileUrl = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, baseCaseFilePath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
 
         double initialItalianImport;
         if (cseRequest.getProcessType() == ProcessType.IDCC) {
@@ -95,14 +96,12 @@ public class CseRunner {
         }
 
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
-
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
             String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-            finalCgmUrl = fileExporter.saveNetworkInUcteFormat(
-                fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl()),
-                finalCgmPath);
+            Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl());
+            finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
             ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData,
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
                 baseCaseFileUrl, finalCgmUrl);

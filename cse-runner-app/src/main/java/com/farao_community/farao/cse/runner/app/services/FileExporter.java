@@ -9,12 +9,14 @@ package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
-import com.farao_community.farao.cse.runner.api.resource.FileResource;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.cse.runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.app.util.MinioStorageHelper;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_io_api.CracExporters;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
+import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
+import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.farao_community.farao.rao_api.json.JsonRaoParameters;
 import com.farao_community.farao.rao_api.parameters.RaoParameters;
 import com.farao_community.farao.search_tree_rao.castor.parameters.SearchTreeRaoParameters;
@@ -22,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.network.Network;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBContext;
@@ -48,14 +49,17 @@ public class FileExporter {
     private static final String JSON_CRAC_FILE_NAME = "crac.json";
     private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
     private static final DateTimeFormatter OUTPUTS_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
+
     private final MinioAdapter minioAdapter;
+    private final ProcessConfiguration processConfiguration;
+
     private final String combinedRasFilePath;
 
-    @Value("${cse-cc-runner.zone-id}")
-    private String zoneId;
+    private static final String PROCESS_TYPE_PREFIX = "CSE_";
 
-    public FileExporter(MinioAdapter minioAdapter, String combinedRasFilePath) {
+    public FileExporter(MinioAdapter minioAdapter, ProcessConfiguration processConfiguration, String combinedRasFilePath) {
         this.minioAdapter = minioAdapter;
+        this.processConfiguration = processConfiguration;
         this.combinedRasFilePath = combinedRasFilePath;
     }
 
@@ -66,32 +70,32 @@ public class FileExporter {
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to save converted CRAC file.", e);
         }
-        String cracPath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(zoneId)) + JSON_CRAC_FILE_NAME;
+        String cracPath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(processConfiguration.getZoneId())) + JSON_CRAC_FILE_NAME;
         try (InputStream is = memDataSource.newInputStream(JSON_CRAC_FILE_NAME)) {
-            minioAdapter.uploadFile(cracPath, is);
+            minioAdapter.uploadArtifactForTimestamp(cracPath, is, adaptTargetProcessName(processType), "", processTargetDateTime);
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to upload converted CRAC file.", e);
         }
         return minioAdapter.generatePreSignedUrl(cracPath);
     }
 
-    public FileResource saveNetwork(Network network, OffsetDateTime processTargetDateTime, ProcessType processType) {
-        String networkPath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(zoneId)) + NETWORK_FILE_NAME;
-        return saveNetwork(network, networkPath);
+    public String saveNetworkInArtifact(Network network, OffsetDateTime processTargetDateTime, String fileType, ProcessType processType) {
+        String networkPath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(processConfiguration.getZoneId())) + NETWORK_FILE_NAME;
+        return saveNetworkInArtifact(network, networkPath, fileType, processTargetDateTime, processType);
     }
 
-    public FileResource saveNetwork(Network network, String networkFilePath) {
-        exportAndUploadFile(network, networkFilePath, "XIIDM", "xiidm");
-        return minioAdapter.generateFileResource(networkFilePath);
+    public String saveNetworkInArtifact(Network network, String networkFilePath, String fileType, OffsetDateTime processTargetDateTime, ProcessType processType) {
+        exportAndUploadNetwork(network, "XIIDM", GridcapaFileGroup.ARTIFACT, networkFilePath, fileType, processTargetDateTime, processType);
+        return minioAdapter.generatePreSignedUrl(networkFilePath);
     }
 
     public String saveRaoParameters(OffsetDateTime offsetDateTime, ProcessType processType) {
         RaoParameters raoParameters = getRaoParameters();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
-        String raoParametersDestinationPath = MinioStorageHelper.makeDestinationMinioPath(offsetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(zoneId)) + RAO_PARAMETERS_FILE_NAME;
+        String raoParametersDestinationPath = MinioStorageHelper.makeDestinationMinioPath(offsetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(processConfiguration.getZoneId())) + RAO_PARAMETERS_FILE_NAME;
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        minioAdapter.uploadFile(raoParametersDestinationPath, bais);
+        minioAdapter.uploadArtifactForTimestamp(raoParametersDestinationPath, bais, adaptTargetProcessName(processType), "", offsetDateTime);
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
     }
 
@@ -128,13 +132,14 @@ public class FileExporter {
             throw new CseInternalException("XSD matching error");
         }
         InputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
-        minioAdapter.uploadFile(getFilePath(processTargetDate, processType), is);
-        return minioAdapter.generatePreSignedUrl(getFilePath(processTargetDate, processType));
+        String outputFilePath = getFilePath(processTargetDate, processType);
+        minioAdapter.uploadOutputForTimestamp(outputFilePath, is, adaptTargetProcessName(processType), processConfiguration.getTtcRes(), processTargetDate);
+        return minioAdapter.generatePreSignedUrl(outputFilePath);
     }
 
     String getFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
         String filename;
-        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(zoneId));
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         if (processType == ProcessType.D2CC) {
             String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
             filename = "TTC_Calculation_" + dateAndTime + "_2D0_CO_CSE1.xml";
@@ -142,27 +147,45 @@ public class FileExporter {
             String date = targetDateInEuropeZone.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             filename = date + "_XBID2_TTCRes_CSE1.xml";
         }
-        return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(zoneId)) + filename;
+        return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId())) + filename;
     }
 
-    String saveNetworkInUcteFormat(Network network, String filePath) {
-        exportAndUploadFile(network, filePath, "UCTE", "uct");
+    String exportAndUploadNetwork(Network network, String format, GridcapaFileGroup fileGroup, String filePath, String fileType, OffsetDateTime offsetDateTime, ProcessType processType) {
+        try (InputStream is = getNetworkInputStream(network, format)) {
+            switch (fileGroup) {
+                case OUTPUT:
+                    minioAdapter.uploadOutputForTimestamp(filePath, is, adaptTargetProcessName(processType), fileType, offsetDateTime);
+                    break;
+                case ARTIFACT:
+                    minioAdapter.uploadArtifactForTimestamp(filePath, is, adaptTargetProcessName(processType), fileType, offsetDateTime);
+                    break;
+                default:
+                    throw new UnsupportedOperationException(String.format("File group %s not supported", fileGroup));
+
+            }
+        } catch (IOException e) {
+            throw new CseInternalException("Error while trying to save network", e);
+        }
         return minioAdapter.generatePreSignedUrl(filePath);
     }
 
-    private void exportAndUploadFile(Network network, String filePath, String format, String ext) {
+    private InputStream getNetworkInputStream(Network network, String format) throws IOException {
         MemDataSource memDataSource = new MemDataSource();
-        Exporters.export(format, network, new Properties(), memDataSource);
-        try (InputStream is = memDataSource.newInputStream("", ext)) {
-            minioAdapter.uploadFile(filePath, is);
-        } catch (IOException e) {
-            throw new CseInternalException("Error while trying to save network", e);
+        switch (format) {
+            case "UCTE":
+                Exporters.export("UCTE", network, new Properties(), memDataSource);
+                return memDataSource.newInputStream("", "uct");
+            case "XIIDM":
+                Exporters.export("XIIDM", network, new Properties(), memDataSource);
+                return memDataSource.newInputStream("", "xiidm");
+            default:
+                throw new UnsupportedOperationException(String.format("Network format %s not supported", format));
         }
     }
 
     String getFinalNetworkFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
         String filename;
-        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(zoneId));
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
         String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
         if (processType == ProcessType.D2CC) {
@@ -170,12 +193,12 @@ public class FileExporter {
         } else {
             filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_CSE1.uct";
         }
-        return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(zoneId)) + filename;
+        return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId())) + filename;
     }
 
     String getBaseCaseFilePath(OffsetDateTime processTargetDate, ProcessType processType) {
         String filename;
-        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(zoneId));
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
         String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
         if (processType == ProcessType.D2CC) {
@@ -183,10 +206,15 @@ public class FileExporter {
         } else {
             filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_Initial_CSE1.uct";
         }
-        return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(zoneId)) + filename;
+        return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId())) + filename;
     }
 
     public String getZoneId() {
-        return zoneId;
+        return processConfiguration.getZoneId();
     }
+
+    private String adaptTargetProcessName(ProcessType processType) {
+        return PROCESS_TYPE_PREFIX + processType;
+    }
+
 }

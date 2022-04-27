@@ -25,17 +25,20 @@ rao-runner-server:
     client-app-id: cse-cc-runner  # should be overridden with value of app name
     queue-name: rao-request-queue
 
-minio:
+minio-adapter:
   bucket: gridcapa
   base-path: ""
-  access:
-    name: gridcapa
-    secret: gridcapa
-  url: http://minio:9000/
+  access-key: gridcapa
+  secret-key: gridcapa
+  url: http://minio:9000
 
 cse-cc-runner:
   zone-id: "Europe/Paris"
   trm: 500
+  outputs:
+    initial-cgm: INITIAL_CGM
+    final-cgm: FINAL_CGM
+    ttc-res: TTC_RES
   xnodes:
     file-path: /home/farao/xnodes/xnodes.xml
   combined-ras:
@@ -69,3 +72,4 @@ cse-cc-runner:
       expiration: 60000
   whitelist:
     - http://minio:9000/
+    - http://localhost:9000/

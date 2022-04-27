@@ -41,7 +41,7 @@ public class TtcResultService {
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveFailedTtcResult(CseRequest cseRequest, String baseCaseFileUrl, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason) throws IOException {
+    public String saveFailedTtcResult(CseRequest cseRequest, String baseCaseFileUrl, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason) {
         TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, baseCaseFileUrl);
         Timestamp timestamp = TtcResult.generate(ttcFiles, new TtcResult.FailedProcessData(
             cseRequest.getTargetProcessDateTime().toString(),

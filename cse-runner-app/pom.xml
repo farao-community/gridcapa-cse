@@ -100,6 +100,10 @@
         </dependency>
         <dependency>
             <groupId>com.farao-community.farao</groupId>
+            <artifactId>gridcapa-starter-minio-adapter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
             <artifactId>gridcapa-task-manager-api</artifactId>
         </dependency>
         <dependency>
@@ -113,10 +117,6 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

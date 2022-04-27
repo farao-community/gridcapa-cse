@@ -17,7 +17,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  */
 @SuppressWarnings("HideUtilityClassConstructor")
 @SpringBootApplication
-@EnableConfigurationProperties({ PiSaConfiguration.class, MendrisioConfiguration.class })
+@EnableConfigurationProperties({PiSaConfiguration.class, MendrisioConfiguration.class})
 public class CseApplication {
     public static void main(String[] args) {
         SpringApplication.run(CseApplication.class, args);
