@@ -118,7 +118,7 @@ public class MerchantLineService {
      * @return The terminal of Mendrisio PST that on the opposite side of the mendrisio-cagno line.
      */
     private Terminal getRegulatedTerminal(TwoWindingsTransformer mendrisioTransformer) {
-        if (mendrisioTransformer.getTerminal1().getBusBreakerView().getBus().getId().equals(mendrisioConfiguration.getMendrisioNodeId())) {
+        if (mendrisioTransformer.getTerminal1().getBusBreakerView().getConnectableBus().getId().equals(mendrisioConfiguration.getMendrisioNodeId())) {
             return mendrisioTransformer.getTerminal2();
         } else {
             return mendrisioTransformer.getTerminal1();
