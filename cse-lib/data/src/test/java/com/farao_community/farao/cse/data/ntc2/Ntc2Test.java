@@ -83,12 +83,14 @@ class Ntc2Test {
 
     @Test
     void assertThrowsWhenDataIsMissing() {
-        assertThrows(CseDataException.class, () -> Ntc2.create(OffsetDateTime.parse("2021-02-07T23:00Z"), test2Nt2Files));
+        OffsetDateTime timestamp = OffsetDateTime.parse("2021-02-07T23:00Z");
+        assertThrows(CseDataException.class, () -> Ntc2.create(timestamp, test2Nt2Files));
     }
 
     @Test
     void assertThrowsWhenTargetDateTimeOutOfBound() {
-        assertThrows(CseDataException.class, () -> Ntc2.create(OffsetDateTime.parse("2021-06-01T22:00Z"), test1Nt2Files));
+        OffsetDateTime timestamp = OffsetDateTime.parse("2021-06-01T22:00Z");
+        assertThrows(CseDataException.class, () -> Ntc2.create(timestamp, test1Nt2Files));
     }
 
     @Test

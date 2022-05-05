@@ -48,10 +48,6 @@ public final class Ntc2 {
     }
 
     public static Ntc2 create(OffsetDateTime targetDateTime, Map<String, InputStream> ntc2InputStreams) {
-        return new Ntc2(getD2Exchanges(targetDateTime, ntc2InputStreams));
-    }
-
-    private static Map<String, Double> getD2Exchanges(OffsetDateTime targetDateTime, Map<String, InputStream> ntc2InputStreams) {
         Map<String, Double> result = new HashMap<>();
         for (Map.Entry<String, InputStream> ntc2Entry : ntc2InputStreams.entrySet()) {
             Optional<String> optAreaCode = getAreaCodeFromFilename(ntc2Entry.getKey());
@@ -64,7 +60,7 @@ public final class Ntc2 {
                 }
             });
         }
-        return result;
+        return new Ntc2(result);
     }
 
     private static Double getD2ExchangeByOffsetDateTime(InputStream ntc2InputStream, OffsetDateTime targetDateTime) throws JAXBException {
