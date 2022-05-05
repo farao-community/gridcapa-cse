@@ -48,10 +48,6 @@ public final class Ntc2 {
     }
 
     public static Ntc2 create(OffsetDateTime targetDateTime, Map<String, InputStream> ntc2InputStreams) {
-        return new Ntc2(getD2Exchanges(ntc2InputStreams, targetDateTime));
-    }
-
-    private static Map<String, Double> getD2Exchanges(Map<String, InputStream> ntc2InputStreams, OffsetDateTime targetDateTime) {
         Map<String, Double> result = new HashMap<>();
         for (Map.Entry<String, InputStream> ntc2Entry : ntc2InputStreams.entrySet()) {
             Optional<String> optAreaCode = getAreaCodeFromFilename(ntc2Entry.getKey());
@@ -60,11 +56,11 @@ public final class Ntc2 {
                     double d2Exchange = getD2ExchangeByOffsetDateTime(ntc2Entry.getValue(), targetDateTime);
                     result.put(areaCode, d2Exchange);
                 } catch (Exception e) {
-                    throw new CseDataException(e.getMessage(), e);
+                    throw new CseDataException(String.format("Impossible to import NTC2 file for area: %s", areaCode), e);
                 }
             });
         }
-        return result;
+        return new Ntc2(result);
     }
 
     private static Double getD2ExchangeByOffsetDateTime(InputStream ntc2InputStream, OffsetDateTime targetDateTime) throws JAXBException {
@@ -76,7 +72,9 @@ public final class Ntc2 {
             int index = interval.getPos().getV().intValue();
             qtyByPositionMap.put(index, interval.getQty().getV().doubleValue());
         });
-        return qtyByPositionMap.get(position);
+        return Optional.ofNullable(qtyByPositionMap.get(position))
+            .orElseThrow(() -> new CseDataException(
+                String.format("Impossible to retrieve NTC2 position %d. It does not exist", position)));
     }
 
     private static void checkTimeInterval(CapacityDocument capacityDocument, OffsetDateTime targetDateTime) {
