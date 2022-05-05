@@ -48,10 +48,10 @@ public final class Ntc2 {
     }
 
     public static Ntc2 create(OffsetDateTime targetDateTime, Map<String, InputStream> ntc2InputStreams) {
-        return new Ntc2(getD2Exchanges(ntc2InputStreams, targetDateTime));
+        return new Ntc2(getD2Exchanges(targetDateTime, ntc2InputStreams));
     }
 
-    private static Map<String, Double> getD2Exchanges(Map<String, InputStream> ntc2InputStreams, OffsetDateTime targetDateTime) {
+    private static Map<String, Double> getD2Exchanges(OffsetDateTime targetDateTime, Map<String, InputStream> ntc2InputStreams) {
         Map<String, Double> result = new HashMap<>();
         for (Map.Entry<String, InputStream> ntc2Entry : ntc2InputStreams.entrySet()) {
             Optional<String> optAreaCode = getAreaCodeFromFilename(ntc2Entry.getKey());
