@@ -60,7 +60,7 @@ public final class Ntc2 {
                     double d2Exchange = getD2ExchangeByOffsetDateTime(ntc2Entry.getValue(), targetDateTime);
                     result.put(areaCode, d2Exchange);
                 } catch (Exception e) {
-                    throw new CseDataException(e.getMessage(), e);
+                    throw new CseDataException(String.format("Impossible to import NTC2 file for area: %s", areaCode), e);
                 }
             });
         }
@@ -76,7 +76,9 @@ public final class Ntc2 {
             int index = interval.getPos().getV().intValue();
             qtyByPositionMap.put(index, interval.getQty().getV().doubleValue());
         });
-        return qtyByPositionMap.get(position);
+        return Optional.ofNullable(qtyByPositionMap.get(position))
+            .orElseThrow(() -> new CseDataException(
+                String.format("Impossible to retrieve NTC2 position %d. It does not exist", position)));
     }
 
     private static void checkTimeInterval(CapacityDocument capacityDocument, OffsetDateTime targetDateTime) {
