@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="CseRaoResult">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Time" type="String_value"/>
+                <xs:element name="Status">
+                    <xs:complexType>
+                        <xs:attribute name="v" type="Status"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="LimitingElements" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="PreventiveMNELimitation" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="MonitoredElement" type="Preventive_branch_result" maxOccurs="unbounded"/> <!-- Several branches could violate MNE constraint in one state i.e. preventive or after an outage -->
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="AfterOutageMNELimitation" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="Outage" type="Outage"/> <!-- In case of MNE in preventive there will be no outage -->
+                                        <xs:element name="MonitoredElement" type="After_outage_branch_result" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Results">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="PreventiveResult" type="Preventive_result" minOccurs="0"/>
+                            <xs:element name="OutageResult" type="Outage_result" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+         </xs:complexType>
+    </xs:element>
+    <xs:complexType name="String_value">
+        <xs:attribute name="v" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="Int_value">
+        <xs:attribute name="v" type="xs:int"/>
+    </xs:complexType>
+    <xs:complexType name="I_value">
+        <xs:attribute name="unit" type="xs:string"/>
+        <xs:attribute name="v" type="xs:int"/>
+    </xs:complexType>
+    <xs:simpleType name="Status">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SECURE"/>
+            <xs:enumeration value="UNSECURE"/>
+            <xs:enumeration value="FAILED"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="Preventive_branch_result">
+        <xs:complexContent>
+            <xs:extension base="Branch">
+                <xs:sequence>
+                    <xs:element name="IBeforeOptimization" type="I_value"/>
+                    <xs:element name="IAfterOptimization" type="I_value"/>
+                    <xs:element name="IMax" type="I_value"/>
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="After_outage_branch_result">
+        <xs:complexContent>
+            <xs:extension base="Branch">
+                <xs:sequence>
+                    <xs:element name="IAfterOutageBeforeOptimization" type="I_value"/>
+                    <xs:element name="IAfterOutageAfterOptimization" type="I_value"/>
+                    <xs:element name="IMaxAfterOutage" type="I_value"/>
+                    <xs:element name="IAfterCRAAfterOptimization" type="I_value"/>
+                    <xs:element name="IMaxAfterCRA" type="I_value"/>
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="Branch">
+        <xs:sequence>
+            <xs:element name="FromNode" type="String_value"/>
+            <xs:element name="ToNode" type="String_value"/>
+            <xs:element name="Code" type="String_value"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Outage">
+        <xs:sequence>
+            <xs:element name="Branch" type="Branch" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="Action">
+        <xs:sequence>
+            <xs:element name="PSTtap" type="Int_value" minOccurs="0"/>
+            <xs:element name="Setpoint" type="Int_value" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="Preventive_result">
+        <xs:sequence>
+            <xs:element name="PreventiveActions" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Action" type="Action" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="MonitoredElement" type="Preventive_branch_result" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Outage_result">
+        <xs:sequence>
+            <xs:element name="Outage" type="Outage"/>
+            <xs:element name="CurativeActions" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Action" type="Action" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="MonitoredElement" type="After_outage_branch_result" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
