@@ -9,6 +9,7 @@ package com.farao_community.farao.cse.runner.api.resource;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +29,7 @@ class CseRequestTest {
             "ntcReductionsUrl",
             "targetChUrl",
             "yearlyNtcUrl",
-            "forcedPrasUrl",
+            Collections.emptyList(),
             50,
             650,
             null);
@@ -58,7 +59,7 @@ class CseRequestTest {
             "ntc2SiItUrl",
             "vulcanusUrl",
             "yearlyNtcUrl",
-            "forcedPrasUrl",
+            Collections.emptyList(),
             50,
             650,
             2500.);

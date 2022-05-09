@@ -7,12 +7,10 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
-import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
-import com.farao_community.farao.cse.runner.app.models.ForcedPras;
 import com.farao_community.farao.cse.runner.app.util.FileUtil;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
@@ -25,7 +23,6 @@ import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powsybl.action.util.Scalable;
 import com.powsybl.glsk.api.io.GlskDocumentImporters;
 import com.powsybl.glsk.commons.ZonalData;
@@ -124,15 +121,6 @@ public class FileImporter {
             return LineFixedFlows.create(targetProcessDateTime, targetChStream);
         } catch (Exception e) {
             throw new CseInvalidDataException("Impossible to import LineFixedFlow from Target ch file", e);
-        }
-    }
-
-    public ForcedPras importInputForcedPras(String inputForcesPrasUrl) {
-        try (InputStream is = urlValidationService.openUrlStream(inputForcesPrasUrl)) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(is.readAllBytes(), ForcedPras.class);
-        } catch (IOException e) {
-            throw new CseDataException(String.format("Cannot import forced PRAs file: %s, check file format", getFilenameFromUrl(inputForcesPrasUrl)));
         }
     }
 

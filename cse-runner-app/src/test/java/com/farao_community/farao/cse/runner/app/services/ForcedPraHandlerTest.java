@@ -24,15 +24,17 @@ class ForcedPraHandlerTest {
     @Test
     void checkCracAndForcedPrasAreConsistent() {
         Crac crac = CracImporters.importCrac("crac-for-forced-pras.json", Objects.requireNonNull(getClass().getResourceAsStream("crac-for-forced-pras.json")));
+        Network network = Importers.loadNetwork("network-for-forced-pras.xiidm", getClass().getResourceAsStream("network-for-forced-pras.xiidm"));
         List<String> forcedPrasIds = List.of("Open line NL1-NL2", "Open line BE2-FR3");
-        assertDoesNotThrow(() -> forcedPrasHandler.checkInputForcesPrasConsistencyWithCrac(forcedPrasIds, crac));
+        assertDoesNotThrow(() -> forcedPrasHandler.checkInputForcesPrasConsistencyWithCrac(forcedPrasIds, crac, network));
     }
 
     @Test
     void checkCracAndForcedPrasAreNotConsistent() {
         Crac crac = CracImporters.importCrac("crac-for-forced-pras.json", Objects.requireNonNull(getClass().getResourceAsStream("crac-for-forced-pras.json")));
+        Network network = Importers.loadNetwork("network-for-forced-pras.xiidm", getClass().getResourceAsStream("network-for-forced-pras.xiidm"));
         List<String> forcedPrasIds = List.of("PRA_PST_BE");
-        assertThrows(CseDataException.class, () -> forcedPrasHandler.checkInputForcesPrasConsistencyWithCrac(forcedPrasIds, crac));
+        assertThrows(CseDataException.class, () -> forcedPrasHandler.checkInputForcesPrasConsistencyWithCrac(forcedPrasIds, crac, network));
     }
 
     @Test
