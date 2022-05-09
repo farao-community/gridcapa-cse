@@ -7,10 +7,12 @@
 
 package com.farao_community.farao.cse.runner.api;
 
-import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.exception.AbstractCseException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
+import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
+import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
+import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -67,7 +69,7 @@ public class JsonApiConverter {
     }
 
     private ResourceConverter createConverter() {
-        ResourceConverter converter = new ResourceConverter(objectMapper, CseRequest.class, CseResponse.class);
+        ResourceConverter converter = new ResourceConverter(objectMapper, CseRequest.class, CseResponse.class, CseExportRequest.class, CseExportResponse.class);
         converter.disableSerializationOption(SerializationFeature.INCLUDE_META);
         return converter;
     }

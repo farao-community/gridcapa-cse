@@ -7,6 +7,8 @@
 package com.farao_community.farao.cse.runner.starter;
 
 import com.farao_community.farao.cse.runner.api.JsonApiConverter;
+import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
+import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,7 @@ class CseClientTest {
     private final JsonApiConverter jsonApiConverter = new JsonApiConverter();
 
     @Test
-    void checkThatCseClientHandlesMessagesCorrectly() throws IOException {
+    void checkThatCseClientHandlesCseImportMessagesCorrectly() throws IOException {
         AmqpTemplate amqpTemplate = Mockito.mock(AmqpTemplate.class);
         CseClient cseClient = new CseClient(amqpTemplate, buildProperties());
         CseRequest cseRequest = jsonApiConverter.fromJsonMessage(getClass().getResourceAsStream("/cseRequestMessage.json").readAllBytes(), CseRequest.class);
@@ -33,9 +35,23 @@ class CseClientTest {
 
         Mockito.when(responseMessage.getBody()).thenReturn(getClass().getResourceAsStream("/cseResponseMessage.json").readAllBytes());
         Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any())).thenReturn(responseMessage);
-        CseResponse cseResponse = cseClient.run(cseRequest);
+        CseResponse cseResponse = cseClient.run(cseRequest, CseResponse.class);
 
         assertEquals("ttcFileUrl", cseResponse.getTtcFileUrl());
+    }
+
+    @Test
+    void checkThatCseClientHandlesCseExportMessagesCorrectly() throws IOException {
+        AmqpTemplate amqpTemplate = Mockito.mock(AmqpTemplate.class);
+        CseClient cseClient = new CseClient(amqpTemplate, buildProperties());
+        CseExportRequest cseExportRequest = jsonApiConverter.fromJsonMessage(getClass().getResourceAsStream("/cseExportRequestMessage.json").readAllBytes(), CseExportRequest.class);
+        Message responseMessage = Mockito.mock(Message.class);
+
+        Mockito.when(responseMessage.getBody()).thenReturn(getClass().getResourceAsStream("/cseExportResponseMessage.json").readAllBytes());
+        Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any())).thenReturn(responseMessage);
+        CseExportResponse cseExportResponse = cseClient.run(cseExportRequest, CseExportResponse.class);
+
+        assertEquals("logsFileUrl", cseExportResponse.getLogsFileUrl());
     }
 
     private CseClientProperties buildProperties() {

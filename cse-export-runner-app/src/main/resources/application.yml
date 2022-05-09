@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: cse-export-runner
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: gridcapa
+    password: gridcapa
+    template:
+      reply-timeout: 2400000
+  cloud:
+    stream:
+      bindings:
+        task-status-update:
+          binder: rabbit
+          destination: task-status-updated
+
+logback:
+  amqp:
+    exchange: task-manager-events
+    routing-key: "#"
+
+minio-adapter:
+  bucket: gridcapa
+  base-path: ""
+  access-key: gridcapa
+  secret-key: gridcapa
+  url: http://minio:9000
+
+cse-cc-runner:
+  pisa:
+    link1:
+      node-fr: FFG.IL12
+      node-it: FFG.IL11
+      fictive-lines:
+        - FFG.IL12 FFG.IL11 1
+        - FFG.IL12 FFG.IL11 2
+    link2:
+      node-fr: FFG.IL14
+      node-it: FFG.IL13
+      fictive-lines:
+        - FFG.IL14 FFG.IL13 1
+        - FFG.IL14 FFG.IL13 2
+  bindings:
+    request:
+      destination: cse-export-request
+      routing-key: "#"
+      group: cse-export-runner
+    response:
+      destination: cse-export-response
+      expiration: 60000
+  whitelist:
+    - http://minio:9000/
+    - http://localhost:9000/

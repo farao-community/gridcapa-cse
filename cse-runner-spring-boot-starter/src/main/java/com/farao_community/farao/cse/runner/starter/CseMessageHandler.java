@@ -8,8 +8,6 @@ package com.farao_community.farao.cse.runner.starter;
 
 import com.farao_community.farao.cse.runner.api.JsonApiConverter;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
-import com.farao_community.farao.cse.runner.api.resource.CseRequest;
-import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import org.springframework.amqp.core.*;
 
 /**
@@ -27,8 +25,8 @@ public class CseMessageHandler {
         this.jsonConverter = new JsonApiConverter();
     }
 
-    public Message buildMessage(CseRequest cseRequest, int priority) {
-        return MessageBuilder.withBody(jsonConverter.toJsonMessage(cseRequest))
+    public <I> Message buildMessage(I request, int priority) {
+        return MessageBuilder.withBody(jsonConverter.toJsonMessage(request))
                 .andProperties(buildMessageProperties(priority))
                 .build();
     }
@@ -44,9 +42,9 @@ public class CseMessageHandler {
                 .build();
     }
 
-    public CseResponse readMessage(Message message) {
+    public <J> J readMessage(Message message, Class<J> clazz) {
         if (message != null) {
-            return jsonConverter.fromJsonMessage(message.getBody(), CseResponse.class);
+            return jsonConverter.fromJsonMessage(message.getBody(), clazz);
         } else {
             throw new CseInternalException("Cse server did not respond");
         }

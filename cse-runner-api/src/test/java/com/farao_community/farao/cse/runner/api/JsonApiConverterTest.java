@@ -7,6 +7,8 @@
 package com.farao_community.farao.cse.runner.api;
 
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
+import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
+import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 class JsonApiConverterTest {
+
     @Test
     void checkCseRequestJsonConversion() throws IOException {
         JsonApiConverter jsonApiConverter = new JsonApiConverter();
@@ -49,6 +52,27 @@ class JsonApiConverterTest {
         CseInternalException exception = new CseInternalException("Something really bad happened");
         String expectedExceptionMessage = Files.readString(Paths.get(getClass().getResource("/errorMessage.json").toURI()));
         assertEquals(expectedExceptionMessage, new String(jsonApiConverter.toJsonMessage(exception)));
+
+    }
+
+    @Test
+    void checkCseExportRequestJsonConversion() throws IOException {
+        JsonApiConverter jsonApiConverter = new JsonApiConverter();
+        byte[] requestBytes = getClass().getResourceAsStream("/cseExportRequestMessage.json").readAllBytes();
+        CseExportRequest request = jsonApiConverter.fromJsonMessage(requestBytes, CseExportRequest.class);
+
+        assertEquals("id", request.getId());
+        assertEquals("mergedCracUrl", request.getMergedCracUrl());
+    }
+
+    @Test
+    void checkCseExportResponseJsonConversion() throws IOException {
+        JsonApiConverter jsonApiConverter = new JsonApiConverter();
+        byte[] responseBytes = getClass().getResourceAsStream("/cseExportResponseMessage.json").readAllBytes();
+        CseExportResponse response = jsonApiConverter.fromJsonMessage(responseBytes, CseExportResponse.class);
+
+        assertEquals("id", response.getId());
+        assertEquals("logsFileUrl", response.getLogsFileUrl());
 
     }
 }
