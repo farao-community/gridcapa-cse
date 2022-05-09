@@ -46,6 +46,18 @@ class UctePstProcessorTest {
     }
 
     @Test
+    void testTransformerSettingsWithSpecifiedValue() {
+        UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network, 150);
+        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer("SMENDR3T SMENDR32 1");
+        PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
+        assertEquals(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL, phaseTapChanger.getRegulationMode());
+        assertEquals(150, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
+        assertTrue(phaseTapChanger.isRegulating());
+        assertEquals(twoWindingsTransformer.getTerminal1(), phaseTapChanger.getRegulationTerminal());
+    }
+
+    @Test
     void testWithLoadFlow() {
         UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
         uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network);
@@ -55,6 +67,12 @@ class UctePstProcessorTest {
         LoadFlow.run(network, LoadFlowParameters.load());
         assertEquals(12, phaseTapChanger.getTapPosition());
         assertEquals(-300, twoWindingsTransformer.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
+    }
+
+    @Test
+    void testFailWithMissingTransformer() {
+        UctePstProcessor uctePstProcessor = new UctePstProcessor("Fake transformer", "SMENDR3T");
+        assertThrows(UctePstException.class, () -> uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network, 150));
     }
 
     @Test
