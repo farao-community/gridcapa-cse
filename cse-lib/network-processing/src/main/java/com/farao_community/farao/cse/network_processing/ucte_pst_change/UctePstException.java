@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package com.farao_community.farao.cse.network_processing.mendrisio_change;
+package com.farao_community.farao.cse.network_processing.ucte_pst_change;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class MendrisioException extends RuntimeException {
+public class UctePstException extends RuntimeException {
 
-    public MendrisioException(String message) {
+    public UctePstException(String message) {
         super(message);
     }
 }

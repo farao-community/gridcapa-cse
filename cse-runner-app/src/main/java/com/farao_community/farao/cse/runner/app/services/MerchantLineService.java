@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
-import com.farao_community.farao.cse.network_processing.mendrisio_change.MendrisioPstProcessor;
+import com.farao_community.farao.cse.network_processing.ucte_pst_change.UctePstProcessor;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
@@ -30,11 +30,11 @@ public class MerchantLineService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MerchantLineService.class);
 
     private final MendrisioConfiguration mendrisioConfiguration;
-    private final MendrisioPstProcessor mendrisioPstProcessor;
+    private final UctePstProcessor uctePstProcessor;
 
     public MerchantLineService(MendrisioConfiguration mendrisioConfiguration) {
         this.mendrisioConfiguration = mendrisioConfiguration;
-        this.mendrisioPstProcessor = new MendrisioPstProcessor(
+        this.uctePstProcessor = new UctePstProcessor(
             mendrisioConfiguration.getMendrisioPstId(),
             mendrisioConfiguration.getMendrisioNodeId());
     }
@@ -50,7 +50,7 @@ public class MerchantLineService {
     }
 
     private void activateMerchantLineForIdcc(Network network) {
-        mendrisioPstProcessor.forcePhaseTapChangerInActivePowerRegulation(network);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network);
     }
 
     private void activateMerchantLineForD2cc(Network network, CseData cseData) {
@@ -61,7 +61,7 @@ public class MerchantLineService {
         double mendrisioCagnoTargetFlow = getMendrisioTargetFlowForD2cc(network, cseData);
         double pstSetPoint = mendrisioCagnoTargetFlow + offset;
 
-        mendrisioPstProcessor.forcePhaseTapChangerInActivePowerRegulation(network, pstSetPoint);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network, pstSetPoint);
     }
 
     private double getMendrisioTargetFlowForD2cc(Network network, CseData cseData) {
