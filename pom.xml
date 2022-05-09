@@ -28,6 +28,7 @@
         <module>cse-runner-api</module>
         <module>cse-runner-app</module>
         <module>cse-runner-spring-boot-starter</module>
+        <module>cse-export-runner-app</module>
     </modules>
 
     <properties>

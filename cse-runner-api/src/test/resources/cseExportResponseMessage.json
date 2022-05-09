@@ -1,0 +1,11 @@
+{
+  "data": {
+    "type": "cse-export-response",
+    "id": "id",
+    "attributes": {
+      "ttcFileUrl": "ttcFileUrl",
+      "finalCgmFileUrl": "finalCgmFileUrl",
+      "logsFileUrl": "logsFileUrl"
+    }
+  }
+}

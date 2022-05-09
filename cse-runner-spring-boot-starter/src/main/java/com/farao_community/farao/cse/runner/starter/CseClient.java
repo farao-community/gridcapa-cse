@@ -6,8 +6,6 @@
  */
 package com.farao_community.farao.cse.runner.starter;
 
-import com.farao_community.farao.cse.runner.api.resource.CseRequest;
-import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -30,19 +28,19 @@ public class CseClient {
         this.cseMessageHandler = new CseMessageHandler(cseClientProperties);
     }
 
-    public CseResponse run(CseRequest cseRequest, int priority) {
-        LOGGER.info("Cse request sent: {}", cseRequest);
+    public <I, J> J run(I request, Class<J> clazz, int priority) {
+        LOGGER.info("Request sent: {}", request);
         Message responseMessage = amqpTemplate.sendAndReceive(
-            cseClientProperties.getBinding().getDestination(),
-            cseClientProperties.getBinding().getRoutingKey(),
-            cseMessageHandler.buildMessage(cseRequest, priority)
+                cseClientProperties.getBinding().getDestination(),
+                cseClientProperties.getBinding().getRoutingKey(),
+                cseMessageHandler.buildMessage(request, priority)
         );
-        CseResponse cseResponse = cseMessageHandler.readMessage(responseMessage);
-        LOGGER.info("Cse response received: {}", cseResponse);
-        return cseResponse;
+        J response = cseMessageHandler.readMessage(responseMessage, clazz);
+        LOGGER.info("Response received: {}", response);
+        return response;
     }
 
-    public CseResponse run(CseRequest cseRequest) {
-        return run(cseRequest, DEFAULT_PRIORITY);
+    public <I, J> J run(I request, Class<J> clazz) {
+        return run(request, clazz, DEFAULT_PRIORITY);
     }
 }
