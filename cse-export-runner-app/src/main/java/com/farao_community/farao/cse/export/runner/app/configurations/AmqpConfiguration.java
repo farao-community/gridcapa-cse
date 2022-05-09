@@ -24,29 +24,29 @@ import java.util.Optional;
 public class AmqpConfiguration {
 
     @Value("${cse-cc-runner.bindings.response.destination}")
-    private String cseResponseDestination;
+    private String cseExportResponseDestination;
     @Value("${cse-cc-runner.bindings.response.expiration}")
-    private String cseResponseExpiration;
+    private String cseExportResponseExpiration;
     @Value("${cse-cc-runner.bindings.request.destination}")
-    private String cseRequestDestination;
+    private String cseExportRequestDestination;
     @Value("${cse-cc-runner.bindings.request.routing-key}")
-    private String cseRequestRoutingKey;
+    private String cseExportRequestRoutingKey;
     @Value("${cse-cc-runner.bindings.request.group}")
-    private String cseRequestGroup;
+    private String cseExportRequestGroup;
 
     @Bean
     public Queue cseExportRequestQueue() {
-        return new Queue(cseRequestDestination + "." + cseRequestGroup);
+        return new Queue(cseExportRequestDestination + "." + cseExportRequestGroup);
     }
 
     @Bean
     public TopicExchange cseExportTopicExchange() {
-        return new TopicExchange(cseRequestDestination);
+        return new TopicExchange(cseExportRequestDestination);
     }
 
     @Bean
     public Binding cseExportRequestBinding() {
-        return BindingBuilder.bind(cseExportRequestQueue()).to(cseExportTopicExchange()).with(Optional.ofNullable(cseRequestRoutingKey).orElse("#"));
+        return BindingBuilder.bind(cseExportRequestQueue()).to(cseExportTopicExchange()).with(Optional.ofNullable(cseExportRequestRoutingKey).orElse("#"));
     }
 
     @Bean
@@ -61,10 +61,10 @@ public class AmqpConfiguration {
 
     @Bean
     public FanoutExchange cseExportResponseExchange() {
-        return new FanoutExchange(cseResponseDestination);
+        return new FanoutExchange(cseExportResponseDestination);
     }
 
-    public String getCseResponseExpiration() {
-        return cseResponseExpiration;
+    public String getCseExportResponseExpiration() {
+        return cseExportResponseExpiration;
     }
 }

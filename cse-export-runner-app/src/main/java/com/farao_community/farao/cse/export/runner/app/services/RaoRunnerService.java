@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.export.runner.app.services;
 
+import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 
@@ -27,7 +28,7 @@ public class RaoRunnerService {
         this.raoRunnerClient = raoRunnerClient;
     }
 
-    public RaoResponse run(String id, String networkPresignedUrl, String cracInJsonFormatUrl, String raoParametersUrl) throws Exception {
+    public RaoResponse run(String id, String networkPresignedUrl, String cracInJsonFormatUrl, String raoParametersUrl) throws CseInternalException {
         RaoRequest raoRequest = buildRaoRequest(id, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl);
         try {
             LOGGER.info("RAO request sent: {}", raoRequest);
@@ -35,7 +36,7 @@ public class RaoRunnerService {
             LOGGER.info("RAO response received: {}", raoResponse);
             return raoResponse;
         } catch (Exception e) {
-            throw new Exception("RAO run failed. Nested exception: " + e.getMessage());
+            throw new CseInternalException("RAO run failed. Nested exception: " + e.getMessage());
         }
     }
 

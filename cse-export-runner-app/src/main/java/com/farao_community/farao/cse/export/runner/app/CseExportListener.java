@@ -115,7 +115,7 @@ public class CseExportListener implements MessageListener  {
                 .setContentType("application/vnd.api+json")
                 .setCorrelationId(correlationId)
                 .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
-                .setExpiration(amqpConfiguration.getCseResponseExpiration())
+                .setExpiration(amqpConfiguration.getCseExportResponseExpiration())
                 .setPriority(1)
                 .build();
     }

@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @SpringBootTest
-public class PiSaConfigurationTest {
+class PiSaConfigurationTest {
 
     @Autowired
     PiSaConfiguration piSaConfiguration;
 
     @Test
-    public void checkPisaConfigurationIsRetrievedCorrectly() {
+    void checkPisaConfigurationIsRetrievedCorrectly() {
         assertEquals(2, piSaConfiguration.getLink1().getFictiveLines().size());
         assertEquals(2, piSaConfiguration.getLink2().getFictiveLines().size());
         assertEquals("FFG.IL12", piSaConfiguration.getLink1().getNodeFr());
