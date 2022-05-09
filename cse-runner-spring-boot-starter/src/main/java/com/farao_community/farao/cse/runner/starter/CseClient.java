@@ -28,19 +28,19 @@ public class CseClient {
         this.cseMessageHandler = new CseMessageHandler(cseClientProperties);
     }
 
-    public <I, J> J run(I request, Class<J> clazz, int priority) {
+    public <I, J> J run(I request, Class<I> requestClass, Class<J> responseClass, int priority) {
         LOGGER.info("Request sent: {}", request);
         Message responseMessage = amqpTemplate.sendAndReceive(
                 cseClientProperties.getBinding().getDestination(),
                 cseClientProperties.getBinding().getRoutingKey(),
-                cseMessageHandler.buildMessage(request, priority)
+                cseMessageHandler.buildMessage(request, requestClass, priority)
         );
-        J response = cseMessageHandler.readMessage(responseMessage, clazz);
+        J response = cseMessageHandler.readMessage(responseMessage, responseClass);
         LOGGER.info("Response received: {}", response);
         return response;
     }
 
-    public <I, J> J run(I request, Class<J> clazz) {
-        return run(request, clazz, DEFAULT_PRIORITY);
+    public <I, J> J run(I request, Class<I> requestClass, Class<J> responseClass) {
+        return run(request, requestClass, responseClass, DEFAULT_PRIORITY);
     }
 }

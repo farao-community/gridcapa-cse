@@ -103,7 +103,7 @@ public class CseExportListener implements MessageListener  {
     }
 
     private Message createMessageResponse(CseExportResponse cseResponse, String correlationId) {
-        return MessageBuilder.withBody(jsonApiConverter.toJsonMessage(cseResponse))
+        return MessageBuilder.withBody(jsonApiConverter.toJsonMessage(cseResponse, CseExportResponse.class))
                 .andProperties(buildMessageResponseProperties(correlationId))
                 .build();
     }

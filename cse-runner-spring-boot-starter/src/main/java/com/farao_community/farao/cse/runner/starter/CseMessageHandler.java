@@ -25,8 +25,8 @@ public class CseMessageHandler {
         this.jsonConverter = new JsonApiConverter();
     }
 
-    public <I> Message buildMessage(I request, int priority) {
-        return MessageBuilder.withBody(jsonConverter.toJsonMessage(request))
+    public <I> Message buildMessage(I request, Class<I> requestClass, int priority) {
+        return MessageBuilder.withBody(jsonConverter.toJsonMessage(request, requestClass))
                 .andProperties(buildMessageProperties(priority))
                 .build();
     }
