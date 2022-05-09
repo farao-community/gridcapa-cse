@@ -105,4 +105,11 @@ class MerchantLineServiceTest {
         assertEquals(75, mendrisioCagnoLine.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
     }
 
+    @Test
+    void testMendrisioSetpointWorksWithDisconnectedTransformer() {
+        String filename = "network_with_mendrisio_disconnected.uct";
+        Network disconnectedTransformerNetwork = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
+
+        assertDoesNotThrow(() -> merchantLineService.activateMerchantLine(ProcessType.IDCC, disconnectedTransformerNetwork, Mockito.mock(CseData.class)));
+    }
 }

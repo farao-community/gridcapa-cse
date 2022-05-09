@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2022, RTE (http://www.rte-france.com)
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<CapacityDocument DtdVersion="4" DtdRelease="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="capacity-document.xsd"><DocumentIdentification v="NTC2_20170601_2D4_AT-IT"/><DocumentVersion v="1"/><DocumentType v="A31"/><ProcessType v="A01"/><SenderIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/><SenderRole v="A04"/><ReceiverIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/><ReceiverRole v="A04"/><CreationDateTime v="2017-05-31T05:04:23Z"/><CapacityTimeInterval v="2017-05-31T22:00Z/2017-06-01T22:00Z"/><Domain v="XXXXXXXXXXXXXXXX" codingScheme="A01"/><CapacityTimeSeries><TimeSeriesIdentification v="20170601-0001"/><BusinessType v="A27"/><Product v="8716867000016"/><InArea v="10YIT-GRTN-----B" codingScheme="A01"/><OutArea v="10YAT-APG------L" codingScheme="A01"/><MeasureUnit v="MAW"/><Period><TimeInterval v="2017-05-31T22:00Z/2017-06-01T22:00Z"/><Resolution v="PT60M"/><Interval><Pos v="1"/><Qty v="238"/></Interval></Period></CapacityTimeSeries></CapacityDocument>

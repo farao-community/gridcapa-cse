@@ -83,11 +83,24 @@ class Ntc2Test {
 
     @Test
     void assertThrowsWhenDataIsMissing() {
-        assertThrows(CseDataException.class, () -> Ntc2.create(OffsetDateTime.parse("2021-02-07T23:00Z"), test2Nt2Files));
+        OffsetDateTime timestamp = OffsetDateTime.parse("2021-02-07T23:00Z");
+        assertThrows(CseDataException.class, () -> Ntc2.create(timestamp, test2Nt2Files));
     }
 
     @Test
     void assertThrowsWhenTargetDateTimeOutOfBound() {
-        assertThrows(CseDataException.class, () -> Ntc2.create(OffsetDateTime.parse("2021-06-01T22:00Z"), test1Nt2Files));
+        OffsetDateTime timestamp = OffsetDateTime.parse("2021-06-01T22:00Z");
+        assertThrows(CseDataException.class, () -> Ntc2.create(timestamp, test1Nt2Files));
+    }
+
+    @Test
+    void testImportFailsWithMissingPositions() {
+        String filename = "NTC2_20170601_2D4_AT-IT1.xml";
+        Map<String, InputStream> isMap = Map.of(filename, Objects.requireNonNull(getClass().getResourceAsStream(filename)));
+        OffsetDateTime timestamp = OffsetDateTime.parse("2017-06-01T16:30Z");
+        Throwable e = assertThrows(CseDataException.class, () -> Ntc2.create(timestamp, isMap));
+        assertEquals("Impossible to import NTC2 file for area: 10YAT-APG------L", e.getMessage());
+        Throwable nestedE = e.getCause();
+        assertEquals("Impossible to retrieve NTC2 position 19. It does not exist", nestedE.getMessage());
     }
 }
