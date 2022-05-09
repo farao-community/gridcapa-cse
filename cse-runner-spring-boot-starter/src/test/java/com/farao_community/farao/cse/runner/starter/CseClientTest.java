@@ -35,7 +35,7 @@ class CseClientTest {
 
         Mockito.when(responseMessage.getBody()).thenReturn(getClass().getResourceAsStream("/cseResponseMessage.json").readAllBytes());
         Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any())).thenReturn(responseMessage);
-        CseResponse cseResponse = cseClient.run(cseRequest, CseResponse.class);
+        CseResponse cseResponse = cseClient.run(cseRequest, CseRequest.class, CseResponse.class);
 
         assertEquals("ttcFileUrl", cseResponse.getTtcFileUrl());
     }
@@ -49,7 +49,7 @@ class CseClientTest {
 
         Mockito.when(responseMessage.getBody()).thenReturn(getClass().getResourceAsStream("/cseExportResponseMessage.json").readAllBytes());
         Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any())).thenReturn(responseMessage);
-        CseExportResponse cseExportResponse = cseClient.run(cseExportRequest, CseExportResponse.class);
+        CseExportResponse cseExportResponse = cseClient.run(cseExportRequest, CseExportRequest.class, CseExportResponse.class);
 
         assertEquals("logsFileUrl", cseExportResponse.getLogsFileUrl());
     }
