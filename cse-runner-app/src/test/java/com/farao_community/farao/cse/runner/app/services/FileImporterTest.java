@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
+import com.farao_community.farao.cse.runner.app.models.ForcedPras;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.powsybl.iidm.import_.Importers;
@@ -52,5 +53,12 @@ class FileImporterTest {
             OffsetDateTime.parse("2021-01-01T00:00Z"),
             Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         assertNotNull(lineFixedFlows);
+    }
+
+    @Test
+    void testForcedPrasImport() {
+        ForcedPras forcedPras = fileImporter.importInputForcedPras(Objects.requireNonNull(getClass().getResource("forcedPras.json")).toString());
+        assertEquals(1000., forcedPras.getInitialDichotomyStep(), 0.);
+        assertEquals(2, forcedPras.getRemedialActionsIds().size());
     }
 }

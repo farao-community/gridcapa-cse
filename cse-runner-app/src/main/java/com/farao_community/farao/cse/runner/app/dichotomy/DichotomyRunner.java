@@ -58,9 +58,9 @@ public class DichotomyRunner {
     public DichotomyResult<RaoResponse> runDichotomy(CseRequest cseRequest,
                                                      CseData cseData,
                                                      Network network,
-                                                     double initialItalianImport) throws IOException {
+                                                     double initialItalianImport,
+                                                     double initialDichotomyStep) throws IOException {
         double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImport);
-        double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
         logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
         Index<RaoResponse> index = new Index<>(initialIndexValue, MAX_IMPORT_VALUE, dichotomyPrecision);

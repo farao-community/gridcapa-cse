@@ -28,6 +28,7 @@ class CseRequestTest {
             "ntcReductionsUrl",
             "targetChUrl",
             "yearlyNtcUrl",
+            "forcedPrasUrl",
             50,
             650,
             null);
@@ -57,6 +58,7 @@ class CseRequestTest {
             "ntc2SiItUrl",
             "vulcanusUrl",
             "yearlyNtcUrl",
+            "forcedPrasUrl",
             50,
             650,
             2500.);

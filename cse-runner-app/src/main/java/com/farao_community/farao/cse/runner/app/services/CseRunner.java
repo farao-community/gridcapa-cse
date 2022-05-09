@@ -16,6 +16,7 @@ import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.app.dichotomy.DichotomyRunner;
+import com.farao_community.farao.cse.runner.app.models.ForcedPras;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -47,16 +49,18 @@ public class CseRunner {
     private final TtcResultService ttcResultService;
     private final PiSaService piSaService;
     private final MerchantLineService merchantLineService;
+    private final ForcedPrasHandler forcedPrasHandler;
     private final ProcessConfiguration processConfiguration;
 
     public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
-                     ProcessConfiguration processConfiguration) {
+                     ForcedPrasHandler forcedPrasHandler, ProcessConfiguration processConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.dichotomyRunner = dichotomyRunner;
         this.ttcResultService = ttcResultService;
         this.piSaService = piSaService;
         this.merchantLineService = merchantLineService;
+        this.forcedPrasHandler = forcedPrasHandler;
         this.processConfiguration = processConfiguration;
 
     }
@@ -95,7 +99,7 @@ public class CseRunner {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
-        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
+        DichotomyResult<RaoResponse> dichotomyResult = applyDichotomy(cseRequest, cseData, network, crac, initialItalianImport);
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
@@ -114,6 +118,21 @@ public class CseRunner {
         }
 
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
+    }
+
+    private DichotomyResult<RaoResponse> applyDichotomy(CseRequest cseRequest, CseData cseData, Network network, Crac crac, double initialItalianImport) throws IOException {
+        DichotomyResult<RaoResponse> dichotomyResult;
+        Optional<String> forcedPrasUrlOpt = Optional.ofNullable(cseRequest.getForcedPrasUrl());
+        if (forcedPrasUrlOpt.isPresent()) {
+            ForcedPras forcedPras = fileImporter.importInputForcedPras(forcedPrasUrlOpt.get());
+            forcedPrasHandler.forcePras(forcedPras.getRemedialActionsIds(), network, crac);
+            double initialDichotomyStep = forcedPras.getInitialDichotomyStep();
+            dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport, initialDichotomyStep);
+        } else {
+            double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
+            dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport, initialDichotomyStep);
+        }
+        return dichotomyResult;
     }
 
     double getInitialItalianImportForD2ccProcess(CseData cseData) {
