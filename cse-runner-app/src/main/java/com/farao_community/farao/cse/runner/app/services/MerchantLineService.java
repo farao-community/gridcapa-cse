@@ -7,8 +7,8 @@
 
 package com.farao_community.farao.cse.runner.app.services;
 
+import com.farao_community.farao.cse.network_processing.ucte_pst_change.UctePstProcessor;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
-import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.runner.app.CseData;
 import com.farao_community.farao.cse.runner.app.configurations.MendrisioConfiguration;
@@ -30,9 +30,13 @@ public class MerchantLineService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MerchantLineService.class);
 
     private final MendrisioConfiguration mendrisioConfiguration;
+    private final UctePstProcessor uctePstProcessor;
 
     public MerchantLineService(MendrisioConfiguration mendrisioConfiguration) {
         this.mendrisioConfiguration = mendrisioConfiguration;
+        this.uctePstProcessor = new UctePstProcessor(
+            mendrisioConfiguration.getMendrisioPstId(),
+            mendrisioConfiguration.getMendrisioNodeId());
     }
 
     public void activateMerchantLine(ProcessType processType, Network network, CseData cseData) {
@@ -46,18 +50,10 @@ public class MerchantLineService {
     }
 
     private void activateMerchantLineForIdcc(Network network) {
-        PhaseTapChanger phaseTapChanger = forcePhaseTapChangerInActivePowerRegulation(network);
-        // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
-        phaseTapChanger.setRegulationValue(-phaseTapChanger.getRegulationValue());
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
-                mendrisioConfiguration.getMendrisioPstId(), phaseTapChanger.getRegulationValue()));
-        }
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network);
     }
 
     private void activateMerchantLineForD2cc(Network network, CseData cseData) {
-        PhaseTapChanger phaseTapChanger = forcePhaseTapChangerInActivePowerRegulation(network);
-
         double offset = Optional.ofNullable(network.getLoad(mendrisioConfiguration.getMendrisioNodeId() + "_load"))
             .map(Load::getP0)
             .orElse(0.);
@@ -65,11 +61,7 @@ public class MerchantLineService {
         double mendrisioCagnoTargetFlow = getMendrisioTargetFlowForD2cc(network, cseData);
         double pstSetPoint = mendrisioCagnoTargetFlow + offset;
 
-        phaseTapChanger.setRegulationValue(pstSetPoint);
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(String.format("Mendrisio PST (%s) has been set in active power control to %.0f MW",
-                mendrisioConfiguration.getMendrisioPstId(), pstSetPoint));
-        }
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network, pstSetPoint);
     }
 
     private double getMendrisioTargetFlowForD2cc(Network network, CseData cseData) {
@@ -87,41 +79,5 @@ public class MerchantLineService {
             LOGGER.info(String.format("Target flow for Mendrisio-Cagno is %.0f MW", mendrisioCagnoTargetFlow));
         }
         return mendrisioCagnoTargetFlow;
-    }
-
-    private PhaseTapChanger forcePhaseTapChangerInActivePowerRegulation(Network network) {
-        TwoWindingsTransformer mendrisioTransformer = network.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
-        if (mendrisioTransformer == null) {
-            throw new CseInvalidDataException(String.format(
-                "Mendrisio transformer is not present in the network with the following ID : %s", mendrisioConfiguration.getMendrisioPstId()));
-        }
-        PhaseTapChanger phaseTapChanger = mendrisioTransformer.getPhaseTapChanger();
-        if (phaseTapChanger == null) {
-            throw new CseInvalidDataException(String.format(
-                "Mendrisio transformer (%s) has no phase tap changer", mendrisioConfiguration.getMendrisioPstId()));
-        }
-
-        phaseTapChanger.setRegulationTerminal(getRegulatedTerminal(mendrisioTransformer));
-        phaseTapChanger.setRegulationMode(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL);
-        phaseTapChanger.setTargetDeadband(5);
-        phaseTapChanger.setRegulating(true);
-        return phaseTapChanger;
-    }
-
-    /**
-     * We want to make sure to set regulation on the good terminal with the following convention:
-     * positive set-point on mendrisio PST will cause a positive flow on mendrisio-cagno line.
-     * As mendrisio node is in-between mendrisio-cagno line and mendrisio PST, we don't want to use this terminal,
-     * because sign of set-point would be inverted.
-     *
-     * @param mendrisioTransformer: Mendrisio tranformer on which to find proper terminal.
-     * @return The terminal of Mendrisio PST that on the opposite side of the mendrisio-cagno line.
-     */
-    private Terminal getRegulatedTerminal(TwoWindingsTransformer mendrisioTransformer) {
-        if (mendrisioTransformer.getTerminal1().getBusBreakerView().getConnectableBus().getId().equals(mendrisioConfiguration.getMendrisioNodeId())) {
-            return mendrisioTransformer.getTerminal2();
-        } else {
-            return mendrisioTransformer.getTerminal1();
-        }
     }
 }
