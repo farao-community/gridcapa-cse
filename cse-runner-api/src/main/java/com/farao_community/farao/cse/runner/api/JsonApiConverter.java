@@ -10,7 +10,6 @@ package com.farao_community.farao.cse.runner.api;
 import com.farao_community.farao.cse.runner.api.exception.AbstractCseException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -32,7 +31,6 @@ public class JsonApiConverter {
     public JsonApiConverter() {
         objectMapper = JsonMapper.builder()
             .addModule(new JavaTimeModule())
-            .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
             .build();
     }
 

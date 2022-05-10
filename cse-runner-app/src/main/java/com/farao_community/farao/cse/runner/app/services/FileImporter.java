@@ -123,5 +123,4 @@ public class FileImporter {
             throw new CseInvalidDataException("Impossible to import LineFixedFlow from Target ch file", e);
         }
     }
-
 }

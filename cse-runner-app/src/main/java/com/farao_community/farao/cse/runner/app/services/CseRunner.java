@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.time.OffsetDateTime;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -98,11 +97,9 @@ public class CseRunner {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
-        Optional.ofNullable(cseRequest.getForcedPrasIds()).ifPresent(forcedPrasIds -> {
-            if (!forcedPrasIds.isEmpty()) {
-                forcedPrasHandler.forcePras(forcedPrasIds, network, crac);
-            }
-        });
+        if (!cseRequest.getForcedPrasIds().isEmpty()) {
+            forcedPrasHandler.forcePras(cseRequest.getForcedPrasIds(), network, crac);
+        }
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
 
         String ttcResultUrl;

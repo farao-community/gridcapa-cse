@@ -6,7 +6,6 @@ import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +14,11 @@ import java.util.stream.Collectors;
 @Service
 public class ForcedPrasHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ForcedPrasHandler.class);
+    private final Logger logger;
+
+    public ForcedPrasHandler(Logger logger) {
+        this.logger = logger;
+    }
 
     public void forcePras(List<String> inputForcesPrasIds, Network network, Crac crac) {
         checkInputForcesPrasConsistencyWithCrac(inputForcesPrasIds, crac, network);
@@ -33,18 +36,20 @@ public class ForcedPrasHandler {
             .collect(Collectors.toList());
 
         if (!wrongInputForcedPras.isEmpty()) {
-            throw new CseDataException(String.format("inconsistency between crac and inputForcedPras, crac file does not contain these topological remedial actions: %s", wrongInputForcedPras));
+            throw new CseDataException(String.format("inconsistency between CRAC and forced PRAs, crac file does not contain these topological remedial actions: %s", wrongInputForcedPras));
         }
 
         List<NetworkAction> applicableRemedialActions = inputForcesPrasIds.stream().map(crac::getNetworkAction).filter(networkAction -> {
             boolean applySuccess = networkAction.apply(network);
             if (!applySuccess) {
-                LOGGER.warn("Network action {} will not be forced because not available", networkAction.getId());
+                logger.warn("Network action {} will not be forced because not available", networkAction.getId());
+            } else {
+                logger.info("Network action {} has been forced", networkAction.getId());
             }
             return applySuccess;
         }).collect(Collectors.toList());
         if (applicableRemedialActions.isEmpty()) {
-            throw new CseDataException("None of input Forced Pras can be applied, It is unnecessary to run the computation again");
+            throw new CseDataException("None of the forced PRAs can be applied, It is unnecessary to run the computation again");
         }
     }
 }

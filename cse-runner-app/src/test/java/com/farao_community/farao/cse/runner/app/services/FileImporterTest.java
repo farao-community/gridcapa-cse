@@ -53,5 +53,4 @@ class FileImporterTest {
             Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         assertNotNull(lineFixedFlows);
     }
-
 }
