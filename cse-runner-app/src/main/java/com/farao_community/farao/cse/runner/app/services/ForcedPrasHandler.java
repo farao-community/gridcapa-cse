@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.farao_community.farao.cse.runner.app.services;
 
 import com.farao_community.farao.cse.data.CseDataException;
@@ -41,10 +47,10 @@ public class ForcedPrasHandler {
 
         List<NetworkAction> applicableRemedialActions = inputForcesPrasIds.stream().map(crac::getNetworkAction).filter(networkAction -> {
             boolean applySuccess = networkAction.apply(network);
-            if (!applySuccess) {
-                logger.warn("Network action {} will not be forced because not available", networkAction.getId());
-            } else {
+            if (applySuccess) {
                 logger.info("Network action {} has been forced", networkAction.getId());
+            } else {
+                logger.warn("Network action {} will not be forced because not available", networkAction.getId());
             }
             return applySuccess;
         }).collect(Collectors.toList());
