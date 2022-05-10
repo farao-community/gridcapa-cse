@@ -47,16 +47,18 @@ public class CseRunner {
     private final TtcResultService ttcResultService;
     private final PiSaService piSaService;
     private final MerchantLineService merchantLineService;
+    private final ForcedPrasHandler forcedPrasHandler;
     private final ProcessConfiguration processConfiguration;
 
     public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
-                     ProcessConfiguration processConfiguration) {
+                     ForcedPrasHandler forcedPrasHandler, ProcessConfiguration processConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.dichotomyRunner = dichotomyRunner;
         this.ttcResultService = ttcResultService;
         this.piSaService = piSaService;
         this.merchantLineService = merchantLineService;
+        this.forcedPrasHandler = forcedPrasHandler;
         this.processConfiguration = processConfiguration;
 
     }
@@ -95,7 +97,11 @@ public class CseRunner {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
+        if (!cseRequest.getForcedPrasIds().isEmpty()) {
+            forcedPrasHandler.forcePras(cseRequest.getForcedPrasIds(), network, crac);
+        }
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
+
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
