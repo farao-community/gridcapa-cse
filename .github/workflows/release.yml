@@ -59,12 +59,22 @@ jobs:
       - name: Re-build with Maven to avoid multiple .jar achives
         run: mvn --batch-mode -Pdefault,coverage clean install
 
-      - name: Build and publish Docker image
+      - name: Build and publish Docker image for import corner
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: farao/gridcapa-cse-runner
+          name: farao/gridcapa-cse-cc-import-runner
           username: farao
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          dockerfile: ImportDockerfile
+          tags: v${{ github.event.inputs.releaseVersion }}
+
+      - name: Build and publish Docker image for export corner
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: farao/gridcapa-cse-cc-export-runner
+          username: farao
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          dockerfile: ExportDockerfile
           tags: v${{ github.event.inputs.releaseVersion }}
 
       - name: Change Maven version to next version
