@@ -34,12 +34,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Build and publish Docker image
+      - name: Build and publish Docker image for import corner
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: farao/gridcapa-cse-runner
+          name: farao/gridcapa-cse-cc-import-runner
           username: farao
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          dockerfile: ImportDockerfile
+
+      - name: Build and publish Docker image for export corner
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: farao/gridcapa-cse-cc-export-runner
+          username: farao
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          dockerfile: ExportDockerfile
 
       - name: Broadcast update event
         uses: farao-community/broadcast-event@master

@@ -11,6 +11,8 @@
     </parent>
 
     <artifactId>gridcapa-cse-network-processing</artifactId>
+    <name>Common CSE helpers for network processing</name>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
