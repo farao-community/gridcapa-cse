@@ -7,10 +7,12 @@
     <parent>
         <artifactId>gridcapa-cse-lib</artifactId>
         <groupId>com.farao-community.farao</groupId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.4.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>gridcapa-cse-network-processing</artifactId>
+    <name>Common CSE helpers for network processing</name>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>

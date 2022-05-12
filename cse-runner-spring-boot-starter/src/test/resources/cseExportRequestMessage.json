@@ -1,0 +1,11 @@
+{
+  "data": {
+    "type": "cse-export-request",
+    "id": "id",
+    "attributes": {
+      "targetProcessDateTime": "2017-06-01T23:55Z",
+      "cgmUrl": "networkFileUrl",
+      "mergedCracUrl": "mergedCracUrl"
+    }
+  }
+}

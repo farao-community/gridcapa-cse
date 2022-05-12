@@ -7,11 +7,9 @@
 
 package com.farao_community.farao.cse.runner.api;
 
-import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.exception.AbstractCseException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
-import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -37,7 +35,7 @@ public class JsonApiConverter {
     }
 
     public <T> T fromJsonMessage(byte[] jsonMessage, Class<T> tClass) {
-        ResourceConverter converter = createConverter();
+        ResourceConverter converter = createConverter(tClass);
         try {
             return converter.readDocument(jsonMessage, tClass).get();
         } catch (Exception e) {
@@ -46,8 +44,8 @@ public class JsonApiConverter {
 
     }
 
-    public <T> byte[] toJsonMessage(T jsonApiObject) {
-        ResourceConverter converter = createConverter();
+    public <T> byte[] toJsonMessage(T jsonApiObject, Class<T> clazz) {
+        ResourceConverter converter = createConverter(clazz);
         JSONAPIDocument<?> jsonApiDocument = new JSONAPIDocument<>(jsonApiObject);
         try {
             return converter.writeDocument(jsonApiDocument);
@@ -66,8 +64,8 @@ public class JsonApiConverter {
         }
     }
 
-    private ResourceConverter createConverter() {
-        ResourceConverter converter = new ResourceConverter(objectMapper, CseRequest.class, CseResponse.class);
+    private ResourceConverter createConverter(Class<?>... classes) {
+        ResourceConverter converter = new ResourceConverter(objectMapper, classes);
         converter.disableSerializationOption(SerializationFeature.INCLUDE_META);
         return converter;
     }
