@@ -84,6 +84,11 @@
         <!-- RUNTIME DEPENDENCIES -->
         <dependency>
             <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-search-tree-rao</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-impl</artifactId>
             <scope>runtime</scope>
         </dependency>
