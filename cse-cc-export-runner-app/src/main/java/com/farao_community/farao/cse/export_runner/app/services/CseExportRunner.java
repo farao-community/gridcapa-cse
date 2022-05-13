@@ -14,6 +14,8 @@ import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -33,7 +35,7 @@ public class CseExportRunner {
         this.raoRunnerService = raoRunnerService;
     }
 
-    public CseExportResponse run(CseExportRequest cseExportRequest) throws Exception {
+    public CseExportResponse run(CseExportRequest cseExportRequest) throws IOException {
         Network network = fileImporter.importNetwork(cseExportRequest.getCgmUrl());
         pisaService.alignGenerators(network);
         Crac crac = fileImporter.preProcessNetworkForBusBarsAndImportCrac(cseExportRequest.getMergedCracUrl(), network, cseExportRequest.getTargetProcessDateTime());
