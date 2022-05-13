@@ -33,6 +33,7 @@ minio-adapter:
   url: http://minio:9000
 
 cse-cc-runner:
+  zone-id: "Europe/Paris"
   pisa:
     link1:
       node-fr: FFG.IL12
