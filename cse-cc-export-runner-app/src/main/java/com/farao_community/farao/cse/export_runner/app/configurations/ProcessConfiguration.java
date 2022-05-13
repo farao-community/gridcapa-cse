@@ -18,7 +18,15 @@ public class ProcessConfiguration {
     @Value("${cse-cc-runner.zone-id}")
     private String zoneId;
 
+    @Value("${cse-cc-runner.outputs.ttc-rao}")
+    private String ttcRao;
+
     public String getZoneId() {
         return zoneId;
     }
+
+    public String getTtcRao() {
+        return ttcRao;
+    }
+
 }

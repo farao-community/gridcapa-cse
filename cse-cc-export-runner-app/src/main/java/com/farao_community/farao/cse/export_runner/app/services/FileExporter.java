@@ -41,6 +41,7 @@ public class FileExporter {
     private static final String JSON_CRAC_FILE_NAME = "crac.json";
     private static final String MINIO_SEPARATOR = "/";
     private static final DateTimeFormatter OUTPUTS_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
+    private static final String PROCESS_TYPE_PREFIX = "CSE_";
     private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
     private static final String REGION = "CSE";
     private static final String UCTE_EXTENSION = "uct";
@@ -123,7 +124,7 @@ public class FileExporter {
         }
         ByteArrayInputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
         String ttcPath =  getDestinationPath(processType, GridcapaFileGroup.OUTPUT) + getTtcRaoResultOutputFilename(processTargetDate);
-        minioAdapter.uploadOutput(ttcPath, is);
+        minioAdapter.uploadOutput(ttcPath, is, adaptTargetProcessName(processType), processConfiguration.getTtcRao(), generateHourlyValidityInterval(processTargetDate));
         return minioAdapter.generatePreSignedUrl(ttcPath);
     }
 
@@ -151,5 +152,13 @@ public class FileExporter {
         return REGION + MINIO_SEPARATOR
                 + processType + MINIO_SEPARATOR
                 + gridcapaFileGroup + MINIO_SEPARATOR;
+    }
+
+    private String adaptTargetProcessName(ProcessType processType) {
+        return PROCESS_TYPE_PREFIX + processType;
+    }
+
+    private String generateHourlyValidityInterval(OffsetDateTime timestamp) {
+        return timestamp != null ? timestamp + "/" + timestamp.plusHours(1L) : null;
     }
 }

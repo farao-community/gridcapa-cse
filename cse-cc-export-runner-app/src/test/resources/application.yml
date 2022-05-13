@@ -14,6 +14,8 @@ minio-adapter:
 
 cse-cc-runner:
   zone-id: "Europe/Paris"
+  outputs:
+    ttc-rao: TTC_RAO
   pisa:
     link1:
       node-fr: FFG.IL12
