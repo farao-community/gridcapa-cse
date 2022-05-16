@@ -41,13 +41,13 @@ public class CseExportRunner {
         Network network = fileImporter.importNetwork(cseExportRequest.getCgmUrl());
         pisaService.alignGenerators(network);
         Crac crac = fileImporter.preProcessNetworkForBusBarsAndImportCrac(cseExportRequest.getMergedCracUrl(), network, cseExportRequest.getTargetProcessDateTime());
-        String networkPreProcesedUrl = fileExporter.saveNetwork(network, "XIIDM", GridcapaFileGroup.ARTIFACT, cseExportRequest.getProcessType(), NETWORK_PRE_PROCESSED_FILE_NAME);
-        String cracInJsonFormatUrl = fileExporter.saveCracInJsonFormat(crac, cseExportRequest.getProcessType());
-        String raoParametersUrl = fileExporter.saveRaoParameters(cseExportRequest.getProcessType());
+        String networkPreProcesedUrl = fileExporter.saveNetwork(network, "XIIDM", GridcapaFileGroup.ARTIFACT, cseExportRequest.getProcessType(), NETWORK_PRE_PROCESSED_FILE_NAME, cseExportRequest.getTargetProcessDateTime());
+        String cracInJsonFormatUrl = fileExporter.saveCracInJsonFormat(crac, cseExportRequest.getProcessType(), cseExportRequest.getTargetProcessDateTime());
+        String raoParametersUrl = fileExporter.saveRaoParameters(cseExportRequest.getProcessType(), cseExportRequest.getTargetProcessDateTime());
 
         RaoResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), networkPreProcesedUrl, cracInJsonFormatUrl, raoParametersUrl);
 
-        String finalCgmUrl = fileExporter.saveNetwork(fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl()), "UCTE", GridcapaFileGroup.OUTPUT, cseExportRequest.getProcessType(), network.getNameOrId());
+        String finalCgmUrl = fileExporter.saveNetwork(fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl()), "UCTE", GridcapaFileGroup.OUTPUT, cseExportRequest.getProcessType(), network.getNameOrId(), cseExportRequest.getTargetProcessDateTime());
         String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), fileImporter.importCracFromJson(cracInJsonFormatUrl)));
         String logsFileUrl = ""; //TODO
         return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, finalCgmUrl, logsFileUrl);

@@ -21,6 +21,9 @@ public class ProcessConfiguration {
     @Value("${cse-cc-runner.outputs.ttc-rao}")
     private String ttcRao;
 
+    @Value("${cse-cc-runner.outputs.final-cgm}")
+    private String finalCgm;
+
     public String getZoneId() {
         return zoneId;
     }
@@ -29,4 +32,7 @@ public class ProcessConfiguration {
         return ttcRao;
     }
 
+    public String getFinalCgm() {
+        return finalCgm;
+    }
 }

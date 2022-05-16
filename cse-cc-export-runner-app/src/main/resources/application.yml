@@ -35,6 +35,7 @@ minio-adapter:
 cse-cc-runner:
   zone-id: "Europe/Paris"
   outputs:
+    final-cgm: FINAL_CGM
     ttc-rao: TTC_RAO
   pisa:
     link1:
