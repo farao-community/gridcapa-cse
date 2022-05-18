@@ -36,6 +36,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gridcapa-cse-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
@@ -79,6 +84,10 @@
         <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>gridcapa-starter-minio-adapter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-rao-result-json</artifactId>
         </dependency>
 
         <!-- RUNTIME DEPENDENCIES -->

@@ -6,6 +6,8 @@
  */
 package com.farao_community.farao.cse.export_runner.app.services;
 
+import com.farao_community.farao.cse.data.xsd.ttc_rao.CseRaoResult;
+import com.farao_community.farao.cse.export_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
@@ -19,7 +21,16 @@ import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
 import java.io.*;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 /**
@@ -29,6 +40,8 @@ import java.util.Properties;
 public class FileExporter {
     private static final String JSON_CRAC_FILE_NAME = "crac.json";
     private static final String MINIO_SEPARATOR = "/";
+    private static final DateTimeFormatter OUTPUTS_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
+    private static final String PROCESS_TYPE_PREFIX = "CSE_EXPORT_";
     private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
     private static final String REGION = "CSE";
     private static final String UCTE_EXTENSION = "uct";
@@ -37,12 +50,14 @@ public class FileExporter {
     private static final String IIDM_EXTENSION = "xiidm";
 
     private final MinioAdapter minioAdapter;
+    private final ProcessConfiguration processConfiguration;
 
-    public FileExporter(MinioAdapter minioAdapter) {
+    public FileExporter(MinioAdapter minioAdapter, ProcessConfiguration processConfiguration) {
         this.minioAdapter = minioAdapter;
+        this.processConfiguration = processConfiguration;
     }
 
-    String saveCracInJsonFormat(Crac crac, ProcessType processType) {
+    String saveCracInJsonFormat(Crac crac, ProcessType processType, OffsetDateTime processTargetDate) {
         MemDataSource memDataSource = new MemDataSource();
         try (OutputStream os = memDataSource.newOutputStream(JSON_CRAC_FILE_NAME, false)) {
             CracExporters.exportCrac(crac, "Json", os);
@@ -51,24 +66,24 @@ public class FileExporter {
         }
         String cracPath = getDestinationPath(processType, GridcapaFileGroup.ARTIFACT) + JSON_CRAC_FILE_NAME;
         try (InputStream is = memDataSource.newInputStream(JSON_CRAC_FILE_NAME)) {
-            minioAdapter.uploadArtifact(cracPath, is);
+            minioAdapter.uploadArtifactForTimestamp(cracPath, is, adaptTargetProcessName(processType), "", processTargetDate);
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to upload converted CRAC file.", e);
         }
         return minioAdapter.generatePreSignedUrl(cracPath);
     }
 
-    String saveNetwork(Network network, String format, GridcapaFileGroup fileGroup, ProcessType processType, String networkFilename) {
+    String saveNetwork(Network network, String format, GridcapaFileGroup fileGroup, ProcessType processType, String networkFilename, OffsetDateTime processTargetDate) {
         String networkPath;
         try (InputStream is = getNetworkInputStream(network, format)) {
             switch (fileGroup) {
                 case ARTIFACT:
                     networkPath = getDestinationPath(processType, GridcapaFileGroup.ARTIFACT) + networkFilename;
-                    minioAdapter.uploadArtifact(networkPath, is);
+                    minioAdapter.uploadArtifactForTimestamp(networkPath, is, adaptTargetProcessName(processType), "", processTargetDate);
                     break;
                 case OUTPUT:
                     networkPath = getDestinationPath(processType, GridcapaFileGroup.OUTPUT) + networkFilename + "." + UCTE_EXTENSION;
-                    minioAdapter.uploadOutput(networkPath, is);
+                    minioAdapter.uploadOutputForTimestamp(networkPath, is, adaptTargetProcessName(processType), processConfiguration.getFinalCgm(), processTargetDate);
                     break;
                 default:
                     throw new UnsupportedOperationException(String.format("File group %s not supported", fileGroup));
@@ -80,14 +95,43 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(networkPath);
     }
 
-    String saveRaoParameters(ProcessType processType) {
+    String saveRaoParameters(ProcessType processType, OffsetDateTime processTargetDate) {
         RaoParameters raoParameters = RaoParameters.load();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
         String raoParametersDestinationPath = getDestinationPath(processType, GridcapaFileGroup.ARTIFACT) + RAO_PARAMETERS_FILE_NAME;
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        minioAdapter.uploadArtifact(raoParametersDestinationPath, bais);
+        minioAdapter.uploadArtifactForTimestamp(raoParametersDestinationPath, bais, adaptTargetProcessName(processType), "", processTargetDate);
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
+    }
+
+    String saveTtcRao(CseRaoResult cseRaoResult, ProcessType processType, OffsetDateTime processTargetDate) {
+        StringWriter stringWriter = new StringWriter();
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(CseRaoResult.class);
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+            // format the XML output
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            QName qName = new QName("CseRaoResult");
+            JAXBElement<CseRaoResult> root = new JAXBElement<>(qName, CseRaoResult.class, cseRaoResult);
+
+            jaxbMarshaller.marshal(root, stringWriter);
+
+        } catch (JAXBException e) {
+            throw new CseInternalException("XSD matching error");
+        }
+        ByteArrayInputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
+        String ttcPath =  getDestinationPath(processType, GridcapaFileGroup.OUTPUT) + getTtcRaoResultOutputFilename(processTargetDate);
+        minioAdapter.uploadOutputForTimestamp(ttcPath, is, adaptTargetProcessName(processType), processConfiguration.getTtcRao(), processTargetDate);
+        return minioAdapter.generatePreSignedUrl(ttcPath);
+    }
+
+    private String getTtcRaoResultOutputFilename(OffsetDateTime processTargetDate) {
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
+        String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
+        return  "TTC_Calculation_" + dateAndTime + "_2D0_CO_RAO_Transit_CSE0.xml";
     }
 
     private InputStream getNetworkInputStream(Network network, String format) throws IOException {
@@ -109,4 +153,9 @@ public class FileExporter {
                 + processType + MINIO_SEPARATOR
                 + gridcapaFileGroup + MINIO_SEPARATOR;
     }
+
+    private String adaptTargetProcessName(ProcessType processType) {
+        return PROCESS_TYPE_PREFIX + processType;
+    }
+
 }

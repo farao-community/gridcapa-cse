@@ -15,6 +15,9 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.CseCracCreationParameters;
+import com.farao_community.farao.data.crac_io_api.CracImporters;
+import com.farao_community.farao.data.rao_result_api.RaoResult;
+import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.apache.commons.io.FilenameUtils;
@@ -60,6 +63,15 @@ public class FileImporter {
         cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
         cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
         return CracCreators.createCrac(cseCrac, network, targetProcessDateTime, cracCreationParameters).getCrac();
+    }
+
+    public RaoResult importRaoResult(String raoResultUrl, Crac crac) throws IOException {
+        return new RaoResultImporter().importRaoResult(urlValidationService.openUrlStream(raoResultUrl), crac);
+    }
+
+    public Crac importCracFromJson(String cracUrl) throws IOException {
+        InputStream cracResultStream = urlValidationService.openUrlStream(cracUrl);
+        return CracImporters.importCrac(getFilenameFromUrl(cracUrl), cracResultStream);
     }
 
     private String getFilenameFromUrl(String url) {

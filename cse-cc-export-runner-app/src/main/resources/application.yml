@@ -33,6 +33,10 @@ minio-adapter:
   url: http://minio:9000
 
 cse-cc-runner:
+  zone-id: "Europe/Paris"
+  outputs:
+    final-cgm: FINAL_CGM
+    ttc-rao: TTC_RAO
   pisa:
     link1:
       node-fr: FFG.IL12

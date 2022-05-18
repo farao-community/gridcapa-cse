@@ -55,7 +55,7 @@ public class FileExporter {
 
     private final String combinedRasFilePath;
 
-    private static final String PROCESS_TYPE_PREFIX = "CSE_";
+    private static final String PROCESS_TYPE_PREFIX = "CSE_IMPORT_";
 
     public FileExporter(MinioAdapter minioAdapter, ProcessConfiguration processConfiguration, String combinedRasFilePath) {
         this.minioAdapter = minioAdapter;
