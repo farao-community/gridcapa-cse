@@ -19,6 +19,7 @@ import com.farao_community.farao.rao_api.parameters.RaoParameters;
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.network.Network;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBContext;
@@ -79,11 +80,11 @@ public class FileExporter {
         try (InputStream is = getNetworkInputStream(network, format)) {
             switch (fileGroup) {
                 case ARTIFACT:
-                    networkPath = getDestinationPath(processTargetDate, processType, GridcapaFileGroup.ARTIFACT) + networkFilename;
+                    networkPath = getDestinationPath(processTargetDate, processType, GridcapaFileGroup.ARTIFACT) + addExtension(networkFilename, format);
                     minioAdapter.uploadArtifactForTimestamp(networkPath, is, adaptTargetProcessName(processType), "", processTargetDate);
                     break;
                 case OUTPUT:
-                    networkPath = getDestinationPath(processTargetDate, processType, GridcapaFileGroup.OUTPUT) + networkFilename + "." + UCTE_EXTENSION;
+                    networkPath = getDestinationPath(processTargetDate, processType, GridcapaFileGroup.OUTPUT) + addExtension(networkFilename, format);
                     minioAdapter.uploadOutputForTimestamp(networkPath, is, adaptTargetProcessName(processType), processConfiguration.getFinalCgm(), processTargetDate);
                     break;
                 default:
@@ -94,6 +95,17 @@ public class FileExporter {
             throw new CseInternalException("Error while trying to save network", e);
         }
         return minioAdapter.generatePreSignedUrl(networkPath);
+    }
+
+    private static String addExtension(String networkFileName, String format) {
+        switch (format) {
+            case "UCTE":
+                return networkFileName + "." + UCTE_EXTENSION;
+            case "XIIDM":
+                return networkFileName + "." + IIDM_EXTENSION;
+            default:
+                throw new NotImplementedException("Network format %s is not recognized");
+        }
     }
 
     String saveRaoParameters(ProcessType processType, OffsetDateTime processTargetDate) {
@@ -135,7 +147,7 @@ public class FileExporter {
         return  "TTC_Calculation_" + dateAndTime + "_2D0_CO_RAO_Transit_CSE0.xml";
     }
 
-    private InputStream getNetworkInputStream(Network network, String format) throws IOException {
+    InputStream getNetworkInputStream(Network network, String format) throws IOException {
         MemDataSource memDataSource = new MemDataSource();
         switch (format) {
             case UCTE_FORMAT:
