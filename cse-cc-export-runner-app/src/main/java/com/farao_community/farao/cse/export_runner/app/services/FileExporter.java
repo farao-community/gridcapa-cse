@@ -99,9 +99,9 @@ public class FileExporter {
 
     private static String addExtension(String networkFileName, String format) {
         switch (format) {
-            case "UCTE":
+            case UCTE_FORMAT:
                 return networkFileName + "." + UCTE_EXTENSION;
-            case "XIIDM":
+            case IIDM_FORMAT:
                 return networkFileName + "." + IIDM_EXTENSION;
             default:
                 throw new NotImplementedException("Network format %s is not recognized");
