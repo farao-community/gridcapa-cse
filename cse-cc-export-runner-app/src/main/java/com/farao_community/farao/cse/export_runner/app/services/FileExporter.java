@@ -76,7 +76,7 @@ public class FileExporter {
     }
 
     String saveNetwork(Network network, String format, GridcapaFileGroup fileGroup, ProcessType processType, String networkFilename, OffsetDateTime processTargetDate) {
-        String networkPath = getDestinationPath(processTargetDate, processType, fileGroup) + addExtension(networkFilename, format);
+        String networkPath = getDestinationPath(processTargetDate, processType, fileGroup) + getNetworkFilenameWithExtension(networkFilename, format);
         try (InputStream is = getNetworkInputStream(network, format)) {
             switch (fileGroup) {
                 case ARTIFACT:
@@ -94,7 +94,7 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(networkPath);
     }
 
-    private static String addExtension(String networkFileName, String format) {
+    private static String getNetworkFilenameWithExtension(String networkFileName, String format) {
         switch (format) {
             case UCTE_FORMAT:
                 return networkFileName + "." + UCTE_EXTENSION;
