@@ -48,8 +48,8 @@ public class FileExporter {
     private static final String DIRECTION = "EXPORT";
     private static final String UCTE_EXTENSION = "uct";
     private static final String UCTE_FORMAT = "UCTE";
-    private static final String IIDM_FORMAT = "XIIDM";
-    private static final String IIDM_EXTENSION = "xiidm";
+    private static final String XIIDM_FORMAT = "XIIDM";
+    private static final String XIIDM_EXTENSION = "xiidm";
 
     private final MinioAdapter minioAdapter;
     private final ProcessConfiguration processConfiguration;
@@ -98,8 +98,8 @@ public class FileExporter {
         switch (format) {
             case UCTE_FORMAT:
                 return networkFileName + "." + UCTE_EXTENSION;
-            case IIDM_FORMAT:
-                return networkFileName + "." + IIDM_EXTENSION;
+            case XIIDM_FORMAT:
+                return networkFileName + "." + XIIDM_EXTENSION;
             default:
                 throw new NotImplementedException("Network format %s is not recognized");
         }
@@ -150,9 +150,9 @@ public class FileExporter {
             case UCTE_FORMAT:
                 Exporters.export(UCTE_FORMAT, network, new Properties(), memDataSource);
                 return memDataSource.newInputStream("", UCTE_EXTENSION);
-            case IIDM_FORMAT:
-                Exporters.export(IIDM_FORMAT, network, new Properties(), memDataSource);
-                return memDataSource.newInputStream("", IIDM_EXTENSION);
+            case XIIDM_FORMAT:
+                Exporters.export(XIIDM_FORMAT, network, new Properties(), memDataSource);
+                return memDataSource.newInputStream("", XIIDM_EXTENSION);
             default:
                 throw new UnsupportedOperationException(String.format("Network format %s not supported.", format));
         }
