@@ -44,6 +44,7 @@ public class FileExporter {
     private static final String PROCESS_TYPE_PREFIX = "CSE_EXPORT_";
     private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
     private static final String REGION = "CSE";
+    private static final String DIRECTION = "EXPORT";
     private static final String UCTE_EXTENSION = "uct";
     private static final String UCTE_FORMAT = "UCTE";
     private static final String IIDM_FORMAT = "XIIDM";
@@ -64,7 +65,7 @@ public class FileExporter {
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to save converted CRAC file.", e);
         }
-        String cracPath = getDestinationPath(processType, GridcapaFileGroup.ARTIFACT) + JSON_CRAC_FILE_NAME;
+        String cracPath = getDestinationPath(processTargetDate, processType, GridcapaFileGroup.ARTIFACT) + JSON_CRAC_FILE_NAME;
         try (InputStream is = memDataSource.newInputStream(JSON_CRAC_FILE_NAME)) {
             minioAdapter.uploadArtifactForTimestamp(cracPath, is, adaptTargetProcessName(processType), "", processTargetDate);
         } catch (IOException e) {
@@ -78,11 +79,11 @@ public class FileExporter {
         try (InputStream is = getNetworkInputStream(network, format)) {
             switch (fileGroup) {
                 case ARTIFACT:
-                    networkPath = getDestinationPath(processType, GridcapaFileGroup.ARTIFACT) + networkFilename;
+                    networkPath = getDestinationPath(processTargetDate, processType, GridcapaFileGroup.ARTIFACT) + networkFilename;
                     minioAdapter.uploadArtifactForTimestamp(networkPath, is, adaptTargetProcessName(processType), "", processTargetDate);
                     break;
                 case OUTPUT:
-                    networkPath = getDestinationPath(processType, GridcapaFileGroup.OUTPUT) + networkFilename + "." + UCTE_EXTENSION;
+                    networkPath = getDestinationPath(processTargetDate, processType, GridcapaFileGroup.OUTPUT) + networkFilename + "." + UCTE_EXTENSION;
                     minioAdapter.uploadOutputForTimestamp(networkPath, is, adaptTargetProcessName(processType), processConfiguration.getFinalCgm(), processTargetDate);
                     break;
                 default:
@@ -99,7 +100,7 @@ public class FileExporter {
         RaoParameters raoParameters = RaoParameters.load();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
-        String raoParametersDestinationPath = getDestinationPath(processType, GridcapaFileGroup.ARTIFACT) + RAO_PARAMETERS_FILE_NAME;
+        String raoParametersDestinationPath = getDestinationPath(processTargetDate, processType, GridcapaFileGroup.ARTIFACT) + RAO_PARAMETERS_FILE_NAME;
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         minioAdapter.uploadArtifactForTimestamp(raoParametersDestinationPath, bais, adaptTargetProcessName(processType), "", processTargetDate);
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
@@ -123,7 +124,7 @@ public class FileExporter {
             throw new CseInternalException("XSD matching error");
         }
         ByteArrayInputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
-        String ttcPath =  getDestinationPath(processType, GridcapaFileGroup.OUTPUT) + getTtcRaoResultOutputFilename(processTargetDate);
+        String ttcPath =  getDestinationPath(processTargetDate, processType, GridcapaFileGroup.OUTPUT) + getTtcRaoResultOutputFilename(processTargetDate);
         minioAdapter.uploadOutputForTimestamp(ttcPath, is, adaptTargetProcessName(processType), processConfiguration.getTtcRao(), processTargetDate);
         return minioAdapter.generatePreSignedUrl(ttcPath);
     }
@@ -148,10 +149,16 @@ public class FileExporter {
         }
     }
 
-    private String getDestinationPath(ProcessType processType, GridcapaFileGroup gridcapaFileGroup) {
+    private String getDestinationPath(OffsetDateTime offsetDateTime, ProcessType processType, GridcapaFileGroup gridcapaFileGroup) {
+        ZonedDateTime targetDateTime = offsetDateTime.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         return REGION + MINIO_SEPARATOR
-                + processType + MINIO_SEPARATOR
-                + gridcapaFileGroup + MINIO_SEPARATOR;
+            + DIRECTION + MINIO_SEPARATOR
+            + processType + MINIO_SEPARATOR
+            + targetDateTime.getYear() + MINIO_SEPARATOR
+            + String.format("%02d", targetDateTime.getMonthValue()) + MINIO_SEPARATOR
+            + String.format("%02d", targetDateTime.getDayOfMonth()) + MINIO_SEPARATOR
+            + String.format("%02d", targetDateTime.getHour()) + "_30" + MINIO_SEPARATOR
+            + gridcapaFileGroup + MINIO_SEPARATOR;
     }
 
     private String adaptTargetProcessName(ProcessType processType) {
