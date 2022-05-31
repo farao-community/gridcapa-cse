@@ -22,7 +22,7 @@ import java.io.IOException;
  */
 @Service
 public class CseExportRunner {
-    private static final String NETWORK_PRE_PROCESSED_FILE_NAME = "network_pre_processed.xiidm";
+    private static final String NETWORK_PRE_PROCESSED_FILE_NAME = "network_pre_processed";
     private final FileImporter fileImporter;
     private final FileExporter fileExporter;
     private final PiSaService pisaService;
