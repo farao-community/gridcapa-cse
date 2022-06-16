@@ -13,9 +13,8 @@ import com.powsybl.ucte.converter.util.UcteConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This class exposes useful methods to modify a network
@@ -26,11 +25,11 @@ public class NetworkModifier {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkModifier.class);
 
     private Network network;
-    private Set<Connectable<?>> connectablesToRemove;
+    private Map<Branch<?>, Branch<?>> movedBranches;
 
     public NetworkModifier(Network network) {
         this.network = network;
-        this.connectablesToRemove = new HashSet<>();
+        this.movedBranches = new HashMap<>();
     }
 
     public Network getNetwork() {
@@ -40,7 +39,8 @@ public class NetworkModifier {
     /**
      * Create a bus with a given ID, on a given voltage level
      * Use a given reference bus to copy generators and loads
-     * @param newBusId: the ID of the new bus
+     *
+     * @param newBusId:       the ID of the new bus
      * @param voltageLevelId: the ID of the voltage level
      * @return the bus created
      */
@@ -63,11 +63,12 @@ public class NetworkModifier {
     /**
      * Create a switch on a given voltage level between two given buses
      * Set its current limit to a given value and its open/close status to a given status
+     *
      * @param voltageLevel: the voltage level object
-     * @param bus1Id: the ID of the first bus
-     * @param bus2Id:  the ID of the second bus
+     * @param bus1Id:       the ID of the first bus
+     * @param bus2Id:       the ID of the second bus
      * @param currentLimit: the value of the currentLimit
-     * @param open: a boolean that describes if the switch is open or close
+     * @param open:         a boolean that describes if the switch is open or close
      * @return the switch object created
      */
     public Switch createSwitch(VoltageLevel voltageLevel, String bus1Id, String bus2Id, Double currentLimit, boolean open) {
@@ -104,18 +105,19 @@ public class NetworkModifier {
      * @param bus    the new bus to connect to the side
      */
     public void moveBranch(Branch<?> branch, Branch.Side side, Bus bus) {
+        Branch<?> branchToMove = movedBranches.getOrDefault(branch, branch);
         try {
-            if (branch instanceof TwoWindingsTransformer) {
-                moveTwoWindingsTransformer((TwoWindingsTransformer) branch, side, bus);
-            } else if (branch instanceof TieLine) {
-                moveTieLine((TieLine) branch, side, bus);
-            } else if (branch instanceof Line) {
-                moveLine((Line) branch, side, bus);
+            if (branchToMove instanceof TwoWindingsTransformer) {
+                moveTwoWindingsTransformer((TwoWindingsTransformer) branchToMove, side, bus);
+            } else if (branchToMove instanceof TieLine) {
+                moveTieLine((TieLine) branchToMove, side, bus);
+            } else if (branchToMove instanceof Line) {
+                moveLine((Line) branchToMove, side, bus);
             } else {
-                throw new FaraoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
+                throw new FaraoException(String.format("Cannot move %s of type %s", branchToMove.getId(), branchToMove.getClass()));
             }
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not move line %s: %s", branch.getId(), e.getMessage()));
+            throw new FaraoException(String.format("Could not move line %s: %s", branchToMove.getId(), e.getMessage()));
         }
     }
 
@@ -148,7 +150,7 @@ public class NetworkModifier {
         copyCurrentLimits(line, newLine);
         copyProperties(line, newLine);
         LOGGER.debug("Line '{}' has been removed, new TieLine '{}' has been created", line.getId(), newLine.getId());
-        connectablesToRemove.add(line);
+        movedBranches.put(line, newLine);
     }
 
     private void moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
@@ -159,7 +161,7 @@ public class NetworkModifier {
         copyCurrentLimits(tieLine, newTieLine);
         copyProperties(tieLine, newTieLine);
         LOGGER.debug("TieLine '{}' has been removed, new TieLine '{}' has been created", tieLine.getId(), newTieLine.getId());
-        connectablesToRemove.add(tieLine);
+        movedBranches.put(tieLine, newTieLine);
     }
 
     private void moveTwoWindingsTransformer(TwoWindingsTransformer transformer, Branch.Side side, Bus bus) {
@@ -171,7 +173,7 @@ public class NetworkModifier {
         copyProperties(transformer, newTransformer);
         copyTapChanger(transformer, newTransformer);
         LOGGER.debug("TwoWindingsTransformer '{}' has been removed, new transformer '{}' has been created", transformer.getId(), newTransformer.getId());
-        connectablesToRemove.add(transformer);
+        movedBranches.put(transformer, newTransformer);
     }
 
     private static void copyTapChanger(TwoWindingsTransformer transformerFrom, TwoWindingsTransformer transformerTo) {
@@ -341,8 +343,8 @@ public class NetworkModifier {
      */
     public void commitAllChanges() {
         try {
-            connectablesToRemove.forEach(Connectable::remove);
-            connectablesToRemove = new HashSet<>();
+            movedBranches.keySet().forEach(Connectable::remove);
+            movedBranches = new HashMap<>();
         } catch (PowsyblException e) {
             throw new FaraoException(String.format("Could not apply all changes to network: %s", e.getMessage()));
         }

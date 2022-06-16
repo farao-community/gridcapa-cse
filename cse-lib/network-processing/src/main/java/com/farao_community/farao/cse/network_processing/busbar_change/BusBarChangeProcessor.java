@@ -111,7 +111,7 @@ public final class BusBarChangeProcessor {
         // Store all switches to create
         tRemedialAction.getBusBar().getBranch().forEach(tBranch -> {
             String linId = NetworkHelper.getLineIdInNetwork(tBranch.getFromNode().getV(), tBranch.getToNode().getV(), String.valueOf(tBranch.getOrder().getV()), initialNodeId, finalNodeId, ucteNetworkAnalyzer);
-            raSwitchesToCreate.add(new SwitchPairToCreate(linId, initialNodeId, finalNodeId));
+            raSwitchesToCreate.add(new SwitchPairToCreate(linId, initialNodeId, finalNodeId, ucteNetworkAnalyzer.getNetwork()));
         });
 
         // If everything is OK with the RA, store what should be created
@@ -134,20 +134,20 @@ public final class BusBarChangeProcessor {
         // Get a list of all switch paris to create, some of them may be in common for different RAs
         List<SwitchPairToCreate> uniqueSwitchPairsToCreate = switchesToCreatePerRa.values().stream().flatMap(Set::stream).sorted().collect(Collectors.toList());
         // Store information about created fictitious buses for moving branches
-        Map<String, String> fictitiousBusIdPerBranchId = new HashMap<>();
+        Map<String, String> fictitiousBusIdPerBranchAndSide = new HashMap<>();
         for (SwitchPairToCreate switchPairToCreate: uniqueSwitchPairsToCreate) {
             String fictitiousBusId;
             // First, see if the branch has already been moved to a fictitious bus by a previous switch pair creation
-            if (fictitiousBusIdPerBranchId.containsKey(switchPairToCreate.branchId)) {
+            if (fictitiousBusIdPerBranchAndSide.containsKey(switchPairToCreate.branchAndSide())) {
                 // If yes, re-use the same fictitious bus
-                fictitiousBusId = fictitiousBusIdPerBranchId.get(switchPairToCreate.branchId);
+                fictitiousBusId = fictitiousBusIdPerBranchAndSide.get(switchPairToCreate.branchAndSide());
             } else {
                 // If not, create a new fictitious bus and store the info
                 fictitiousBusId = NetworkHelper.moveBranchToNewFictitiousBus(switchPairToCreate, networkModifier);
-                fictitiousBusIdPerBranchId.put(switchPairToCreate.branchId, fictitiousBusId);
+                fictitiousBusIdPerBranchAndSide.put(switchPairToCreate.branchAndSide(), fictitiousBusId);
             }
             // Then create the switch pair
-            createdSwitches.put(switchPairToCreate.uniqueId, NetworkHelper.createSwitchPair(switchPairToCreate, networkModifier, fictitiousBusId));
+            createdSwitches.put(switchPairToCreate.getUniqueId(), NetworkHelper.createSwitchPair(switchPairToCreate, networkModifier, fictitiousBusId));
         }
     }
 
@@ -172,11 +172,11 @@ public final class BusBarChangeProcessor {
      * Fetches the IDs of the created switches to open & close, for a given SwitchPairToCreate
      */
     private static SwitchPairId getCreatedSwitchPairId(SwitchPairToCreate switchPairToCreate, Map<String, NetworkHelper.BusBarEquivalentModel> createdSwitches) {
-        String switchPairToCreateId = switchPairToCreate.uniqueId();
+        String switchPairToCreateId = switchPairToCreate.getUniqueId();
         // OPEN switch between branch and initial node, CLOSE switch between branch and final node
         return new SwitchPairId(
-            createdSwitches.get(switchPairToCreateId).getSwitchId(switchPairToCreate.initialNodeId),
-            createdSwitches.get(switchPairToCreateId).getSwitchId(switchPairToCreate.finalNodeId)
+            createdSwitches.get(switchPairToCreateId).getSwitchId(switchPairToCreate.getInitialNodeId()),
+            createdSwitches.get(switchPairToCreateId).getSwitchId(switchPairToCreate.getFinalNodeId())
         );
     }
 

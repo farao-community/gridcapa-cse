@@ -10,10 +10,7 @@ import com.farao_community.farao.cse.network_processing.TestUtils;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.SwitchPairId;
 import com.powsybl.iidm.import_.Importers;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.TieLine;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
@@ -187,6 +184,66 @@ class BusBarChangeProcessorTest {
             new SwitchPairId("BBE1AA1Y BBE1AA13 1", "BBE1AA1Y BBE1AA11 1"),
             new SwitchPairId("BBE1AA1X BBE1AA13 1", "BBE1AA1X BBE1AA11 1"),
             new SwitchPairId("BBE1AA1Z BBE1AA13 1", "BBE1AA1Z BBE1AA11 1")
+        );
+        assertEquals(switchPairs, bbcs.getSwitchPairs());
+    }
+
+    @Test
+    void testTwoRasOnTwoEndsOfSameLine() {
+        setUp("BaseNetwork_twoBusBarsOnSameLine.uct", "BusBarChange_twoBusBarsOnSameLine.xml");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork_twoBusBarsOnSameLine.uct", getClass());
+        assertEquals(3, busBarChangeSwitchesSet.size());
+        BusBarChangeSwitches bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_1")).findAny().orElseThrow();
+        Set<SwitchPairId> switchPairs = Set.of(
+            new SwitchPairId("BBE1AA1Z BBE1AA11 1", "BBE1AA1Z BBE1AA12 1")
+        );
+        assertEquals(switchPairs, bbcs.getSwitchPairs());
+        bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_2")).findAny().orElseThrow();
+        switchPairs = Set.of(
+            new SwitchPairId("BBE2AA1Z BBE2AA11 1", "BBE2AA1Z BBE2AA12 1")
+        );
+        assertEquals(switchPairs, bbcs.getSwitchPairs());
+        bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("RA_1_inverted")).findAny().orElseThrow();
+        switchPairs = Set.of(
+            new SwitchPairId("BBE1AA1Z BBE1AA12 1", "BBE1AA1Z BBE1AA11 1")
+        );
+        assertEquals(switchPairs, bbcs.getSwitchPairs());
+
+        assertTrue(network.getIdentifiable("BBE1AA1Z BBE1AA11 1") instanceof Switch);
+        assertFalse(((Switch)network.getIdentifiable("BBE1AA1Z BBE1AA11 1")).isOpen());
+
+        assertTrue(network.getIdentifiable("BBE1AA1Z BBE1AA12 1") instanceof Switch);
+        assertTrue(((Switch)network.getIdentifiable("BBE1AA1Z BBE1AA12 1")).isOpen());
+
+        assertTrue(network.getIdentifiable("BBE2AA1Z BBE2AA11 1") instanceof Switch);
+        assertFalse(((Switch)network.getIdentifiable("BBE2AA1Z BBE2AA11 1")).isOpen());
+
+        assertTrue(network.getIdentifiable("BBE2AA1Z BBE2AA12 1") instanceof Switch);
+        assertTrue(((Switch)network.getIdentifiable("BBE2AA1Z BBE2AA12 1")).isOpen());
+
+        assertNull(network.getIdentifiable("BBE1AA11 BBE2AA11 1"));
+        assertNull(network.getIdentifiable("BBE1AA11 BBE2AA1Z 1"));
+        assertNull(network.getIdentifiable("BBE1AA1Z BBE2AA11 1"));
+        assertTrue(network.getIdentifiable("BBE1AA1Z BBE2AA1Z 1") instanceof Line);
+    }
+
+    @Test
+    void testTwoRasOnTwoEndsOfSameLine2() {
+        setUp("BaseNetwork_2RA_on_1_line.uct", "BusBarChange_2RA_on_1_line.xml");
+        TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork_2RA_on_1_line.uct", getClass());
+        assertEquals(2, busBarChangeSwitchesSet.size());
+        BusBarChangeSwitches bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("Bus bar ok test - 8000")).findAny().orElseThrow();
+        Set<SwitchPairId> switchPairs = Set.of(
+            new SwitchPairId("BBE1AA1Z BBE1AA11 1", "BBE1AA1Z BBE1AA12 1"),
+            new SwitchPairId("BBE1AA1Y BBE1AA11 1", "BBE1AA1Y BBE1AA12 1"),
+            new SwitchPairId("BBE1AA1X BBE1AA11 1", "BBE1AA1X BBE1AA12 1"),
+            new SwitchPairId("BBE1AA1W BBE1AA11 1", "BBE1AA1W BBE1AA12 1")
+        );
+        assertEquals(switchPairs, bbcs.getSwitchPairs());
+        bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("Bus bar ok test - 2")).findAny().orElseThrow();
+        switchPairs = Set.of(
+            new SwitchPairId("BBE2AA1Y BBE2AA11 1", "BBE2AA1Y BBE2AA12 1"),
+            new SwitchPairId("BBE2AA1Z BBE2AA11 1", "BBE2AA1Z BBE2AA12 1")
         );
         assertEquals(switchPairs, bbcs.getSwitchPairs());
     }
