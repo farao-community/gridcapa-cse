@@ -210,16 +210,16 @@ class BusBarChangeProcessorTest {
         assertEquals(switchPairs, bbcs.getSwitchPairs());
 
         assertTrue(network.getIdentifiable("BBE1AA1Z BBE1AA11 1") instanceof Switch);
-        assertFalse(((Switch)network.getIdentifiable("BBE1AA1Z BBE1AA11 1")).isOpen());
+        assertFalse(((Switch) network.getIdentifiable("BBE1AA1Z BBE1AA11 1")).isOpen());
 
         assertTrue(network.getIdentifiable("BBE1AA1Z BBE1AA12 1") instanceof Switch);
-        assertTrue(((Switch)network.getIdentifiable("BBE1AA1Z BBE1AA12 1")).isOpen());
+        assertTrue(((Switch) network.getIdentifiable("BBE1AA1Z BBE1AA12 1")).isOpen());
 
         assertTrue(network.getIdentifiable("BBE2AA1Z BBE2AA11 1") instanceof Switch);
-        assertFalse(((Switch)network.getIdentifiable("BBE2AA1Z BBE2AA11 1")).isOpen());
+        assertFalse(((Switch) network.getIdentifiable("BBE2AA1Z BBE2AA11 1")).isOpen());
 
         assertTrue(network.getIdentifiable("BBE2AA1Z BBE2AA12 1") instanceof Switch);
-        assertTrue(((Switch)network.getIdentifiable("BBE2AA1Z BBE2AA12 1")).isOpen());
+        assertTrue(((Switch) network.getIdentifiable("BBE2AA1Z BBE2AA12 1")).isOpen());
 
         assertNull(network.getIdentifiable("BBE1AA11 BBE2AA11 1"));
         assertNull(network.getIdentifiable("BBE1AA11 BBE2AA1Z 1"));
