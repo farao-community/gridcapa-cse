@@ -107,7 +107,7 @@ public class NetworkModifier {
     public void moveBranch(Branch<?> branch, Branch.Side side, Bus bus) {
         // In case line has already been modified on the other side, then modify the new line instead
         // For example if we have a line "NODE1 NODE2"
-        // RA1 moves side 1 : then the line is replaced by "FBUS1 NODE2" (FBUS = fictitious bus)
+        // RA1 moves side 1 : then the line is replaced with "FBUS1 NODE2" (FBUS = fictitious bus)
         // RA2 moves side 2 : then the line "FBUS1 NODE2" should be replaced with "FBUS1 FBUS2"
         // (instead of replacing "NODE1 NODE2" with "NODE1 FBUS2")
         Branch<?> branchToMove = movedBranches.getOrDefault(branch, branch);
