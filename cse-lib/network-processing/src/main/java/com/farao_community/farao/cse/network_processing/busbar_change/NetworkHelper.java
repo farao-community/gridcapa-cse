@@ -79,18 +79,18 @@ public final class NetworkHelper {
         return bus1.equals(nodeId) || bus2.equals(nodeId);
     }
 
-    public static String moveBranchToNewFictitiousBus(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier) {
+    public static String moveBranchToNewFictitiousBus(String branchId, Branch.Side branchSideToModify, NetworkModifier networkModifier) {
         Network network = networkModifier.getNetwork();
-        Branch<?> branch = network.getBranch(switchPairToCreate.branchId);
+        Branch<?> branch = network.getBranch(branchId);
 
-        VoltageLevel voltageLevel = ((Bus) network.getIdentifiable(switchPairToCreate.initialNodeId)).getVoltageLevel();
+        VoltageLevel voltageLevel = branch.getTerminal(branchSideToModify).getVoltageLevel();
 
         // Create fictitious bus
         String fictitiousBusId = generateFictitiousBusId(voltageLevel, network);
         Bus fictitiousBus = networkModifier.createBus(fictitiousBusId, voltageLevel.getId());
 
         // Move one branch end to the fictitious bus
-        networkModifier.moveBranch(branch, switchPairToCreate.branchSideToModify, fictitiousBus);
+        networkModifier.moveBranch(branch, branchSideToModify, fictitiousBus);
 
         return fictitiousBusId;
     }

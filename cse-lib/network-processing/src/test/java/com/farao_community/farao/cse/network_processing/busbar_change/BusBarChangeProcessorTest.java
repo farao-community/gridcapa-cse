@@ -232,7 +232,7 @@ class BusBarChangeProcessorTest {
         setUp("BaseNetwork_2RA_on_1_line.uct", "BusBarChange_2RA_on_1_line.xml");
         TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork_2RA_on_1_line.uct", getClass());
         assertEquals(2, busBarChangeSwitchesSet.size());
-        BusBarChangeSwitches bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("Bus bar ok test - 8000")).findAny().orElseThrow();
+        BusBarChangeSwitches bbcs = busBarChangeSwitchesSet.stream().filter(busBarChangeSwitches -> busBarChangeSwitches.getRemedialActionId().equals("Bus bar ok test - 1")).findAny().orElseThrow();
         Set<SwitchPairId> switchPairs = Set.of(
             new SwitchPairId("BBE1AA1Z BBE1AA11 1", "BBE1AA1Z BBE1AA12 1"),
             new SwitchPairId("BBE1AA1Y BBE1AA11 1", "BBE1AA1Y BBE1AA12 1"),

@@ -21,7 +21,7 @@
   <CRACSeries>
     <RemedialActions>
       <RemedialAction>
-        <Name v="Bus bar ok test - 8000"/>
+        <Name v="Bus bar ok test - 1"/>
         <TimeInterval v="2020-03-12T23:00Z/2020-03-13T00:00Z"/>
         <Operator v="BE"/>
         <Application v="PREVENTIVE"/>

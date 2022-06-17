@@ -131,7 +131,7 @@ public final class BusBarChangeProcessor {
      * Stores info about created switches in createdSwitches, SwitchPairToCreate ID
      */
     private static void createSwitches(Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa, Map<String, NetworkHelper.BusBarEquivalentModel> createdSwitches, NetworkModifier networkModifier) {
-        // Get a list of all switch paris to create, some of them may be in common for different RAs
+        // Get a list of all switch pairs to create, some of them may be in common for different RAs
         List<SwitchPairToCreate> uniqueSwitchPairsToCreate = switchesToCreatePerRa.values().stream().flatMap(Set::stream).sorted().collect(Collectors.toList());
         // Store information about created fictitious buses for moving branches
         Map<String, String> fictitiousBusIdPerBranchAndSide = new HashMap<>();
@@ -143,7 +143,7 @@ public final class BusBarChangeProcessor {
                 fictitiousBusId = fictitiousBusIdPerBranchAndSide.get(switchPairToCreate.branchAndSide());
             } else {
                 // If not, create a new fictitious bus and store the info
-                fictitiousBusId = NetworkHelper.moveBranchToNewFictitiousBus(switchPairToCreate, networkModifier);
+                fictitiousBusId = NetworkHelper.moveBranchToNewFictitiousBus(switchPairToCreate.getBranchId(), switchPairToCreate.getBranchSideToModify(), networkModifier);
                 fictitiousBusIdPerBranchAndSide.put(switchPairToCreate.branchAndSide(), fictitiousBusId);
             }
             // Then create the switch pair
