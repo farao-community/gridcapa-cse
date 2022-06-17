@@ -9,6 +9,7 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
+import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.CseData;
@@ -23,6 +24,8 @@ import com.farao_community.farao.dichotomy.shift.LinearScaler;
 import com.farao_community.farao.dichotomy.shift.ShiftDispatcher;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
+import com.powsybl.action.util.Scalable;
+import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
@@ -73,9 +76,21 @@ public class DichotomyRunner {
                                              CseData cseData,
                                              Network network) throws IOException {
         return new LinearScaler(
-            fileImporter.importGlsk(request.getMergedGlskUrl(), network),
+            getZonalScalable(request.getMergedGlskUrl(), network),
             getShiftDispatcher(request.getProcessType(), cseData, network),
             SHIFT_TOLERANCE);
+    }
+
+    private ZonalData<Scalable> getZonalScalable(String mergedGlskUrl, Network network) throws IOException {
+        ZonalData<Scalable> zonalScalable = fileImporter.importGlsk(mergedGlskUrl, network);
+        Arrays.stream(CseCountry.values()).forEach(country -> checkCseCountryInGlsk(zonalScalable, country));
+        return zonalScalable;
+    }
+
+    private void checkCseCountryInGlsk(ZonalData<Scalable> zonalScalable, CseCountry country) {
+        if (!zonalScalable.getDataPerZone().containsKey(country.getEiCode())) {
+            throw new CseInvalidDataException(String.format("Area '%s' was not found in the glsk file.", country.getEiCode()));
+        }
     }
 
     private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Network network) {
