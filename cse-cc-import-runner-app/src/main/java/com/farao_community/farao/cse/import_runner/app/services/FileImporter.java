@@ -11,7 +11,6 @@ import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
-import com.farao_community.farao.cse.import_runner.app.dichotomy.CseCountry;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
@@ -35,7 +34,6 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,15 +73,7 @@ public class FileImporter {
     }
 
     public ZonalData<Scalable> importGlsk(String glskUrl, Network network) throws IOException {
-        ZonalData<Scalable> zonalScalable = GlskDocumentImporters.importGlsk(urlValidationService.openUrlStream(glskUrl)).getZonalScalable(network);
-        Arrays.stream(CseCountry.values()).forEach(val -> checkCseCountryInGlsk(zonalScalable, val));
-        return zonalScalable;
-    }
-
-    private void checkCseCountryInGlsk(ZonalData<Scalable> zonalScalable, CseCountry val) {
-        if (!zonalScalable.getDataPerZone().containsKey(val.getEiCode())) {
-            throw new CseInvalidDataException(String.format("Area '%s' was not found in the glsk file.", val.getEiCode()));
-        }
+        return GlskDocumentImporters.importGlsk(urlValidationService.openUrlStream(glskUrl)).getZonalScalable(network);
     }
 
     public RaoResult importRaoResult(String raoResultUrl, Crac crac) throws IOException {
