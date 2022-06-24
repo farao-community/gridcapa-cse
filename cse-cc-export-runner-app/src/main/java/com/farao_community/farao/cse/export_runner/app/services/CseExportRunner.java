@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.export_runner.app.services;
 
+import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
 import com.farao_community.farao.data.crac_api.Crac;
@@ -38,19 +39,21 @@ public class CseExportRunner {
     }
 
     public CseExportResponse run(CseExportRequest cseExportRequest) throws IOException {
+        String logsFileUrl = ""; //TODO
         Network network = fileImporter.importNetwork(cseExportRequest.getCgmUrl());
         pisaService.alignGenerators(network);
         Crac crac = fileImporter.preProcessNetworkForBusBarsAndImportCrac(cseExportRequest.getMergedCracUrl(), network, cseExportRequest.getTargetProcessDateTime());
         String networkPreProcesedUrl = fileExporter.saveNetwork(network, "XIIDM", GridcapaFileGroup.ARTIFACT, cseExportRequest.getProcessType(), NETWORK_PRE_PROCESSED_FILE_NAME, cseExportRequest.getTargetProcessDateTime());
         String cracInJsonFormatUrl = fileExporter.saveCracInJsonFormat(crac, cseExportRequest.getProcessType(), cseExportRequest.getTargetProcessDateTime());
         String raoParametersUrl = fileExporter.saveRaoParameters(cseExportRequest.getProcessType(), cseExportRequest.getTargetProcessDateTime());
-
-        RaoResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), networkPreProcesedUrl, cracInJsonFormatUrl, raoParametersUrl);
-
-        String finalCgmUrl = fileExporter.saveNetwork(fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl()), "UCTE", GridcapaFileGroup.OUTPUT, cseExportRequest.getProcessType(), network.getNameOrId(), cseExportRequest.getTargetProcessDateTime());
-        String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), fileImporter.importCracFromJson(cracInJsonFormatUrl)), fileImporter.importCracFromJson(raoResponse.getCracFileUrl()));
-        String logsFileUrl = ""; //TODO
-        return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, finalCgmUrl, logsFileUrl);
+        try {
+            RaoResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), networkPreProcesedUrl, cracInJsonFormatUrl, raoParametersUrl);
+            String finalCgmUrl = fileExporter.saveNetwork(fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl()), "UCTE", GridcapaFileGroup.OUTPUT, cseExportRequest.getProcessType(), network.getNameOrId(), cseExportRequest.getTargetProcessDateTime());
+            String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), fileImporter.importCracFromJson(cracInJsonFormatUrl)), fileImporter.importCracFromJson(raoResponse.getCracFileUrl()));
+            return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, finalCgmUrl, logsFileUrl);
+        } catch (CseInternalException e) {
+            // Temporary return of an empty string for ttc logs file and cgm file
+            return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", logsFileUrl);
+        }
     }
-
 }
