@@ -117,10 +117,10 @@ public final class TtcRao {
         return outageResultList;
     }
 
-    private static void fillBranchCommonPropertiesFromCnecCommon(CnecCommon cnecCommon, Branch afterOutageBranchResult) {
-        afterOutageBranchResult.setCode(getStringValue(cnecCommon.getCode()));
-        afterOutageBranchResult.setFromNode(getStringValue(cnecCommon.getAreaFrom()));
-        afterOutageBranchResult.setToNode(getStringValue(cnecCommon.getAreaTo()));
+    private static void fillBranchCommonPropertiesFromCnecCommon(CnecCommon cnecCommon, Branch branch) {
+        branch.setCode(getStringValue(cnecCommon.getCode()));
+        branch.setFromNode(getStringValue(cnecCommon.getAreaFrom()));
+        branch.setToNode(getStringValue(cnecCommon.getAreaTo()));
     }
 
     static void addPreventiveResult(CseRaoResult.Results results, PreventiveResult preventiveResult) {
