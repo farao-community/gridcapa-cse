@@ -8,9 +8,9 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.computation.BorderExchanges;
-import com.farao_community.farao.cse.data.ttc_res.CracResultsHelper;
+import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
-import com.farao_community.farao.cse.data.ttc_res.XNodeReader;
+import com.farao_community.farao.cse.data.xnode.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.data.crac_api.Crac;

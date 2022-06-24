@@ -6,6 +6,9 @@
  */
 package com.farao_community.farao.cse.data.ttc_res;
 
+import com.farao_community.farao.cse.data.cnec.CnecPreventive;
+import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
+import com.farao_community.farao.cse.data.cnec.MergedCnec;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
@@ -67,7 +70,7 @@ class CracResultsHelperTest {
         assertEquals(5, monitoredBranchesForContingency.size());
 
         FlowCnec branchCnec = cracResultsHelper.getCrac().getFlowCnec("FFR2AA1  DDE3AA1  1 - outage - Contingency FR1 FR3");
-        assertEquals(1858, cracResultsHelper.getFlowCnecResultInAmpereAfterOptim(branchCnec, OptimizationState.AFTER_PRA).getFlow(), 0.1);
+        assertEquals(1858, cracResultsHelper.getFlowCnecResultInAmpere(branchCnec, OptimizationState.AFTER_PRA).getFlow(), 0.1);
     }
 
     @Test

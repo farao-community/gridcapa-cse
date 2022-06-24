@@ -4,10 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.cse.data.ttc_res;
+package com.farao_community.farao.cse.data.cnec;
 
 import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
+import com.farao_community.farao.cse.data.xnode.XNode;
 import com.farao_community.farao.data.crac_api.*;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_api.cnec.Side;
@@ -92,7 +93,7 @@ public class CracResultsHelper {
                     cnecCommon.setAreaTo(getAreaTo(cnecPreventive.getNetworkElement()));
                     CnecPreventive cnecPrev = new CnecPreventive();
                     cnecPrev.setCnecCommon(cnecCommon);
-                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpereAfterOptim(cnecPreventive, OptimizationState.AFTER_PRA);
+                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnecPreventive, OptimizationState.AFTER_PRA);
                     cnecPrev.setI(flowCnecResult.getFlow());
                     cnecPrev.setiMax(flowCnecResult.getiMax());
                     cnecPreventives.add(cnecPrev);
@@ -118,15 +119,15 @@ public class CracResultsHelper {
                 mergedCnec = mergedCnecs.get(cnec.getName());
             }
             if (cnec.getState().getInstant().equals(Instant.OUTAGE)) {
-                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpereAfterOptim(cnec, OptimizationState.AFTER_PRA);
+                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_PRA);
                 mergedCnec.setiAfterOutage(flowCnecResult.getFlow());
                 mergedCnec.setiMaxAfterOutage(flowCnecResult.getiMax());
             } else if (cnec.getState().getInstant().equals(Instant.CURATIVE)) {
-                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpereAfterOptim(cnec, OptimizationState.AFTER_CRA);
+                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_CRA);
                 mergedCnec.setiAfterCra(flowCnecResult.getFlow());
                 mergedCnec.setiMaxAfterCra(flowCnecResult.getiMax());
             } else if (cnec.getState().getInstant().equals(Instant.AUTO)) {
-                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpereAfterOptim(cnec, OptimizationState.AFTER_PRA);
+                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_PRA);
                 mergedCnec.setiAfterSps(flowCnecResult.getFlow());
                 mergedCnec.setiMaxAfterSps(flowCnecResult.getiMax());
             } else {
@@ -136,7 +137,7 @@ public class CracResultsHelper {
         return mergedCnecs;
     }
 
-    public FlowCnecResult getFlowCnecResultInAmpereAfterOptim(FlowCnec flowCnec, OptimizationState optimizationState) {
+    public FlowCnecResult getFlowCnecResultInAmpere(FlowCnec flowCnec, OptimizationState optimizationState) {
         Optional<Double> upperBound = flowCnec.getUpperBound(Side.LEFT, Unit.AMPERE);
         Optional<Double> lowerBound = flowCnec.getLowerBound(Side.LEFT, Unit.AMPERE);
         double flow;

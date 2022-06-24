@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.data.ttc_res;
 
 import com.farao_community.farao.cse.data.CseDataException;
+import com.farao_community.farao.cse.data.xnode.XNodeReader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
