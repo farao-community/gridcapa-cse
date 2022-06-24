@@ -131,7 +131,6 @@ public final class TtcRao {
         results.getOutageResult().addAll(outageResults);
     }
 
-
     static PreventiveResult getPreventiveResult(List<Action> preventiveActions, List<PreventiveBranchResult> preventiveBranchResults) {
         PreventiveResult preventiveResult = new PreventiveResult();
         PreventiveResult.PreventiveActions preventiveActions1 = new PreventiveResult.PreventiveActions();

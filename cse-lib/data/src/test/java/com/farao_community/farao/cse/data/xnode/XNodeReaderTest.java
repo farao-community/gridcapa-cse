@@ -4,10 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.cse.data.ttc_res;
+package com.farao_community.farao.cse.data.xnode;
 
 import com.farao_community.farao.cse.data.CseDataException;
-import com.farao_community.farao.cse.data.xnode.XNodeReader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
@@ -26,7 +25,7 @@ class XNodeReaderTest {
 
     @Test
     void testXNodesLoadingFailsBecauseOfMissingFile() {
-        assertThrows(CseDataException.class, () -> XNodeReader.getXNodes("/faskePathToXNodes/xnodes.xml"));
+        assertThrows(CseDataException.class, () -> XNodeReader.getXNodes("/fakePathToXNodes/xnodes.xml"));
     }
 
     @Test
