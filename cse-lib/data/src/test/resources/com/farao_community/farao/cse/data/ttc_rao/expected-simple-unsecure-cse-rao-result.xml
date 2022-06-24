@@ -2,4 +2,103 @@
 <CseRaoResult>
     <Time v="2022-05-06T16:30Z"/>
     <Status v="UNSECURE"/>
+    <Results>
+        <PreventiveResult>
+            <PreventiveActions>
+                <Action name="complexNetworkActionId"/>
+                <Action name="pstRange1Id">
+                    <PSTtap v="-7"/>
+                </Action>
+            </PreventiveActions>
+            <MonitoredElement name="cnec1prevId">
+                <FromNode v="FR"/>
+                <ToNode v="FR"/>
+                <Code v="FFR1AA1  FFR3AA1  1"/>
+                <IBeforeOptimization unit="A" v="-1120"/>
+                <IAfterOptimization unit="A" v="-1220"/>
+                <IMax unit="A" v="500"/>
+            </MonitoredElement>
+            <MonitoredElement name="cnec2prevId">
+                <FromNode v="NL"/>
+                <ToNode v="NL"/>
+                <Code v="NNL1AA1  NNL2AA1  1"/>
+                <IBeforeOptimization unit="A" v="2120"/>
+                <IAfterOptimization unit="A" v="2220"/>
+                <IMax unit="A" v="694"/>
+            </MonitoredElement>
+            <MonitoredElement name="cnec3prevName">
+                <FromNode v="BE"/>
+                <ToNode v="BE"/>
+                <Code v="BBE2AA1  BBE3AA1  1"/>
+                <IBeforeOptimization unit="A" v="3120"/>
+                <IAfterOptimization unit="A" v="3220"/>
+                <IMax unit="A" v="2147483647"/>
+            </MonitoredElement>
+            <MonitoredElement name="cnec4prevName">
+                <FromNode v="DE"/>
+                <ToNode v="DE"/>
+                <Code v="DDE2AA1  DDE3AA1  1"/>
+                <IBeforeOptimization unit="A" v="4120"/>
+                <IAfterOptimization unit="A" v="4220"/>
+                <IMax unit="A" v="2147483647"/>
+            </MonitoredElement>
+        </PreventiveResult>
+        <OutageResult>
+            <Outage name="contingency1Id">
+                <Branch>
+                    <FromNode v="NL"/>
+                    <ToNode v="NL"/>
+                    <Code v="NNL1AA1  NNL2AA1  1"/>
+                </Branch>
+            </Outage>
+            <CurativeActions>
+                <Action name="pstSetpointRaId"/>
+            </CurativeActions>
+            <MonitoredElement name="cnec1outageId">
+                <FromNode v="FR"/>
+                <ToNode v="FR"/>
+                <Code v="FFR1AA1  FFR3AA1  1"/>
+                <IAfterOutageBeforeOptimization unit="A" v="-1120"/>
+                <IAfterOutageAfterOptimization unit="A" v="-1220"/>
+                <IMaxAfterOutage unit="A" v="800"/>
+                <IAfterCRAAfterOptimization unit="A" v="0"/>
+                <IMaxAfterCRA unit="A" v="0"/>
+            </MonitoredElement>
+        </OutageResult>
+        <OutageResult>
+            <Outage name="contingency2Id">
+                <Branch>
+                    <FromNode v="DE"/>
+                    <ToNode v="DE"/>
+                    <Code v="DDE2AA1  DDE3AA1  1"/>
+                </Branch>
+                <Branch>
+                    <FromNode v="BE"/>
+                    <ToNode v="BE"/>
+                    <Code v="BBE2AA1  BBE3AA1  1"/>
+                </Branch>
+            </Outage>
+            <CurativeActions/>
+            <MonitoredElement name="cnec3autoName">
+                <FromNode v="BE"/>
+                <ToNode v="BE"/>
+                <Code v="BBE2AA1  BBE3AA1  1"/>
+                <IAfterOutageBeforeOptimization unit="A" v="0"/>
+                <IAfterOutageAfterOptimization unit="A" v="0"/>
+                <IMaxAfterOutage unit="A" v="0"/>
+                <IAfterCRAAfterOptimization unit="A" v="0"/>
+                <IMaxAfterCRA unit="A" v="0"/>
+            </MonitoredElement>
+            <MonitoredElement name="cnec3curId">
+                <FromNode v="BE"/>
+                <ToNode v="BE"/>
+                <Code v="BBE2AA1  BBE3AA1  1"/>
+                <IAfterOutageBeforeOptimization unit="A" v="0"/>
+                <IAfterOutageAfterOptimization unit="A" v="0"/>
+                <IMaxAfterOutage unit="A" v="0"/>
+                <IAfterCRAAfterOptimization unit="A" v="3420"/>
+                <IMaxAfterCRA unit="A" v="2147483647"/>
+            </MonitoredElement>
+        </OutageResult>
+    </Results>
 </CseRaoResult>
