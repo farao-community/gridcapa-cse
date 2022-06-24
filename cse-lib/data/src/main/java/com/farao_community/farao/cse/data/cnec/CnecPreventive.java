@@ -14,6 +14,7 @@ public class CnecPreventive {
 
     private CnecCommon cnecCommon;
     private double i;
+    private double iBeforeOptimisation;
     private double iMax;
 
     public CnecCommon getCnecCommon() {
@@ -38,5 +39,13 @@ public class CnecPreventive {
 
     public void setiMax(double iMax) {
         this.iMax = iMax;
+    }
+
+    public double getiBeforeOptimisation() {
+        return iBeforeOptimisation;
+    }
+
+    public void setiBeforeOptimisation(double iBeforeOptimisation) {
+        this.iBeforeOptimisation = iBeforeOptimisation;
     }
 }

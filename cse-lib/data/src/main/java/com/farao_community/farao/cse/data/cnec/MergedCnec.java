@@ -14,6 +14,7 @@ public class MergedCnec {
 
     private CnecCommon cnecCommon;
     private double iAfterOutage;
+    private double iAfterOutageBeforeOptimisation;
     private double iMaxAfterOutage;
     private double iAfterCra;
     private double iMaxAfterCra;
@@ -74,5 +75,13 @@ public class MergedCnec {
 
     public void setiMaxAfterSps(double iMaxAfterSps) {
         this.iMaxAfterSps = iMaxAfterSps;
+    }
+
+    public double getiAfterOutageBeforeOptimisation() {
+        return iAfterOutageBeforeOptimisation;
+    }
+
+    public void setiAfterOutageBeforeOptimisation(double iAfterOutageBeforeOptimisation) {
+        this.iAfterOutageBeforeOptimisation = iAfterOutageBeforeOptimisation;
     }
 }

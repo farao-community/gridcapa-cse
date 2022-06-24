@@ -49,24 +49,52 @@ public class CracResultsHelper {
 
     public List<String> getPreventivePstRangeActionIds() {
         return raoResult.getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream()
-            .filter(PstRangeAction.class::isInstance)
-            .map(Identifiable::getId)
-            .collect(Collectors.toList());
+                .filter(PstRangeAction.class::isInstance)
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
     }
 
     public List<String> getPreventiveHvdcRangeActionIds() {
         return raoResult.getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream()
-            .filter(InjectionRangeAction.class::isInstance)
-            .map(Identifiable::getId)
-            .collect(Collectors.toList());
+                .filter(InjectionRangeAction.class::isInstance)
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
     }
 
     public int getTapOfPstRangeActionInPreventive(String pstRangeActionId) {
         return raoResult.getOptimizedTapOnState(crac.getPreventiveState(), crac.getPstRangeAction(pstRangeActionId));
     }
 
+    public int getTapOfPstRangeActionInCurative(String contingencyId, String pstRangeActionId) {
+        return raoResult.getOptimizedTapOnState(crac.getState(contingencyId, Instant.CURATIVE), crac.getPstRangeAction(pstRangeActionId));
+    }
+
     public int getSetpointOfHvdcRangeActionInPreventive(String hvdcRangeActionId) {
         return (int) raoResult.getOptimizedSetPointOnState(crac.getPreventiveState(), crac.getInjectionRangeAction(hvdcRangeActionId));
+    }
+
+    public List<String> getCurativeNetworkActionIds(String contingencyId) {
+        return raoResult.getActivatedNetworkActionsDuringState(crac.getState(contingencyId, Instant.CURATIVE)).stream()
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getCurativePstRangeActionIds(String contingencyId) {
+        return raoResult.getActivatedRangeActionsDuringState(crac.getState(contingencyId, Instant.CURATIVE)).stream()
+                .filter(PstRangeAction.class::isInstance)
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getCurativeHvdcRangeActionIds(String contingencyId) {
+        return raoResult.getActivatedRangeActionsDuringState(crac.getState(contingencyId, Instant.CURATIVE)).stream()
+                .filter(InjectionRangeAction.class::isInstance)
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
+    }
+
+    public int getSetpointOfHvdcRangeActionInCurative(String contingencyId, String hvdcRangeActionId) {
+        return (int) raoResult.getOptimizedSetPointOnState(crac.getState(contingencyId, Instant.CURATIVE), crac.getInjectionRangeAction(hvdcRangeActionId));
     }
 
     public List<FlowCnec> getMonitoredBranchesForOutage(String contingencyId) {
@@ -96,6 +124,8 @@ public class CracResultsHelper {
                     FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnecPreventive, OptimizationState.AFTER_PRA);
                     cnecPrev.setI(flowCnecResult.getFlow());
                     cnecPrev.setiMax(flowCnecResult.getiMax());
+                    FlowCnecResult flowCnecResult1 = getFlowCnecResultInAmpere(cnecPreventive, OptimizationState.INITIAL);
+                    cnecPrev.setiBeforeOptimisation(flowCnecResult1.getFlow());
                     cnecPreventives.add(cnecPrev);
                 });
         return cnecPreventives;
@@ -122,6 +152,8 @@ public class CracResultsHelper {
                 FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_PRA);
                 mergedCnec.setiAfterOutage(flowCnecResult.getFlow());
                 mergedCnec.setiMaxAfterOutage(flowCnecResult.getiMax());
+                FlowCnecResult flowCnecResult1 = getFlowCnecResultInAmpere(cnec, OptimizationState.INITIAL);
+                mergedCnec.setiAfterOutageBeforeOptimisation(flowCnecResult1.getFlow());
             } else if (cnec.getState().getInstant().equals(Instant.CURATIVE)) {
                 FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_CRA);
                 mergedCnec.setiAfterCra(flowCnecResult.getFlow());
