@@ -85,9 +85,9 @@ public final class TtcRao {
             outageResult.setOutage(outage);
             contingency.getNetworkElements().forEach(contingencyNetworkElement -> {
                 Branch branch = new Branch();
-                branch.setCode(getStringValue(contingencyNetworkElement.getId()));
-                branch.setFromNode(getStringValue(cracResultsHelper.getAreaFrom(contingencyNetworkElement)));
-                branch.setToNode(getStringValue(cracResultsHelper.getAreaTo(contingencyNetworkElement)));
+                branch.setCode(getStringValue(cracResultsHelper.getOrderCode(contingencyNetworkElement)));
+                branch.setFromNode(getStringValue(cracResultsHelper.getNodeFrom(contingencyNetworkElement)));
+                branch.setToNode(getStringValue(cracResultsHelper.getNodeTo(contingencyNetworkElement)));
                 outage.getBranch().add(branch);
             });
 
@@ -118,9 +118,9 @@ public final class TtcRao {
     }
 
     private static void fillBranchCommonPropertiesFromCnecCommon(CnecCommon cnecCommon, Branch branch) {
-        branch.setCode(getStringValue(cnecCommon.getCode()));
-        branch.setFromNode(getStringValue(cnecCommon.getAreaFrom()));
-        branch.setToNode(getStringValue(cnecCommon.getAreaTo()));
+        branch.setCode(getStringValue(cnecCommon.getOrderCode()));
+        branch.setFromNode(getStringValue(cnecCommon.getNodeFrom()));
+        branch.setToNode(getStringValue(cnecCommon.getNodeTo()));
     }
 
     static void addPreventiveResult(CseRaoResult.Results results, PreventiveResult preventiveResult) {

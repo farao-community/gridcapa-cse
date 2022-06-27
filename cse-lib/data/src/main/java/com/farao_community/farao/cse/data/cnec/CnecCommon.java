@@ -16,6 +16,9 @@ public class CnecCommon {
     private String code;
     private String areaFrom;
     private String areaTo;
+    private String nodeFrom;
+    private String nodeTo;
+    private String orderCode;
 
     public String getName() {
         return name;
@@ -47,5 +50,29 @@ public class CnecCommon {
 
     public void setAreaTo(String areaTo) {
         this.areaTo = areaTo;
+    }
+
+    public String getNodeFrom() {
+        return nodeFrom;
+    }
+
+    public void setNodeFrom(String nodeFrom) {
+        this.nodeFrom = nodeFrom;
+    }
+
+    public String getNodeTo() {
+        return nodeTo;
+    }
+
+    public void setNodeTo(String nodeTo) {
+        this.nodeTo = nodeTo;
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 }

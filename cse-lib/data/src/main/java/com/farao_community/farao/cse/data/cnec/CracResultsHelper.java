@@ -119,6 +119,9 @@ public class CracResultsHelper {
                     cnecCommon.setCode(cnecPreventive.getNetworkElement().getName());
                     cnecCommon.setAreaFrom(getAreaFrom(cnecPreventive.getNetworkElement()));
                     cnecCommon.setAreaTo(getAreaTo(cnecPreventive.getNetworkElement()));
+                    cnecCommon.setOrderCode(getOrderCode(cnecPreventive.getNetworkElement()));
+                    cnecCommon.setNodeFrom(getNodeFrom(cnecPreventive.getNetworkElement()));
+                    cnecCommon.setNodeTo(getNodeTo(cnecPreventive.getNetworkElement()));
                     CnecPreventive cnecPrev = new CnecPreventive();
                     cnecPrev.setCnecCommon(cnecCommon);
                     FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnecPreventive, OptimizationState.AFTER_PRA);
@@ -143,6 +146,9 @@ public class CracResultsHelper {
                 cnecCommon.setCode(cnec.getNetworkElement().getName());
                 cnecCommon.setAreaFrom(getAreaFrom(cnec.getNetworkElement()));
                 cnecCommon.setAreaTo(getAreaTo(cnec.getNetworkElement()));
+                cnecCommon.setNodeFrom(getNodeFrom(cnec.getNetworkElement()));
+                cnecCommon.setNodeTo(getNodeTo(cnec.getNetworkElement()));
+                cnecCommon.setOrderCode(getOrderCode(cnec.getNetworkElement()));
                 mergedCnec.setCnecCommon(cnecCommon);
                 mergedCnecs.put(cnec.getName(), mergedCnec);
             } else {
@@ -230,12 +236,16 @@ public class CracResultsHelper {
         }
     }
 
-    private String getNodeFrom(NetworkElement networkElement) {
+    public String getNodeFrom(NetworkElement networkElement) {
         return networkElement.getId().substring(0, 8);
     }
 
-    private String getNodeTo(NetworkElement networkElement) {
+    public String getNodeTo(NetworkElement networkElement) {
         return networkElement.getId().substring(9, 17);
+    }
+
+    public String getOrderCode(NetworkElement networkElement) {
+        return networkElement.getId().substring(18);
     }
 
     public FlowCnec getWorstCnec() {
