@@ -11,15 +11,15 @@
   },
   "contingencies" : [ {
     "id" : "contingency1Id",
-    "networkElementsIds" : [ "ne1Id" ]
+    "networkElementsIds" : [ "NNL1AA1  NNL2AA1  1" ]
   }, {
     "id" : "contingency2Id",
-    "networkElementsIds" : [ "ne2Id", "ne3Id" ]
+    "networkElementsIds" : [ "BBE2AA1  BBE3AA1  1", "DDE2AA1  DDE3AA1  1" ]
   } ],
   "flowCnecs" : [ {
     "id" : "cnec1outageId",
     "name" : "cnec1outageId",
-    "networkElementId" : "ne4Id",
+    "networkElementId" : "FFR1AA1  FFR3AA1  1",
     "operator" : "operator1",
     "instant" : "outage",
     "contingencyId" : "contingency1Id",
@@ -35,7 +35,7 @@
   }, {
     "id" : "cnec1prevId",
     "name" : "cnec1prevId",
-    "networkElementId" : "ne4Id",
+    "networkElementId" : "FFR1AA1  FFR3AA1  1",
     "operator" : "operator1",
     "instant" : "preventive",
     "optimized" : true,
@@ -51,7 +51,7 @@
   }, {
     "id" : "cnec2prevId",
     "name" : "cnec2prevId",
-    "networkElementId" : "ne5Id",
+    "networkElementId" : "NNL1AA1  NNL2AA1  1",
     "operator" : "operator2",
     "instant" : "preventive",
     "optimized" : true,
@@ -79,7 +79,7 @@
   }, {
     "id" : "cnec3autoId",
     "name" : "cnec3autoName",
-    "networkElementId" : "ne2Id",
+    "networkElementId" : "BBE2AA1  BBE3AA1  1",
     "operator" : "operator3",
     "instant" : "auto",
     "contingencyId" : "contingency2Id",
@@ -94,7 +94,7 @@
   }, {
     "id" : "cnec3curId",
     "name" : "cnec3curId",
-    "networkElementId" : "ne2Id",
+    "networkElementId" : "BBE2AA1  BBE3AA1  1",
     "operator" : "operator3",
     "instant" : "curative",
     "contingencyId" : "contingency2Id",
@@ -109,7 +109,7 @@
   }, {
     "id" : "cnec3prevId",
     "name" : "cnec3prevName",
-    "networkElementId" : "ne2Id",
+    "networkElementId" : "BBE2AA1  BBE3AA1  1",
     "operator" : "operator3",
     "instant" : "preventive",
     "optimized" : false,
@@ -123,7 +123,7 @@
   }, {
     "id" : "cnec4prevId",
     "name" : "cnec4prevName",
-    "networkElementId" : "ne3Id",
+    "networkElementId" : "DDE2AA1  DDE3AA1  1",
     "operator" : "operator4",
     "instant" : "preventive",
     "optimized" : true,
@@ -143,7 +143,7 @@
       "instant" : "preventive",
       "usageMethod" : "available"
     } ],
-    "networkElementId" : "pst",
+    "networkElementId" : "FFR2AA1  FFR3AA1  1",
     "initialTap" : 2,
     "tapToAngleConversionMap" : {
       "3" : 3.0,
@@ -171,7 +171,7 @@
       "instant" : "preventive",
       "flowCnecId" : "cnec3prevId"
     } ],
-    "networkElementId" : "pst2",
+    "networkElementId" : "FFR2AA1  FFR3AA1  1",
     "groupId" : "group-1-pst",
     "initialTap" : 1,
     "tapToAngleConversionMap" : {
@@ -201,7 +201,7 @@
       "instant" : "preventive",
       "usageMethod" : "available"
     } ],
-    "networkElementId" : "hvdc",
+    "networkElementId" : "FFR2AA1  FFR3AA1  1",
     "ranges" : [ {
       "min" : -1000.0,
       "max" : 1000.0
@@ -214,7 +214,7 @@
       "instant" : "preventive",
       "flowCnecId" : "cnec3curId"
     } ],
-    "networkElementId" : "hvdc2",
+    "networkElementId" : "FFR2AA1  FFR3AA1  1",
     "groupId" : "group-1-hvdc",
     "ranges" : [ {
       "min" : -1000.0,
@@ -230,7 +230,7 @@
       "usageMethod" : "available"
     } ],
     "topologicalActions" : [ {
-      "networkElementId" : "ne1Id",
+      "networkElementId" : "NNL1AA1  NNL2AA1  1",
       "actionType" : "close"
     } ],
     "pstSetpoints" : [ {
@@ -263,7 +263,7 @@
       "usageMethod" : "forced"
     } ],
     "pstSetpoints" : [ {
-      "networkElementId" : "pst",
+      "networkElementId" : "FFR2AA1  FFR3AA1  1",
       "setpoint" : 15
     } ]
   }, {

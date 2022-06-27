@@ -17,6 +17,8 @@ cse-cc-runner:
   outputs:
     final-cgm: FINAL_CGM
     ttc-rao: TTC_RAO
+  xnodes:
+    file-path: xnodes/cvg_xnodes_20200714.xml
   pisa:
     link1:
       node-fr: FFG.IL12

@@ -4,10 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.cse.data.ttc_res;
+package com.farao_community.farao.cse.data.cnec;
 
 import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
+import com.farao_community.farao.cse.data.xnode.XNode;
 import com.farao_community.farao.data.crac_api.*;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_api.cnec.Side;
@@ -48,24 +49,52 @@ public class CracResultsHelper {
 
     public List<String> getPreventivePstRangeActionIds() {
         return raoResult.getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream()
-            .filter(PstRangeAction.class::isInstance)
-            .map(Identifiable::getId)
-            .collect(Collectors.toList());
+                .filter(PstRangeAction.class::isInstance)
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
     }
 
     public List<String> getPreventiveHvdcRangeActionIds() {
         return raoResult.getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream()
-            .filter(InjectionRangeAction.class::isInstance)
-            .map(Identifiable::getId)
-            .collect(Collectors.toList());
+                .filter(InjectionRangeAction.class::isInstance)
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
     }
 
     public int getTapOfPstRangeActionInPreventive(String pstRangeActionId) {
         return raoResult.getOptimizedTapOnState(crac.getPreventiveState(), crac.getPstRangeAction(pstRangeActionId));
     }
 
+    public int getTapOfPstRangeActionInCurative(String contingencyId, String pstRangeActionId) {
+        return raoResult.getOptimizedTapOnState(crac.getState(contingencyId, Instant.CURATIVE), crac.getPstRangeAction(pstRangeActionId));
+    }
+
     public int getSetpointOfHvdcRangeActionInPreventive(String hvdcRangeActionId) {
         return (int) raoResult.getOptimizedSetPointOnState(crac.getPreventiveState(), crac.getInjectionRangeAction(hvdcRangeActionId));
+    }
+
+    public List<String> getCurativeNetworkActionIds(String contingencyId) {
+        return raoResult.getActivatedNetworkActionsDuringState(crac.getState(contingencyId, Instant.CURATIVE)).stream()
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getCurativePstRangeActionIds(String contingencyId) {
+        return raoResult.getActivatedRangeActionsDuringState(crac.getState(contingencyId, Instant.CURATIVE)).stream()
+                .filter(PstRangeAction.class::isInstance)
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getCurativeHvdcRangeActionIds(String contingencyId) {
+        return raoResult.getActivatedRangeActionsDuringState(crac.getState(contingencyId, Instant.CURATIVE)).stream()
+                .filter(InjectionRangeAction.class::isInstance)
+                .map(Identifiable::getId)
+                .collect(Collectors.toList());
+    }
+
+    public int getSetpointOfHvdcRangeActionInCurative(String contingencyId, String hvdcRangeActionId) {
+        return (int) raoResult.getOptimizedSetPointOnState(crac.getState(contingencyId, Instant.CURATIVE), crac.getInjectionRangeAction(hvdcRangeActionId));
     }
 
     public List<FlowCnec> getMonitoredBranchesForOutage(String contingencyId) {
@@ -90,11 +119,16 @@ public class CracResultsHelper {
                     cnecCommon.setCode(cnecPreventive.getNetworkElement().getName());
                     cnecCommon.setAreaFrom(getAreaFrom(cnecPreventive.getNetworkElement()));
                     cnecCommon.setAreaTo(getAreaTo(cnecPreventive.getNetworkElement()));
+                    cnecCommon.setOrderCode(getOrderCode(cnecPreventive.getNetworkElement()));
+                    cnecCommon.setNodeFrom(getNodeFrom(cnecPreventive.getNetworkElement()));
+                    cnecCommon.setNodeTo(getNodeTo(cnecPreventive.getNetworkElement()));
                     CnecPreventive cnecPrev = new CnecPreventive();
                     cnecPrev.setCnecCommon(cnecCommon);
-                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpereAfterOptim(cnecPreventive, OptimizationState.AFTER_PRA);
+                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnecPreventive, OptimizationState.AFTER_PRA);
                     cnecPrev.setI(flowCnecResult.getFlow());
                     cnecPrev.setiMax(flowCnecResult.getiMax());
+                    FlowCnecResult flowCnecResult1 = getFlowCnecResultInAmpere(cnecPreventive, OptimizationState.INITIAL);
+                    cnecPrev.setiBeforeOptimisation(flowCnecResult1.getFlow());
                     cnecPreventives.add(cnecPrev);
                 });
         return cnecPreventives;
@@ -112,21 +146,26 @@ public class CracResultsHelper {
                 cnecCommon.setCode(cnec.getNetworkElement().getName());
                 cnecCommon.setAreaFrom(getAreaFrom(cnec.getNetworkElement()));
                 cnecCommon.setAreaTo(getAreaTo(cnec.getNetworkElement()));
+                cnecCommon.setNodeFrom(getNodeFrom(cnec.getNetworkElement()));
+                cnecCommon.setNodeTo(getNodeTo(cnec.getNetworkElement()));
+                cnecCommon.setOrderCode(getOrderCode(cnec.getNetworkElement()));
                 mergedCnec.setCnecCommon(cnecCommon);
                 mergedCnecs.put(cnec.getName(), mergedCnec);
             } else {
                 mergedCnec = mergedCnecs.get(cnec.getName());
             }
             if (cnec.getState().getInstant().equals(Instant.OUTAGE)) {
-                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpereAfterOptim(cnec, OptimizationState.AFTER_PRA);
+                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_PRA);
                 mergedCnec.setiAfterOutage(flowCnecResult.getFlow());
                 mergedCnec.setiMaxAfterOutage(flowCnecResult.getiMax());
+                FlowCnecResult flowCnecResult1 = getFlowCnecResultInAmpere(cnec, OptimizationState.INITIAL);
+                mergedCnec.setiAfterOutageBeforeOptimisation(flowCnecResult1.getFlow());
             } else if (cnec.getState().getInstant().equals(Instant.CURATIVE)) {
-                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpereAfterOptim(cnec, OptimizationState.AFTER_CRA);
+                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_CRA);
                 mergedCnec.setiAfterCra(flowCnecResult.getFlow());
                 mergedCnec.setiMaxAfterCra(flowCnecResult.getiMax());
             } else if (cnec.getState().getInstant().equals(Instant.AUTO)) {
-                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpereAfterOptim(cnec, OptimizationState.AFTER_PRA);
+                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_PRA);
                 mergedCnec.setiAfterSps(flowCnecResult.getFlow());
                 mergedCnec.setiMaxAfterSps(flowCnecResult.getiMax());
             } else {
@@ -136,7 +175,7 @@ public class CracResultsHelper {
         return mergedCnecs;
     }
 
-    public FlowCnecResult getFlowCnecResultInAmpereAfterOptim(FlowCnec flowCnec, OptimizationState optimizationState) {
+    public FlowCnecResult getFlowCnecResultInAmpere(FlowCnec flowCnec, OptimizationState optimizationState) {
         Optional<Double> upperBound = flowCnec.getUpperBound(Side.LEFT, Unit.AMPERE);
         Optional<Double> lowerBound = flowCnec.getLowerBound(Side.LEFT, Unit.AMPERE);
         double flow;
@@ -197,12 +236,16 @@ public class CracResultsHelper {
         }
     }
 
-    private String getNodeFrom(NetworkElement networkElement) {
+    public String getNodeFrom(NetworkElement networkElement) {
         return networkElement.getId().substring(0, 8);
     }
 
-    private String getNodeTo(NetworkElement networkElement) {
+    public String getNodeTo(NetworkElement networkElement) {
         return networkElement.getId().substring(9, 17);
+    }
+
+    public String getOrderCode(NetworkElement networkElement) {
+        return networkElement.getId().substring(18);
     }
 
     public FlowCnec getWorstCnec() {

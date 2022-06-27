@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.cse.data.ttc_res;
+package com.farao_community.farao.cse.data.cnec;
 
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
@@ -67,7 +67,7 @@ class CracResultsHelperTest {
         assertEquals(5, monitoredBranchesForContingency.size());
 
         FlowCnec branchCnec = cracResultsHelper.getCrac().getFlowCnec("FFR2AA1  DDE3AA1  1 - outage - Contingency FR1 FR3");
-        assertEquals(1858, cracResultsHelper.getFlowCnecResultInAmpereAfterOptim(branchCnec, OptimizationState.AFTER_PRA).getFlow(), 0.1);
+        assertEquals(1858, cracResultsHelper.getFlowCnecResultInAmpere(branchCnec, OptimizationState.AFTER_PRA).getFlow(), 0.1);
     }
 
     @Test

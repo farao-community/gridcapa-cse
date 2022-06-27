@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.data.ttc_rao;
 
+import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.*;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
@@ -15,12 +16,14 @@ import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.*;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -46,7 +49,7 @@ class TtcRaoTest {
 
     private void assertEqualsXml(String raoResultFilename, String expectedResultFilename) throws JAXBException {
         RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream(raoResultFilename), crac);
-        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), raoResult);
+        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), raoResult, new CracResultsHelper(crac, raoResult, Mockito.mock(List.class)));
         assertEqualsXml(cseRaoResult, expectedResultFilename);
     }
 
