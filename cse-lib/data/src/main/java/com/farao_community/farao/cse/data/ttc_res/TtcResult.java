@@ -11,6 +11,8 @@ import com.farao_community.farao.cse.data.xsd.ttc_res.*;
 import com.farao_community.farao.data.crac_api.Contingency;
 import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CsePstCreationContext;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import org.apache.commons.lang3.NotImplementedException;
@@ -498,12 +500,14 @@ public final class TtcResult {
             action.setName(name);
             actionList.add(action);
         });
-        pstPreventiveRas.forEach(parade -> {
+        pstPreventiveRas.forEach(jsonRaId -> {
             Action action = new Action();
             Name name = new Name();
-            name.setV(parade);
+            CsePstCreationContext csePstCreationContext = getPstCreationContext(cracResultsHelper.getCseCracCreationContext(), jsonRaId);
+            name.setV(csePstCreationContext.getNativeId());
             PSTtap pstTap = new PSTtap();
-            pstTap.setV(BigInteger.valueOf(cracResultsHelper.getTapOfPstRangeActionInPreventive(parade)));
+            int tap = csePstCreationContext.isInverted() ? -cracResultsHelper.getTapOfPstRangeActionInPreventive(jsonRaId) : cracResultsHelper.getTapOfPstRangeActionInPreventive(jsonRaId);
+            pstTap.setV(BigInteger.valueOf(tap));
             action.setPSTtap(pstTap);
             action.setName(name);
             actionList.add(action);
@@ -520,6 +524,11 @@ public final class TtcResult {
         });
         preventive.getAction().addAll(actionList);
         results.setPreventive(preventive);
+    }
+
+    private static CsePstCreationContext getPstCreationContext(CseCracCreationContext cseCracCreationContext, String jsonRaId) {
+        return cseCracCreationContext.getRemedialActionCreationContexts().stream().filter(CsePstCreationContext.class::isInstance).map(CsePstCreationContext.class::cast)
+            .filter(pstcc -> pstcc.isImported() && pstcc.getCreatedRAId().equals(jsonRaId)).findAny().orElseThrow(() -> new CseDataException(""));
     }
 
     private static String limitingCauseToString(LimitingCause limitingCause) {

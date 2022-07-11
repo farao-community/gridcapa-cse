@@ -9,6 +9,10 @@ package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.data.crac_api.Crac;
+import com.farao_community.farao.data.rao_result_api.RaoResult;
+import com.farao_community.farao.rao_api.Rao;
+import com.farao_community.farao.rao_api.RaoInput;
+import com.farao_community.farao.rao_api.parameters.RaoParameters;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
@@ -42,6 +46,9 @@ class CseRunnerTest {
         assertEquals(1, Stream.of(network.getVoltageLevel("ITALY11").getBusBreakerView().getBuses()).count());
 
         Crac crac = cseRunner.preProcessNetworkForBusBarsAndImportCrac(cracUrl, network, OffsetDateTime.parse("2021-09-01T20:30Z"));
+
+        RaoInput.RaoInputBuilder raoInputBuilder = RaoInput.build(network, crac);
+        RaoResult results = Rao.run(raoInputBuilder.build(), new RaoParameters());
 
         // After pre-processing 4 buses in this voltage level ITALY111, ITALY112, ITALY11Z and ITALY11Y
         assertEquals(4, StreamSupport.stream(network.getVoltageLevel("ITALY11").getBusBreakerView().getBuses().spliterator(), true).count());

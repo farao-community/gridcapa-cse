@@ -6,16 +6,22 @@
  */
 package com.farao_community.farao.cse.data.ttc_res;
 
-import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
-import com.farao_community.farao.data.crac_io_api.CracImporters;
+import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
+import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.BranchCnecCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
+import com.powsybl.iidm.import_.Importers;
+import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,108 +34,102 @@ class CracResultsHelperTest {
 
     @Test
     void preventivePstRangeActionsRetrievingTest() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("crac.json", "raoResult.json");
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("/pst_and_topo/crac.xml", "/pst_and_topo/network.uct", "/pst_and_topo/raoResult.json");
         assertEquals(1, cracResultsHelper.getPreventivePstRangeActionIds().size());
-        assertEquals("PRA_PST_BE", cracResultsHelper.getPreventivePstRangeActionIds().get(0));
+        assertEquals("PST_cra_3_BBE2AA1  BBE3AA1  1", cracResultsHelper.getPreventivePstRangeActionIds().get(0));
     }
 
     @Test
     void preventiveHvdcRangeActionsRetrievingTest() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("crac_with_HVDC.json", "raoResult_with_HVDC.json");
-        assertEquals(1, cracResultsHelper.getPreventiveHvdcRangeActionIds().size());
-        assertEquals("PRA_HVDC_GILE_PIOSSASCO_2", cracResultsHelper.getPreventiveHvdcRangeActionIds().get(0));
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("/hvdc/crac.xml", "/hvdc/network.uct", "/hvdc/raoResult.json");
+        assertEquals(3, cracResultsHelper.getPreventiveHvdcRangeActionIds().size());
+        assertEquals("PRA_HVDC", cracResultsHelper.getPreventiveHvdcRangeActionIds().get(0));
     }
 
     @Test
     void preventiveNetworkActionsRetrievingTest() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("crac.json", "raoResult.json");
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("/pst_and_topo/crac.xml", "/pst_and_topo/network.uct", "/pst_and_topo/raoResult.json");
         assertEquals(1, cracResultsHelper.getPreventiveNetworkActionIds().size());
-        assertEquals("Open line NL1-NL2", cracResultsHelper.getPreventiveNetworkActionIds().get(0));
+        assertEquals("ra_1", cracResultsHelper.getPreventiveNetworkActionIds().get(0));
     }
 
     @Test
     void pstTapPositionRetrievingTest() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("crac.json", "raoResult.json");
-        assertEquals(-16, cracResultsHelper.getTapOfPstRangeActionInPreventive("PRA_PST_BE"));
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("/pst_and_topo/crac.xml", "/pst_and_topo/network.uct", "/pst_and_topo/raoResult.json");
+        assertEquals(-16, cracResultsHelper.getTapOfPstRangeActionInPreventive("PST_cra_3_BBE2AA1  BBE3AA1  1"));
     }
 
     @Test
     void pstHvdcSetpointRetrievingTest() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("crac_with_HVDC.json", "raoResult_with_HVDC.json");
-        assertEquals(600, cracResultsHelper.getSetpointOfHvdcRangeActionInPreventive("PRA_HVDC_GILE_PIOSSASCO_2"));
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("/hvdc/crac.xml", "/hvdc/network.uct", "/hvdc/raoResult.json");
+        assertEquals(800, cracResultsHelper.getSetpointOfHvdcRangeActionInPreventive("PRA_HVDC"));
     }
 
     @Test
     void checkMonitoredBranchesRetrievedCorrectly() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("cracWithMonitoredBranches.json", "raoResultMonitoredBranches.json");
-        String contingencyId = "Contingency FR1 FR3";
-        List<FlowCnec> monitoredBranchesForContingency = cracResultsHelper.getMonitoredBranchesForOutage(contingencyId);
-        assertEquals(5, monitoredBranchesForContingency.size());
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("/pst_and_topo/crac.xml", "/pst_and_topo/network.uct", "/pst_and_topo/raoResult.json");
+        String contingencyId = "outage_1";
+        List<BranchCnecCreationContext> monitoredBranchesForContingency = cracResultsHelper.getMonitoredBranchesForOutage(contingencyId);
+        assertEquals(1, monitoredBranchesForContingency.size());
 
-        FlowCnec branchCnec = cracResultsHelper.getCrac().getFlowCnec("FFR2AA1  DDE3AA1  1 - outage - Contingency FR1 FR3");
-        assertEquals(1858, cracResultsHelper.getFlowCnecResultInAmpereAfterOptim(branchCnec, OptimizationState.AFTER_PRA).getFlow(), 0.1);
+        FlowCnec branchCnec = cracResultsHelper.getCrac().getFlowCnec("French line 1 - FFR1AA1 ->FFR2AA1   - outage_1 - outage");
+        assertEquals(50, cracResultsHelper.getFlowCnecResultInAmpereAfterOptim(branchCnec, OptimizationState.AFTER_PRA).getFlow(), 0.1);
     }
 
     @Test
     void getPreventiveCnecsTest() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("cracWithMonitoredBranches.json", "raoResultMonitoredBranches.json");
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("/pst_and_topo/crac.xml", "/pst_and_topo/network.uct", "/pst_and_topo/raoResult.json");
         List<CnecPreventive> cnecPreventives = cracResultsHelper.getPreventiveCnecs();
-        assertEquals(2, cnecPreventives.size());
-        CnecPreventive germanLine = cnecPreventives.stream()
-            .filter(cnecPreventive -> cnecPreventive.getCnecCommon().getName().equals("Line DE1 DE2"))
+        assertEquals(3, cnecPreventives.size());
+        CnecPreventive nlLine = cnecPreventives.stream()
+            .filter(cnecPreventive -> cnecPreventive.getCnecCommon().getCode().equals("NNL2AA1  NNL3AA1  1"))
             .findFirst()
             .orElseThrow();
-        assertEquals("Line DE1 DE2", germanLine.getCnecCommon().getName());
-        assertEquals("DDE1AA1  DDE2AA1  1", germanLine.getCnecCommon().getCode());
-        assertEquals("DE", germanLine.getCnecCommon().getAreaFrom());
-        assertEquals("DE", germanLine.getCnecCommon().getAreaTo());
-        assertEquals(564, germanLine.getI());
-        assertEquals(1500, germanLine.getiMax());
+        assertEquals("NL", nlLine.getCnecCommon().getAreaFrom());
+        assertEquals("NL", nlLine.getCnecCommon().getAreaTo());
+        assertEquals(818.1, nlLine.getI(), .1);
+        assertEquals(4000, nlLine.getiMax(), .1);
     }
 
     @Test
     void geMergedCnecsTest() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("cracWithMonitoredBranches.json", "raoResultMonitoredBranches.json");
-        Map<String, MergedCnec> mergedCnecs = cracResultsHelper.getMergedCnecs("Contingency FR1 FR3");
-        assertEquals(2, mergedCnecs.size());
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("/pst_and_topo/crac.xml", "/pst_and_topo/network.uct", "/pst_and_topo/raoResult.json");
+        Map<String, MergedCnec> mergedCnecs = cracResultsHelper.getMergedCnecs("outage_1");
+        assertEquals(1, mergedCnecs.size());
 
-        MergedCnec deDeMergedCnec = mergedCnecs.get("Line DE1 DE2");
-        assertEquals("Line DE1 DE2", deDeMergedCnec.getCnecCommon().getName());
-        assertEquals("DDE1AA1  DDE2AA1  1", deDeMergedCnec.getCnecCommon().getCode());
-        assertEquals("DE", deDeMergedCnec.getCnecCommon().getAreaFrom());
-        assertEquals("DE", deDeMergedCnec.getCnecCommon().getAreaTo());
-        assertEquals(583, deDeMergedCnec.getiAfterOutage());
-        assertEquals(1500, deDeMergedCnec.getiMaxAfterOutage());
-        assertEquals(583, deDeMergedCnec.getiAfterCra());
-        assertEquals(1500, deDeMergedCnec.getiMaxAfterCra());
-        assertEquals(0, deDeMergedCnec.getiAfterSps());
-        assertEquals(0, deDeMergedCnec.getiMaxAfterSps());
-
-        MergedCnec frDeMergedCnec = mergedCnecs.get("Tie-line FR DE");
-        assertEquals("Tie-line FR DE", frDeMergedCnec.getCnecCommon().getName());
-        assertEquals("FFR2AA1  DDE3AA1  1", frDeMergedCnec.getCnecCommon().getCode());
-        assertEquals("FR", frDeMergedCnec.getCnecCommon().getAreaFrom());
-        assertEquals("DE", frDeMergedCnec.getCnecCommon().getAreaTo());
-        assertEquals(1858, frDeMergedCnec.getiAfterOutage());
-        assertEquals(1500, frDeMergedCnec.getiMaxAfterOutage());
-        assertEquals(1858, frDeMergedCnec.getiAfterCra());
-        assertEquals(1500, frDeMergedCnec.getiMaxAfterCra());
-        assertEquals(1000, frDeMergedCnec.getiAfterSps());
-        assertEquals(1500, frDeMergedCnec.getiMaxAfterSps());
+        MergedCnec frFrMergedCnec = mergedCnecs.get("French line 1");
+        assertEquals("French line 1", frFrMergedCnec.getCnecCommon().getName());
+        assertEquals("FFR1AA1  FFR2AA1  1", frFrMergedCnec.getCnecCommon().getCode());
+        assertEquals("FR", frFrMergedCnec.getCnecCommon().getAreaFrom());
+        assertEquals("FR", frFrMergedCnec.getCnecCommon().getAreaTo());
+        assertEquals(50, frFrMergedCnec.getiAfterOutage(), .1);
+        assertEquals(4318, frFrMergedCnec.getiMaxAfterOutage(), .1);
+        assertEquals(Double.NaN, frFrMergedCnec.getiAfterCra(), .1);
+        assertEquals(3099, frFrMergedCnec.getiMaxAfterCra(), .1);
+        assertEquals(0, frFrMergedCnec.getiAfterSps(), .1);
+        assertEquals(0, frFrMergedCnec.getiMaxAfterSps(), .1);
     }
 
     @Test
     void mostLimitingElementTest() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("cracWithMonitoredBranches.json", "raoResultMonitoredBranches.json");
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("/pst_and_topo/crac.xml", "/pst_and_topo/network.uct", "/pst_and_topo/raoResult.json");
         FlowCnec worstCnec = cracResultsHelper.getWorstCnec();
-        assertEquals("Tie-line FR DE", worstCnec.getName());
+        assertEquals("French line 1", worstCnec.getName());
     }
 
-    private CracResultsHelper getCracResultsHelper(String cracPath, String raoResultPath) {
-        InputStream cracInputStream = getClass().getResourceAsStream(cracPath);
-        InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultPath);
-        Crac crac = CracImporters.importCrac("crac.json", cracInputStream);
-        RaoResult raoResult = new RaoResultImporter().importRaoResult(raoResultInputStream, crac);
-        return new CracResultsHelper(crac, raoResult, Mockito.mock(List.class));
+    private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) {
+        InputStream cracInputStream = getClass().getResourceAsStream(cracXmlFileName);
+        CseCracImporter importer = new CseCracImporter();
+        CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
+
+        Network network = Importers.loadNetwork(networkFileName, getClass().getResourceAsStream(networkFileName));
+
+        CseCracCreator cseCracCreator = new CseCracCreator();
+        CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
+
+        InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
+        RaoResult raoResult = new RaoResultImporter().importRaoResult(raoResultInputStream, cseCracCreationContext.getCrac());
+
+        return new CracResultsHelper(cseCracCreationContext, raoResult, new ArrayList<>());
     }
 }
