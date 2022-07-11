@@ -47,6 +47,10 @@ public class CracResultsHelper {
         return crac;
     }
 
+    public RaoResult getRaoResult() {
+        return raoResult;
+    }
+
     public CseCracCreationContext getCseCracCreationContext() {
         return cseCracCreationContext;
     }

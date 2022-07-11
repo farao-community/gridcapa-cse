@@ -54,14 +54,14 @@ class TtcResultTest {
             "2020-12-30T18:28Z",
             "secure_CGM_with_PRA.uct"
         );
-        InputStream cracInputStream = getClass().getResourceAsStream("/pst_and_topo/crac.xml");
+        InputStream cracInputStream = getClass().getResourceAsStream("pst_and_topo/crac.xml");
         CseCracImporter importer = new CseCracImporter();
         CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
 
-        Network network = Importers.loadNetwork("/pst_and_topo/network.uct", getClass().getResourceAsStream("/pst_and_topo/network.uct"));
+        Network network = Importers.loadNetwork("pst_and_topo/network.uct", getClass().getResourceAsStream("pst_and_topo/network.uct"));
         CseCracCreator cseCracCreator = new CseCracCreator();
         CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
-        RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream("/pst_and_topo/raoResult.json"), cseCracCreationContext.getCrac());
+        RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream("pst_and_topo/raoResult.json"), cseCracCreationContext.getCrac());
 
         cracResultsHelper = new CracResultsHelper(cseCracCreationContext, raoResult, new ArrayList<>());
     }
