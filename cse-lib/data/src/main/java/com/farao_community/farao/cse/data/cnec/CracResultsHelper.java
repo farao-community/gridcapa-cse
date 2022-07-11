@@ -135,7 +135,7 @@ public class CracResultsHelper {
                     cnecPrev.setI(flowCnecResult.getFlow());
                     cnecPrev.setiMax(flowCnecResult.getiMax());
                     FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(cnecPreventive, OptimizationState.INITIAL);
-                    cnecPrev.setiBeforeOptimisation(flowCnecResult1.getFlow());
+                    cnecPrev.setiBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
                     cnecPreventives.add(cnecPrev);
                 });
         return cnecPreventives;
@@ -170,7 +170,7 @@ public class CracResultsHelper {
                     mergedCnec.setiAfterOutage(flowCnecResult.getFlow());
                     mergedCnec.setiMaxAfterOutage(flowCnecResult.getiMax());
                     FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(cnec, OptimizationState.INITIAL);
-                    mergedCnec.setiAfterOutageBeforeOptimisation(flowCnecResult1.getFlow());
+                    mergedCnec.setiAfterOutageBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
 
                 } else if (cnec.getState().getInstant().equals(Instant.CURATIVE)) {
                     FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_CRA);

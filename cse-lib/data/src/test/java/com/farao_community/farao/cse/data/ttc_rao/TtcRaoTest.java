@@ -10,6 +10,7 @@ package com.farao_community.farao.cse.data.ttc_rao;
 import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.*;
 import com.farao_community.farao.data.crac_api.Crac;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
@@ -33,11 +34,13 @@ import java.util.stream.Collectors;
 class TtcRaoTest {
 
     private Crac crac;
+    CseCracCreationContext cracCreationContext = Mockito.mock(CseCracCreationContext.class);
 
     @BeforeEach
     void setUp() {
         String cracFilename = "crac-for-rao-result-v1.1.json";
         crac = CracImporters.importCrac(cracFilename, Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)));
+        Mockito.when(cracCreationContext.getCrac()).thenReturn(crac);
     }
 
     private void writeResult(CseRaoResult cseRaoResult, String name) throws JAXBException, FileNotFoundException {
@@ -49,7 +52,7 @@ class TtcRaoTest {
 
     private void assertEqualsXml(String raoResultFilename, String expectedResultFilename) throws JAXBException {
         RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream(raoResultFilename), crac);
-        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), raoResult, new CracResultsHelper(crac, raoResult, Mockito.mock(List.class)));
+        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), raoResult, new CracResultsHelper(cracCreationContext, raoResult, Mockito.mock(List.class)));
         assertEqualsXml(cseRaoResult, expectedResultFilename);
     }
 
