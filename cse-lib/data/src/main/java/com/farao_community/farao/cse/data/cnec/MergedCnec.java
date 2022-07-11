@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.cse.data.ttc_res;
+package com.farao_community.farao.cse.data.cnec;
 
 /**
  * @author Mohamed BenRejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
@@ -14,6 +14,7 @@ public class MergedCnec {
 
     private CnecCommon cnecCommon;
     private double iAfterOutage;
+    private double iAfterOutageBeforeOptimisation;
     private double iMaxAfterOutage;
     private double iAfterCra;
     private double iMaxAfterCra;
@@ -74,5 +75,13 @@ public class MergedCnec {
 
     public void setiMaxAfterSps(double iMaxAfterSps) {
         this.iMaxAfterSps = iMaxAfterSps;
+    }
+
+    public double getiAfterOutageBeforeOptimisation() {
+        return iAfterOutageBeforeOptimisation;
+    }
+
+    public void setiAfterOutageBeforeOptimisation(double iAfterOutageBeforeOptimisation) {
+        this.iAfterOutageBeforeOptimisation = iAfterOutageBeforeOptimisation;
     }
 }

@@ -1,0 +1,164 @@
+{
+  "type" : "CRAC",
+  "version" : "1.1",
+  "id": "LS_parade_pst_direct",
+  "name": "LS_parade_pst_direct",
+  "networkElementsNamePerId": {
+    "FFR1AA1  FFR3AA1  1" : "FFR1AA1  FFR3AA1  1",
+    "FFR2AA1  DDE3AA1  1" : "FFR2AA1  DDE3AA1  1",
+    "DDE1AA1  DDE2AA1  1" : "DDE1AA1  DDE2AA1  1",
+    "BBE2AA1  BBE3AA1  1" : "BBE2AA1  BBE3AA1  1"
+  },
+  "contingencies": [
+    {
+      "id": "Contingency FR1 FR3",
+      "name": "Contingency FR1 FR3",
+      "networkElementsIds": [
+        "FFR1AA1  FFR3AA1  1"
+      ]
+    }
+  ],
+  "flowCnecs": [
+    {
+      "id": "FFR2AA1  DDE3AA1  1 - curative - Contingency FR1 FR3",
+      "name": "Tie-line FR DE",
+      "networkElementId": "FFR2AA1  DDE3AA1  1",
+      "instant": "curative",
+      "contingencyId": "Contingency FR1 FR3",
+      "frm": 0.0,
+      "nominalV" : [380, 380],
+      "thresholds": [
+        {
+          "unit": "ampere",
+          "min": NaN,
+          "max": 1500.0,
+          "rule": "onLeftSide"
+        }
+      ]
+    },
+    {
+      "id": "DDE1AA1  DDE2AA1  1 - outage - Contingency FR1 FR3",
+      "name": "Line DE1 DE2",
+      "networkElementId": "DDE1AA1  DDE2AA1  1",
+      "contingencyId": "Contingency FR1 FR3",
+      "instant": "outage",
+      "frm": 0,
+      "nominalV" : [380, 380],
+      "thresholds": [
+        {
+          "unit": "ampere",
+          "min": -1500,
+          "max": NaN,
+          "rule": "onLeftSide"
+        }
+      ]
+    },
+    {
+      "id": "DDE1AA1  DDE2AA1  1 - curative - Contingency FR1 FR3",
+      "name": "Line DE1 DE2",
+      "networkElementId": "DDE1AA1  DDE2AA1  1",
+      "contingencyId": "Contingency FR1 FR3",
+      "instant": "curative",
+      "frm": 0,
+      "nominalV" : [380, 380],
+      "thresholds": [
+        {
+          "unit": "ampere",
+          "min": -1500,
+          "max": NaN,
+          "rule": "onLeftSide"
+        }
+      ]
+    },
+    {
+      "id": "DDE1AA1  DDE2AA1  1 - N - preventive",
+      "name": "Line DE1 DE2",
+      "networkElementId": "DDE1AA1  DDE2AA1  1",
+      "instant": "preventive",
+      "frm": 0,
+      "nominalV" : [380, 380],
+      "thresholds": [
+        {
+          "unit": "ampere",
+          "min": -1500,
+          "max": NaN,
+          "rule": "onLeftSide"
+        }
+      ]
+    },
+    {
+      "id": "FFR2AA1  DDE3AA1  1 - outage - Contingency FR1 FR3",
+      "name": "Tie-line FR DE",
+      "networkElementId": "FFR2AA1  DDE3AA1  1",
+      "contingencyId": "Contingency FR1 FR3",
+      "instant": "outage",
+      "frm": 0,
+      "nominalV" : [380, 380],
+      "thresholds": [
+        {
+          "unit": "ampere",
+          "min": -1500,
+          "max": 1500.0,
+          "rule": "onLeftSide"
+        }
+      ]
+    },
+    {
+      "id": "FFR2AA1  DDE3AA1  1 - auto - Contingency FR1 FR3",
+      "name": "Tie-line FR DE",
+      "networkElementId": "FFR2AA1  DDE3AA1  1",
+      "contingencyId": "Contingency FR1 FR3",
+      "instant": "auto",
+      "frm": 0,
+      "nominalV" : [380, 380],
+      "thresholds": [
+        {
+          "unit": "ampere",
+          "min": -1500,
+          "max": 1500.0,
+          "rule": "onLeftSide"
+        }
+      ]
+    },
+    {
+      "id": "FFR2AA1  DDE3AA1  1 - N - preventive",
+      "name": "Tie-line FR DE",
+      "networkElementId": "FFR2AA1  DDE3AA1  1",
+      "instant": "preventive",
+      "frm": 0,
+      "nominalV" : [380, 380],
+      "thresholds": [
+        {
+          "unit": "ampere",
+          "min": -1500,
+          "max": 1500.0,
+          "rule": "onLeftSide"
+        }
+      ]
+    }
+  ],
+  "pstRangeActions": [
+    {
+      "id": "PST1",
+      "name": "PST1",
+      "operator": "FR",
+      "freeToUseUsageRules": [
+        {
+          "usageMethod": "available",
+          "instant": "preventive"
+        }
+      ],
+      "networkElementId": "BBE2AA1  BBE3AA1  1",
+      "initialTap" : 0,
+      "tapToAngleConversionMap" : {"-1" : -0.5, "0" :  0, "1" : 0.5 },
+      "ranges": [
+        {
+          "min": 1.0,
+          "max": 33.0,
+          "rangeType": "absolute"
+        }
+      ]
+    }
+  ],
+  "networkActions": []
+}

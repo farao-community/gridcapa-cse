@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.cse.data.ttc_res;
+package com.farao_community.farao.cse.data.cnec;
 
 /**
  * @author Mohamed BenRejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
@@ -16,6 +16,9 @@ public class CnecCommon {
     private String code;
     private String areaFrom;
     private String areaTo;
+    private String nodeFrom;
+    private String nodeTo;
+    private String orderCode;
 
     public String getName() {
         return name;
@@ -47,5 +50,29 @@ public class CnecCommon {
 
     public void setAreaTo(String areaTo) {
         this.areaTo = areaTo;
+    }
+
+    public String getNodeFrom() {
+        return nodeFrom;
+    }
+
+    public void setNodeFrom(String nodeFrom) {
+        this.nodeFrom = nodeFrom;
+    }
+
+    public String getNodeTo() {
+        return nodeTo;
+    }
+
+    public void setNodeTo(String nodeTo) {
+        this.nodeTo = nodeTo;
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 }
