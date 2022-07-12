@@ -1,0 +1,25 @@
+{
+  "data": {
+    "type": "cse-request",
+    "id": "8e020dea-9772-4df7-a92d-7daf1d2fa371",
+    "attributes": {
+      "processType": "D2CC",
+      "targetProcessDateTime": 1.6305282E+9,
+      "cgmUrl": "http://minio:9000/gridcapa//CSE/IMPORT/D2CC/CGMs/20210901_2230_test_network.uct?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=gridcapa%2F20220706%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220706T063635Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=243128dfaf518cee777d8582037a787fe4c59eeb9de9490b7f00d7a83e36f63d",
+      "mergedCracUrl": "http://minio:9000/gridcapa//CSE/IMPORT/D2CC/CRACs/20210901_2230_213_CRAC_CO_CSE1.xml?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=gridcapa%2F20220706%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220706T063620Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3a4306ac875e0b5acb9ea5d72e469b23cd5378e3dbf2a919494b0d637a158891",
+      "mergedGlskUrl": "http://minio:9000/gridcapa//CSE/IMPORT/D2CC/GLSKs/20210901_2230_213_GSK_CO_CSE1.xml?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=gridcapa%2F20220706%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220706T063635Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=ef43043ebfcd39cc6714eb705aba696aac9f736db4eb99b118cdba5a9eb3e2e4",
+      "ntcReductionsUrl": "http://minio:9000/gridcapa//CSE/IMPORT/D2CC/NTCREDs/20210901_2D3_NTC_reductions_test.xml?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=gridcapa%2F20220706%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220706T063635Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=5d14734492c1ae29eb55b06d35ac302f3f1ffb77f0d6200a0ba49d5ae06dff1b",
+      "ntc2AtItUrl": null,
+      "ntc2ChItUrl": null,
+      "ntc2FrItUrl": null,
+      "ntc2SiItUrl": null,
+      "targetChUrl": "http://minio:9000/gridcapa//CSE/IMPORT/D2CC/TARGETCHs/20210101_target_ch_annual.xml?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=gridcapa%2F20220706%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220706T063628Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c4151bb109e3147d797667822c08699c46c64459ceb9f23313e069ce2828621e",
+      "vulcanusUrl": null,
+      "yearlyNtcUrl": "http://minio:9000/gridcapa//CSE/IMPORT/D2CC/NTC/2021_test_NTC_annual.xml?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=gridcapa%2F20220706%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220706T063621Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=b9c6a0a8bf031a4861171f2dd2296463b32afd1c1b24bc838bc1b0afb337ed20",
+      "forcedPrasIds": [],
+      "dichotomyPrecision": 50.0,
+      "initialDichotomyStep": 650.0,
+      "initialDichotomyIndex": null
+    }
+  }
+}
