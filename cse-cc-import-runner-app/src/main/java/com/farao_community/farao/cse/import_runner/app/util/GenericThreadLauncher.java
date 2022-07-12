@@ -15,8 +15,6 @@ import java.util.List;
 
 public class GenericThreadLauncher<T, U> extends Thread {
 
-    public static final String TASK_HAS_BEEN_INTERRUPTED = "The task has been interrupted";
-    private static final String NO_RESULT = "No result has been found";
     private T threadable;
     private Method run;
     private Object[] args;
@@ -30,9 +28,9 @@ public class GenericThreadLauncher<T, U> extends Thread {
         Class<T> actualTypeArgument = (Class<T>) threadable.getClass();
         List<Method> methods = getMethodsAnnotatedWith(actualTypeArgument, Threadable.class);
         if (methods.isEmpty()) {
-            throw new IllegalArgumentException("the class " + actualTypeArgument.getName() + " does not have his running method annoted with @Threadable");
+            throw new RuntimeException("the class " + actualTypeArgument.getName() + " does not have his running method annoted with @Threadable");
         } else if (methods.size() > 1) {
-            throw new IllegalArgumentException("the class " + actualTypeArgument.getName() + " must have only one method annoted with @Threadable");
+            throw new RuntimeException("the class " + actualTypeArgument.getName() + " must have only one method annoted with @Threadable");
         } else {
             this.run = methods.get(0);
         }
@@ -45,7 +43,6 @@ public class GenericThreadLauncher<T, U> extends Thread {
         this.start();
     }
 
-    @Override
     public void run() {
         setName(this.identifiant);
         try {
@@ -74,12 +71,14 @@ public class GenericThreadLauncher<T, U> extends Thread {
     }
 
     public static List<Method> getMethodsAnnotatedWith(final Class<?> type, final Class<? extends Annotation> annotation) {
-        final List<Method> methods = new ArrayList<>();
+        final List<Method> methods = new ArrayList<Method>();
         Class<?> klass = type;
         while (klass != Object.class) { // need to traverse a type hierarchy in order to process methods from super types
             // iterate though the list of methods declared in the class represented by klass variable, and add those annotated with the specified annotation
             for (final Method method : klass.getDeclaredMethods()) {
                 if (method.isAnnotationPresent(annotation)) {
+                    Annotation annotInstance = method.getAnnotation(annotation);
+                    // TODO process annotInstance
                     methods.add(method);
                 }
             }
@@ -89,11 +88,11 @@ public class GenericThreadLauncher<T, U> extends Thread {
         return methods;
     }
 
-    public U getResult() {
+    public U getResult() throws InterruptedException {
         if (this.isInterrupt) {
-            throw new IllegalStateException(TASK_HAS_BEEN_INTERRUPTED);
+            throw new InterruptedException("The task has been interrupted");
         } else if (result == null) {
-            throw new NullPointerException(NO_RESULT);
+            throw new RuntimeException("No result has been found");
         }
         return result;
     }
