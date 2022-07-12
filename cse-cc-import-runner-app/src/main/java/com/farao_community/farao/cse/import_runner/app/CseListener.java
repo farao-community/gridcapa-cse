@@ -8,6 +8,7 @@ package com.farao_community.farao.cse.import_runner.app;
 
 import com.farao_community.farao.cse.import_runner.app.configurations.AmqpConfiguration;
 import com.farao_community.farao.cse.import_runner.app.services.CseRunner;
+import com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncher;
 import com.farao_community.farao.cse.runner.api.JsonApiConverter;
 import com.farao_community.farao.cse.runner.api.exception.AbstractCseException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
@@ -59,9 +60,14 @@ public class CseListener implements MessageListener {
         try {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
-            CseResponse cseResponse = cseServer.run(cseRequest);
+            GenericThreadLauncher launcher = new GenericThreadLauncher<CseRunner, CseResponse>(cseServer, cseRequest.getId());
+            launcher.launch(cseRequest);
+            launcher.join();
+            CseResponse cseResponse = (CseResponse) launcher.getResult();
             LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
+        } catch (InterruptedException e) {
+            handleError(e, cseRequest.getId(), replyTo, correlationId);
         } catch (Exception e) {
             handleError(e, cseRequest.getId(), replyTo, correlationId);
         }
@@ -84,7 +90,12 @@ public class CseListener implements MessageListener {
     }
 
     private void sendErrorResponse(String requestId, AbstractCseException exception, String replyTo, String correlationId) {
-        streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
+
+        if (exception.getCause().getClass() == InterruptedException.class) {
+            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.INTERRUPTED));
+        } else {
+            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
+        }
         if (replyTo != null) {
             amqpTemplate.send(replyTo, createErrorResponse(exception, correlationId));
         } else {

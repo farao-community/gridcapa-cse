@@ -70,6 +70,11 @@ cse-cc-runner:
     response:
       destination: cse-response
       expiration: 60000
+    interrupt:
+      destination: cse-interrupt
+      routing-key: "#"
+      group: cse-idcc-interrupt
+    max-concurrent: 1
   whitelist:
     - http://minio:9000/
     - http://localhost:9000/
