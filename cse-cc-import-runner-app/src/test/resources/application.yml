@@ -55,7 +55,7 @@ cse-cc-runner:
     interrupt:
       destination: cse-interrupt
       routing-key: "#"
-      group: cse-idcc-interrupt
+      group: cse-runner
     max-concurrent: 1
   whitelist:
     - http://localhost:9000
