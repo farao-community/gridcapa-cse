@@ -66,6 +66,10 @@ public class CseListener implements MessageListener {
             CseResponse cseResponse = launcher.getResult();
             LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
+        } catch (InterruptedException e) {
+            handleError(e, cseRequest.getId(), replyTo, correlationId);
+            Thread.currentThread().interrupt();
+            //catch needed because of the "launcher.join()" or sonarqube is grumpy
         } catch (Exception e) {
             handleError(e, cseRequest.getId(), replyTo, correlationId);
         }
@@ -89,7 +93,7 @@ public class CseListener implements MessageListener {
 
     private void sendErrorResponse(String requestId, AbstractCseException exception, String replyTo, String correlationId) {
 
-        if (exception.getCause().getMessage().equals(GenericThreadLauncher.INTERRUPTED)) {
+        if (exception.getCause().getMessage().equals(GenericThreadLauncher.TASK_HAS_BEEN_INTERRUPTED)) {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.INTERRUPTED));
         } else {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));

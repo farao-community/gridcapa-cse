@@ -7,8 +7,6 @@
 package com.farao_community.farao.cse.import_runner.app;
 
 import com.farao_community.farao.cse.import_runner.app.configurations.AmqpInterruptConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,9 +15,6 @@ import java.util.Optional;
 
 @Component
 public class CseInterruptListener implements MessageListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CseInterruptListener.class);
-    private static final String TASK_STATUS_UPDATE = "task-status-update";
-
     private final AmqpTemplate amqpTemplate;
     private final AmqpInterruptConfiguration amqpConfiguration;
 
@@ -44,7 +39,7 @@ public class CseInterruptListener implements MessageListener {
         if (task.isPresent()) {
             task.get().interrupt();
         }
-        Message mess = MessageBuilder.withBody(new String("").getBytes())
+        Message mess = MessageBuilder.withBody("".getBytes())
                 .andProperties(buildMessageResponseProperties(correlationId))
                 .build();
 
