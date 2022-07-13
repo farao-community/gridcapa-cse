@@ -44,7 +44,7 @@ public class CseInterruptListener implements MessageListener {
         if (task.isPresent()) {
             task.get().interrupt();
         }
-        Message mess = MessageBuilder.withBody(new byte[1])
+        Message mess = MessageBuilder.withBody(new String("").getBytes())
                 .andProperties(buildMessageResponseProperties(correlationId))
                 .build();
 

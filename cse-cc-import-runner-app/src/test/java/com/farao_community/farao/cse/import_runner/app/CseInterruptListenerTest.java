@@ -1,7 +1,6 @@
 package com.farao_community.farao.cse.import_runner.app;
 
-import com.farao_community.farao.cse.import_runner.app.configurations.AmqpConfiguration;
-import com.farao_community.farao.cse.import_runner.app.services.CseRunner;
+import com.farao_community.farao.cse.import_runner.app.configurations.AmqpInterruptConfiguration;
 import com.farao_community.farao.cse.runner.api.JsonApiConverter;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessagePropertiesBuilder;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -18,19 +17,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.amqp.core.MessageBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-class CseListenerTest {
+class CseInterruptListenerTest {
 
     @MockBean
     private RabbitTemplate rabbitTemplate;
@@ -43,15 +41,13 @@ class CseListenerTest {
     @MockBean
     private StreamBridge streamBridge;
     @MockBean
-    private AmqpConfiguration amqpConfiguration;
+    private AmqpInterruptConfiguration amqpConfiguration;
 
-    @MockBean
-    private CseRunner cseServer;
     @MockBean
     private Logger businessLogger;
 
     @Autowired
-    CseListener cseListener;
+    CseInterruptListener cseListener;
 
     @BeforeEach
     public void setup() {
@@ -59,29 +55,15 @@ class CseListenerTest {
     }
 
     @Test
-    void testReceivedNewRequest() throws IOException {
+    void testReceivedNewInterruption() throws IOException {
         Message amqpMsg = createMessage();
-        Mockito.when(cseServer.run(any())).thenReturn(getCseResponse());
         Mockito.doNothing().when(messagingTemplate).send(any());
         cseListener.onMessage(amqpMsg);
         ArgumentCaptor<String> replyToArgument = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Message> messageArgument = ArgumentCaptor.forClass(Message.class);
         verify(rabbitTemplate).send(replyToArgument.capture(), messageArgument.capture());
         assertEquals("replyTo", replyToArgument.getValue());
-        assertEquals(new String(messageArgument.getValue().getBody()), getBodyResponseOK());
-    }
-
-    @Test
-    void testInterruption() throws IOException {
-        Message amqpMsg = createMessage();
-        Mockito.when(cseServer.run(any())).thenThrow(createInterruptException());
-        Mockito.doNothing().when(messagingTemplate).send(any());
-        cseListener.onMessage(amqpMsg);
-        ArgumentCaptor<String> replyToArgument = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<Message> messageArgument = ArgumentCaptor.forClass(Message.class);
-        verify(rabbitTemplate).send(replyToArgument.capture(), messageArgument.capture());
-        assertEquals("replyTo", replyToArgument.getValue());
-        assertEquals(new String(messageArgument.getValue().getBody()), getBodyResponseNOK());
+        assertEquals(new String(messageArgument.getValue().getBody()), new String(""));
     }
 
     private Message createMessage() throws IOException {

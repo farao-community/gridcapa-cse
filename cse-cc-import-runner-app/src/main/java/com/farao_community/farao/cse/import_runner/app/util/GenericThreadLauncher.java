@@ -15,6 +15,8 @@ import java.util.List;
 
 public class GenericThreadLauncher<T, U> extends Thread {
 
+    public static final String INTERRUPTED = "The task has been interrupted";
+    private static final String NO_RESULT = "No result has been found";
     private T threadable;
     private Method run;
     private Object[] args;
@@ -88,11 +90,11 @@ public class GenericThreadLauncher<T, U> extends Thread {
         return methods;
     }
 
-    public U getResult() throws InterruptedException {
+    public U getResult() {
         if (this.isInterrupt) {
-            throw new InterruptedException("The task has been interrupted");
+            throw new RuntimeException(INTERRUPTED);
         } else if (result == null) {
-            throw new RuntimeException("No result has been found");
+            throw new NullPointerException(NO_RESULT);
         }
         return result;
     }

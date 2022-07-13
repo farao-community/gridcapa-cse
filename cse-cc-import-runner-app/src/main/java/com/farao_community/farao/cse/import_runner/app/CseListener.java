@@ -60,14 +60,12 @@ public class CseListener implements MessageListener {
         try {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
-            GenericThreadLauncher launcher = new GenericThreadLauncher<CseRunner, CseResponse>(cseServer, cseRequest.getId());
+            GenericThreadLauncher <CseRunner, CseResponse> launcher = new GenericThreadLauncher<>(cseServer, cseRequest.getId());
             launcher.launch(cseRequest);
             launcher.join();
-            CseResponse cseResponse = (CseResponse) launcher.getResult();
+            CseResponse cseResponse = launcher.getResult();
             LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
-        } catch (InterruptedException e) {
-            handleError(e, cseRequest.getId(), replyTo, correlationId);
         } catch (Exception e) {
             handleError(e, cseRequest.getId(), replyTo, correlationId);
         }
@@ -91,7 +89,7 @@ public class CseListener implements MessageListener {
 
     private void sendErrorResponse(String requestId, AbstractCseException exception, String replyTo, String correlationId) {
 
-        if (exception.getCause().getClass() == InterruptedException.class) {
+        if (exception.getCause().getMessage().equals(GenericThreadLauncher.INTERRUPTED)) {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.INTERRUPTED));
         } else {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
