@@ -15,6 +15,7 @@ import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.gridcapa.task_manager.api.TaskStatus;
 import com.farao_community.farao.gridcapa.task_manager.api.TaskStatusUpdate;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -22,7 +23,11 @@ import org.springframework.amqp.core.*;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.*;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -38,6 +43,7 @@ public class CseListener implements MessageListener {
     private final JsonApiConverter jsonApiConverter;
     private final CseRunner cseServer;
     private final Logger businessLogger;
+    private Map<String, CompletableFuture<CseResponse>> futurs = new HashMap<>();
 
     public CseListener(AmqpTemplate amqpTemplate, StreamBridge streamBridge, AmqpConfiguration amqpConfiguration, CseRunner cseServer, Logger businessLogger) {
         this.amqpTemplate = amqpTemplate;
@@ -59,11 +65,17 @@ public class CseListener implements MessageListener {
         try {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
-            CseResponse cseResponse = cseServer.run(cseRequest);
+            Future<CseResponse> future = this.calculateAsync(cseServer, cseRequest);
+            CseResponse cseResponse = future.get();
             LOGGER.info("Cse response sent: {}", cseResponse);
             sendCseResponse(cseResponse, replyTo, correlationId);
+        } catch (InterruptedException e) {
+            handleError(e, cseRequest.getId(), replyTo, correlationId);
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             handleError(e, cseRequest.getId(), replyTo, correlationId);
+        } finally {
+            this.futurs.remove(cseRequest.getId());
         }
     }
 
@@ -84,7 +96,12 @@ public class CseListener implements MessageListener {
     }
 
     private void sendErrorResponse(String requestId, AbstractCseException exception, String replyTo, String correlationId) {
-        streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
+
+        if (exception.getCause().getClass().equals(CancellationException.class)) {
+            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.INTERRUPTED));
+        } else {
+            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
+        }
         if (replyTo != null) {
             amqpTemplate.send(replyTo, createErrorResponse(exception, correlationId));
         } else {
@@ -118,5 +135,27 @@ public class CseListener implements MessageListener {
                 .setExpiration(amqpConfiguration.getCseResponseExpiration())
                 .setPriority(1)
                 .build();
+    }
+
+    public Future<CseResponse> calculateAsync(CseRunner cseServer, CseRequest cseRequest) {
+
+        ExecutorService es = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+                .setNameFormat(cseRequest.getId())
+                .setThreadFactory(Executors.defaultThreadFactory())
+                .build());
+
+        CompletableFuture<CseResponse> futur = CompletableFuture.supplyAsync(() -> {
+            try {
+                return cseServer.run(cseRequest);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }, es);
+        this.futurs.put(cseRequest.getId(), futur);
+        return futur;
+    }
+
+    public Map<String, CompletableFuture<CseResponse>> getFuturs() {
+        return futurs;
     }
 }

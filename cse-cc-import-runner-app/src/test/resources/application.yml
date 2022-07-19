@@ -52,6 +52,11 @@ cse-cc-runner:
     response:
       destination: cse-response
       expiration: 60000
+    interrupt:
+      destination: cse-interrupt
+      routing-key: "#"
+      group: cse-runner
+    max-concurrent: 1
   whitelist:
     - http://localhost:9000
     - file:/

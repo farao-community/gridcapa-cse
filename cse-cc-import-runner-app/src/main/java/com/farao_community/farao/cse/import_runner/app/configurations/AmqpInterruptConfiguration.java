@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.cse.import_runner.app.configurations;
 
-import com.farao_community.farao.cse.import_runner.app.CseListener;
+import com.farao_community.farao.cse.import_runner.app.CseInterruptListener;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
@@ -18,45 +18,45 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Optional;
 
 /**
- * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
+ * @author Thieulin Sébastien {@literal <sebastien.thieulin at rte-france.com>}
  */
 @Configuration
-public class AmqpConfiguration {
+public class AmqpInterruptConfiguration {
 
     @Value("${cse-cc-runner.bindings.response.destination}")
     private String cseResponseDestination;
     @Value("${cse-cc-runner.bindings.response.expiration}")
     private String cseResponseExpiration;
-    @Value("${cse-cc-runner.bindings.request.destination}")
-    private String cseRequestDestination;
-    @Value("${cse-cc-runner.bindings.request.routing-key}")
-    private String cseRequestRoutingKey;
-    @Value("${cse-cc-runner.bindings.request.group}")
-    private String cseRequestGroup;
+    @Value("${cse-cc-runner.bindings.interrupt.destination}")
+    private String cseInterruptDestination;
+    @Value("${cse-cc-runner.bindings.interrupt.routing-key}")
+    private String cseInterruptRoutingKey;
+    @Value("${cse-cc-runner.bindings.interrupt.group}")
+    private String cseInterruptGroup;
 
     @Value("${cse-cc-runner.bindings.max-concurrent}")
     private String maxconcurrent;
 
     @Bean
-    public Queue cseRequestQueue() {
-        return new Queue(cseRequestDestination + "." + cseRequestGroup);
+    public Queue cseInterruptQueue() {
+        return new Queue(cseInterruptDestination + "." + cseInterruptGroup);
     }
 
     @Bean
-    public TopicExchange cseTopicExchange() {
-        return new TopicExchange(cseRequestDestination);
+    public TopicExchange cseInterruptTopicExchange() {
+        return new TopicExchange(cseInterruptDestination);
     }
 
     @Bean
-    public Binding cseRequestBinding() {
-        return BindingBuilder.bind(cseRequestQueue()).to(cseTopicExchange()).with(Optional.ofNullable(cseRequestRoutingKey).orElse("#"));
+    public Binding cseInterruptBinding() {
+        return BindingBuilder.bind(cseInterruptQueue()).to(cseInterruptTopicExchange()).with(Optional.ofNullable(cseInterruptRoutingKey).orElse("#"));
     }
 
     @Bean
-    public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory, Queue cseRequestQueue, CseListener listener) {
+    public MessageListenerContainer messageInterruptListenerContainer(ConnectionFactory connectionFactory, Queue cseInterruptQueue, CseInterruptListener listener) {
         SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
         simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
-        simpleMessageListenerContainer.setQueues(cseRequestQueue);
+        simpleMessageListenerContainer.setQueues(cseInterruptQueue);
         simpleMessageListenerContainer.setMessageListener(listener);
         simpleMessageListenerContainer.setPrefetchCount(1);
         simpleMessageListenerContainer.setConcurrency(maxconcurrent);
@@ -64,11 +64,11 @@ public class AmqpConfiguration {
     }
 
     @Bean
-    public FanoutExchange cseResponseExchange() {
+    public FanoutExchange cseInterruptResponseExchange() {
         return new FanoutExchange(cseResponseDestination);
     }
 
-    public String getCseResponseExpiration() {
+    public String getCseInterruptResponseExpiration() {
         return cseResponseExpiration;
     }
 }
