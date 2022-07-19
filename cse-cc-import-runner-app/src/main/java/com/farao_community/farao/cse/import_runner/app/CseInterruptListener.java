@@ -11,8 +11,6 @@ import org.springframework.amqp.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 public class CseInterruptListener implements MessageListener {
     private final AmqpTemplate amqpTemplate;
@@ -31,12 +29,7 @@ public class CseInterruptListener implements MessageListener {
         String replyTo = message.getMessageProperties().getReplyTo();
         String correlationId = message.getMessageProperties().getCorrelationId();
         String taskId = new String(message.getBody());
-        Optional<? extends Thread> task = Thread.getAllStackTraces()
-                .keySet()
-                .stream()
-                .filter(t -> t.getName().equals(taskId))
-                .findFirst();
-        if (task.isPresent()) {
+        if (cseListener.getFuturs().containsKey(taskId)) {
             cseListener.getFuturs().get(taskId).cancel(true);
         }
         Message mess = MessageBuilder.withBody("".getBytes())
