@@ -10,10 +10,16 @@ spring:
       reply-timeout: 2400000
   cloud:
     stream:
+      function: interruptionConsumer
       bindings:
         task-status-update:
           binder: rabbit
           destination: task-status-updated
+        interruptionConsumer-in-0 :
+          binder: rabbit
+          destination: cse-interrupt
+          group: cse-idcc-interrupt
+
 
 logback:
   amqp:
@@ -27,7 +33,7 @@ rao-runner-server:
 
 minio-adapter:
   bucket: gridcapa
-  base-path: ""
+  base-path:
   access-key: gridcapa
   secret-key: gridcapa
   url: http://minio:9000
