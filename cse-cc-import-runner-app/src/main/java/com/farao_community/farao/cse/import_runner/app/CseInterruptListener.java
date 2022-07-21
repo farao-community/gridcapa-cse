@@ -36,13 +36,10 @@ public class CseInterruptListener implements MessageListener {
         String replyTo = message.getMessageProperties().getReplyTo();
         String correlationId = message.getMessageProperties().getCorrelationId();
         String taskId = new String(message.getBody());
-        Optional<? extends Thread> task = Thread.getAllStackTraces()
-                .keySet()
-                .stream()
-                .filter(t -> t.getName().equals(taskId))
-                .findFirst();
-        if (task.isPresent()) {
-            task.get().interrupt();
+        Optional<Thread> thread = isRunning(taskId);
+        while (thread.isPresent()) {
+            thread.get().interrupt();
+            thread = isRunning(taskId);
         }
         Message mess = MessageBuilder.withBody(new byte[1])
                 .andProperties(buildMessageResponseProperties(correlationId))
@@ -61,5 +58,13 @@ public class CseInterruptListener implements MessageListener {
                 .setExpiration(amqpConfiguration.getCseInterruptResponseExpiration())
                 .setPriority(1)
                 .build();
+    }
+
+    private Optional<Thread> isRunning(String id) {
+        return Thread.getAllStackTraces()
+                .keySet()
+                .stream()
+                .filter(t -> t.getName().equals(id))
+                .findFirst();
     }
 }

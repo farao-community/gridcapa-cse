@@ -63,7 +63,7 @@ class CseInterruptListenerTest {
         ArgumentCaptor<Message> messageArgument = ArgumentCaptor.forClass(Message.class);
         verify(rabbitTemplate).send(replyToArgument.capture(), messageArgument.capture());
         assertEquals("replyTo", replyToArgument.getValue());
-        assertEquals(new String(messageArgument.getValue().getBody()), new String(""));
+        assertEquals(new String(messageArgument.getValue().getBody()), new String(new byte[] {0x00}));
     }
 
     private Message createMessage() throws IOException {
