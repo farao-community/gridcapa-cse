@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncher;
@@ -7,6 +14,7 @@ import com.farao_community.farao.cse.runner.api.exception.AbstractCseException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
+import com.farao_community.farao.cse.runner.api.resource.ThreadLauncherResult;
 import com.farao_community.farao.gridcapa.task_manager.api.TaskStatus;
 import com.farao_community.farao.gridcapa.task_manager.api.TaskStatusUpdate;
 import org.slf4j.Logger;
@@ -37,14 +45,19 @@ public class RequestService {
         try {
             updateStatusProducer.produce(new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
-            GenericThreadLauncher launcher = new GenericThreadLauncher<CseRunner, CseResponse>(cseServer, cseRequest.getId());
-            launcher.launch(cseRequest);
-            launcher.join();
-            CseResponse response = (CseResponse) launcher.getResult();
-            result = sendCseResponse(response);
-            LOGGER.info("Cse response sent: {}", response);
-        } catch (InterruptedException e) {
-            result = handleError(e, cseRequest.getId());
+            GenericThreadLauncher<CseRunner, CseResponse> launcher = new GenericThreadLauncher<>(cseServer, cseRequest.getId(), cseRequest);
+            launcher.start();
+            ThreadLauncherResult<CseResponse> cseResponse = launcher.getResult();
+            if (cseResponse.isHasError() && cseResponse.getException() != null) {
+                throw cseResponse.getException();
+            }
+            if (cseResponse.getResult().isPresent() && !cseResponse.isHasError()) {
+                result = sendCseResponse(cseResponse.getResult().get());
+                LOGGER.info("Cse response sent: {}", cseResponse.getResult().get());
+            } else {
+                LOGGER.info("CSE run has been interrupted");
+                result = sendCseResponse(new CseResponse(cseRequest.getId(), null, null));
+            }
         } catch (Exception e) {
             result = handleError(e, cseRequest.getId());
         }
@@ -53,7 +66,11 @@ public class RequestService {
     }
 
     private byte[] sendCseResponse(CseResponse cseResponse) {
-        updateStatusProducer.produce(new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));
+        if (cseResponse.getFinalCgmFileUrl() == null && cseResponse.getTtcFileUrl() == null) {
+            updateStatusProducer.produce(new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.INTERRUPTED));
+        } else {
+            updateStatusProducer.produce(new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));
+        }
         return jsonApiConverter.toJsonMessage(cseResponse, CseResponse.class);
     }
 

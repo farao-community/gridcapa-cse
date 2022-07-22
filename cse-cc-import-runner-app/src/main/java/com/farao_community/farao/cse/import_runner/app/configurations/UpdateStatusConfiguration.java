@@ -1,16 +1,18 @@
+/*
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package com.farao_community.farao.cse.import_runner.app.configurations;
 
 import com.farao_community.farao.cse.import_runner.app.util.UpdateStatusProducer;
-import com.farao_community.farao.gridcapa.task_manager.api.TaskStatusUpdate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
-import reactor.core.publisher.Sinks;
 
 @Configuration
 public class UpdateStatusConfiguration {
-
-    private Sinks.Many<Message<TaskStatusUpdate>> processor = Sinks.many().multicast().onBackpressureBuffer();
 
     @Bean("notification-producer")
     UpdateStatusProducer updateStatusProducer() {

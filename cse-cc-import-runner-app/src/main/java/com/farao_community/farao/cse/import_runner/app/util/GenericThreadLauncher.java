@@ -7,78 +7,72 @@
 
 package com.farao_community.farao.cse.import_runner.app.util;
 
-import java.lang.annotation.Annotation;
+import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import com.farao_community.farao.cse.runner.api.resource.ThreadLauncherResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GenericThreadLauncher<T, U> extends Thread {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenericThreadLauncher.class);
     private T threadable;
     private Method run;
     private Object[] args;
 
-    private final String identifiant;
+    private ThreadLauncherResult<U> result;
 
-    private U result;
-    private boolean isInterrupt = false;
-
-    public GenericThreadLauncher(T threadable, String identifiant) {
-        Class<T> actualTypeArgument = (Class<T>) threadable.getClass();
-        List<Method> methods = getMethodsAnnotatedWith(actualTypeArgument, Threadable.class);
-        if (methods.isEmpty()) {
-            throw new RuntimeException("the class " + actualTypeArgument.getName() + " does not have his running method annoted with @Threadable");
-        } else if (methods.size() > 1) {
-            throw new RuntimeException("the class " + actualTypeArgument.getName() + " must have only one method annoted with @Threadable");
-        } else {
-            this.run = methods.get(0);
-        }
+    public GenericThreadLauncher(T threadable, String id, Object... args) {
+        super(id);
+        this.run = getMethodAnnotatedWith(threadable.getClass());
         this.threadable = threadable;
-        this.identifiant = identifiant;
-    }
-
-    public void launch(Object... args) {
         this.args = args;
-        this.start();
     }
 
+    @Override
     public void run() {
-        setName(this.identifiant);
         try {
-            this.result = (U) this.run.invoke(threadable, args);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            checkInterrupt(e);
+            U resultat = (U) this.run.invoke(threadable, args);
+            this.result = new ThreadLauncherResult<>(Optional.ofNullable(resultat), false, null);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            LOGGER.error("Error occurred during CSE run", e);
+            this.result = new ThreadLauncherResult<>(Optional.ofNullable(null), true, e);
         }
-
     }
 
-    private void checkInterrupt(InvocationTargetException e) {
-        Throwable t = e.getTargetException();
-
-        while (t != null) {
-            if (t.getMessage().equals("interrupted")) {
-                this.isInterrupt = true;
-            }
-            t = t.getCause();
+    public ThreadLauncherResult<U> getResult() {
+        try {
+            join();
+        } catch (InterruptedException e) {
+            interrupt();
         }
-        if (!this.isInterrupt) {
-            throw new RuntimeException(e);
-        }
-
+        return result;
     }
 
-    public static List<Method> getMethodsAnnotatedWith(final Class<?> type, final Class<? extends Annotation> annotation) {
-        final List<Method> methods = new ArrayList<Method>();
+    private static Method getMethodAnnotatedWith(final Class<?> type) {
+        List<Method> methods = getMethodsAnnotatedWith(type);
+        if (methods.isEmpty()) {
+            throw new CseInternalException("the class " + type.getCanonicalName() + " does not have his running method annoted with @Threadable");
+        } else if (methods.size() > 1) {
+            throw new CseInternalException("the class " + type.getCanonicalName() + " must have only one method annoted with @Threadable");
+        } else {
+            return methods.get(0);
+        }
+    }
+
+    private static List<Method> getMethodsAnnotatedWith(final Class<?> type) {
+        final List<Method> methods = new ArrayList<>();
         Class<?> klass = type;
         while (klass != Object.class) { // need to traverse a type hierarchy in order to process methods from super types
             // iterate though the list of methods declared in the class represented by klass variable, and add those annotated with the specified annotation
             for (final Method method : klass.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(annotation)) {
-                    Annotation annotInstance = method.getAnnotation(annotation);
-                    // TODO process annotInstance
+                if (method.isAnnotationPresent(Threadable.class)) {
                     methods.add(method);
                 }
             }
@@ -86,14 +80,5 @@ public class GenericThreadLauncher<T, U> extends Thread {
             klass = klass.getSuperclass();
         }
         return methods;
-    }
-
-    public U getResult() throws InterruptedException {
-        if (this.isInterrupt) {
-            throw new InterruptedException("The task has been interrupted");
-        } else if (result == null) {
-            throw new RuntimeException("No result has been found");
-        }
-        return result;
     }
 }
