@@ -127,16 +127,15 @@ public class CracResultsHelper {
             .forEach(branchCnecCreationContext -> {
                 CnecCommon cnecCommon = new CnecCommon();
                 cnecCommon.setName(branchCnecCreationContext.getNativeId());
-                FlowCnec flowCnecPrev = crac.getFlowCnec(branchCnecCreationContext.getCreatedCnecsIds().get(Instant.PREVENTIVE));
-                NetworkElement networkElementPrev = flowCnecPrev.getNetworkElement();
-                cnecCommon.setCode(networkElementPrev.getName());
-                cnecCommon.setAreaFrom(getAreaFrom(networkElementPrev));
-                cnecCommon.setAreaTo(getAreaTo(networkElementPrev));
-                cnecCommon.setOrderCode(getOrderCode(networkElementPrev));
+                cnecCommon.setCode(branchCnecCreationContext.getNativeBranch().getFrom() + " " + branchCnecCreationContext.getNativeBranch().getTo()  + " " + branchCnecCreationContext.getNativeBranch().getSuffix());
+                cnecCommon.setAreaFrom(getAreaFrom(branchCnecCreationContext.getNativeBranch().getFrom(), branchCnecCreationContext.getNativeBranch().getTo()));
+                cnecCommon.setAreaTo(getAreaTo(branchCnecCreationContext.getNativeBranch().getFrom(), branchCnecCreationContext.getNativeBranch().getTo()));
+                cnecCommon.setOrderCode(branchCnecCreationContext.getNativeBranch().getSuffix());
                 cnecCommon.setNodeFrom(branchCnecCreationContext.getNativeBranch().getFrom());
                 cnecCommon.setNodeTo(branchCnecCreationContext.getNativeBranch().getTo());
                 CnecPreventive cnecPrev = new CnecPreventive();
                 cnecPrev.setCnecCommon(cnecCommon);
+                FlowCnec flowCnecPrev = crac.getFlowCnec(branchCnecCreationContext.getCreatedCnecsIds().get(Instant.PREVENTIVE));
                 FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.AFTER_PRA);
                 cnecPrev.setI(flowCnecResult.getFlow());
                 cnecPrev.setiMax(flowCnecResult.getiMax());
@@ -150,50 +149,46 @@ public class CracResultsHelper {
     public Map<String, MergedCnec> getMergedCnecs(String contingencyId) {
         Map<String, MergedCnec> mergedCnecs = new HashMap<>();
         List<BranchCnecCreationContext> branchCnecCreationContexts = getMonitoredBranchesForOutage(contingencyId);
-        branchCnecCreationContexts.forEach(branchCnecCreationContext -> branchCnecCreationContext.getCreatedCnecsIds().forEach((instant, createdCnecId) -> {
-            FlowCnec flowCnec = crac.getFlowCnec(createdCnecId);
-            MergedCnec mergedCnec;
-            if (!mergedCnecs.containsKey(branchCnecCreationContext.getNativeId())) {
-                mergedCnec = new MergedCnec();
-                CnecCommon cnecCommon = new CnecCommon();
-                cnecCommon.setName(branchCnecCreationContext.getNativeId());
-                NetworkElement networkElement = flowCnec.getNetworkElement();
-                cnecCommon.setCode(networkElement.getName());
-                cnecCommon.setAreaFrom(getAreaFrom(networkElement));
-                cnecCommon.setAreaTo(getAreaTo(networkElement));
-                cnecCommon.setNodeFrom(branchCnecCreationContext.getNativeBranch().getFrom());
-                cnecCommon.setNodeTo(branchCnecCreationContext.getNativeBranch().getTo());
-                cnecCommon.setOrderCode(getOrderCode(networkElement));
-                mergedCnec.setCnecCommon(cnecCommon);
-                mergedCnecs.put(branchCnecCreationContext.getNativeId(), mergedCnec);
-            } else {
-                mergedCnec = mergedCnecs.get(branchCnecCreationContext.getNativeId());
-            }
+        branchCnecCreationContexts.forEach(branchCnecCreationContext -> {
+            MergedCnec mergedCnec = new MergedCnec();
+            CnecCommon cnecCommon = new CnecCommon();
+            cnecCommon.setName(branchCnecCreationContext.getNativeId());
+            cnecCommon.setCode(branchCnecCreationContext.getNativeBranch().getFrom() + " " + branchCnecCreationContext.getNativeBranch().getTo() + " " + branchCnecCreationContext.getNativeBranch().getSuffix());
+            cnecCommon.setAreaFrom(getAreaFrom(branchCnecCreationContext.getNativeBranch().getFrom(), branchCnecCreationContext.getNativeBranch().getTo()));
+            cnecCommon.setAreaTo(getAreaTo(branchCnecCreationContext.getNativeBranch().getFrom(), branchCnecCreationContext.getNativeBranch().getTo()));
+            cnecCommon.setNodeFrom(branchCnecCreationContext.getNativeBranch().getFrom());
+            cnecCommon.setNodeTo(branchCnecCreationContext.getNativeBranch().getTo());
+            cnecCommon.setOrderCode(branchCnecCreationContext.getNativeBranch().getSuffix());
+            mergedCnec.setCnecCommon(cnecCommon);
+            mergedCnecs.put(branchCnecCreationContext.getNativeId(), mergedCnec);
 
-            FlowCnecResult flowCnecResult;
-            switch (instant) {
-                case OUTAGE:
-                    flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
-                    mergedCnec.setiAfterOutage(flowCnecResult.getFlow());
-                    mergedCnec.setiMaxAfterOutage(flowCnecResult.getiMax());
-                    FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnec, OptimizationState.INITIAL);
-                    mergedCnec.setiAfterOutageBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
-                    break;
-                case CURATIVE:
-                    flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_CRA);
-                    mergedCnec.setiAfterCra(flowCnecResult.getFlow());
-                    mergedCnec.setiMaxAfterCra(flowCnecResult.getiMax());
-                    break;
-                case AUTO:
-                    flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
-                    mergedCnec.setiAfterSps(flowCnecResult.getFlow());
-                    mergedCnec.setiMaxAfterSps(flowCnecResult.getiMax());
-                    break;
+            branchCnecCreationContext.getCreatedCnecsIds().forEach((instant, createdCnecId) -> {
+                FlowCnec flowCnec = crac.getFlowCnec(createdCnecId);
+                FlowCnecResult flowCnecResult;
+                switch (instant) {
+                    case OUTAGE:
+                        flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
+                        mergedCnec.setiAfterOutage(flowCnecResult.getFlow());
+                        mergedCnec.setiMaxAfterOutage(flowCnecResult.getiMax());
+                        FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnec, OptimizationState.INITIAL);
+                        mergedCnec.setiAfterOutageBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
+                        break;
+                    case CURATIVE:
+                        flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_CRA);
+                        mergedCnec.setiAfterCra(flowCnecResult.getFlow());
+                        mergedCnec.setiMaxAfterCra(flowCnecResult.getiMax());
+                        break;
+                    case AUTO:
+                        flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
+                        mergedCnec.setiAfterSps(flowCnecResult.getFlow());
+                        mergedCnec.setiMaxAfterSps(flowCnecResult.getiMax());
+                        break;
 
-                default:
-                    throw new CseDataException("Couldn't find Cnec type in cnec Id : " + flowCnec.getId());
-            }
-        }));
+                    default:
+                        throw new CseDataException("Couldn't find Cnec type in cnec Id : " + flowCnec.getId());
+                }
+            });
+        });
         return mergedCnecs;
     }
 
@@ -223,12 +218,24 @@ public class CracResultsHelper {
         return new FlowCnecResult(flow, iMax);
     }
 
+    public String getAreaFrom(String nodeFrom, String nodeTo) {
+        String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
+        String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
+        return getCountryOfNode(nodeFrom, countryFrom, countryTo);
+    }
+
     public String getAreaFrom(NetworkElement networkElement) {
         String nodeFrom = getNodeFrom(networkElement);
         String nodeTo = getNodeTo(networkElement);
         String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
         return getCountryOfNode(nodeFrom, countryFrom, countryTo);
+    }
+
+    public String getAreaTo(String nodeFrom, String nodeTo) {
+        String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
+        String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
+        return getCountryOfNode(nodeTo, countryTo, countryFrom);
     }
 
     public String getAreaTo(NetworkElement networkElement) {

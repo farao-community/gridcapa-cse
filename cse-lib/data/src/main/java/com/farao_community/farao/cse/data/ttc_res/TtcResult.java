@@ -369,7 +369,8 @@ public final class TtcResult {
     }
 
     private static void fillNotPreventiveCnecs(CracResultsHelper cracResultsHelper, Results results) {
-        List<CseOutageCreationContext> cseOutageCreationContexts = cracResultsHelper.getCseCracCreationContext().getOutageCreationContexts().stream().filter(ElementaryCreationContext::isImported).collect(Collectors.toList());
+        List<CseOutageCreationContext> cseOutageCreationContexts = cracResultsHelper.getCseCracCreationContext().getOutageCreationContexts().stream()
+            .filter(ElementaryCreationContext::isImported).collect(Collectors.toList());
         cseOutageCreationContexts.forEach(cseOutageCreationContext -> {
             CriticalBranch criticalBranch = new CriticalBranch();
             Outage outage = new Outage();
