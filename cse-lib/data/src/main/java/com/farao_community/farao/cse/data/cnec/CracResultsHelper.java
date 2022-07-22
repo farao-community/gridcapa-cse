@@ -23,7 +23,6 @@ import com.powsybl.ucte.network.UcteCountryCode;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Mohamed BenRejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
@@ -63,16 +62,16 @@ public class CracResultsHelper {
 
     public List<String> getPreventivePstRangeActionIds() {
         return raoResult.getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream()
-                .filter(PstRangeAction.class::isInstance)
-                .map(Identifiable::getId)
-                .collect(Collectors.toList());
+            .filter(PstRangeAction.class::isInstance)
+            .map(Identifiable::getId)
+            .collect(Collectors.toList());
     }
 
     public List<String> getPreventiveHvdcRangeActionIds() {
         return raoResult.getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream()
-                .filter(InjectionRangeAction.class::isInstance)
-                .map(Identifiable::getId)
-                .collect(Collectors.toList());
+            .filter(InjectionRangeAction.class::isInstance)
+            .map(Identifiable::getId)
+            .collect(Collectors.toList());
     }
 
     public int getTapOfPstRangeActionInPreventive(String pstRangeActionId) {
@@ -121,75 +120,80 @@ public class CracResultsHelper {
 
     public List<CnecPreventive> getPreventiveCnecs() {
         List<CnecPreventive> cnecPreventives = new ArrayList<>();
-        crac.getFlowCnecs(crac.getPreventiveState())
-                .stream()
-                .sorted(Comparator.comparing(FlowCnec::getName))
-                .forEach(cnecPreventive -> {
-                    CnecCommon cnecCommon = new CnecCommon();
-                    cnecCommon.setName(cnecPreventive.getName());
-                    cnecCommon.setCode(cnecPreventive.getNetworkElement().getName());
-                    cnecCommon.setAreaFrom(getAreaFrom(cnecPreventive.getNetworkElement()));
-                    cnecCommon.setAreaTo(getAreaTo(cnecPreventive.getNetworkElement()));
-                    cnecCommon.setOrderCode(getOrderCode(cnecPreventive.getNetworkElement()));
-                    cnecCommon.setNodeFrom(getNodeFrom(cnecPreventive.getNetworkElement()));
-                    cnecCommon.setNodeTo(getNodeTo(cnecPreventive.getNetworkElement()));
-                    CnecPreventive cnecPrev = new CnecPreventive();
-                    cnecPrev.setCnecCommon(cnecCommon);
-                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnecPreventive, OptimizationState.AFTER_PRA);
-                    cnecPrev.setI(flowCnecResult.getFlow());
-                    cnecPrev.setiMax(flowCnecResult.getiMax());
-                    FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(cnecPreventive, OptimizationState.INITIAL);
-                    cnecPrev.setiBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
-                    cnecPreventives.add(cnecPrev);
-                });
+        cseCracCreationContext.getBranchCnecCreationContexts().stream()
+            .filter(ElementaryCreationContext::isImported)
+            .filter(branchCnecCreationContext -> branchCnecCreationContext.getCreatedCnecsIds().containsKey(Instant.PREVENTIVE))
+            .sorted(Comparator.comparing(BranchCnecCreationContext::getNativeId))
+            .forEach(branchCnecCreationContext -> {
+                CnecCommon cnecCommon = new CnecCommon();
+                cnecCommon.setName(branchCnecCreationContext.getNativeId());
+                FlowCnec flowCnecPrev = crac.getFlowCnec(branchCnecCreationContext.getCreatedCnecsIds().get(Instant.PREVENTIVE));
+                NetworkElement networkElementPrev = flowCnecPrev.getNetworkElement();
+                cnecCommon.setCode(networkElementPrev.getName());
+                cnecCommon.setAreaFrom(getAreaFrom(networkElementPrev));
+                cnecCommon.setAreaTo(getAreaTo(networkElementPrev));
+                cnecCommon.setOrderCode(getOrderCode(networkElementPrev));
+                cnecCommon.setNodeFrom(branchCnecCreationContext.getNativeBranch().getFrom());
+                cnecCommon.setNodeTo(branchCnecCreationContext.getNativeBranch().getTo());
+                CnecPreventive cnecPrev = new CnecPreventive();
+                cnecPrev.setCnecCommon(cnecCommon);
+                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.AFTER_PRA);
+                cnecPrev.setI(flowCnecResult.getFlow());
+                cnecPrev.setiMax(flowCnecResult.getiMax());
+                FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.INITIAL);
+                cnecPrev.setiBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
+                cnecPreventives.add(cnecPrev);
+            });
         return cnecPreventives;
     }
 
     public Map<String, MergedCnec> getMergedCnecs(String contingencyId) {
         Map<String, MergedCnec> mergedCnecs = new HashMap<>();
         List<BranchCnecCreationContext> branchCnecCreationContexts = getMonitoredBranchesForOutage(contingencyId);
+        branchCnecCreationContexts.forEach(branchCnecCreationContext -> branchCnecCreationContext.getCreatedCnecsIds().forEach((instant, createdCnecId) -> {
+            FlowCnec flowCnec = crac.getFlowCnec(createdCnecId);
+            MergedCnec mergedCnec;
+            if (!mergedCnecs.containsKey(branchCnecCreationContext.getNativeId())) {
+                mergedCnec = new MergedCnec();
+                CnecCommon cnecCommon = new CnecCommon();
+                cnecCommon.setName(branchCnecCreationContext.getNativeId());
+                NetworkElement networkElement = flowCnec.getNetworkElement();
+                cnecCommon.setCode(networkElement.getName());
+                cnecCommon.setAreaFrom(getAreaFrom(networkElement));
+                cnecCommon.setAreaTo(getAreaTo(networkElement));
+                cnecCommon.setNodeFrom(branchCnecCreationContext.getNativeBranch().getFrom());
+                cnecCommon.setNodeTo(branchCnecCreationContext.getNativeBranch().getTo());
+                cnecCommon.setOrderCode(getOrderCode(networkElement));
+                mergedCnec.setCnecCommon(cnecCommon);
+                mergedCnecs.put(branchCnecCreationContext.getNativeId(), mergedCnec);
+            } else {
+                mergedCnec = mergedCnecs.get(branchCnecCreationContext.getNativeId());
+            }
 
-        branchCnecCreationContexts.forEach(branchCnecCreationContext -> {
-            List<FlowCnec> flowCnecs = Stream.of(branchCnecCreationContext.getCreatedCnecsIds()).flatMap(x -> x.values().stream()).map(crac::getFlowCnec).collect(Collectors.toList());
-            flowCnecs.forEach(cnec -> {
-
-                MergedCnec mergedCnec;
-                if (!mergedCnecs.containsKey(cnec.getName())) {
-                    mergedCnec = new MergedCnec();
-                    CnecCommon cnecCommon = new CnecCommon();
-                    cnecCommon.setName(branchCnecCreationContext.getNativeId());
-                    cnecCommon.setCode(cnec.getNetworkElement().getName());
-                    cnecCommon.setAreaFrom(getAreaFrom(cnec.getNetworkElement()));
-                    cnecCommon.setAreaTo(getAreaTo(cnec.getNetworkElement()));
-                    cnecCommon.setNodeFrom(getNodeFrom(cnec.getNetworkElement()));
-                    cnecCommon.setNodeTo(getNodeTo(cnec.getNetworkElement()));
-                    cnecCommon.setOrderCode(getOrderCode(cnec.getNetworkElement()));
-                    mergedCnec.setCnecCommon(cnecCommon);
-                    mergedCnecs.put(cnec.getName(), mergedCnec);
-                } else {
-                    mergedCnec = mergedCnecs.get(cnec.getName());
-                }
-                if (cnec.getState().getInstant().equals(Instant.OUTAGE)) {
-                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_PRA);
+            FlowCnecResult flowCnecResult;
+            switch (instant) {
+                case OUTAGE:
+                    flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
                     mergedCnec.setiAfterOutage(flowCnecResult.getFlow());
                     mergedCnec.setiMaxAfterOutage(flowCnecResult.getiMax());
-                    FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(cnec, OptimizationState.INITIAL);
+                    FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnec, OptimizationState.INITIAL);
                     mergedCnec.setiAfterOutageBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
-
-                } else if (cnec.getState().getInstant().equals(Instant.CURATIVE)) {
-                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_CRA);
+                    break;
+                case CURATIVE:
+                    flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_CRA);
                     mergedCnec.setiAfterCra(flowCnecResult.getFlow());
                     mergedCnec.setiMaxAfterCra(flowCnecResult.getiMax());
-                } else if (cnec.getState().getInstant().equals(Instant.AUTO)) {
-                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(cnec, OptimizationState.AFTER_PRA);
+                    break;
+                case AUTO:
+                    flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
                     mergedCnec.setiAfterSps(flowCnecResult.getFlow());
                     mergedCnec.setiMaxAfterSps(flowCnecResult.getiMax());
-                } else {
-                    throw new CseDataException("Couldn't find Cnec type in cnec Id : " + cnec.getId());
-                }
-            });
+                    break;
 
-        });
+                default:
+                    throw new CseDataException("Couldn't find Cnec type in cnec Id : " + flowCnec.getId());
+            }
+        }));
         return mergedCnecs;
     }
 

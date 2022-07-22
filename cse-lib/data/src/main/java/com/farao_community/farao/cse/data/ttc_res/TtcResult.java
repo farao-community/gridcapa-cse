@@ -15,7 +15,9 @@ import com.farao_community.farao.cse.data.xsd.ttc_res.*;
 import com.farao_community.farao.data.crac_api.Contingency;
 import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
+import com.farao_community.farao.data.crac_creation.creator.api.ElementaryCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.cse.outage.CseOutageCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CsePstCreationContext;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
@@ -25,6 +27,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -366,14 +369,15 @@ public final class TtcResult {
     }
 
     private static void fillNotPreventiveCnecs(CracResultsHelper cracResultsHelper, Results results) {
-        Set<Contingency> contingencies = cracResultsHelper.getCrac().getContingencies();
-        contingencies.forEach(contingency -> {
+        List<CseOutageCreationContext> cseOutageCreationContexts = cracResultsHelper.getCseCracCreationContext().getOutageCreationContexts().stream().filter(ElementaryCreationContext::isImported).collect(Collectors.toList());
+        cseOutageCreationContexts.forEach(cseOutageCreationContext -> {
             CriticalBranch criticalBranch = new CriticalBranch();
             Outage outage = new Outage();
             Name outageName = new Name();
-            outageName.setV(contingency.getName());
+            outageName.setV(cseOutageCreationContext.getNativeId());
             outage.setName(outageName);
             MonitoredElement monitoredElement = new MonitoredElement();
+            Contingency contingency = cracResultsHelper.getCrac().getContingency(cseOutageCreationContext.getCreatedContingencyId());
             contingency.getNetworkElements().forEach(contingencyNetworkElement -> {
                 Element outageElement = new Element();
                 Code outageElementCode = new Code();
@@ -386,48 +390,46 @@ public final class TtcResult {
                 outageElement.setAreafrom(outageAreaFrom);
                 outageElement.setAreato(outageAreaTo);
                 outage.getElement().add(outageElement);
-                Map<String, MergedCnec> mergedMonitoredCnecs = cracResultsHelper.getMergedCnecs(contingency.getId());
+            });
 
-                mergedMonitoredCnecs.values().forEach(mergedCnec -> {
-                    Element monitoredBranchElement = new Element();
-                    fillCommonElementInformation(monitoredBranchElement, mergedCnec.getCnecCommon().getName(), mergedCnec.getCnecCommon().getCode(),
-                        mergedCnec.getCnecCommon().getAreaFrom(), mergedCnec.getCnecCommon().getAreaTo());
+            Map<String, MergedCnec> mergedMonitoredCnecs = cracResultsHelper.getMergedCnecs(contingency.getId());
+            mergedMonitoredCnecs.values().forEach(mergedCnec -> {
+                Element monitoredBranchElement = new Element();
+                fillCommonElementInformation(monitoredBranchElement, mergedCnec.getCnecCommon().getName(), mergedCnec.getCnecCommon().getCode(),
+                    mergedCnec.getCnecCommon().getAreaFrom(), mergedCnec.getCnecCommon().getAreaTo());
+                if (mergedCnec.getiMaxAfterOutage() != 0) {
+                    IAfterOutage iAfterOutage = new IAfterOutage();
+                    iAfterOutage.setV(BigInteger.valueOf((int) mergedCnec.getiAfterOutage()));
+                    iAfterOutage.setUnit(FLOW_UNIT);
+                    monitoredBranchElement.setIAfterOutage(iAfterOutage);
+                    ImaxAfterOutage imaxAfterOutage = new ImaxAfterOutage();
+                    imaxAfterOutage.setV(BigInteger.valueOf((int) mergedCnec.getiMaxAfterOutage()));
+                    imaxAfterOutage.setUnit(FLOW_UNIT);
+                    monitoredBranchElement.setImaxAfterOutage(imaxAfterOutage);
+                }
+                if (mergedCnec.getiMaxAfterCra() != 0) {
+                    IAfterCRA iAfterCRA = new IAfterCRA();
+                    iAfterCRA.setV(BigInteger.valueOf((int) mergedCnec.getiAfterCra()));
+                    iAfterCRA.setUnit(FLOW_UNIT);
+                    monitoredBranchElement.setIAfterCRA(iAfterCRA);
+                    ImaxAfterCRA imaxAfterCRA = new ImaxAfterCRA();
+                    imaxAfterCRA.setV(BigInteger.valueOf((int) mergedCnec.getiMaxAfterCra()));
+                    imaxAfterCRA.setUnit(FLOW_UNIT);
+                    monitoredBranchElement.setImaxAfterCRA(imaxAfterCRA);
+                }
 
-                    if (mergedCnec.getiMaxAfterOutage() != 0) {
-                        IAfterOutage iAfterOutage = new IAfterOutage();
-                        iAfterOutage.setV(BigInteger.valueOf((int) mergedCnec.getiAfterOutage()));
-                        iAfterOutage.setUnit(FLOW_UNIT);
-                        monitoredBranchElement.setIAfterOutage(iAfterOutage);
-                        ImaxAfterOutage imaxAfterOutage = new ImaxAfterOutage();
-                        imaxAfterOutage.setV(BigInteger.valueOf((int) mergedCnec.getiMaxAfterOutage()));
-                        imaxAfterOutage.setUnit(FLOW_UNIT);
-                        monitoredBranchElement.setImaxAfterOutage(imaxAfterOutage);
-                    }
+                if (mergedCnec.getiMaxAfterSps() != 0) {
+                    IAfterSPS iAfterSps = new IAfterSPS();
+                    iAfterSps.setV(BigInteger.valueOf((int) mergedCnec.getiAfterSps()));
+                    iAfterSps.setUnit(FLOW_UNIT);
+                    monitoredBranchElement.setIAfterSPS(iAfterSps);
+                    ImaxAfterSPS imaxAfterSps = new ImaxAfterSPS();
+                    imaxAfterSps.setV(BigInteger.valueOf((int) mergedCnec.getiMaxAfterSps()));
+                    imaxAfterSps.setUnit(FLOW_UNIT);
+                    monitoredBranchElement.setImaxAfterSPS(imaxAfterSps);
+                }
 
-                    if (mergedCnec.getiMaxAfterCra() != 0) {
-                        IAfterCRA iAfterCRA = new IAfterCRA();
-                        iAfterCRA.setV(BigInteger.valueOf((int) mergedCnec.getiAfterCra()));
-                        iAfterCRA.setUnit(FLOW_UNIT);
-                        monitoredBranchElement.setIAfterCRA(iAfterCRA);
-                        ImaxAfterCRA imaxAfterCRA = new ImaxAfterCRA();
-                        imaxAfterCRA.setV(BigInteger.valueOf((int) mergedCnec.getiMaxAfterCra()));
-                        imaxAfterCRA.setUnit(FLOW_UNIT);
-                        monitoredBranchElement.setImaxAfterCRA(imaxAfterCRA);
-                    }
-
-                    if (mergedCnec.getiMaxAfterSps() != 0) {
-                        IAfterSPS iAfterSps = new IAfterSPS();
-                        iAfterSps.setV(BigInteger.valueOf((int) mergedCnec.getiAfterSps()));
-                        iAfterSps.setUnit(FLOW_UNIT);
-                        monitoredBranchElement.setIAfterSPS(iAfterSps);
-                        ImaxAfterSPS imaxAfterSps = new ImaxAfterSPS();
-                        imaxAfterSps.setV(BigInteger.valueOf((int) mergedCnec.getiMaxAfterSps()));
-                        imaxAfterSps.setUnit(FLOW_UNIT);
-                        monitoredBranchElement.setImaxAfterSPS(imaxAfterSps);
-                    }
-
-                    monitoredElement.getElement().add(monitoredBranchElement);
-                });
+                monitoredElement.getElement().add(monitoredBranchElement);
             });
             criticalBranch.setOutage(outage);
             criticalBranch.setMonitoredElement(monitoredElement);
