@@ -14,7 +14,7 @@ public class InterruptConfiguration {
     InterruptionService interruptionService;
 
     @Bean
-    public Consumer<String> interruptionConsumer () {
-        return (taskId) -> interruptionService.interruption(taskId);
+    public Consumer<String> interruptionConsumer() {
+        return taskId -> interruptionService.interruption(taskId);
     }
 }

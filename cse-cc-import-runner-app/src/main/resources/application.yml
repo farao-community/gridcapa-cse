@@ -1,3 +1,5 @@
+server:
+  port: 8082
 spring:
   application:
     name: cse-cc-runner
@@ -10,15 +12,27 @@ spring:
       reply-timeout: 2400000
   cloud:
     stream:
-      function: interruptionConsumer
+      function:
+        definition: interruptionConsumer;requestProcessor;notification-producer
       bindings:
-        task-status-update:
-          binder: rabbit
-          destination: task-status-updated
-        interruptionConsumer-in-0 :
+        interruptionConsumer-in-0:
           binder: rabbit
           destination: cse-interrupt
           group: cse-idcc-interrupt
+        requestProcessor-in-0:
+          binder: rabbit
+          destination: cse-import-idcc-request
+          routing-key: "#"
+          group: cse-idcc-runner
+        requestProcessor-out-0:
+          destination: cse-response
+          group: cse-idcc-runner
+        notification-producer-out-0:
+          destination: cse-import-idcc-task-status-updated
+          group: cse-import-idcc-task-manager
+
+
+
 
 
 logback:
@@ -68,14 +82,7 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL14 FFG.IL13 1
         - FFG.IL14 FFG.IL13 2
-  bindings:
-    request:
-      destination: cse-request
-      routing-key: "#"
-      group: cse-idcc-runner
-    response:
-      destination: cse-response
-      expiration: 60000
+        - FFG.IL14 FFG.IL13 3
   whitelist:
     - http://minio:9000/
     - http://localhost:9000/

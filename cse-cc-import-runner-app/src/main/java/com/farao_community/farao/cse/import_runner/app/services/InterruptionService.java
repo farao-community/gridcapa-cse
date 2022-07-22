@@ -1,7 +1,6 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -22,6 +21,4 @@ public class InterruptionService {
                 .filter(t -> t.getName().equals(id))
                 .findFirst();
     }
-
-
 }
