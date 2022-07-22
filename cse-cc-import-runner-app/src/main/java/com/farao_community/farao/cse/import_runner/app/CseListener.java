@@ -68,6 +68,7 @@ public class CseListener implements MessageListener {
             sendCseResponse(cseResponse, replyTo, correlationId);
         } catch (InterruptedException e) {
             handleError(e, cseRequest.getId(), replyTo, correlationId);
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             handleError(e, cseRequest.getId(), replyTo, correlationId);
         }
