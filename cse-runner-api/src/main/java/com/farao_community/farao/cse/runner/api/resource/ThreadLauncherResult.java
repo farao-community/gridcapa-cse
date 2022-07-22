@@ -11,9 +11,9 @@ import java.util.Optional;
 
 public class ThreadLauncherResult<U> {
 
-    Optional<U> result;
-    boolean hasError;
-    Exception exception;
+    private final Optional<U> result;
+    private final boolean hasError;
+    private final Exception exception;
 
     public ThreadLauncherResult(Optional<U> result, boolean hasError, Exception exception) {
         this.result = result;
@@ -25,7 +25,7 @@ public class ThreadLauncherResult<U> {
         return result;
     }
 
-    public boolean isHasError() {
+    public boolean hasError() {
         return hasError;
     }
 

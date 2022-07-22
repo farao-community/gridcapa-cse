@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
 public class GenericThreadLauncher<T, U> extends Thread {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericThreadLauncher.class);
-    private T threadable;
-    private Method run;
-    private Object[] args;
+    private final T threadable;
+    private final Method run;
+    private final Object[] args;
 
     private ThreadLauncherResult<U> result;
 
@@ -38,11 +38,16 @@ public class GenericThreadLauncher<T, U> extends Thread {
     @Override
     public void run() {
         try {
-            U resultat = (U) this.run.invoke(threadable, args);
-            this.result = new ThreadLauncherResult<>(Optional.ofNullable(resultat), false, null);
+            U threadResult = (U) this.run.invoke(threadable, args);
+            this.result = new ThreadLauncherResult<>(Optional.ofNullable(threadResult), false, null);
         } catch (IllegalAccessException | InvocationTargetException e) {
             LOGGER.error("Error occurred during CSE run", e);
-            this.result = new ThreadLauncherResult<>(Optional.ofNullable(null), true, e);
+            if (checkInterruption(e)) {
+                //an interruption is not considered as an error because it is intentional
+                this.result = new ThreadLauncherResult<>(Optional.empty(), false, e);
+            } else {
+                this.result = new ThreadLauncherResult<>(Optional.empty(), true, e);
+            }
         }
     }
 
@@ -58,9 +63,9 @@ public class GenericThreadLauncher<T, U> extends Thread {
     private static Method getMethodAnnotatedWith(final Class<?> type) {
         List<Method> methods = getMethodsAnnotatedWith(type);
         if (methods.isEmpty()) {
-            throw new CseInternalException("the class " + type.getCanonicalName() + " does not have his running method annoted with @Threadable");
+            throw new CseInternalException("the class " + type.getCanonicalName() + " does not have his running method annotated with @Threadable");
         } else if (methods.size() > 1) {
-            throw new CseInternalException("the class " + type.getCanonicalName() + " must have only one method annoted with @Threadable");
+            throw new CseInternalException("the class " + type.getCanonicalName() + " must have only one method annotated with @Threadable");
         } else {
             return methods.get(0);
         }
@@ -80,5 +85,17 @@ public class GenericThreadLauncher<T, U> extends Thread {
             klass = klass.getSuperclass();
         }
         return methods;
+    }
+
+    private boolean checkInterruption(Exception exception) {
+        boolean result = false;
+        Throwable e = exception;
+        while (e != null && !result) {
+            if ("interrupted".equals(e.getMessage())) {
+                result = true;
+            }
+            e = e.getCause();
+        }
+        return result;
     }
 }

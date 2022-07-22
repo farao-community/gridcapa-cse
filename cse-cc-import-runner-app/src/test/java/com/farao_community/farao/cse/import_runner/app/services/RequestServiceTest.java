@@ -15,8 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.stream.function.StreamBridge;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
@@ -30,6 +32,9 @@ public class RequestServiceTest {
     @MockBean
     private CseRunner cseServer;
 
+    @MockBean
+    private StreamBridge streamBridge;
+
     @Autowired
     private RequestService requestService;
 
@@ -38,10 +43,11 @@ public class RequestServiceTest {
         String id = UUID.randomUUID().toString();
         CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 0.0, null);
         JsonApiConverter jsonApiConverter = new JsonApiConverter();
-        CseResponse cseResponse = new CseResponse(cseRequest.getId(), null, null);
+        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null");
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         byte[] resp = jsonApiConverter.toJsonMessage(cseResponse, CseResponse.class);
         when(cseServer.run(any())).thenReturn(cseResponse);
+        when(streamBridge.send(any(), any())).thenReturn(true);
         byte[] result = requestService.launchCseRequest(req);
         assertArrayEquals(resp, result);
     }
@@ -49,12 +55,14 @@ public class RequestServiceTest {
     @Test
     void testInterruptionRequestService() throws IOException {
         String id = UUID.randomUUID().toString();
+        Exception except = new InterruptedIOException("interrupted");
         CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 0.0, null);
         JsonApiConverter jsonApiConverter = new JsonApiConverter();
         CseResponse cseResponse = new CseResponse(cseRequest.getId(), null, null);
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         byte[] resp = jsonApiConverter.toJsonMessage(cseResponse, CseResponse.class);
-        when(cseServer.run(any())).thenReturn(null);
+        when(cseServer.run(any())).thenThrow(except);
+        when(streamBridge.send(any(), any())).thenReturn(true);
         byte[] result = requestService.launchCseRequest(req);
         assertArrayEquals(resp, result);
     }
@@ -67,6 +75,7 @@ public class RequestServiceTest {
         JsonApiConverter jsonApiConverter = new JsonApiConverter();
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         when(cseServer.run(any())).thenThrow(except);
+        when(streamBridge.send(any(), any())).thenReturn(true);
         byte[] expectedResult = jsonApiConverter.toJsonMessage(new CseInternalException("CSE run failed", new InvocationTargetException(except)));
 
         byte[] result  = requestService.launchCseRequest(req);

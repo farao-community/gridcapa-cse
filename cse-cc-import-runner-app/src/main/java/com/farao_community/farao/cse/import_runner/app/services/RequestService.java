@@ -8,7 +8,6 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncher;
-import com.farao_community.farao.cse.import_runner.app.util.UpdateStatusProducer;
 import com.farao_community.farao.cse.runner.api.JsonApiConverter;
 import com.farao_community.farao.cse.runner.api.exception.AbstractCseException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
@@ -20,40 +19,47 @@ import com.farao_community.farao.gridcapa.task_manager.api.TaskStatusUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class RequestService {
+    private static final String TASK_STATUS_UPDATE = "task-status-update";
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
-    @Autowired
-    private CseRunner cseServer;
-    @Autowired
-    private Logger businessLogger;
-    @Autowired
-    private UpdateStatusProducer updateStatusProducer;
+    private final CseRunner cseServer;
+    private final Logger businessLogger;
     private final JsonApiConverter jsonApiConverter = new JsonApiConverter();
+    private final StreamBridge streamBridge;
+
+    public RequestService(CseRunner cseServer, Logger businessLogger, StreamBridge streamBridge) {
+        this.cseServer = cseServer;
+        this.businessLogger = businessLogger;
+        this.streamBridge = streamBridge;
+    }
 
     public byte[] launchCseRequest(byte[] req) {
-        byte[] result = new byte[1];
+        byte[] result;
         CseRequest cseRequest = jsonApiConverter.fromJsonMessage(req, CseRequest.class);
         // propagate in logs MDC the task id as an extra field to be able to match microservices logs with calculation tasks.
         // This should be done only once, as soon as the information to add in mdc is available.
         MDC.put("gridcapa-task-id", cseRequest.getId());
         try {
-            updateStatusProducer.produce(new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
+            streamBridge.send("task-status-update", new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
             GenericThreadLauncher<CseRunner, CseResponse> launcher = new GenericThreadLauncher<>(cseServer, cseRequest.getId(), cseRequest);
             launcher.start();
             ThreadLauncherResult<CseResponse> cseResponse = launcher.getResult();
-            if (cseResponse.isHasError() && cseResponse.getException() != null) {
+            if (cseResponse.hasError() && cseResponse.getException() != null) {
                 throw cseResponse.getException();
             }
-            if (cseResponse.getResult().isPresent() && !cseResponse.isHasError()) {
-                result = sendCseResponse(cseResponse.getResult().get());
-                LOGGER.info("Cse response sent: {}", cseResponse.getResult().get());
+            Optional<CseResponse> resp = cseResponse.getResult();
+            if (resp.isPresent() && !cseResponse.hasError()) {
+                result = sendCseResponse(resp.get());
+                LOGGER.info("Cse response sent: {}", resp.get());
+
             } else {
                 LOGGER.info("CSE run has been interrupted");
                 result = sendCseResponse(new CseResponse(cseRequest.getId(), null, null));
@@ -67,9 +73,9 @@ public class RequestService {
 
     private byte[] sendCseResponse(CseResponse cseResponse) {
         if (cseResponse.getFinalCgmFileUrl() == null && cseResponse.getTtcFileUrl() == null) {
-            updateStatusProducer.produce(new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.INTERRUPTED));
+            streamBridge.send("task-status-update", new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.INTERRUPTED));
         } else {
-            updateStatusProducer.produce(new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));
+            streamBridge.send("task-status-update", new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));
         }
         return jsonApiConverter.toJsonMessage(cseResponse, CseResponse.class);
     }
@@ -83,11 +89,7 @@ public class RequestService {
 
     private byte[] sendErrorResponse(String requestId, AbstractCseException exception) {
 
-        if (exception.getCause().getClass() == InterruptedException.class) {
-            updateStatusProducer.produce(new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.INTERRUPTED));
-        } else {
-            updateStatusProducer.produce(new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
-        }
+        streamBridge.send("task-status-update", new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
         return exceptionToJsonMessage(exception);
 
     }

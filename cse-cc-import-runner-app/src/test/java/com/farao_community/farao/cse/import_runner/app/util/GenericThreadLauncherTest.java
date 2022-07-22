@@ -97,7 +97,7 @@ public class GenericThreadLauncherTest {
         } catch (Exception e) {
             exception++;
             assertEquals(e.getClass(), CseInternalException.class);
-            assertEquals(e.getMessage(), "the class com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncherTest.LaunchWithoutThreadableAnnotation does not have his running method annoted with @Threadable");
+            assertEquals(e.getMessage(), "the class com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncherTest.LaunchWithoutThreadableAnnotation does not have his running method annotated with @Threadable");
         }
         assertEquals(1, exception);
 
@@ -114,7 +114,7 @@ public class GenericThreadLauncherTest {
         } catch (Exception e) {
             exception++;
             assertEquals(e.getClass(), CseInternalException.class);
-            assertEquals(e.getMessage(), "the class com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncherTest.LaunchWithMultipleThreadableAnnotation must have only one method annoted with @Threadable");
+            assertEquals(e.getMessage(), "the class com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncherTest.LaunchWithMultipleThreadableAnnotation must have only one method annotated with @Threadable");
         }
         assertEquals(1, exception);
     }
