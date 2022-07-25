@@ -40,8 +40,9 @@ import java.util.*;
 @Service
 public class DichotomyRunner {
     private static final double SHIFT_TOLERANCE = 1;
+    private static final double MIN_IMPORT_VALUE = 0;
     private static final double MAX_IMPORT_VALUE = 19999;
-    private static final String DICHOTOMY_PARAMETERS_MSG = "Starting dichotomy index: {}, Maximum dichotomy index: {}, Initial dichotomy step: {}, Dichotomy precision: {}";
+    private static final String DICHOTOMY_PARAMETERS_MSG = "Starting dichotomy index: {}, Minimum dichotomy index: {}, Maximum dichotomy index: {}, Initial dichotomy step: {}, Dichotomy precision: {}";
 
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
@@ -62,8 +63,8 @@ public class DichotomyRunner {
         double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImport);
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
-        logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
-        Index<RaoResponse> index = new Index<>(0, MAX_IMPORT_VALUE, dichotomyPrecision);
+        logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, MIN_IMPORT_VALUE, MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
+        Index<RaoResponse> index = new Index<>(MIN_IMPORT_VALUE, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<RaoResponse> engine = new DichotomyEngine<>(
             index,
             new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
