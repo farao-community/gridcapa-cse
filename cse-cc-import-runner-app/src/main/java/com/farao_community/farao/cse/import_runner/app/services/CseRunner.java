@@ -97,8 +97,8 @@ public class CseRunner {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
-        if (!cseRequest.getForcedPrasIds().isEmpty()) {
-            forcedPrasHandler.forcePras(cseRequest.getForcedPrasIds(), network, crac);
+        if (!cseRequest.getManualForcedPrasIds().isEmpty()) {
+            forcedPrasHandler.forcePras(cseRequest.getManualForcedPrasIds(), network, crac);
         }
         DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
 
