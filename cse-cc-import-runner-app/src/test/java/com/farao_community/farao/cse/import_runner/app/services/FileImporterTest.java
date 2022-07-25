@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,7 +41,7 @@ class FileImporterTest {
     void testCracImport() throws IOException {
         CseCrac cseCrac = fileImporter.importCseCrac(Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Network network = Importers.loadNetwork("20210901_2230_test_network.uct", getClass().getResourceAsStream("20210901_2230_test_network.uct"));
-        Crac crac = fileImporter.importCrac(cseCrac, Collections.emptySet(), OffsetDateTime.parse("2021-09-01T20:30Z"), network);
+        Crac crac = fileImporter.importCrac(cseCrac, OffsetDateTime.parse("2021-09-01T20:30Z"), network);
         assertEquals(4, crac.getFlowCnecs().size());
     }
 

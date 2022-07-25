@@ -47,8 +47,7 @@ public class FileImporter {
 
     Crac preProcessNetworkForBusBarsAndImportCrac(String mergedCracUrl, Network initialNetwork, OffsetDateTime targetProcessDateTime) throws IOException {
         CseCrac cseCrac = importCseCrac(mergedCracUrl);
-        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangeProcessor.process(initialNetwork, cseCrac);
-        return importCrac(cseCrac, busBarChangeSwitchesSet, targetProcessDateTime, initialNetwork);
+        return importCrac(cseCrac, targetProcessDateTime, initialNetwork);
     }
 
     CseCrac importCseCrac(String cracUrl) throws IOException {
@@ -57,11 +56,8 @@ public class FileImporter {
         return cseCracImporter.importNativeCrac(cracInputStream);
     }
 
-    private Crac importCrac(CseCrac cseCrac, Set<BusBarChangeSwitches> busBarChangeSwitchesSet, OffsetDateTime targetProcessDateTime, Network network) {
-        CracCreationParameters cracCreationParameters = CracCreationParameters.load();
-        CseCracCreationParameters cseCracCreationParameters = new CseCracCreationParameters();
-        cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
-        cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
+    private Crac importCrac(CseCrac cseCrac, OffsetDateTime targetProcessDateTime, Network network) {
+        CracCreationParameters cracCreationParameters = integrateBusBarPretreatment(network, cseCrac);
         return CracCreators.createCrac(cseCrac, network, targetProcessDateTime, cracCreationParameters).getCrac();
     }
 
@@ -80,5 +76,14 @@ public class FileImporter {
         } catch (MalformedURLException e) {
             throw new CseInvalidDataException(String.format("URL is invalid: %s", url));
         }
+    }
+
+    public CracCreationParameters integrateBusBarPretreatment(Network network, CseCrac nativeCseCrac) {
+        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangeProcessor.process(network, nativeCseCrac);
+        CseCracCreationParameters cseCracCreationParameters = new CseCracCreationParameters();
+        cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
+        CracCreationParameters cracCreationParameters = CracCreationParameters.load();
+        cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
+        return cracCreationParameters;
     }
 }

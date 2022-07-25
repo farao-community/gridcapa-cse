@@ -12,6 +12,7 @@ import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
+import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
@@ -59,11 +60,8 @@ public class FileImporter {
         return cseCracImporter.importNativeCrac(cracInputStream);
     }
 
-    public Crac importCrac(CseCrac cseCrac, Set<BusBarChangeSwitches> busBarChangeSwitchesSet, OffsetDateTime targetProcessDateTime, Network network) {
-        CracCreationParameters cracCreationParameters = CracCreationParameters.load();
-        CseCracCreationParameters cseCracCreationParameters = new CseCracCreationParameters();
-        cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
-        cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
+    public Crac importCrac(CseCrac cseCrac, OffsetDateTime targetProcessDateTime, Network network) {
+        CracCreationParameters cracCreationParameters = integrateBusBarPretreatment(network, cseCrac);
         return CracCreators.createCrac(cseCrac, network, targetProcessDateTime, cracCreationParameters).getCrac();
     }
 
@@ -120,5 +118,15 @@ public class FileImporter {
         } catch (Exception e) {
             throw new CseInvalidDataException("Impossible to import LineFixedFlow from Target ch file", e);
         }
+    }
+
+    public CracCreationParameters integrateBusBarPretreatment(Network network, CseCrac nativeCracCse) {
+        CracCreationParameters cracCreationParameters = CracCreationParameters.load();
+        CseCracCreationParameters cseCracCreationParameters = new CseCracCreationParameters();
+        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangeProcessor.process(network, nativeCracCse);
+        cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
+        cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
+        cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
+        return cracCreationParameters;
     }
 }

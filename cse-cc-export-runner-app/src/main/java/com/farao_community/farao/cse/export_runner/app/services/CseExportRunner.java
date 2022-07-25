@@ -11,6 +11,7 @@ import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
+import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
@@ -19,7 +20,6 @@ import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -54,7 +54,8 @@ public class CseExportRunner {
             String finalCgmUrl = fileExporter.saveNetwork(fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl()), "UCTE", GridcapaFileGroup.OUTPUT, cseExportRequest.getProcessType(), network.getNameOrId(), cseExportRequest.getTargetProcessDateTime());
 
             CseCrac nativeCseCrac = fileImporter.importCseCrac(cseExportRequest.getMergedCracUrl());
-            CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) CracCreators.createCrac(nativeCseCrac, network, cseExportRequest.getTargetProcessDateTime());
+            CracCreationParameters cracCreationParameters = fileImporter.integrateBusBarPretreatment(network, nativeCseCrac);
+            CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) CracCreators.createCrac(nativeCseCrac, network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);
             String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), fileImporter.importCracFromJson(cracInJsonFormatUrl)), cseCracCreationContext);
             return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, finalCgmUrl, logsFileUrl);
         } catch (CseInternalException e) {
@@ -62,4 +63,5 @@ public class CseExportRunner {
             return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", logsFileUrl);
         }
     }
+
 }
