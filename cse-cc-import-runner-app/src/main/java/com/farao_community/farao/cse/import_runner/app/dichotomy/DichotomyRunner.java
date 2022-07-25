@@ -17,8 +17,8 @@ import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.dichotomy.api.DichotomyEngine;
 import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
+import com.farao_community.farao.dichotomy.api.index.BiDirectionalStepsIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.Index;
-import com.farao_community.farao.dichotomy.api.index.StepsIndexStrategy;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.shift.LinearScaler;
 import com.farao_community.farao.dichotomy.shift.ShiftDispatcher;
@@ -63,10 +63,10 @@ public class DichotomyRunner {
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
         logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
-        Index<RaoResponse> index = new Index<>(initialIndexValue, MAX_IMPORT_VALUE, dichotomyPrecision);
+        Index<RaoResponse> index = new Index<>(0, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<RaoResponse> engine = new DichotomyEngine<>(
             index,
-            new StepsIndexStrategy(true, initialDichotomyStep),
+            new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
             getNetworkShifter(cseRequest, cseData, network),
             getNetworkValidator(cseRequest, cseData));
         return engine.run(network);
