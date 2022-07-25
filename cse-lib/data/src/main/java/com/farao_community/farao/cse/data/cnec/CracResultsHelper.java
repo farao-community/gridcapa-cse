@@ -16,7 +16,9 @@ import com.farao_community.farao.data.crac_api.range_action.InjectionRangeAction
 import com.farao_community.farao.data.crac_api.range_action.PstRangeAction;
 import com.farao_community.farao.data.crac_creation.creator.api.ElementaryCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.BranchCnecCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.NativeBranch;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.cse.outage.CseOutageCreationContext;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.powsybl.ucte.network.UcteCountryCode;
@@ -122,17 +124,10 @@ public class CracResultsHelper {
         List<CnecPreventive> cnecPreventives = new ArrayList<>();
         cseCracCreationContext.getBranchCnecCreationContexts().stream()
             .filter(ElementaryCreationContext::isImported)
-            .filter(branchCnecCreationContext -> branchCnecCreationContext.getCreatedCnecsIds().containsKey(Instant.PREVENTIVE))
+            .filter(BranchCnecCreationContext::isBaseCase)
             .sorted(Comparator.comparing(BranchCnecCreationContext::getNativeId))
             .forEach(branchCnecCreationContext -> {
-                CnecCommon cnecCommon = new CnecCommon();
-                cnecCommon.setName(branchCnecCreationContext.getNativeId());
-                cnecCommon.setCode(branchCnecCreationContext.getNativeBranch().getFrom() + " " + branchCnecCreationContext.getNativeBranch().getTo()  + " " + branchCnecCreationContext.getNativeBranch().getSuffix());
-                cnecCommon.setAreaFrom(getAreaFrom(branchCnecCreationContext.getNativeBranch().getFrom(), branchCnecCreationContext.getNativeBranch().getTo()));
-                cnecCommon.setAreaTo(getAreaTo(branchCnecCreationContext.getNativeBranch().getFrom(), branchCnecCreationContext.getNativeBranch().getTo()));
-                cnecCommon.setOrderCode(branchCnecCreationContext.getNativeBranch().getSuffix());
-                cnecCommon.setNodeFrom(branchCnecCreationContext.getNativeBranch().getFrom());
-                cnecCommon.setNodeTo(branchCnecCreationContext.getNativeBranch().getTo());
+                CnecCommon cnecCommon = makeCnecCommon(branchCnecCreationContext.getNativeId(), branchCnecCreationContext.getNativeBranch());
                 CnecPreventive cnecPrev = new CnecPreventive();
                 cnecPrev.setCnecCommon(cnecCommon);
                 FlowCnec flowCnecPrev = crac.getFlowCnec(branchCnecCreationContext.getCreatedCnecsIds().get(Instant.PREVENTIVE));
@@ -151,14 +146,7 @@ public class CracResultsHelper {
         List<BranchCnecCreationContext> branchCnecCreationContexts = getMonitoredBranchesForOutage(contingencyId);
         branchCnecCreationContexts.forEach(branchCnecCreationContext -> {
             MergedCnec mergedCnec = new MergedCnec();
-            CnecCommon cnecCommon = new CnecCommon();
-            cnecCommon.setName(branchCnecCreationContext.getNativeId());
-            cnecCommon.setCode(branchCnecCreationContext.getNativeBranch().getFrom() + " " + branchCnecCreationContext.getNativeBranch().getTo() + " " + branchCnecCreationContext.getNativeBranch().getSuffix());
-            cnecCommon.setAreaFrom(getAreaFrom(branchCnecCreationContext.getNativeBranch().getFrom(), branchCnecCreationContext.getNativeBranch().getTo()));
-            cnecCommon.setAreaTo(getAreaTo(branchCnecCreationContext.getNativeBranch().getFrom(), branchCnecCreationContext.getNativeBranch().getTo()));
-            cnecCommon.setNodeFrom(branchCnecCreationContext.getNativeBranch().getFrom());
-            cnecCommon.setNodeTo(branchCnecCreationContext.getNativeBranch().getTo());
-            cnecCommon.setOrderCode(branchCnecCreationContext.getNativeBranch().getSuffix());
+            CnecCommon cnecCommon = makeCnecCommon(branchCnecCreationContext.getNativeId(), branchCnecCreationContext.getNativeBranch());
             mergedCnec.setCnecCommon(cnecCommon);
             mergedCnecs.put(branchCnecCreationContext.getNativeId(), mergedCnec);
 
@@ -192,6 +180,22 @@ public class CracResultsHelper {
         return mergedCnecs;
     }
 
+    private CnecCommon makeCnecCommon(String nativeId, NativeBranch nativeBranch) {
+        CnecCommon cnecCommon = new CnecCommon();
+        cnecCommon.setName(nativeId);
+        cnecCommon.setCode(makeCode(nativeBranch));
+        cnecCommon.setAreaFrom(getAreaFrom(nativeBranch));
+        cnecCommon.setAreaTo(getAreaTo(nativeBranch));
+        cnecCommon.setNodeFrom(nativeBranch.getFrom());
+        cnecCommon.setNodeTo(nativeBranch.getTo());
+        cnecCommon.setOrderCode(nativeBranch.getSuffix());
+        return cnecCommon;
+    }
+
+    private String makeCode(NativeBranch nativeBranch) {
+        return nativeBranch.getFrom() + " " + nativeBranch.getTo() + " " + nativeBranch.getSuffix();
+    }
+
     public FlowCnecResult getFlowCnecResultInAmpere(FlowCnec flowCnec, OptimizationState optimizationState) {
         Optional<Double> upperBound = flowCnec.getUpperBound(Side.LEFT, Unit.AMPERE);
         Optional<Double> lowerBound = flowCnec.getLowerBound(Side.LEFT, Unit.AMPERE);
@@ -218,10 +222,10 @@ public class CracResultsHelper {
         return new FlowCnecResult(flow, iMax);
     }
 
-    public String getAreaFrom(String nodeFrom, String nodeTo) {
-        String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
-        String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(nodeFrom, countryFrom, countryTo);
+    public String getAreaFrom(NativeBranch nativeBranch) {
+        String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
+        String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
+        return getCountryOfNode(nativeBranch.getFrom(), countryFrom, countryTo);
     }
 
     public String getAreaFrom(NetworkElement networkElement) {
@@ -232,10 +236,10 @@ public class CracResultsHelper {
         return getCountryOfNode(nodeFrom, countryFrom, countryTo);
     }
 
-    public String getAreaTo(String nodeFrom, String nodeTo) {
-        String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
-        String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(nodeTo, countryTo, countryFrom);
+    public String getAreaTo(NativeBranch nativeBranch) {
+        String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
+        String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
+        return getCountryOfNode(nativeBranch.getTo(), countryTo, countryFrom);
     }
 
     public String getAreaTo(NetworkElement networkElement) {
@@ -305,5 +309,10 @@ public class CracResultsHelper {
         } else {
             return PREVENTIVE_OUTAGE_NAME;
         }
+    }
+
+    public List<CseOutageCreationContext> getOutageCreationContext() {
+        return cseCracCreationContext.getOutageCreationContexts().stream()
+            .filter(ElementaryCreationContext::isImported).collect(Collectors.toList());
     }
 }

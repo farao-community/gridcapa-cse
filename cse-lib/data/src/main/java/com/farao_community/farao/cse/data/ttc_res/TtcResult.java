@@ -16,8 +16,9 @@ import com.farao_community.farao.data.crac_api.Contingency;
 import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_creation.creator.api.ElementaryCreationContext;
-import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.RemedialActionCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.outage.CseOutageCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CseHvdcCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CsePstCreationContext;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
@@ -369,8 +370,7 @@ public final class TtcResult {
     }
 
     private static void fillNotPreventiveCnecs(CracResultsHelper cracResultsHelper, Results results) {
-        List<CseOutageCreationContext> cseOutageCreationContexts = cracResultsHelper.getCseCracCreationContext().getOutageCreationContexts().stream()
-            .filter(ElementaryCreationContext::isImported).collect(Collectors.toList());
+        List<CseOutageCreationContext> cseOutageCreationContexts = cracResultsHelper.getOutageCreationContext();
         cseOutageCreationContexts.forEach(cseOutageCreationContext -> {
             CriticalBranch criticalBranch = new CriticalBranch();
             Outage outage = new Outage();
@@ -497,45 +497,49 @@ public final class TtcResult {
     private static void fillActivatedPreventiveRemedialActions(CracResultsHelper cracResultsHelper, Results results) {
         Preventive preventive = new Preventive();
         List<Action> actionList = new ArrayList<>();
-        List<String> topoPreventiveRas = cracResultsHelper.getPreventiveNetworkActionIds();
-        List<String> pstPreventiveRas = cracResultsHelper.getPreventivePstRangeActionIds();
-        List<String> hvdcPreventiveRas = cracResultsHelper.getPreventiveHvdcRangeActionIds();
-        topoPreventiveRas.forEach(parade -> {
-            Action action = new Action();
-            Name name = new Name();
-            name.setV(parade);
-            action.setName(name);
-            actionList.add(action);
+        List<RemedialActionCreationContext> remedialActionCreationContextStream = cracResultsHelper.getCseCracCreationContext().getRemedialActionCreationContexts().stream()
+            .filter(ElementaryCreationContext::isImported).collect(Collectors.toList());
+
+        remedialActionCreationContextStream.forEach(networkRaCC -> {
+            if (cracResultsHelper.getPreventiveNetworkActionIds().contains(networkRaCC.getCreatedRAId())) {
+                Action action = new Action();
+                Name name = new Name();
+                name.setV(networkRaCC.getNativeId());
+                action.setName(name);
+                actionList.add(action);
+            }
         });
-        pstPreventiveRas.forEach(jsonRaId -> {
-            Action action = new Action();
-            Name name = new Name();
-            CsePstCreationContext csePstCreationContext = getPstCreationContext(cracResultsHelper.getCseCracCreationContext(), jsonRaId);
-            name.setV(csePstCreationContext.getNativeId());
-            PSTtap pstTap = new PSTtap();
-            int tap = csePstCreationContext.isInverted() ? -cracResultsHelper.getTapOfPstRangeActionInPreventive(jsonRaId) : cracResultsHelper.getTapOfPstRangeActionInPreventive(jsonRaId);
-            pstTap.setV(BigInteger.valueOf(tap));
-            action.setPSTtap(pstTap);
-            action.setName(name);
-            actionList.add(action);
-        });
-        hvdcPreventiveRas.forEach(parade -> {
-            Action action = new Action();
-            Name name = new Name();
-            name.setV(parade);
-            HVDCsetpoint hvdcSetpoint = new HVDCsetpoint();
-            hvdcSetpoint.setV(BigInteger.valueOf(cracResultsHelper.getSetpointOfHvdcRangeActionInPreventive(parade)));
-            action.setHVDCsetpoint(hvdcSetpoint);
-            action.setName(name);
-            actionList.add(action);
-        });
+
+        remedialActionCreationContextStream.stream().filter(CsePstCreationContext.class::isInstance).map(CsePstCreationContext.class::cast)
+            .forEach(pstRaCC -> {
+                if (cracResultsHelper.getPreventivePstRangeActionIds().contains(pstRaCC.getCreatedRAId())) {
+                    Action action = new Action();
+                    Name name = new Name();
+                    name.setV(pstRaCC.getNativeId());
+                    PSTtap pstTap = new PSTtap();
+                    int tap = pstRaCC.isInverted() ? -cracResultsHelper.getTapOfPstRangeActionInPreventive(pstRaCC.getCreatedRAId()) : cracResultsHelper.getTapOfPstRangeActionInPreventive(pstRaCC.getCreatedRAId());
+                    pstTap.setV(BigInteger.valueOf(tap));
+                    action.setPSTtap(pstTap);
+                    action.setName(name);
+                    actionList.add(action);
+                }
+            });
+
+        remedialActionCreationContextStream.stream().filter(CseHvdcCreationContext.class::isInstance).map(CseHvdcCreationContext.class::cast)
+            .forEach(hvdcRaCC -> {
+                if (cracResultsHelper.getPreventiveHvdcRangeActionIds().contains(hvdcRaCC.getCreatedRAId())) {
+                    Action action = new Action();
+                    Name name = new Name();
+                    name.setV(hvdcRaCC.getNativeId());
+                    HVDCsetpoint hvdcSetpoint = new HVDCsetpoint();
+                    hvdcSetpoint.setV(BigInteger.valueOf(cracResultsHelper.getSetpointOfHvdcRangeActionInPreventive(hvdcRaCC.getCreatedRAId())));
+                    action.setHVDCsetpoint(hvdcSetpoint);
+                    action.setName(name);
+                    actionList.add(action);
+                }
+            });
         preventive.getAction().addAll(actionList);
         results.setPreventive(preventive);
-    }
-
-    private static CsePstCreationContext getPstCreationContext(CseCracCreationContext cseCracCreationContext, String jsonRaId) {
-        return cseCracCreationContext.getRemedialActionCreationContexts().stream().filter(CsePstCreationContext.class::isInstance).map(CsePstCreationContext.class::cast)
-            .filter(pstcc -> pstcc.isImported() && pstcc.getCreatedRAId().equals(jsonRaId)).findAny().orElseThrow(() -> new CseDataException(""));
     }
 
     private static String limitingCauseToString(LimitingCause limitingCause) {
