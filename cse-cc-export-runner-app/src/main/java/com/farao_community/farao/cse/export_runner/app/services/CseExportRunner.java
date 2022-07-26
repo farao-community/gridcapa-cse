@@ -14,6 +14,7 @@ import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
 import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
+import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
@@ -56,7 +57,9 @@ public class CseExportRunner {
             CseCrac nativeCseCrac = fileImporter.importCseCrac(cseExportRequest.getMergedCracUrl());
             CracCreationParameters cracCreationParameters = fileImporter.integrateBusBarPretreatment(network, nativeCseCrac);
             CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) CracCreators.createCrac(nativeCseCrac, network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);
-            String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), fileImporter.importCracFromJson(cracInJsonFormatUrl)), cseCracCreationContext);
+            Crac cracResult = fileImporter.importCracFromJson(raoResponse.getCracFileUrl());
+            RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), cracResult);
+            String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, raoResult, cseCracCreationContext, cracResult);
             return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, finalCgmUrl, logsFileUrl);
         } catch (CseInternalException e) {
             // Temporary return of an empty string for ttc logs file and cgm file

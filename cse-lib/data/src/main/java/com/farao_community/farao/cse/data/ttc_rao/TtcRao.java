@@ -77,7 +77,7 @@ public final class TtcRao {
 
     private static List<OutageResult> getOutageResults(CracResultsHelper cracResultsHelper) {
         List<OutageResult> outageResultList = new ArrayList<>();
-        Set<Contingency> contingencies = cracResultsHelper.getCrac().getContingencies();
+        Set<Contingency> contingencies = cracResultsHelper.getCracResult().getContingencies();
         contingencies.forEach(contingency -> {
             OutageResult outageResult = new OutageResult();
             Outage outage = new Outage();

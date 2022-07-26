@@ -378,7 +378,7 @@ public final class TtcResult {
             outageName.setV(cseOutageCreationContext.getNativeId());
             outage.setName(outageName);
             MonitoredElement monitoredElement = new MonitoredElement();
-            Contingency contingency = cracResultsHelper.getCrac().getContingency(cseOutageCreationContext.getCreatedContingencyId());
+            Contingency contingency = cracResultsHelper.getCracResult().getContingency(cseOutageCreationContext.getCreatedContingencyId());
             contingency.getNetworkElements().forEach(contingencyNetworkElement -> {
                 Element outageElement = new Element();
                 Code outageElementCode = new Code();

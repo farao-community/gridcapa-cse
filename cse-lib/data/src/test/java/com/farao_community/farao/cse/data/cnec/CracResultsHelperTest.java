@@ -71,7 +71,7 @@ class CracResultsHelperTest {
         List<BranchCnecCreationContext> monitoredBranchesForContingency = cracResultsHelper.getMonitoredBranchesForOutage(contingencyId);
         assertEquals(1, monitoredBranchesForContingency.size());
 
-        FlowCnec branchCnec = cracResultsHelper.getCrac().getFlowCnec("French line 1 - FFR1AA1 ->FFR2AA1   - outage_1 - outage");
+        FlowCnec branchCnec = cracResultsHelper.getCracResult().getFlowCnec("French line 1 - FFR1AA1 ->FFR2AA1   - outage_1 - outage");
         assertEquals(50, cracResultsHelper.getFlowCnecResultInAmpere(branchCnec, OptimizationState.AFTER_PRA).getFlow(), 0.1);
     }
 
@@ -129,6 +129,7 @@ class CracResultsHelperTest {
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
         RaoResult raoResult = new RaoResultImporter().importRaoResult(raoResultInputStream, cseCracCreationContext.getCrac());
 
-        return new CracResultsHelper(cseCracCreationContext, raoResult, new ArrayList<>());
+        //FIXME change cracCreationContext.getCrac() by crac result
+        return new CracResultsHelper(cseCracCreationContext, cseCracCreationContext.getCrac(), raoResult, new ArrayList<>());
     }
 }
