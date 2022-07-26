@@ -92,14 +92,14 @@ public class CseRequest {
                                          String ntcReductionsUrl,
                                          String targetChUrl,
                                          String yearlyNtcUrl,
-                                         List<String> forcedPrasIds,
+                                         List<String> manualFrcedPrasIds,
                                          Map<String, Set<Set<String>>> automatedForcedPras,
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex) {
         return new CseRequest(
             id, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
-            null, null, null, targetChUrl, null, yearlyNtcUrl, forcedPrasIds,
+            null, null, null, targetChUrl, null, yearlyNtcUrl, manualFrcedPrasIds,
             automatedForcedPras, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
@@ -115,13 +115,13 @@ public class CseRequest {
                                          String ntc2SiItUrl,
                                          String vulcanusUrl,
                                          String yearlyNtcUrl,
-                                         List<String> forcedPrasIds,
+                                         List<String> manualForcedPrasIds,
                                          Map<String, Set<Set<String>>> automatedForcedPras,
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex) {
         return new CseRequest(id, ProcessType.IDCC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl,
-            ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl, forcedPrasIds,
+            ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl, manualForcedPrasIds,
             automatedForcedPras, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
