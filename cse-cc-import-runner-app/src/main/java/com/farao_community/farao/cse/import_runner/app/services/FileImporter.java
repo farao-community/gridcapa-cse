@@ -60,8 +60,7 @@ public class FileImporter {
         return cseCracImporter.importNativeCrac(cracInputStream);
     }
 
-    public Crac importCrac(CseCrac cseCrac, OffsetDateTime targetProcessDateTime, Network network) {
-        CracCreationParameters cracCreationParameters = integrateBusBarPretreatment(network, cseCrac);
+    public Crac importCrac(CseCrac cseCrac, OffsetDateTime targetProcessDateTime, Network network, CracCreationParameters cracCreationParameters) {
         return CracCreators.createCrac(cseCrac, network, targetProcessDateTime, cracCreationParameters).getCrac();
     }
 

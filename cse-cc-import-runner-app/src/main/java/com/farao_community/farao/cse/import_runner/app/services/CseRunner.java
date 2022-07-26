@@ -18,6 +18,7 @@ import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRunner
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
+import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
@@ -125,7 +126,8 @@ public class CseRunner {
 
     Crac preProcessNetworkForBusBarsAndImportCrac(String mergedCracUrl, Network initialNetwork, OffsetDateTime targetProcessDateTime) throws IOException {
         CseCrac cseCrac = fileImporter.importCseCrac(mergedCracUrl);
-        return fileImporter.importCrac(cseCrac, targetProcessDateTime, initialNetwork);
+        CracCreationParameters cracCreationParameters = fileImporter.integrateBusBarPretreatment(initialNetwork, cseCrac);
+        return fileImporter.importCrac(cseCrac, targetProcessDateTime, initialNetwork, cracCreationParameters);
     }
 
     private void checkNetworkAndReferenceExchangesDifference(CseData cseData, double initialItalianImportFromNetwork) {

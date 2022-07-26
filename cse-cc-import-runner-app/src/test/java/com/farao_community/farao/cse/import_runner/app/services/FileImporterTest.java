@@ -9,6 +9,7 @@ package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.data.crac_api.Crac;
+import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
@@ -41,7 +42,7 @@ class FileImporterTest {
     void testCracImport() throws IOException {
         CseCrac cseCrac = fileImporter.importCseCrac(Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Network network = Importers.loadNetwork("20210901_2230_test_network.uct", getClass().getResourceAsStream("20210901_2230_test_network.uct"));
-        Crac crac = fileImporter.importCrac(cseCrac, OffsetDateTime.parse("2021-09-01T20:30Z"), network);
+        Crac crac = fileImporter.importCrac(cseCrac, OffsetDateTime.parse("2021-09-01T20:30Z"), network, CracCreationParameters.load());
         assertEquals(4, crac.getFlowCnecs().size());
     }
 
