@@ -30,6 +30,7 @@ class CseRequestTest {
             "targetChUrl",
             "yearlyNtcUrl",
             Collections.emptyList(),
+            Collections.emptyMap(),
             50,
             650,
             null);
@@ -60,6 +61,7 @@ class CseRequestTest {
             "vulcanusUrl",
             "yearlyNtcUrl",
             Collections.emptyList(),
+            Collections.emptyMap(),
             50,
             650,
             2500.);
