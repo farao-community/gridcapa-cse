@@ -70,7 +70,7 @@ public class RequestServiceTest {
     @Test
     void testErrorRequestService() throws IOException {
         String id = UUID.randomUUID().toString();
-        Exception except = new IOException("PLOP PLOP");
+        Exception except = new IOException("Mocked exception");
         CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 0.0, null);
         JsonApiConverter jsonApiConverter = new JsonApiConverter();
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);

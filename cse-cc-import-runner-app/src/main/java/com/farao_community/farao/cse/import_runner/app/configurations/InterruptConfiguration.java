@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 public class InterruptConfiguration {
 
     @Bean
-    public Consumer<String> interruptionConsumer(InterruptionService interruptionService) {
+    public Consumer<String> interrupt(InterruptionService interruptionService) {
         return interruptionService::interruption;
     }
 }

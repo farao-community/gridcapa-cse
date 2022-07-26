@@ -39,14 +39,13 @@ public class GenericThreadLauncher<T, U> extends Thread {
     public void run() {
         try {
             U threadResult = (U) this.run.invoke(threadable, args);
-            this.result = new ThreadLauncherResult<>(Optional.ofNullable(threadResult), false, null);
+            this.result = ThreadLauncherResult.success(threadResult);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            LOGGER.error("Error occurred during CSE run", e);
             if (checkInterruption(e)) {
                 //an interruption is not considered as an error because it is intentional
-                this.result = new ThreadLauncherResult<>(Optional.empty(), false, e);
+                this.result = ThreadLauncherResult.interrupt();
             } else {
-                this.result = new ThreadLauncherResult<>(Optional.empty(), true, e);
+                this.result = ThreadLauncherResult.error(e);
             }
         }
     }

@@ -47,7 +47,7 @@ public class RequestService {
         // This should be done only once, as soon as the information to add in mdc is available.
         MDC.put("gridcapa-task-id", cseRequest.getId());
         try {
-            streamBridge.send("task-status-update", new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
+            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
             GenericThreadLauncher<CseRunner, CseResponse> launcher = new GenericThreadLauncher<>(cseServer, cseRequest.getId(), cseRequest);
             launcher.start();
@@ -58,24 +58,22 @@ public class RequestService {
             Optional<CseResponse> resp = cseResponse.getResult();
             if (resp.isPresent() && !cseResponse.hasError()) {
                 result = sendCseResponse(resp.get());
-                LOGGER.info("Cse response sent: {}", resp.get());
-
+                businessLogger.info("Cse response sent: {}", resp.get());
             } else {
-                LOGGER.info("CSE run has been interrupted");
+                businessLogger.info("CSE run has been interrupted");
                 result = sendCseResponse(new CseResponse(cseRequest.getId(), null, null));
             }
         } catch (Exception e) {
             result = handleError(e, cseRequest.getId());
         }
-
         return result;
     }
 
     private byte[] sendCseResponse(CseResponse cseResponse) {
         if (cseResponse.getFinalCgmFileUrl() == null && cseResponse.getTtcFileUrl() == null) {
-            streamBridge.send("task-status-update", new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.INTERRUPTED));
+            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.INTERRUPTED));
         } else {
-            streamBridge.send("task-status-update", new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));
+            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));
         }
         return jsonApiConverter.toJsonMessage(cseResponse, CseResponse.class);
     }
@@ -88,10 +86,8 @@ public class RequestService {
     }
 
     private byte[] sendErrorResponse(String requestId, AbstractCseException exception) {
-
-        streamBridge.send("task-status-update", new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
+        streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
         return exceptionToJsonMessage(exception);
-
     }
 
     private byte[] exceptionToJsonMessage(AbstractCseException e) {

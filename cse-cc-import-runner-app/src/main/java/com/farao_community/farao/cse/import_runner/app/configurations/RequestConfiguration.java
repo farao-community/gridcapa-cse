@@ -18,7 +18,7 @@ import java.util.function.Function;
 public class RequestConfiguration {
 
     @Bean
-    public Function<Flux<byte[]>, Flux<byte[]>> requestProcessor(RequestService requestService) {
+    public Function<Flux<byte[]>, Flux<byte[]>> request(RequestService requestService) {
         return cseRequestFlux -> cseRequestFlux
                 .map(requestService::launchCseRequest)
                 .log();

@@ -1,10 +1,8 @@
-server:
-  port: 8082
 spring:
   application:
-    name: cse-idcc-runner
+    name: cse-cc-runner
   rabbitmq:
-    host: 127.0.0.1
+    host: localhost
     port: 5672
     username: gridcapa
     password: gridcapa
@@ -13,38 +11,29 @@ spring:
   cloud:
     stream:
       function:
-        definition: interruptionConsumer;requestProcessor;notificationProducer
+        definition: interrupt;request
+      default:
+        binder: rabbit
+        group: cse-idcc-runner
       bindings:
-        interruptionConsumer-in-0:
-          binder: rabbit
+        interrupt-in-0:
           destination: cse-interrupt
-          group: cse-idcc-interrupt
-        requestProcessor-in-0:
-          binder: rabbit
+        request-in-0:
           destination: cse-import-idcc-request
-          routing-key: "#"
-          group: cse-idcc-runner
-        requestProcessor-out-0:
+        request-out-0:
           destination: cse-response
-          group: cse-idcc-runner
-        notificationProducer-out-0:
+        task-status-update:
           destination: cse-import-idcc-task-status-updated
           group: cse-import-idcc-task-manager
-        task-status-update:
-          binder: rabbit
-          destination: cse-import-idcc-task-status-updated
-
-
-
-
 
 logback:
   amqp:
-    exchange: cse-import-idcc-task-manager-logs-exchange
+    exchange: task-manager-events
+    routing-key: "#"
 
 rao-runner-server:
   amqp:
-    client-app-id: cse-import-idcc-runner
+    client-app-id: cse-cc-runner  # should be overridden with value of app name
     queue-name: rao-request-queue
 
 minio-adapter:
@@ -62,9 +51,9 @@ cse-cc-runner:
     final-cgm: FINAL_CGM
     ttc-res: TTC_RES
   xnodes:
-    file-path: /home/farao/xnodes.xml
+    file-path: /home/farao/xnodes/xnodes.xml
   combined-ras:
-    file-path: /home/farao/combinedRAs.json
+    file-path: /home/farao/combinedRAs/combinedRAs.json
   mendrisio:
     mendrisio-cagno-line:
       target-ch-id: ml_0001
@@ -84,7 +73,5 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL14 FFG.IL13 1
         - FFG.IL14 FFG.IL13 2
-        - FFG.IL14 FFG.IL13 3
   whitelist:
     - http://minio:9000/
-    - http://localhost:9000/
