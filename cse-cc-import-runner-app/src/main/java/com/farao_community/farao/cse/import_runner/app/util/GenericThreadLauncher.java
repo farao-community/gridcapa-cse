@@ -17,6 +17,7 @@ import java.util.List;
 import com.farao_community.farao.cse.runner.api.resource.ThreadLauncherResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 public class GenericThreadLauncher<T, U> extends Thread {
 
@@ -24,11 +25,13 @@ public class GenericThreadLauncher<T, U> extends Thread {
     private final T threadable;
     private final Method run;
     private final Object[] args;
+    private final String id;
 
     private ThreadLauncherResult<U> result;
 
     public GenericThreadLauncher(T threadable, String id, Object... args) {
         super(id);
+        this.id = id;
         this.run = getMethodAnnotatedWith(threadable.getClass());
         this.threadable = threadable;
         this.args = args;
@@ -37,6 +40,7 @@ public class GenericThreadLauncher<T, U> extends Thread {
     @Override
     public void run() {
         try {
+            MDC.put("gridcapa-task-id", this.id);
             U threadResult = (U) this.run.invoke(threadable, args);
             this.result = ThreadLauncherResult.success(threadResult);
         } catch (IllegalAccessException | InvocationTargetException e) {
