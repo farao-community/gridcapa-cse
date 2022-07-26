@@ -58,7 +58,7 @@ public class RequestService {
             Optional<CseResponse> resp = cseResponse.getResult();
             if (resp.isPresent() && !cseResponse.hasError()) {
                 result = sendCseResponse(resp.get());
-                businessLogger.info("Cse response sent: {}", resp.get());
+                LOGGER.info("Cse response sent: {}", resp.get());
             } else {
                 businessLogger.info("CSE run has been interrupted");
                 result = sendCseResponse(new CseResponse(cseRequest.getId(), null, null));

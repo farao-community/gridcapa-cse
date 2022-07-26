@@ -21,14 +21,15 @@ public class ThreadLauncherResult<U> {
         this.exception = exception;
     }
 
-    public static <U> ThreadLauncherResult<U> success ( U result){
+    public static <U> ThreadLauncherResult<U> success(U result) {
         return new ThreadLauncherResult<>(Optional.of(result), false, null);
     }
-    public static <U> ThreadLauncherResult<U> interrupt (){
+
+    public static <U> ThreadLauncherResult<U> interrupt() {
         return new ThreadLauncherResult<>(Optional.empty(), false, null);
     }
 
-    public static <U> ThreadLauncherResult<U> error ( Exception e){
+    public static <U> ThreadLauncherResult<U> error(Exception e) {
         return new ThreadLauncherResult<>(Optional.empty(), true, e);
     }
 
