@@ -25,13 +25,11 @@ public class GenericThreadLauncher<T, U> extends Thread {
     private final T threadable;
     private final Method run;
     private final Object[] args;
-    private final String id;
 
     private ThreadLauncherResult<U> result;
 
     public GenericThreadLauncher(T threadable, String id, Object... args) {
         super(id);
-        this.id = id;
         this.run = getMethodAnnotatedWith(threadable.getClass());
         this.threadable = threadable;
         this.args = args;
@@ -40,7 +38,7 @@ public class GenericThreadLauncher<T, U> extends Thread {
     @Override
     public void run() {
         try {
-            MDC.put("gridcapa-task-id", this.id);
+            MDC.put("gridcapa-task-id", getName());
             U threadResult = (U) this.run.invoke(threadable, args);
             this.result = ThreadLauncherResult.success(threadResult);
         } catch (IllegalAccessException | InvocationTargetException e) {
