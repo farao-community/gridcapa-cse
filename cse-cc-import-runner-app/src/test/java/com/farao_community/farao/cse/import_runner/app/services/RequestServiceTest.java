@@ -41,7 +41,7 @@ class RequestServiceTest {
     @Test
     void testRequestService() throws IOException {
         String id = UUID.randomUUID().toString();
-        CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 0.0, null);
+        CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 0.0, null);
         JsonApiConverter jsonApiConverter = new JsonApiConverter();
         CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null");
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
@@ -56,7 +56,7 @@ class RequestServiceTest {
     void testInterruptionRequestService() throws IOException {
         String id = UUID.randomUUID().toString();
         Exception except = new InterruptedIOException("interrupted");
-        CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 0.0, null);
+        CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 0.0, null);
         JsonApiConverter jsonApiConverter = new JsonApiConverter();
         CseResponse cseResponse = new CseResponse(cseRequest.getId(), null, null);
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
@@ -71,7 +71,7 @@ class RequestServiceTest {
     void testErrorRequestService() throws IOException {
         String id = UUID.randomUUID().toString();
         Exception except = new IOException("Mocked exception");
-        CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 0.0, null);
+        CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 0.0, null);
         JsonApiConverter jsonApiConverter = new JsonApiConverter();
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         when(cseServer.run(any())).thenThrow(except);
