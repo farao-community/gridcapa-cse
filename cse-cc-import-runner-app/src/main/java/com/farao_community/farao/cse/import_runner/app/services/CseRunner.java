@@ -10,6 +10,7 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
+import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -63,6 +64,7 @@ public class CseRunner {
 
     }
 
+    @Threadable
     public CseResponse run(CseRequest cseRequest) throws IOException {
         CseData cseData = new CseData(cseRequest, fileImporter);
 
