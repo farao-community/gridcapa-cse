@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class RequestServiceTest {
+class RequestServiceTest {
 
     @MockBean
     private CseRunner cseServer;

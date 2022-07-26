@@ -10,11 +10,14 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Optional;
 
 @SpringBootTest
-public class InterruptionServiceTest {
+class InterruptionServiceTest {
 
     @Autowired
     InterruptionService interruptionService;
@@ -30,11 +33,7 @@ public class InterruptionServiceTest {
             int count = 0;
             for (int i = 0; i < 10; i++) {
                 count += i;
-                try {
-                    sleep(i * 1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                await().atMost(i, SECONDS);
             }
         }
     }

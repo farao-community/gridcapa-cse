@@ -17,7 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class GenericThreadLauncherTest {
+class GenericThreadLauncherTest {
 
     private class LaunchWithoutThreadableAnnotation {
 
@@ -97,7 +97,7 @@ public class GenericThreadLauncherTest {
         } catch (Exception e) {
             exception++;
             assertEquals(e.getClass(), CseInternalException.class);
-            assertEquals(e.getMessage(), "the class com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncherTest.LaunchWithoutThreadableAnnotation does not have his running method annotated with @Threadable");
+            assertEquals("the class com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncherTest.LaunchWithoutThreadableAnnotation does not have his running method annotated with @Threadable", e.getMessage());
         }
         assertEquals(1, exception);
 
@@ -114,7 +114,7 @@ public class GenericThreadLauncherTest {
         } catch (Exception e) {
             exception++;
             assertEquals(e.getClass(), CseInternalException.class);
-            assertEquals(e.getMessage(), "the class com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncherTest.LaunchWithMultipleThreadableAnnotation must have only one method annotated with @Threadable");
+            assertEquals("the class com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncherTest.LaunchWithMultipleThreadableAnnotation must have only one method annotated with @Threadable", e.getMessage());
         }
         assertEquals(1, exception);
     }

@@ -15,13 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.farao_community.farao.cse.runner.api.resource.ThreadLauncherResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 public class GenericThreadLauncher<T, U> extends Thread {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericThreadLauncher.class);
     private final T threadable;
     private final Method run;
     private final Object[] args;
@@ -88,14 +85,14 @@ public class GenericThreadLauncher<T, U> extends Thread {
     }
 
     private boolean checkInterruption(Exception exception) {
-        boolean result = false;
+        boolean isInterrupt = false;
         Throwable e = exception;
-        while (e != null && !result) {
+        while (e != null && !isInterrupt) {
             if ("interrupted".equals(e.getMessage())) {
-                result = true;
+                isInterrupt = true;
             }
             e = e.getCause();
         }
-        return result;
+        return isInterrupt;
     }
 }
