@@ -73,6 +73,5 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL14 FFG.IL13 1
         - FFG.IL14 FFG.IL13 2
-        - FFG.IL14 FFG.IL13 3
   whitelist:
     - http://minio:9000/
