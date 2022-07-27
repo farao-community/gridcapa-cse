@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 class TtcRaoTest {
 
     private void checkGeneratedXmlMatchesExpectedXml(CracResultsHelper cracResultsHelper, String expectedResultFilename) throws JAXBException {
-        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), cracResultsHelper.getRaoResult(), cracResultsHelper);
+        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), cracResultsHelper);
         assertEqualsXml(cseRaoResult, expectedResultFilename);
     }
 
@@ -59,8 +59,7 @@ class TtcRaoTest {
         CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
         RaoResult raoResult = new RaoResultImporter().importRaoResult(raoResultInputStream, cseCracCreationContext.getCrac());
-        //FIXME change cracCreationContext.getCrac() by crac result
-        return new CracResultsHelper(cseCracCreationContext, cseCracCreationContext.getCrac(), raoResult, new ArrayList<>());
+        return new CracResultsHelper(cseCracCreationContext, raoResult, new ArrayList<>());
     }
 
     @Test

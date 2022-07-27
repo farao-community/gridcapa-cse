@@ -63,8 +63,7 @@ class TtcResultTest {
         CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
         RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream("pst_and_topo/raoResult.json"), cseCracCreationContext.getCrac());
 
-        //FIXME change cracCreationContext.getCrac() by crac result
-        cracResultsHelper = new CracResultsHelper(cseCracCreationContext, cseCracCreationContext.getCrac(), raoResult, new ArrayList<>());
+        cracResultsHelper = new CracResultsHelper(cseCracCreationContext, raoResult, new ArrayList<>());
     }
 
     private TtcResult.ProcessData initProcessData(LimitingCause limitingCause, double finalItalianImport, double mniiOffsetValue) {

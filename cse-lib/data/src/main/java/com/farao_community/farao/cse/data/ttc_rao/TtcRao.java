@@ -14,7 +14,6 @@ import com.farao_community.farao.cse.data.cnec.MergedCnec;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.*;
 import com.farao_community.farao.data.crac_api.Contingency;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
-import com.farao_community.farao.data.rao_result_api.RaoResult;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -32,16 +31,16 @@ public final class TtcRao {
         // Should not be instantiated
     }
 
-    public static CseRaoResult generate(OffsetDateTime timestamp, RaoResult raoResult, CracResultsHelper cracHelper) {
+    public static CseRaoResult generate(OffsetDateTime timestamp, CracResultsHelper cracResultsHelper) {
         CseRaoResult cseRaoResult = new CseRaoResult();
         addTime(cseRaoResult, timestamp.toString());
 
-        if (raoResult.getFunctionalCost(OptimizationState.AFTER_CRA) <= 0) {
+        if (cracResultsHelper.getRaoResult().getFunctionalCost(OptimizationState.AFTER_CRA) <= 0) {
             addStatus(cseRaoResult, Status.SECURE);
         } else {
             addStatus(cseRaoResult, Status.UNSECURE);
         }
-        addResults(cseRaoResult, cracHelper);
+        addResults(cseRaoResult, cracResultsHelper);
         return cseRaoResult;
     }
 
@@ -77,7 +76,7 @@ public final class TtcRao {
 
     private static List<OutageResult> getOutageResults(CracResultsHelper cracResultsHelper) {
         List<OutageResult> outageResultList = new ArrayList<>();
-        Set<Contingency> contingencies = cracResultsHelper.getCracResult().getContingencies();
+        Set<Contingency> contingencies = cracResultsHelper.getCrac().getContingencies();
         contingencies.forEach(contingency -> {
             OutageResult outageResult = new OutageResult();
             Outage outage = new Outage();

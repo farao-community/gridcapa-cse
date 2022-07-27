@@ -6,15 +6,10 @@
  */
 package com.farao_community.farao.cse.export_runner.app.services;
 
-import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
-import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
-import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
-import com.farao_community.farao.data.crac_creation.creator.cse.parameters.CseCracCreationParameters;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
@@ -27,8 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.OffsetDateTime;
-import java.util.Set;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -45,20 +38,10 @@ public class FileImporter {
         return Importers.loadNetwork(getFilenameFromUrl(cgmUrl), urlValidationService.openUrlStream(cgmUrl));
     }
 
-    Crac preProcessNetworkForBusBarsAndImportCrac(String mergedCracUrl, Network initialNetwork, OffsetDateTime targetProcessDateTime) throws IOException {
-        CseCrac cseCrac = importCseCrac(mergedCracUrl);
-        return importCrac(cseCrac, targetProcessDateTime, initialNetwork);
-    }
-
     CseCrac importCseCrac(String cracUrl) throws IOException {
         InputStream cracInputStream = urlValidationService.openUrlStream(cracUrl);
         CseCracImporter cseCracImporter = new CseCracImporter();
         return cseCracImporter.importNativeCrac(cracInputStream);
-    }
-
-    private Crac importCrac(CseCrac cseCrac, OffsetDateTime targetProcessDateTime, Network network) {
-        CracCreationParameters cracCreationParameters = integrateBusBarPretreatment(network, cseCrac);
-        return CracCreators.createCrac(cseCrac, network, targetProcessDateTime, cracCreationParameters).getCrac();
     }
 
     public RaoResult importRaoResult(String raoResultUrl, Crac crac) throws IOException {
@@ -76,14 +59,5 @@ public class FileImporter {
         } catch (MalformedURLException e) {
             throw new CseInvalidDataException(String.format("URL is invalid: %s", url));
         }
-    }
-
-    public CracCreationParameters integrateBusBarPretreatment(Network network, CseCrac nativeCseCrac) {
-        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangeProcessor.process(network, nativeCseCrac);
-        CseCracCreationParameters cseCracCreationParameters = new CseCracCreationParameters();
-        cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
-        CracCreationParameters cracCreationParameters = CracCreationParameters.load();
-        cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
-        return cracCreationParameters;
     }
 }
