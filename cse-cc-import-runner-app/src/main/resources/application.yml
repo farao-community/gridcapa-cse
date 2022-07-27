@@ -10,10 +10,20 @@ spring:
       reply-timeout: 2400000
   cloud:
     stream:
+      function:
+        definition: interrupt;request
+      default:
+        binder: rabbit
+        group: cse-idcc-runner
       bindings:
+        interrupt-in-0:
+          destination: cse-interrupt
+        request-in-0:
+          destination: cse-import-idcc-request
+        request-out-0:
+          destination: cse-response
         task-status-update:
-          binder: rabbit
-          destination: task-status-updated
+          destination: cse-import-idcc-task-status-updated
 
 logback:
   amqp:
@@ -27,7 +37,7 @@ rao-runner-server:
 
 minio-adapter:
   bucket: gridcapa
-  base-path: ""
+  base-path:
   access-key: gridcapa
   secret-key: gridcapa
   url: http://minio:9000
@@ -40,9 +50,9 @@ cse-cc-runner:
     final-cgm: FINAL_CGM
     ttc-res: TTC_RES
   xnodes:
-    file-path: /home/farao/xnodes/xnodes.xml
+    file-path: /home/farao/xnodes.xml
   combined-ras:
-    file-path: /home/farao/combinedRAs/combinedRAs.json
+    file-path: /home/farao/combinedRAs.json
   mendrisio:
     mendrisio-cagno-line:
       target-ch-id: ml_0001
@@ -62,14 +72,5 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL14 FFG.IL13 1
         - FFG.IL14 FFG.IL13 2
-  bindings:
-    request:
-      destination: cse-request
-      routing-key: "#"
-      group: cse-idcc-runner
-    response:
-      destination: cse-response
-      expiration: 60000
   whitelist:
     - http://minio:9000/
-    - http://localhost:9000/
