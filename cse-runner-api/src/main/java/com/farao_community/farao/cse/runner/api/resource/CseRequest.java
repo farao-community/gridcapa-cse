@@ -38,7 +38,7 @@ public class CseRequest {
     private final String vulcanusUrl;
     private final String yearlyNtcUrl;
     private final List<String> manualForcedPrasIds;
-    private final Map<String, Set<String>> automatedForcedPrasIds;
+    private final Map<String, Set<Set<String>>> automatedForcedPrasIds;
     private final double dichotomyPrecision;
     private final double initialDichotomyStep;
     private final Double initialDichotomyIndex;
@@ -59,7 +59,7 @@ public class CseRequest {
                       @JsonProperty("vulcanusUrl") String vulcanusUrl,
                       @JsonProperty("yearlyNtcUrl") String yearlyNtcUrl,
                       @JsonProperty("manualForcedPrasIds") List<String> manualForcedPrasIds,
-                      @JsonProperty("automatedForcedPras") Map<String, Set<String>> automatedForcedPrasIds,
+                      @JsonProperty("automatedForcedPras") Map<String, Set<Set<String>>> automatedForcedPrasIds,
                       @JsonProperty("dichotomyPrecision") double dichotomyPrecision,
                       @JsonProperty("initialDichotomyStep") double initialDichotomyStep,
                       @JsonProperty("initialDichotomyIndex") Double initialDichotomyIndex) {
@@ -92,14 +92,14 @@ public class CseRequest {
                                          String ntcReductionsUrl,
                                          String targetChUrl,
                                          String yearlyNtcUrl,
-                                         List<String> forcedPrasIds,
-                                         Map<String, Set<String>> automatedForcedPras,
+                                         List<String> manualFrcedPrasIds,
+                                         Map<String, Set<Set<String>>> automatedForcedPras,
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex) {
         return new CseRequest(
             id, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
-            null, null, null, targetChUrl, null, yearlyNtcUrl, forcedPrasIds,
+            null, null, null, targetChUrl, null, yearlyNtcUrl, manualFrcedPrasIds,
             automatedForcedPras, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
@@ -115,13 +115,13 @@ public class CseRequest {
                                          String ntc2SiItUrl,
                                          String vulcanusUrl,
                                          String yearlyNtcUrl,
-                                         List<String> forcedPrasIds,
-                                         Map<String, Set<String>> automatedForcedPras,
+                                         List<String> manualForcedPrasIds,
+                                         Map<String, Set<Set<String>>> automatedForcedPras,
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex) {
         return new CseRequest(id, ProcessType.IDCC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl,
-            ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl, forcedPrasIds,
+            ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl, manualForcedPrasIds,
             automatedForcedPras, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
@@ -185,7 +185,7 @@ public class CseRequest {
         return manualForcedPrasIds;
     }
 
-    public Map<String, Set<String>> getAutomatedForcedPrasIds() {
+    public Map<String, Set<Set<String>>> getAutomatedForcedPrasIds() {
         return automatedForcedPrasIds;
     }
 

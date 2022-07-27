@@ -45,12 +45,13 @@
         <maven.jvnet.jaxb2-basics.version>1.11.1</maven.jvnet.jaxb2-basics.version>
         <mockito.core.version>3.9.0</mockito.core.version>
         <logstash.version>7.0.1</logstash.version>
+        <awaitility.version>3.0.0</awaitility.version>
 
         <!-- BUSINESS DEPENDENCIES -->
         <farao.dependencies.version>1.3.3</farao.dependencies.version>
         <farao.dichotomy.version>4.4.0</farao.dichotomy.version>
         <gridcapa.rao.runner.version>1.0.0</gridcapa.rao.runner.version>
-        <gridcapa.task-manager.version>1.1.2</gridcapa.task-manager.version>
+        <gridcapa.task-manager.version>1.4.0</gridcapa.task-manager.version>
         <gridcapa.starter.minio.adapter.version>0.2.0</gridcapa.starter.minio.adapter.version>
     </properties>
 
@@ -149,6 +150,12 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.core.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
                 <scope>test</scope>
             </dependency>
 
