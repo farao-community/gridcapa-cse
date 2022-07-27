@@ -106,16 +106,16 @@
     <LimitingElement>
         <CriticalBranch>
             <Outage>
-                <Name v="N Situation"/>
+                <Name v="outage_1"/>
             </Outage>
             <MonitoredElement>
                 <Element>
-                    <Name v="Tie-line FR DE"/>
-                    <Code v="FFR2AA1  DDE3AA1  1"/>
+                    <Name v="French line 1"/>
+                    <Code v="FFR1AA1  FFR2AA1  1"/>
                     <areafrom v="FR"/>
-                    <areato v="DE"/>
-                    <I unit="A" v="1916"/>
-                    <Imax unit="A" v="1500"/>
+                    <areato v="FR"/>
+                    <IAfterOutage unit="A" v="50"/>
+                    <ImaxAfterOutage unit="A" v="4318"/>
                 </Element>
             </MonitoredElement>
         </CriticalBranch>
@@ -123,7 +123,10 @@
     <Results>
         <Preventive>
             <Action>
-                <Name v="PST1"/>
+                <Name v="ra_1"/>
+            </Action>
+            <Action>
+                <Name v="cra_3"/>
                 <PSTtap v="-16"/>
             </Action>
         </Preventive>
@@ -133,54 +136,50 @@
             </Outage>
             <MonitoredElement>
                 <Element>
-                    <Name v="Line DE1 DE2"/>
-                    <Code v="DDE1AA1  DDE2AA1  1"/>
-                    <areafrom v="DE"/>
-                    <areato v="DE"/>
-                    <I unit="A" v="564"/>
-                    <Imax unit="A" v="1500"/>
+                    <Name v="basecase_branch_1"/>
+                    <Code v="NNL2AA1  NNL3AA1  1"/>
+                    <areafrom v="NL"/>
+                    <areato v="NL"/>
+                    <I unit="A" v="818"/>
+                    <Imax unit="A" v="4000"/>
                 </Element>
                 <Element>
-                    <Name v="Tie-line FR DE"/>
-                    <Code v="FFR2AA1  DDE3AA1  1"/>
-                    <areafrom v="FR"/>
-                    <areato v="DE"/>
-                    <I unit="A" v="1916"/>
-                    <Imax unit="A" v="1500"/>
+                    <Name v="basecase_branch_2"/>
+                    <Code v="NNL1AA1  NNL3AA1  1"/>
+                    <areafrom v="NL"/>
+                    <areato v="NL"/>
+                    <I unit="A" v="-769"/>
+                    <Imax unit="A" v="4000"/>
+                </Element>
+                <Element>
+                    <Name v="basecase_branch_3"/>
+                    <Code v="NNL1AA1  NNL2AA1  1"/>
+                    <areafrom v="NL"/>
+                    <areato v="NL"/>
+                    <I unit="A" v="48"/>
+                    <Imax unit="A" v="4500"/>
                 </Element>
             </MonitoredElement>
         </CriticalBranch>
         <CriticalBranch>
             <Outage>
-                <Name v="Contingency FR1 FR3"/>
+                <Name v="outage_1"/>
                 <Element>
-                    <Code v="FFR1AA1  FFR3AA1  1"/>
-                    <areafrom v="FR"/>
+                    <Code v="BBE2AA1  FFR3AA1  1"/>
+                    <areafrom v="BE"/>
                     <areato v="FR"/>
                 </Element>
             </Outage>
             <MonitoredElement>
                 <Element>
-                    <Name v="Line DE1 DE2"/>
-                    <Code v="DDE1AA1  DDE2AA1  1"/>
-                    <areafrom v="DE"/>
-                    <areato v="DE"/>
-                    <IAfterOutage unit="A" v="583"/>
-                    <ImaxAfterOutage unit="A" v="1500"/>
-                    <IAfterCRA unit="A" v="583"/>
-                    <ImaxAfterCRA unit="A" v="1500"/>
-                </Element>
-                <Element>
-                    <Name v="Tie-line FR DE"/>
-                    <Code v="FFR2AA1  DDE3AA1  1"/>
+                    <Name v="French line 1"/>
+                    <Code v="FFR1AA1  FFR2AA1  1"/>
                     <areafrom v="FR"/>
-                    <areato v="DE"/>
-                    <IAfterOutage unit="A" v="1858"/>
-                    <ImaxAfterOutage unit="A" v="1500"/>
-                    <IAfterSPS unit="A" v="1000"/>
-                    <ImaxAfterSPS unit="A" v="1500"/>
-                    <IAfterCRA unit="A" v="1858"/>
-                    <ImaxAfterCRA unit="A" v="1500"/>
+                    <areato v="FR"/>
+                    <IAfterOutage unit="A" v="50"/>
+                    <ImaxAfterOutage unit="A" v="4318"/>
+                    <IAfterCRA unit="A" v="0"/>
+                    <ImaxAfterCRA unit="A" v="3099"/>
                 </Element>
             </MonitoredElement>
         </CriticalBranch>

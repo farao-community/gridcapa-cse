@@ -9,27 +9,29 @@ package com.farao_community.farao.cse.data.ttc_res;
 
 import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
-import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_io_api.CracImporters;
+import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
+import com.powsybl.iidm.import_.Importers;
+import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,10 +45,6 @@ class TtcResultTest {
 
     @BeforeEach
     public void setUp() {
-        String cracFilename = "cracWithMonitoredBranches.json";
-        Crac crac = CracImporters.importCrac(cracFilename, Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)));
-        String raoResultFilename = "raoResultMonitoredBranches.json";
-        RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream(raoResultFilename), crac);
         ttcFiles = new TtcResult.TtcFiles(
             "20210101_1930_185_Initial_CSE1.uct",
             "20210101_1930_185_CSE1.uct",
@@ -56,7 +54,16 @@ class TtcResultTest {
             "2020-12-30T18:28Z",
             "secure_CGM_with_PRA.uct"
         );
-        cracResultsHelper = new CracResultsHelper(crac, raoResult, Mockito.mock(List.class));
+        InputStream cracInputStream = getClass().getResourceAsStream("pst_and_topo/crac.xml");
+        CseCracImporter importer = new CseCracImporter();
+        CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
+
+        Network network = Importers.loadNetwork("pst_and_topo/network.uct", getClass().getResourceAsStream("pst_and_topo/network.uct"));
+        CseCracCreator cseCracCreator = new CseCracCreator();
+        CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
+        RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream("pst_and_topo/raoResult.json"), cseCracCreationContext.getCrac());
+
+        cracResultsHelper = new CracResultsHelper(cseCracCreationContext, raoResult, new ArrayList<>());
     }
 
     private TtcResult.ProcessData initProcessData(LimitingCause limitingCause, double finalItalianImport, double mniiOffsetValue) {

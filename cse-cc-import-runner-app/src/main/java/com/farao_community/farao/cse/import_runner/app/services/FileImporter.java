@@ -13,12 +13,8 @@ import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
-import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
-import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
-import com.farao_community.farao.data.crac_creation.creator.cse.parameters.CseCracCreationParameters;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
@@ -35,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -57,14 +52,6 @@ public class FileImporter {
         InputStream cracInputStream = urlValidationService.openUrlStream(cracUrl);
         CseCracImporter cseCracImporter = new CseCracImporter();
         return cseCracImporter.importNativeCrac(cracInputStream);
-    }
-
-    public Crac importCrac(CseCrac cseCrac, Set<BusBarChangeSwitches> busBarChangeSwitchesSet, OffsetDateTime targetProcessDateTime, Network network) {
-        CracCreationParameters cracCreationParameters = CracCreationParameters.load();
-        CseCracCreationParameters cseCracCreationParameters = new CseCracCreationParameters();
-        cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitchesSet);
-        cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
-        return CracCreators.createCrac(cseCrac, network, targetProcessDateTime, cracCreationParameters).getCrac();
     }
 
     public Crac importCracFromJson(String cracUrl) throws IOException {
