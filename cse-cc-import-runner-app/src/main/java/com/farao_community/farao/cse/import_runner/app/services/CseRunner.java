@@ -10,13 +10,13 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
-import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRunner;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
@@ -47,18 +47,18 @@ public class CseRunner {
 
     private final FileImporter fileImporter;
     private final FileExporter fileExporter;
-    private final DichotomyRunner dichotomyRunner;
+    private final MultipleDichotomyRunner multipleDichotomyRunner;
     private final TtcResultService ttcResultService;
     private final PiSaService piSaService;
     private final MerchantLineService merchantLineService;
     private final ForcedPrasHandler forcedPrasHandler;
     private final ProcessConfiguration processConfiguration;
 
-    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
+    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, MultipleDichotomyRunner multipleDichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
                      ForcedPrasHandler forcedPrasHandler, ProcessConfiguration processConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
-        this.dichotomyRunner = dichotomyRunner;
+        this.multipleDichotomyRunner = multipleDichotomyRunner;
         this.ttcResultService = ttcResultService;
         this.piSaService = piSaService;
         this.merchantLineService = merchantLineService;
@@ -105,10 +105,16 @@ public class CseRunner {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
-        if (!cseRequest.getManualForcedPrasIds().isEmpty()) {
-            forcedPrasHandler.forcePras(cseRequest.getManualForcedPrasIds(), network, cseCracCreationContext.getCrac());
-        }
-        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
+        MultipleDichotomyRunner.MultipleDichotomyResult multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
+            cseRequest,
+            cseData,
+            network,
+            cseCracCreationContext.getCrac(),
+            cseRequest.getManualForcedPrasIds(),
+            cseRequest.getAutomatedForcedPrasIds(),
+            initialItalianImport);
+
+        DichotomyResult<RaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
 
         String ttcResultUrl;
         String finalCgmUrl;
