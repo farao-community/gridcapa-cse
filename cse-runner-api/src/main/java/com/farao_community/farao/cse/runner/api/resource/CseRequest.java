@@ -38,7 +38,7 @@ public class CseRequest {
     private final String vulcanusUrl;
     private final String yearlyNtcUrl;
     private final List<String> manualForcedPrasIds;
-    private final Map<String, Set<Set<String>>> automatedForcedPrasIds;
+    private final Map<String, List<Set<String>>> automatedForcedPrasIds;
     private final double dichotomyPrecision;
     private final double initialDichotomyStep;
     private final Double initialDichotomyIndex;
@@ -59,7 +59,7 @@ public class CseRequest {
                       @JsonProperty("vulcanusUrl") String vulcanusUrl,
                       @JsonProperty("yearlyNtcUrl") String yearlyNtcUrl,
                       @JsonProperty("manualForcedPrasIds") List<String> manualForcedPrasIds,
-                      @JsonProperty("automatedForcedPras") Map<String, Set<Set<String>>> automatedForcedPrasIds,
+                      @JsonProperty("automatedForcedPras") Map<String, List<Set<String>>> automatedForcedPrasIds,
                       @JsonProperty("dichotomyPrecision") double dichotomyPrecision,
                       @JsonProperty("initialDichotomyStep") double initialDichotomyStep,
                       @JsonProperty("initialDichotomyIndex") Double initialDichotomyIndex) {
@@ -93,7 +93,7 @@ public class CseRequest {
                                          String targetChUrl,
                                          String yearlyNtcUrl,
                                          List<String> manualFrcedPrasIds,
-                                         Map<String, Set<Set<String>>> automatedForcedPras,
+                                         Map<String, List<Set<String>>> automatedForcedPras,
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex) {
@@ -116,7 +116,7 @@ public class CseRequest {
                                          String vulcanusUrl,
                                          String yearlyNtcUrl,
                                          List<String> manualForcedPrasIds,
-                                         Map<String, Set<Set<String>>> automatedForcedPras,
+                                         Map<String, List<Set<String>>> automatedForcedPras,
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex) {
@@ -185,7 +185,7 @@ public class CseRequest {
         return manualForcedPrasIds;
     }
 
-    public Map<String, Set<Set<String>>> getAutomatedForcedPrasIds() {
+    public Map<String, List<Set<String>>> getAutomatedForcedPrasIds() {
         return automatedForcedPrasIds;
     }
 
