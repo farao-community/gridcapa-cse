@@ -96,7 +96,7 @@ class CracResultsHelperTest {
         Map<String, MergedCnec> mergedCnecs = cracResultsHelper.getMergedCnecs("outage_1");
         assertEquals(1, mergedCnecs.size());
 
-        MergedCnec frFrMergedCnec = mergedCnecs.get("French line 1");
+        MergedCnec frFrMergedCnec = mergedCnecs.get("French line 1 - FFR1AA1  - FFR2AA1  - outage_1");
         assertEquals("French line 1", frFrMergedCnec.getCnecCommon().getName());
         assertEquals("FFR1AA1  FFR2AA1  1", frFrMergedCnec.getCnecCommon().getCode());
         assertEquals("FR", frFrMergedCnec.getCnecCommon().getAreaFrom());
