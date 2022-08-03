@@ -102,12 +102,12 @@ public final class TtcRao {
                 afterOutageBranchResult.setName(mergedCnec.getCnecCommon().getName());
                 fillBranchCommonPropertiesFromCnecCommon(mergedCnec.getCnecCommon(), afterOutageBranchResult);
 
-                afterOutageBranchResult.setIMaxAfterOutage(getIValue((int) mergedCnec.getiMaxAfterOutage()));
-                afterOutageBranchResult.setIAfterOutageAfterOptimization(getIValue((int) mergedCnec.getiAfterOutage()));
-                afterOutageBranchResult.setIAfterOutageBeforeOptimization(getIValue((int) mergedCnec.getiAfterOutageBeforeOptimisation()));
+                afterOutageBranchResult.setIMaxAfterOutage(getIValue((int) mergedCnec.getIMaxAfterOutage()));
+                afterOutageBranchResult.setIAfterOutageAfterOptimization(getIValue((int) mergedCnec.getIAfterOutage()));
+                afterOutageBranchResult.setIAfterOutageBeforeOptimization(getIValue((int) mergedCnec.getIAfterOutageBeforeOptimisation()));
 
-                afterOutageBranchResult.setIMaxAfterCRA(getIValue((int) mergedCnec.getiMaxAfterCra()));
-                afterOutageBranchResult.setIAfterCRAAfterOptimization(getIValue((int) mergedCnec.getiAfterCra()));
+                afterOutageBranchResult.setIMaxAfterCRA(getIValue((int) mergedCnec.getIMaxAfterCra()));
+                afterOutageBranchResult.setIAfterCRAAfterOptimization(getIValue((int) mergedCnec.getIAfterCra()));
                 afterOutageBranchResults.add(afterOutageBranchResult);
             });
             outageResult.getMonitoredElement().addAll(afterOutageBranchResults);
@@ -197,8 +197,8 @@ public final class TtcRao {
             preventiveBranchResult.setName(cnecPrev.getCnecCommon().getName());
             fillBranchCommonPropertiesFromCnecCommon(cnecPrev.getCnecCommon(), preventiveBranchResult);
 
-            preventiveBranchResult.setIMax(getIValue((int) cnecPrev.getiMax()));
-            preventiveBranchResult.setIBeforeOptimization(getIValue((int) cnecPrev.getiBeforeOptimisation()));
+            preventiveBranchResult.setIMax(getIValue((int) cnecPrev.getIMax()));
+            preventiveBranchResult.setIBeforeOptimization(getIValue((int) cnecPrev.getIBeforeOptimisation()));
             preventiveBranchResult.setIAfterOptimization(getIValue((int) cnecPrev.getI()));
             preventiveBranchResults.add(preventiveBranchResult);
         });

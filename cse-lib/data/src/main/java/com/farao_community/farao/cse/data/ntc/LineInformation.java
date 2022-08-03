@@ -7,26 +7,16 @@
 
 package com.farao_community.farao.cse.data.ntc;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 class LineInformation {
-    private final String country;
-    private final String variationType;
-    private final double flow;
-
-    LineInformation(String country, String variationType, double flow) {
-        this.country = country;
-        this.variationType = variationType;
-        this.flow = flow;
-    }
-
-    String getCountry() {
-        return country;
-    }
-
-    String getVariationType() {
-        return variationType;
-    }
-
-    double getFlow() {
-        return flow;
-    }
+    String country;
+    String variationType;
+    double flow;
 }

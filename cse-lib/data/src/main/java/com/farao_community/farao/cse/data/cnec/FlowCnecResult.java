@@ -6,23 +6,19 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 public class FlowCnecResult {
-    private final double flow;
-    private final double iMax;
+    double flow;
+    double iMax;
 
-    public FlowCnecResult(double flow, double iMax) {
-        this.flow = flow;
-        this.iMax = iMax;
-    }
-
-    public double getFlow() {
-        return flow;
-    }
-
-    public double getiMax() {
-        return iMax;
-    }
 }

@@ -67,7 +67,7 @@ public class TtcResultService {
 
         RaoResult raoResult = fileImporter.importRaoResult(highestSecureStepRaoResponse.getRaoResultFileUrl(), cseCracCreationContext.getCrac());
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
-            cseCracCreationContext, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath()));
+            cseCracCreationContext, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getXNodesFilePath()));
         Timestamp timestamp = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
     }

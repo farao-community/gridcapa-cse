@@ -7,23 +7,19 @@
 
 package com.farao_community.farao.cse.import_runner.app.configurations;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 public class MendrisioCagnoLineProperties {
-    private final String targetChId;
-    private final String ntcId;
+    String targetChId;
+    String ntcId;
 
-    public MendrisioCagnoLineProperties(String targetChId, String ntcId) {
-        this.targetChId = targetChId;
-        this.ntcId = ntcId;
-    }
-
-    public String getTargetChId() {
-        return targetChId;
-    }
-
-    public String getNtcId() {
-        return ntcId;
-    }
 }

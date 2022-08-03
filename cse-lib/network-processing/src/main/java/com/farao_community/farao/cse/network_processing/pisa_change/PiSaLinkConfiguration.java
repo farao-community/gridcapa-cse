@@ -7,31 +7,21 @@
 
 package com.farao_community.farao.cse.network_processing.pisa_change;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 import java.util.List;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 public class PiSaLinkConfiguration {
-    private final String piSaLinkFictiveNodeFr;
-    private final String piSaLinkFictiveNodeIt;
-    private final List<String> piSaLinkFictiveLines;
-
-    public PiSaLinkConfiguration(String piSaLinkFictiveNodeFr, String piSaLinkFictiveNodeIt, List<String> piSaLinkFictiveLines) {
-        this.piSaLinkFictiveNodeFr = piSaLinkFictiveNodeFr;
-        this.piSaLinkFictiveNodeIt = piSaLinkFictiveNodeIt;
-        this.piSaLinkFictiveLines = piSaLinkFictiveLines;
-    }
-
-    public String getPiSaLinkFictiveNodeFr() {
-        return piSaLinkFictiveNodeFr;
-    }
-
-    public String getPiSaLinkFictiveNodeIt() {
-        return piSaLinkFictiveNodeIt;
-    }
-
-    public List<String> getPiSaLinkFictiveLines() {
-        return piSaLinkFictiveLines;
-    }
+    String piSaLinkFictiveNodeFr;
+    String piSaLinkFictiveNodeIt;
+    List<String> piSaLinkFictiveLines;
 }

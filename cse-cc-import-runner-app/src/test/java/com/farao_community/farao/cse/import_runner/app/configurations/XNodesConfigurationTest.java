@@ -24,6 +24,6 @@ class XNodesConfigurationTest {
 
     @Test
     void testXNodesLoading() {
-        assertEquals("xnodes/cvg_xnodes_20200714.xml", xNodesConfiguration.getxNodesFilePath());
+        assertEquals("xnodes/cvg_xnodes_20200714.xml", xNodesConfiguration.getXNodesFilePath());
     }
 }

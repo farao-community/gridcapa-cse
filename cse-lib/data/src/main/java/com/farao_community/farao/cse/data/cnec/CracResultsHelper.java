@@ -22,6 +22,9 @@ import com.farao_community.farao.data.crac_creation.creator.cse.outage.CseOutage
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.powsybl.ucte.network.UcteCountryCode;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,31 +32,21 @@ import java.util.stream.Collectors;
 /**
  * @author Mohamed BenRejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
  */
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CracResultsHelper {
     public static final String PREVENTIVE_OUTAGE_NAME = "N Situation";
 
-    private final CseCracCreationContext cseCracCreationContext;
-    private final Crac crac;
-    private final RaoResult raoResult;
-    private final List<XNode> xNodeList;
+    CseCracCreationContext cseCracCreationContext;
+    Crac crac;
+    RaoResult raoResult;
+    List<XNode> xNodeList;
 
     public CracResultsHelper(CseCracCreationContext cseCracCreationContext, RaoResult result, List<XNode> xNodeList) {
         this.cseCracCreationContext = cseCracCreationContext;
         this.crac = cseCracCreationContext.getCrac();
         this.raoResult = result;
         this.xNodeList = xNodeList;
-    }
-
-    public Crac getCrac() {
-        return crac;
-    }
-
-    public RaoResult getRaoResult() {
-        return raoResult;
-    }
-
-    public CseCracCreationContext getCseCracCreationContext() {
-        return cseCracCreationContext;
     }
 
     public List<String> getPreventiveNetworkActionIds() {
@@ -135,9 +128,9 @@ public class CracResultsHelper {
                 cnecPrev.setCnecCommon(cnecCommon);
                 FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.AFTER_PRA);
                 cnecPrev.setI(flowCnecResult.getFlow());
-                cnecPrev.setiMax(flowCnecResult.getiMax());
+                cnecPrev.setIMax(flowCnecResult.getIMax());
                 FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.INITIAL);
-                cnecPrev.setiBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
+                cnecPrev.setIBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
                 cnecPreventives.add(cnecPrev);
             });
         return cnecPreventives;
@@ -157,20 +150,20 @@ public class CracResultsHelper {
                 switch (entry.getKey()) {
                     case OUTAGE:
                         flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
-                        mergedCnec.setiAfterOutage(flowCnecResult.getFlow());
-                        mergedCnec.setiMaxAfterOutage(flowCnecResult.getiMax());
+                        mergedCnec.setIAfterOutage(flowCnecResult.getFlow());
+                        mergedCnec.setIMaxAfterOutage(flowCnecResult.getIMax());
                         FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnec, OptimizationState.INITIAL);
-                        mergedCnec.setiAfterOutageBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
+                        mergedCnec.setIAfterOutageBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
                         break;
                     case CURATIVE:
                         flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_CRA);
-                        mergedCnec.setiAfterCra(flowCnecResult.getFlow());
-                        mergedCnec.setiMaxAfterCra(flowCnecResult.getiMax());
+                        mergedCnec.setIAfterCra(flowCnecResult.getFlow());
+                        mergedCnec.setIMaxAfterCra(flowCnecResult.getIMax());
                         break;
                     case AUTO:
                         flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
-                        mergedCnec.setiAfterSps(flowCnecResult.getFlow());
-                        mergedCnec.setiMaxAfterSps(flowCnecResult.getiMax());
+                        mergedCnec.setIAfterSps(flowCnecResult.getFlow());
+                        mergedCnec.setIMaxAfterSps(flowCnecResult.getIMax());
                         break;
 
                     default:

@@ -7,19 +7,21 @@
 
 package com.farao_community.farao.cse.runner.api.resource;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 import java.util.Optional;
 
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 public class ThreadLauncherResult<U> {
 
-    private final Optional<U> result;
-    private final boolean hasError;
-    private final Exception exception;
-
-    public ThreadLauncherResult(Optional<U> result, boolean hasError, Exception exception) {
-        this.result = result;
-        this.hasError = hasError;
-        this.exception = exception;
-    }
+    Optional<U> result;
+    boolean error;
+    Exception exception;
 
     public static <U> ThreadLauncherResult<U> success(U result) {
         return new ThreadLauncherResult<>(Optional.of(result), false, null);
@@ -33,15 +35,4 @@ public class ThreadLauncherResult<U> {
         return new ThreadLauncherResult<>(Optional.empty(), true, e);
     }
 
-    public Optional<U> getResult() {
-        return result;
-    }
-
-    public boolean hasError() {
-        return hasError;
-    }
-
-    public Exception getException() {
-        return exception;
-    }
 }

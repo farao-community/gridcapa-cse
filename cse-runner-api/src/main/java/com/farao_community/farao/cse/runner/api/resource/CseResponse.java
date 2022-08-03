@@ -10,35 +10,28 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Type("cse-response")
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CseResponse {
     @Id
-    private final String id;
-    private final String ttcFileUrl;
-    private final String finalCgmFileUrl;
+    String id;
+    String ttcFileUrl;
+    String finalCgmFileUrl;
 
     @JsonCreator
     public CseResponse(@JsonProperty("id") String id, @JsonProperty("ttcFileUrl") String ttcFileUrl, @JsonProperty("finalCgmFileUrl") String finalCgmFileUrl) {
         this.id = id;
         this.ttcFileUrl = ttcFileUrl;
         this.finalCgmFileUrl = finalCgmFileUrl;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getTtcFileUrl() {
-        return ttcFileUrl;
-    }
-
-    public String getFinalCgmFileUrl() {
-        return finalCgmFileUrl;
     }
 
     @Override

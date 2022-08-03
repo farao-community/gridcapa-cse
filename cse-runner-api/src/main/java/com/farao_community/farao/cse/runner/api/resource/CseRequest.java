@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.time.OffsetDateTime;
@@ -21,27 +24,29 @@ import java.util.Set;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Type("cse-request")
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CseRequest {
     @Id
-    private final String id;
-    private final ProcessType processType;
-    private final OffsetDateTime targetProcessDateTime;
-    private final String cgmUrl;
-    private final String mergedCracUrl;
-    private final String mergedGlskUrl;
-    private final String ntcReductionsUrl;
-    private final String ntc2AtItUrl;
-    private final String ntc2ChItUrl;
-    private final String ntc2FrItUrl;
-    private final String ntc2SiItUrl;
-    private final String targetChUrl;
-    private final String vulcanusUrl;
-    private final String yearlyNtcUrl;
-    private final List<String> manualForcedPrasIds;
-    private final Map<String, List<Set<String>>> automatedForcedPrasIds;
-    private final double dichotomyPrecision;
-    private final double initialDichotomyStep;
-    private final Double initialDichotomyIndex;
+    String id;
+    ProcessType processType;
+    OffsetDateTime targetProcessDateTime;
+    String cgmUrl;
+    String mergedCracUrl;
+    String mergedGlskUrl;
+    String ntcReductionsUrl;
+    String ntc2AtItUrl;
+    String ntc2ChItUrl;
+    String ntc2FrItUrl;
+    String ntc2SiItUrl;
+    String targetChUrl;
+    String vulcanusUrl;
+    String yearlyNtcUrl;
+    List<String> manualForcedPrasIds;
+    Map<String, List<Set<String>>> automatedForcedPrasIds;
+    double dichotomyPrecision;
+    double initialDichotomyStep;
+    Double initialDichotomyIndex;
 
     @JsonCreator
     public CseRequest(@JsonProperty("id") String id,
@@ -123,82 +128,6 @@ public class CseRequest {
         return new CseRequest(id, ProcessType.IDCC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl,
             ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl, manualForcedPrasIds,
             automatedForcedPras, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public ProcessType getProcessType() {
-        return processType;
-    }
-
-    public OffsetDateTime getTargetProcessDateTime() {
-        return targetProcessDateTime;
-    }
-
-    public String getCgmUrl() {
-        return cgmUrl;
-    }
-
-    public String getMergedCracUrl() {
-        return mergedCracUrl;
-    }
-
-    public String getMergedGlskUrl() {
-        return mergedGlskUrl;
-    }
-
-    public String getNtcReductionsUrl() {
-        return ntcReductionsUrl;
-    }
-
-    public String getNtc2AtItUrl() {
-        return ntc2AtItUrl;
-    }
-
-    public String getNtc2ChItUrl() {
-        return ntc2ChItUrl;
-    }
-
-    public String getNtc2FrItUrl() {
-        return ntc2FrItUrl;
-    }
-
-    public String getNtc2SiItUrl() {
-        return ntc2SiItUrl;
-    }
-
-    public String getTargetChUrl() {
-        return targetChUrl;
-    }
-
-    public String getVulcanusUrl() {
-        return vulcanusUrl;
-    }
-
-    public String getYearlyNtcUrl() {
-        return yearlyNtcUrl;
-    }
-
-    public List<String> getManualForcedPrasIds() {
-        return manualForcedPrasIds;
-    }
-
-    public Map<String, List<Set<String>>> getAutomatedForcedPrasIds() {
-        return automatedForcedPrasIds;
-    }
-
-    public double getDichotomyPrecision() {
-        return dichotomyPrecision;
-    }
-
-    public double getInitialDichotomyStep() {
-        return initialDichotomyStep;
-    }
-
-    public Double getInitialDichotomyIndex() {
-        return initialDichotomyIndex;
     }
 
     @Override

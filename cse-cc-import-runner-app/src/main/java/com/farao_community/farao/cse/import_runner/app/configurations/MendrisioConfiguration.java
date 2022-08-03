@@ -7,6 +7,10 @@
 
 package com.farao_community.farao.cse.import_runner.app.configurations;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
@@ -15,28 +19,13 @@ import org.springframework.boot.context.properties.ConstructorBinding;
  */
 @ConfigurationProperties(prefix = "cse-cc-runner.mendrisio")
 @ConstructorBinding
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 public class MendrisioConfiguration {
-    private final MendrisioCagnoLineProperties mendrisioCagnoLine;
-    private final String mendrisioPstId;
-    private final String mendrisioNodeId;
-
-    public MendrisioConfiguration(MendrisioCagnoLineProperties mendrisioCagnoLine, String mendrisioPstId, String mendrisioNodeId) {
-        this.mendrisioCagnoLine = mendrisioCagnoLine;
-        this.mendrisioPstId = mendrisioPstId;
-        this.mendrisioNodeId = mendrisioNodeId;
-    }
-
-    public MendrisioCagnoLineProperties getMendrisioCagnoLine() {
-        return mendrisioCagnoLine;
-    }
-
-    public String getMendrisioPstId() {
-        return mendrisioPstId;
-    }
-
-    public String getMendrisioNodeId() {
-        return mendrisioNodeId;
-    }
+    MendrisioCagnoLineProperties mendrisioCagnoLine;
+    String mendrisioPstId;
+    String mendrisioNodeId;
 
     public String getMendrisioCagnoTargetChId() {
         return mendrisioCagnoLine.getTargetChId();

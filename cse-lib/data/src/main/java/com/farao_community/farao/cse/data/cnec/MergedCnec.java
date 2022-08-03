@@ -6,82 +6,25 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 /**
  * @author Mohamed BenRejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
  */
 
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MergedCnec {
 
-    private CnecCommon cnecCommon;
-    private double iAfterOutage;
-    private double iAfterOutageBeforeOptimisation;
-    private double iMaxAfterOutage;
-    private double iAfterCra;
-    private double iMaxAfterCra;
-    private double iAfterSps;
-    private double iMaxAfterSps;
+    CnecCommon cnecCommon;
+    double iAfterOutage;
+    double iAfterOutageBeforeOptimisation;
+    double iMaxAfterOutage;
+    double iAfterCra;
+    double iMaxAfterCra;
+    double iAfterSps;
+    double iMaxAfterSps;
 
-    public CnecCommon getCnecCommon() {
-        return cnecCommon;
-    }
-
-    public void setCnecCommon(CnecCommon cnecCommon) {
-        this.cnecCommon = cnecCommon;
-    }
-
-    public double getiAfterOutage() {
-        return iAfterOutage;
-    }
-
-    public void setiAfterOutage(double iAfterOutage) {
-        this.iAfterOutage = iAfterOutage;
-    }
-
-    public double getiMaxAfterOutage() {
-        return iMaxAfterOutage;
-    }
-
-    public void setiMaxAfterOutage(double iMaxAfterOutage) {
-        this.iMaxAfterOutage = iMaxAfterOutage;
-    }
-
-    public double getiAfterCra() {
-        return iAfterCra;
-    }
-
-    public void setiAfterCra(double iAfterCra) {
-        this.iAfterCra = iAfterCra;
-    }
-
-    public double getiMaxAfterCra() {
-        return iMaxAfterCra;
-    }
-
-    public void setiMaxAfterCra(double iMaxAfterCra) {
-        this.iMaxAfterCra = iMaxAfterCra;
-    }
-
-    public double getiAfterSps() {
-        return iAfterSps;
-    }
-
-    public void setiAfterSps(double iAfterSps) {
-        this.iAfterSps = iAfterSps;
-    }
-
-    public double getiMaxAfterSps() {
-        return iMaxAfterSps;
-    }
-
-    public void setiMaxAfterSps(double iMaxAfterSps) {
-        this.iMaxAfterSps = iMaxAfterSps;
-    }
-
-    public double getiAfterOutageBeforeOptimisation() {
-        return iAfterOutageBeforeOptimisation;
-    }
-
-    public void setiAfterOutageBeforeOptimisation(double iAfterOutageBeforeOptimisation) {
-        this.iAfterOutageBeforeOptimisation = iAfterOutageBeforeOptimisation;
-    }
 }

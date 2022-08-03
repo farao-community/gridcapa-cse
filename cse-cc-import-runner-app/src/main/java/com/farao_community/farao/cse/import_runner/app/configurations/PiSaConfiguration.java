@@ -8,6 +8,10 @@
 package com.farao_community.farao.cse.import_runner.app.configurations;
 
 import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkConfiguration;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.context.annotation.Bean;
@@ -17,22 +21,12 @@ import org.springframework.context.annotation.Bean;
  */
 @ConfigurationProperties(prefix = "cse-cc-runner.pisa")
 @ConstructorBinding
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 public class PiSaConfiguration {
-    private final PisaLinkProperties link1;
-    private final PisaLinkProperties link2;
-
-    public PiSaConfiguration(PisaLinkProperties link1, PisaLinkProperties link2) {
-        this.link1 = link1;
-        this.link2 = link2;
-    }
-
-    public PisaLinkProperties getLink1() {
-        return link1;
-    }
-
-    public PisaLinkProperties getLink2() {
-        return link2;
-    }
+    PisaLinkProperties link1;
+    PisaLinkProperties link2;
 
     @Bean(name = "piSaLink1Configuration")
     public PiSaLinkConfiguration getPiSaLink1Configuration() {

@@ -6,61 +6,34 @@
  */
 package com.farao_community.farao.cse.runner.starter;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Optional;
+
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @ConfigurationProperties("cse-cc-runner")
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CseClientProperties {
-    private BindingConfiguration binding;
+    BindingConfiguration binding;
 
-    public BindingConfiguration getBinding() {
-        return binding;
-    }
-
-    public void setBinding(BindingConfiguration binding) {
-        this.binding = binding;
-    }
-
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class BindingConfiguration {
-        private String destination;
-        private String routingKey;
-        private String expiration;
-        private String applicationId;
-
-        public String getDestination() {
-            return destination;
-        }
-
-        public void setDestination(String destination) {
-            this.destination = destination;
-        }
+        String destination;
+        String routingKey;
+        String expiration;
+        String applicationId;
 
         public String getRoutingKey() {
             return Optional.ofNullable(routingKey).orElse("#");
         }
-
-        public void setRoutingKey(String routingKey) {
-            this.routingKey = routingKey;
-        }
-
-        public String getExpiration() {
-            return expiration;
-        }
-
-        public void setExpiration(String expiration) {
-            this.expiration = expiration;
-        }
-
-        public String getApplicationId() {
-            return applicationId;
-        }
-
-        public void setApplicationId(String applicationId) {
-            this.applicationId = applicationId;
-        }
     }
+
 }

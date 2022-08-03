@@ -8,43 +8,22 @@
 package com.farao_community.farao.cse.data.target_ch;
 
 import com.farao_community.farao.cse.data.xsd.target_ch.TOutage;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 class OutageInformation {
-    private final String name;
-    private final String fromNode;
-    private final String toNode;
-    private final String orderCode;
-    private final double fixedFlow;
-
-    OutageInformation(String name, String fromNode, String toNode, String orderCode, double fixedFlow) {
-        this.name = name;
-        this.fromNode = fromNode;
-        this.toNode = toNode;
-        this.orderCode = orderCode;
-        this.fixedFlow = fixedFlow;
-    }
+    String name;
+    String fromNode;
+    String toNode;
+    String orderCode;
+    double fixedFlow;
 
     OutageInformation(TOutage tOutage, double fixedFlow) {
         this(tOutage.getName(), tOutage.getNodeFrom(), tOutage.getNodeTo(), String.valueOf(tOutage.getOrder()), fixedFlow);
-    }
-
-    String getName() {
-        return name;
-    }
-
-    String getFromNode() {
-        return fromNode;
-    }
-
-    String getToNode() {
-        return toNode;
-    }
-
-    String getOrderCode() {
-        return orderCode;
-    }
-
-    double getFixedFlow() {
-        return fixedFlow;
     }
 }

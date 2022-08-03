@@ -7,6 +7,9 @@
 
 package com.farao_community.farao.cse.import_runner.app.configurations;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,38 +17,20 @@ import org.springframework.context.annotation.Configuration;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @Configuration
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProcessConfiguration {
 
     @Value("${cse-cc-runner.zone-id}")
-    private String zoneId;
-
+    String zoneId;
     @Value("${cse-cc-runner.trm}")
-    private Double trm;
-
+    Double trm;
     @Value("${cse-cc-runner.outputs.initial-cgm}")
-    private String initialCgm;
+    String initialCgm;
     @Value("${cse-cc-runner.outputs.final-cgm}")
-    private String finalCgm;
+    String finalCgm;
     @Value("${cse-cc-runner.outputs.ttc-res}")
-    private String ttcRes;
+    String ttcRes;
 
-    public String getZoneId() {
-        return zoneId;
-    }
 
-    public Double getTrm() {
-        return trm;
-    }
-
-    public String getInitialCgm() {
-        return initialCgm;
-    }
-
-    public String getFinalCgm() {
-        return finalCgm;
-    }
-
-    public String getTtcRes() {
-        return ttcRes;
-    }
 }

@@ -34,7 +34,7 @@ public class TtcRaoService {
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
             cracCreationContext,
             raoResult,
-            XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath()));
+            XNodeReader.getXNodes(xNodesConfiguration.getXNodesFilePath()));
         CseRaoResult cseRaoResult = TtcRao.generate(request.getTargetProcessDateTime(), cracResultsHelper);
         return fileExporter.saveTtcRao(cseRaoResult, request.getProcessType(), request.getTargetProcessDateTime());
     }

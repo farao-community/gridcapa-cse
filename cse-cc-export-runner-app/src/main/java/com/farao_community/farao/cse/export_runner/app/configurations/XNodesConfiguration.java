@@ -6,6 +6,9 @@
  */
 package com.farao_community.farao.cse.export_runner.app.configurations;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,12 +16,11 @@ import org.springframework.context.annotation.Configuration;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @Configuration
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class XNodesConfiguration {
 
     @Value("${cse-cc-runner.xnodes.file-path}")
-    private String xNodesFilePath;
+    String xNodesFilePath;
 
-    public String getxNodesFilePath() {
-        return xNodesFilePath;
-    }
 }

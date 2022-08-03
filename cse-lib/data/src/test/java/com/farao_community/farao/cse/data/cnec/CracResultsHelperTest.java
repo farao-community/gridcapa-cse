@@ -87,7 +87,7 @@ class CracResultsHelperTest {
         assertEquals("NL", nlLine.getCnecCommon().getAreaFrom());
         assertEquals("NL", nlLine.getCnecCommon().getAreaTo());
         assertEquals(818.1, nlLine.getI(), .1);
-        assertEquals(4000, nlLine.getiMax(), .1);
+        assertEquals(4000, nlLine.getIMax(), .1);
     }
 
     @Test
@@ -101,12 +101,12 @@ class CracResultsHelperTest {
         assertEquals("FFR1AA1  FFR2AA1  1", frFrMergedCnec.getCnecCommon().getCode());
         assertEquals("FR", frFrMergedCnec.getCnecCommon().getAreaFrom());
         assertEquals("FR", frFrMergedCnec.getCnecCommon().getAreaTo());
-        assertEquals(50, frFrMergedCnec.getiAfterOutage(), .1);
-        assertEquals(4318, frFrMergedCnec.getiMaxAfterOutage(), .1);
-        assertEquals(Double.NaN, frFrMergedCnec.getiAfterCra(), .1);
-        assertEquals(3099, frFrMergedCnec.getiMaxAfterCra(), .1);
-        assertEquals(0, frFrMergedCnec.getiAfterSps(), .1);
-        assertEquals(0, frFrMergedCnec.getiMaxAfterSps(), .1);
+        assertEquals(50, frFrMergedCnec.getIAfterOutage(), .1);
+        assertEquals(4318, frFrMergedCnec.getIMaxAfterOutage(), .1);
+        assertEquals(Double.NaN, frFrMergedCnec.getIAfterCra(), .1);
+        assertEquals(3099, frFrMergedCnec.getIMaxAfterCra(), .1);
+        assertEquals(0, frFrMergedCnec.getIAfterSps(), .1);
+        assertEquals(0, frFrMergedCnec.getIMaxAfterSps(), .1);
     }
 
     @Test

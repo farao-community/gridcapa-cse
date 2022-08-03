@@ -7,20 +7,16 @@
 
 package com.farao_community.farao.cse.data.ntc;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor
 class NtcInformation {
-    private final String variationType;
-    private final double flow;
+    String variationType;
+    double flow;
 
-    NtcInformation(String variationType, double flow) {
-        this.variationType = variationType;
-        this.flow = flow;
-    }
-
-    String getVariationType() {
-        return variationType;
-    }
-
-    double getFlow() {
-        return flow;
-    }
 }

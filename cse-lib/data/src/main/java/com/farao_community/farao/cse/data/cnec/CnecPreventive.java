@@ -6,46 +6,20 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 /**
  * @author Mohamed BenRejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
  */
 
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CnecPreventive {
 
-    private CnecCommon cnecCommon;
-    private double i;
-    private double iBeforeOptimisation;
-    private double iMax;
-
-    public CnecCommon getCnecCommon() {
-        return cnecCommon;
-    }
-
-    public void setCnecCommon(CnecCommon cnecCommon) {
-        this.cnecCommon = cnecCommon;
-    }
-
-    public double getI() {
-        return i;
-    }
-
-    public void setI(double i) {
-        this.i = i;
-    }
-
-    public double getiMax() {
-        return iMax;
-    }
-
-    public void setiMax(double iMax) {
-        this.iMax = iMax;
-    }
-
-    public double getiBeforeOptimisation() {
-        return iBeforeOptimisation;
-    }
-
-    public void setiBeforeOptimisation(double iBeforeOptimisation) {
-        this.iBeforeOptimisation = iBeforeOptimisation;
-    }
+    CnecCommon cnecCommon;
+    double i;
+    double iBeforeOptimisation;
+    double iMax;
 }

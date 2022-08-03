@@ -6,73 +6,23 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 /**
  * @author Mohamed BenRejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
  */
 
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CnecCommon {
 
-    private String name;
-    private String code;
-    private String areaFrom;
-    private String areaTo;
-    private String nodeFrom;
-    private String nodeTo;
-    private String orderCode;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getAreaFrom() {
-        return areaFrom;
-    }
-
-    public void setAreaFrom(String areaFrom) {
-        this.areaFrom = areaFrom;
-    }
-
-    public String getAreaTo() {
-        return areaTo;
-    }
-
-    public void setAreaTo(String areaTo) {
-        this.areaTo = areaTo;
-    }
-
-    public String getNodeFrom() {
-        return nodeFrom;
-    }
-
-    public void setNodeFrom(String nodeFrom) {
-        this.nodeFrom = nodeFrom;
-    }
-
-    public String getNodeTo() {
-        return nodeTo;
-    }
-
-    public void setNodeTo(String nodeTo) {
-        this.nodeTo = nodeTo;
-    }
-
-    public String getOrderCode() {
-        return orderCode;
-    }
-
-    public void setOrderCode(String orderCode) {
-        this.orderCode = orderCode;
-    }
+    String name;
+    String code;
+    String areaFrom;
+    String areaTo;
+    String nodeFrom;
+    String nodeTo;
+    String orderCode;
 }

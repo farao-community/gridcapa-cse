@@ -6,6 +6,9 @@
  */
 package com.farao_community.farao.cse.export_runner.app.configurations;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -19,10 +22,9 @@ import java.util.List;
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties("cse-cc-runner")
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UrlWhitelistConfiguration {
-    private final List<String> whitelist = new ArrayList<>();
+    List<String> whitelist = new ArrayList<>();
 
-    public List<String> getWhitelist() {
-        return whitelist;
-    }
 }

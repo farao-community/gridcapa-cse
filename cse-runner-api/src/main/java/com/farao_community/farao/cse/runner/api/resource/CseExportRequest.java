@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.time.OffsetDateTime;
@@ -18,13 +21,15 @@ import java.time.OffsetDateTime;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Type("cse-export-request")
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CseExportRequest {
     @Id
-    private final String id;
-    private final ProcessType processType;
-    private final OffsetDateTime targetProcessDateTime;
-    private final String cgmUrl;
-    private final String mergedCracUrl;
+    String id;
+    ProcessType processType;
+    OffsetDateTime targetProcessDateTime;
+    String cgmUrl;
+    String mergedCracUrl;
 
     @JsonCreator
     public CseExportRequest(@JsonProperty("id") String id,
@@ -37,26 +42,6 @@ public class CseExportRequest {
         this.processType = processType;
         this.cgmUrl = cgmUrl;
         this.mergedCracUrl = mergedCracUrl;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getCgmUrl() {
-        return cgmUrl;
-    }
-
-    public String getMergedCracUrl() {
-        return mergedCracUrl;
-    }
-
-    public OffsetDateTime getTargetProcessDateTime() {
-        return targetProcessDateTime;
-    }
-
-    public ProcessType getProcessType() {
-        return processType;
     }
 
     @Override

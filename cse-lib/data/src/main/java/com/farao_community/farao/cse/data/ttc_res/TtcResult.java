@@ -22,6 +22,10 @@ import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.
 import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CsePstCreationContext;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.math.BigDecimal;
@@ -36,50 +40,39 @@ import java.util.stream.Collectors;
 public final class TtcResult {
     private static final String FLOW_UNIT = "A";
 
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    @AllArgsConstructor
     public static class TtcFiles {
-        private final String baseCaseFileName;
-        private final String initialCgmFileName;
-        private final String cracJsonFileName;
-        private final String mergedGlskFileName;
-        private final String ntcReductionFilename;
-        private final String ntcReductionCreationDatetime;
-        private final String finalCgmWithPraFileName;
+        String baseCaseFileName;
+        String initialCgmFileName;
+        String cracJsonFileName;
+        String mergedGlskFileName;
+        String ntcReductionFilename;
+        String ntcReductionCreationDatetime;
+        String finalCgmWithPraFileName;
 
-        public TtcFiles(String baseCaseFileName, String initialCgmFileName, String cracJsonFileName, String mergedGlskFileName, String ntcReductionFilename, String ntcReductionCreationDatetime, String finalCgmWithPraFileName) {
-            this.baseCaseFileName = baseCaseFileName;
-            this.initialCgmFileName = initialCgmFileName;
-            this.cracJsonFileName = cracJsonFileName;
-            this.mergedGlskFileName = mergedGlskFileName;
-            this.ntcReductionFilename = ntcReductionFilename;
-            this.ntcReductionCreationDatetime = ntcReductionCreationDatetime;
-            this.finalCgmWithPraFileName = finalCgmWithPraFileName;
-        }
     }
 
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    @AllArgsConstructor
     public static class ProcessData {
-        private final Map<String, Double> borderExchanges;
-        private final Map<String, Double> reducedSplittingFactors;
-        private final Map<String, Double> countryBalances;
-        private final LimitingCause limitingCause;
-        private final double finalItalianImport;
-        private final double mniiOffsetValue;
-        private final String processTargetDate;
-
-        public ProcessData(Map<String, Double> borderExchanges, Map<String, Double> reducedSplittingFactors, Map<String, Double> countryBalances, LimitingCause limitingCause, double finalItalianImport, double mniiOffsetValue, String processTargetDate) {
-            this.borderExchanges = borderExchanges;
-            this.reducedSplittingFactors = reducedSplittingFactors;
-            this.countryBalances = countryBalances;
-            this.limitingCause = limitingCause;
-            this.finalItalianImport = finalItalianImport;
-            this.mniiOffsetValue = mniiOffsetValue;
-            this.processTargetDate = processTargetDate;
-        }
+        Map<String, Double> borderExchanges;
+        Map<String, Double> reducedSplittingFactors;
+        Map<String, Double> countryBalances;
+        LimitingCause limitingCause;
+        double finalItalianImport;
+        double mniiOffsetValue;
+        String processTargetDate;
     }
 
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     public static class FailedProcessData {
-        private final String processTargetDate;
-        private final FailedProcessReason failedProcessReason;
-        private final Optional<String> additionalFailureMessage;
+        String processTargetDate;
+        FailedProcessReason failedProcessReason;
+        Optional<String> additionalFailureMessage;
 
         public FailedProcessData(String processTargetDate, FailedProcessReason failedProcessReason, String additionalFailureMessage) {
             this.processTargetDate = processTargetDate;
@@ -329,7 +322,7 @@ public final class TtcResult {
                 iAfterCRA.setV(BigInteger.valueOf((int) flowCnecResult.getFlow()));
                 ImaxAfterCRA imaxAfterCRA = new ImaxAfterCRA();
                 imaxAfterCRA.setUnit(FLOW_UNIT);
-                imaxAfterCRA.setV(BigInteger.valueOf((int) flowCnecResult.getiMax()));
+                imaxAfterCRA.setV(BigInteger.valueOf((int) flowCnecResult.getIMax()));
                 mostLimitingElement.setIAfterCRA(iAfterCRA);
                 mostLimitingElement.setImaxAfterCRA(imaxAfterCRA);
             } else if (worstCnec.getState().getInstant() == Instant.OUTAGE) {
@@ -339,7 +332,7 @@ public final class TtcResult {
                 iAfterOutage.setV(BigInteger.valueOf((int) flowCnecResult.getFlow()));
                 ImaxAfterOutage imaxAfterOutage = new ImaxAfterOutage();
                 imaxAfterOutage.setUnit(FLOW_UNIT);
-                imaxAfterOutage.setV(BigInteger.valueOf((int) flowCnecResult.getiMax()));
+                imaxAfterOutage.setV(BigInteger.valueOf((int) flowCnecResult.getIMax()));
                 mostLimitingElement.setIAfterOutage(iAfterOutage);
                 mostLimitingElement.setImaxAfterOutage(imaxAfterOutage);
             } else if (worstCnec.getState().getInstant() == Instant.AUTO) {
@@ -349,7 +342,7 @@ public final class TtcResult {
                 iAfterSPS.setV(BigInteger.valueOf((int) flowCnecResult.getFlow()));
                 ImaxAfterSPS imaxAfterSps = new ImaxAfterSPS();
                 imaxAfterSps.setUnit(FLOW_UNIT);
-                imaxAfterSps.setV(BigInteger.valueOf((int) flowCnecResult.getiMax()));
+                imaxAfterSps.setV(BigInteger.valueOf((int) flowCnecResult.getIMax()));
                 mostLimitingElement.setIAfterSPS(iAfterSPS);
                 mostLimitingElement.setImaxAfterSPS(imaxAfterSps);
             } else {
@@ -398,34 +391,34 @@ public final class TtcResult {
                 Element monitoredBranchElement = new Element();
                 fillCommonElementInformation(monitoredBranchElement, mergedCnec.getCnecCommon().getName(), mergedCnec.getCnecCommon().getCode(),
                     mergedCnec.getCnecCommon().getAreaFrom(), mergedCnec.getCnecCommon().getAreaTo());
-                if (mergedCnec.getiMaxAfterOutage() != 0) {
+                if (mergedCnec.getIMaxAfterOutage() != 0) {
                     IAfterOutage iAfterOutage = new IAfterOutage();
-                    iAfterOutage.setV(BigInteger.valueOf((int) mergedCnec.getiAfterOutage()));
+                    iAfterOutage.setV(BigInteger.valueOf((int) mergedCnec.getIAfterOutage()));
                     iAfterOutage.setUnit(FLOW_UNIT);
                     monitoredBranchElement.setIAfterOutage(iAfterOutage);
                     ImaxAfterOutage imaxAfterOutage = new ImaxAfterOutage();
-                    imaxAfterOutage.setV(BigInteger.valueOf((int) mergedCnec.getiMaxAfterOutage()));
+                    imaxAfterOutage.setV(BigInteger.valueOf((int) mergedCnec.getIMaxAfterOutage()));
                     imaxAfterOutage.setUnit(FLOW_UNIT);
                     monitoredBranchElement.setImaxAfterOutage(imaxAfterOutage);
                 }
-                if (mergedCnec.getiMaxAfterCra() != 0) {
+                if (mergedCnec.getIMaxAfterCra() != 0) {
                     IAfterCRA iAfterCRA = new IAfterCRA();
-                    iAfterCRA.setV(BigInteger.valueOf((int) mergedCnec.getiAfterCra()));
+                    iAfterCRA.setV(BigInteger.valueOf((int) mergedCnec.getIAfterCra()));
                     iAfterCRA.setUnit(FLOW_UNIT);
                     monitoredBranchElement.setIAfterCRA(iAfterCRA);
                     ImaxAfterCRA imaxAfterCRA = new ImaxAfterCRA();
-                    imaxAfterCRA.setV(BigInteger.valueOf((int) mergedCnec.getiMaxAfterCra()));
+                    imaxAfterCRA.setV(BigInteger.valueOf((int) mergedCnec.getIMaxAfterCra()));
                     imaxAfterCRA.setUnit(FLOW_UNIT);
                     monitoredBranchElement.setImaxAfterCRA(imaxAfterCRA);
                 }
 
-                if (mergedCnec.getiMaxAfterSps() != 0) {
+                if (mergedCnec.getIMaxAfterSps() != 0) {
                     IAfterSPS iAfterSps = new IAfterSPS();
-                    iAfterSps.setV(BigInteger.valueOf((int) mergedCnec.getiAfterSps()));
+                    iAfterSps.setV(BigInteger.valueOf((int) mergedCnec.getIAfterSps()));
                     iAfterSps.setUnit(FLOW_UNIT);
                     monitoredBranchElement.setIAfterSPS(iAfterSps);
                     ImaxAfterSPS imaxAfterSps = new ImaxAfterSPS();
-                    imaxAfterSps.setV(BigInteger.valueOf((int) mergedCnec.getiMaxAfterSps()));
+                    imaxAfterSps.setV(BigInteger.valueOf((int) mergedCnec.getIMaxAfterSps()));
                     imaxAfterSps.setUnit(FLOW_UNIT);
                     monitoredBranchElement.setImaxAfterSPS(imaxAfterSps);
                 }
@@ -464,7 +457,7 @@ public final class TtcResult {
         preventiveCnecElement.setI(i);
         Imax imax = new Imax();
         imax.setUnit(FLOW_UNIT);
-        imax.setV(BigInteger.valueOf((int) cnecPreventive.getiMax()));
+        imax.setV(BigInteger.valueOf((int) cnecPreventive.getIMax()));
         preventiveCnecElement.setImax(imax);
     }
 
@@ -475,7 +468,7 @@ public final class TtcResult {
         preventiveCnecElement.setI(i);
         Imax imax = new Imax();
         imax.setUnit(FLOW_UNIT);
-        imax.setV(BigInteger.valueOf((int) flowCnecResult.getiMax()));
+        imax.setV(BigInteger.valueOf((int) flowCnecResult.getIMax()));
         preventiveCnecElement.setImax(imax);
     }
 

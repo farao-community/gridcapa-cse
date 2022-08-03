@@ -52,11 +52,11 @@ public class RequestService {
             GenericThreadLauncher<CseRunner, CseResponse> launcher = new GenericThreadLauncher<>(cseServer, cseRequest.getId(), cseRequest);
             launcher.start();
             ThreadLauncherResult<CseResponse> cseResponse = launcher.getResult();
-            if (cseResponse.hasError() && cseResponse.getException() != null) {
+            if (cseResponse.isError() && cseResponse.getException() != null) {
                 throw cseResponse.getException();
             }
             Optional<CseResponse> resp = cseResponse.getResult();
-            if (resp.isPresent() && !cseResponse.hasError()) {
+            if (resp.isPresent() && !cseResponse.isError()) {
                 result = sendCseResponse(resp.get());
                 LOGGER.info("Cse response sent: {}", resp.get());
             } else {
