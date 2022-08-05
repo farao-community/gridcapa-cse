@@ -31,6 +31,7 @@ import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -53,6 +54,9 @@ public class CseRunner {
     private final MerchantLineService merchantLineService;
     private final ForcedPrasHandler forcedPrasHandler;
     private final ProcessConfiguration processConfiguration;
+
+    @Value("${cse-cc-runner.dichotomy-number-max:4}")
+    private int dichotomyNumberMax;
 
     public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
                      ForcedPrasHandler forcedPrasHandler, ProcessConfiguration processConfiguration) {
@@ -104,11 +108,11 @@ public class CseRunner {
         } else {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
-
-        if (!cseRequest.getManualForcedPrasIds().isEmpty()) {
+        boolean hasForcedPra = !cseRequest.getManualForcedPrasIds().isEmpty();
+        if (hasForcedPra) {
             forcedPrasHandler.forcePras(cseRequest.getManualForcedPrasIds(), network, cseCracCreationContext.getCrac());
         }
-        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
+        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport, hasForcedPra ? dichotomyNumberMax : 100);
 
         String ttcResultUrl;
         String finalCgmUrl;
