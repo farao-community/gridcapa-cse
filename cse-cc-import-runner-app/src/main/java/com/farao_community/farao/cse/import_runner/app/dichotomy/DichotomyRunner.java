@@ -29,6 +29,7 @@ import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -48,6 +49,9 @@ public class DichotomyRunner {
     private final FileImporter fileImporter;
     private final RaoRunnerClient raoRunnerClient;
     private final Logger logger;
+
+    @Value("${cse-cc-runner.dichotomy-number-max:4}")
+    private int dichotomyNumberMax;
 
     public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, RaoRunnerClient raoRunnerClient, Logger logger) {
         this.fileExporter = fileExporter;
@@ -69,7 +73,8 @@ public class DichotomyRunner {
             index,
             new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
             getNetworkShifter(cseRequest, cseData, network),
-            getNetworkValidator(cseRequest, cseData));
+            getNetworkValidator(cseRequest, cseData),
+            dichotomyNumberMax);
         return engine.run(network);
     }
 
