@@ -547,7 +547,7 @@ public final class TtcResult {
             case CRITICAL_BRANCH:
                 return "Critical Branch";
             case GLSK_LIMITATION:
-                return "GLSK Limitation";
+                return "GSK Limitation";
             case COMPUTATION_FAILURE:
             case INDEX_EVALUATION_OR_MAX_ITERATION:
                 return "Failure";
