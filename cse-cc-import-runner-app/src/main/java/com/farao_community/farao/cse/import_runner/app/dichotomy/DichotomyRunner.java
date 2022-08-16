@@ -8,12 +8,12 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.cse.computation.BorderExchanges;
+import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
+import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.dichotomy.api.DichotomyEngine;
 import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
@@ -27,7 +27,9 @@ import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -77,18 +79,77 @@ public class DichotomyRunner {
                                              CseData cseData,
                                              Network network) throws IOException {
         return new LinearScaler(
-            getZonalScalable(request.getMergedGlskUrl(), network),
-            getShiftDispatcher(request.getProcessType(), cseData, network),
-            SHIFT_TOLERANCE);
+                getZonalScalable(request.getMergedGlskUrl(), network, request.getProcessType()),
+                getShiftDispatcher(request.getProcessType(), cseData, network),
+                SHIFT_TOLERANCE);
     }
 
-    private ZonalData<Scalable> getZonalScalable(String mergedGlskUrl, Network network) throws IOException {
+    public ZonalData<Scalable> getZonalScalable(String mergedGlskUrl, Network network, ProcessType processType) throws IOException {
         ZonalData<Scalable> zonalScalable = fileImporter.importGlsk(mergedGlskUrl, network);
         Arrays.stream(CseCountry.values()).forEach(country -> checkCseCountryInGlsk(zonalScalable, country));
+        handleLsk(network, zonalScalable, processType);
         return zonalScalable;
     }
 
-    private void checkCseCountryInGlsk(ZonalData<Scalable> zonalScalable, CseCountry country) {
+    private void handleLsk(Network network, ZonalData<Scalable> zonalScalable, ProcessType processType) {
+        zonalScalable.getDataPerZone().forEach((zone, scalable) -> {
+            if (processType == ProcessType.IDCC && zone.equals(CseCountry.IT.getEiCode())) {
+                return;
+            }
+            double sum = getZoneSumOfActiveLoads(network, zone);
+            Scalable stackedScalable = getStackedScalable(zone, scalable, network, sum);
+            zonalScalable.getDataPerZone().put(zone, stackedScalable);
+        });
+    }
+
+    private double getZoneSumOfActiveLoads(Network network, String zone) {
+        double sum = 0;
+        for (Load load : network.getLoads()) {
+            try {
+                if (CseCountry.valueOf(getLoadCountry(load)).getEiCode().equals(zone)) {
+                    sum += load.getP0();
+                }
+            } catch (IllegalArgumentException ignored) {
+                // Catching exception when CseCountry.valueOf() is called for a country not existing, we just ignore it
+            }
+        }
+        return sum;
+    }
+
+    private Scalable getStackedScalable(String zone, Scalable scalable, Network network, double sum) {
+        // No need to go further if a country has no active load
+        if (sum == 0) {
+            return scalable;
+        }
+
+        List<Scalable> listScalables = new ArrayList<>();
+        List<Float> listPercentages = new ArrayList<>();
+
+        for (Load load : network.getLoads()) {
+            try {
+                if (CseCountry.valueOf(getLoadCountry(load)).getEiCode().equals(zone)) {
+                    listPercentages.add((float) (load.getP0() / sum) * 100);
+                    listScalables.add(Scalable.onLoad(load.getId()));
+                }
+            } catch (IllegalArgumentException ignored) {
+                // Catching exception when CseCountry.valueOf() is called for a country not existing, we just ignore it
+            }
+        }
+        return Scalable.stack(scalable, Scalable.proportional(listPercentages, listScalables));
+    }
+
+    private String getLoadCountry(Load load) {
+        Optional<Substation> substation = load.getTerminal().getVoltageLevel().getSubstation();
+        if (substation.isPresent()) {
+            Optional<Country> country = substation.get().getCountry();
+            if (country.isPresent()) {
+                return country.get().toString();
+            }
+        }
+        return "No Country";
+    }
+
+    private static void checkCseCountryInGlsk(ZonalData<Scalable> zonalScalable, CseCountry country) {
         if (!zonalScalable.getDataPerZone().containsKey(country.getEiCode())) {
             throw new CseInvalidDataException(String.format("Area '%s' was not found in the glsk file.", country.getEiCode()));
         }
@@ -97,9 +158,9 @@ public class DichotomyRunner {
     private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Network network) {
         if (processType == ProcessType.D2CC) {
             return new CseD2ccShiftDispatcher(
-                convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true)),
-                convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
+                    convertSplittingFactors(cseData.getReducedSplittingFactors()),
+                    convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true)),
+                    convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
         } else {
             return new CseIdccShiftDispatcher(
                 convertSplittingFactors(cseData.getReducedSplittingFactors()),
