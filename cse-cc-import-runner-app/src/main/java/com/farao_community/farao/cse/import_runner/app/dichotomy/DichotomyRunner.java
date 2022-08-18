@@ -103,17 +103,18 @@ public class DichotomyRunner {
     }
 
     private double getZoneSumOfActiveLoads(Network network, String zone) {
-        double sum = 0;
-        for (Load load : network.getLoads()) {
-            try {
-                if (CseCountry.valueOf(getLoadCountry(load)).getEiCode().equals(zone)) {
-                    sum += load.getP0();
-                }
-            } catch (IllegalArgumentException ignored) {
-                // Catching exception when CseCountry.valueOf() is called for a country not existing, we just ignore it
-            }
+        return network.getLoadStream()
+                    .filter(load -> isLoadCorrespondingToTheZone(load, zone))
+                    .map(Load::getP0)
+                    .mapToDouble(Double::doubleValue).sum();
+    }
+
+    private boolean isLoadCorrespondingToTheZone(Load load, String zone) {
+        try {
+            return CseCountry.valueOf(getLoadCountry(load)).getEiCode().equals(zone);
+        } catch (IllegalArgumentException ignored) {
+            return false; // Catching exception when CseCountry.valueOf() is called for a country not existing, we just ignore it
         }
-        return sum;
     }
 
     private Scalable getStackedScalable(String zone, Scalable scalable, Network network, double sum) {
