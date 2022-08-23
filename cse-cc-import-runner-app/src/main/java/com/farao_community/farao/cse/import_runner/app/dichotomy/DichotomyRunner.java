@@ -68,10 +68,10 @@ public class DichotomyRunner {
         logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, MIN_IMPORT_VALUE, MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
         Index<RaoResponse> index = new Index<>(MIN_IMPORT_VALUE, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<RaoResponse> engine = new DichotomyEngine<>(
-            index,
-            new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
-            getNetworkShifter(cseRequest, cseData, network),
-            getNetworkValidator(cseRequest, cseData));
+                index,
+                new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
+                getNetworkShifter(cseRequest, cseData, network),
+                getNetworkValidator(cseRequest, cseData));
         return engine.run(network);
     }
 
@@ -84,19 +84,23 @@ public class DichotomyRunner {
                 SHIFT_TOLERANCE);
     }
 
-    public ZonalData<Scalable> getZonalScalable(String mergedGlskUrl, Network network, ProcessType processType) throws IOException {
+    ZonalData<Scalable> getZonalScalable(String mergedGlskUrl, Network network, ProcessType processType) throws IOException {
         ZonalData<Scalable> zonalScalable = fileImporter.importGlsk(mergedGlskUrl, network);
         Arrays.stream(CseCountry.values()).forEach(country -> checkCseCountryInGlsk(zonalScalable, country));
-        handleLsk(network, zonalScalable, processType);
+        stackScalableOnLoads(network, zonalScalable, processType);
         return zonalScalable;
     }
 
-    private void handleLsk(Network network, ZonalData<Scalable> zonalScalable, ProcessType processType) {
+    private void stackScalableOnLoads(Network network, ZonalData<Scalable> zonalScalable, ProcessType processType) {
         zonalScalable.getDataPerZone().forEach((zone, scalable) -> {
             if (processType == ProcessType.IDCC && zone.equals(CseCountry.IT.getEiCode())) {
                 return;
             }
             double sum = getZoneSumOfActiveLoads(network, zone);
+            // No need to go further if a country has no active load
+            if (sum == 0.0) {
+                return;
+            }
             Scalable stackedScalable = getStackedScalable(zone, scalable, network, sum);
             zonalScalable.getDataPerZone().put(zone, stackedScalable);
         });
@@ -104,31 +108,26 @@ public class DichotomyRunner {
 
     private double getZoneSumOfActiveLoads(Network network, String zone) {
         return network.getLoadStream()
-                    .filter(load -> isLoadCorrespondingToTheZone(load, zone))
-                    .map(Load::getP0)
-                    .mapToDouble(Double::doubleValue).sum();
+                .filter(load -> isLoadCorrespondingToTheZone(load, zone))
+                .map(Load::getP0)
+                .reduce(0., Double::sum);
     }
 
     private boolean isLoadCorrespondingToTheZone(Load load, String zone) {
-        try {
-            return CseCountry.valueOf(getLoadCountry(load)).getEiCode().equals(zone);
-        } catch (IllegalArgumentException ignored) {
-            return false; // Catching exception when CseCountry.valueOf() is called for a country not existing, we just ignore it
-        }
+        return load.getTerminal().getVoltageLevel().getSubstation()
+                .flatMap(Substation::getCountry)
+                .map(Country::toString)
+                .map(country -> CseCountry.valueOf(country).getEiCode().equals(zone))
+                .orElse(false);
     }
 
     private Scalable getStackedScalable(String zone, Scalable scalable, Network network, double sum) {
-        // No need to go further if a country has no active load
-        if (sum == 0) {
-            return scalable;
-        }
-
         List<Scalable> listScalables = new ArrayList<>();
         List<Float> listPercentages = new ArrayList<>();
 
         for (Load load : network.getLoads()) {
             try {
-                if (CseCountry.valueOf(getLoadCountry(load)).getEiCode().equals(zone)) {
+                if (isLoadCorrespondingToTheZone(load, zone)) {
                     listPercentages.add((float) (load.getP0() / sum) * 100);
                     listScalables.add(Scalable.onLoad(load.getId()));
                 }
@@ -137,17 +136,6 @@ public class DichotomyRunner {
             }
         }
         return Scalable.stack(scalable, Scalable.proportional(listPercentages, listScalables));
-    }
-
-    private String getLoadCountry(Load load) {
-        Optional<Substation> substation = load.getTerminal().getVoltageLevel().getSubstation();
-        if (substation.isPresent()) {
-            Optional<Country> country = substation.get().getCountry();
-            if (country.isPresent()) {
-                return country.get().toString();
-            }
-        }
-        return "No Country";
     }
 
     private static void checkCseCountryInGlsk(ZonalData<Scalable> zonalScalable, CseCountry country) {
@@ -164,22 +152,22 @@ public class DichotomyRunner {
                     convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
         } else {
             return new CseIdccShiftDispatcher(
-                convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                cseData.getCseReferenceExchanges().getExchanges(),
-                cseData.getNtc2().getExchanges());
+                    convertSplittingFactors(cseData.getReducedSplittingFactors()),
+                    cseData.getCseReferenceExchanges().getExchanges(),
+                    cseData.getNtc2().getExchanges());
         }
     }
 
     private NetworkValidator<RaoResponse> getNetworkValidator(CseRequest request, CseData cseData) {
         return new RaoRunnerValidator(
-            request.getProcessType(),
-            request.getId(),
-            request.getTargetProcessDateTime(),
-            cseData.getJsonCracUrl(),
-            fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType()),
-            raoRunnerClient,
-            fileExporter,
-            fileImporter);
+                request.getProcessType(),
+                request.getId(),
+                request.getTargetProcessDateTime(),
+                cseData.getJsonCracUrl(),
+                fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType()),
+                raoRunnerClient,
+                fileExporter,
+                fileImporter);
     }
 
     static Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
