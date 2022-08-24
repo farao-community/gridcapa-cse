@@ -13,7 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
@@ -34,13 +38,13 @@ class Ntc2Test {
     private Map<String, InputStream> test2Nt2Files;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() throws IOException, URISyntaxException {
         test1Nt2Files = getNtc2Files("test1");
         test2Nt2Files = getNtc2Files("test2");
     }
 
-    private Map<String, InputStream> getNtc2Files(String directory) throws IOException {
-        return Files.list(Paths.get(Objects.requireNonNull(getClass().getResource(directory)).getPath()))
+    private Map<String, InputStream> getNtc2Files(String directory) throws IOException, URISyntaxException {
+        return Files.list(Paths.get(Paths.get(Objects.requireNonNull(getClass().getResource(directory)).toURI()).toString()))
             .collect(Collectors.toMap(
                 path -> path.getFileName().toString(),
                 path -> {
