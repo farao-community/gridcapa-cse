@@ -126,13 +126,9 @@ public class DichotomyRunner {
         List<Float> listPercentages = new ArrayList<>();
 
         for (Load load : network.getLoads()) {
-            try {
-                if (isLoadCorrespondingToTheZone(load, zone)) {
-                    listPercentages.add((float) (load.getP0() / sum) * 100);
-                    listScalables.add(Scalable.onLoad(load.getId()));
-                }
-            } catch (IllegalArgumentException ignored) {
-                // Catching exception when CseCountry.valueOf() is called for a country not existing, we just ignore it
+            if (isLoadCorrespondingToTheZone(load, zone)) {
+                listPercentages.add((float) (load.getP0() / sum) * 100);
+                listScalables.add(Scalable.onLoad(load.getId()));
             }
         }
         return Scalable.stack(scalable, Scalable.proportional(listPercentages, listScalables));
