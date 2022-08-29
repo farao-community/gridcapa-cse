@@ -68,10 +68,10 @@ public class DichotomyRunner {
         logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, MIN_IMPORT_VALUE, MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
         Index<RaoResponse> index = new Index<>(MIN_IMPORT_VALUE, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<RaoResponse> engine = new DichotomyEngine<>(
-                index,
-                new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
-                getNetworkShifter(cseRequest, cseData, network),
-                getNetworkValidator(cseRequest, cseData));
+            index,
+            new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
+            getNetworkShifter(cseRequest, cseData, network),
+            getNetworkValidator(cseRequest, cseData));
         return engine.run(network);
     }
 
@@ -79,9 +79,9 @@ public class DichotomyRunner {
                                              CseData cseData,
                                              Network network) throws IOException {
         return new LinearScaler(
-                getZonalScalable(request.getMergedGlskUrl(), network, request.getProcessType()),
-                getShiftDispatcher(request.getProcessType(), cseData, network),
-                SHIFT_TOLERANCE);
+            getZonalScalable(request.getMergedGlskUrl(), network, request.getProcessType()),
+            getShiftDispatcher(request.getProcessType(), cseData, network),
+            SHIFT_TOLERANCE);
     }
 
     ZonalData<Scalable> getZonalScalable(String mergedGlskUrl, Network network, ProcessType processType) throws IOException {
@@ -108,17 +108,17 @@ public class DichotomyRunner {
 
     private double getZoneSumOfActiveLoads(Network network, String zone) {
         return network.getLoadStream()
-                .filter(load -> isLoadCorrespondingToTheZone(load, zone))
-                .map(Load::getP0)
-                .reduce(0., Double::sum);
+            .filter(load -> isLoadCorrespondingToTheZone(load, zone))
+            .map(Load::getP0)
+            .reduce(0., Double::sum);
     }
 
     private boolean isLoadCorrespondingToTheZone(Load load, String zone) {
         return load.getTerminal().getVoltageLevel().getSubstation()
-                .flatMap(Substation::getCountry)
-                .map(Country::toString)
-                .map(country -> CseCountry.valueOf(country).getEiCode().equals(zone))
-                .orElse(false);
+            .flatMap(Substation::getCountry)
+            .map(Country::toString)
+            .map(country -> CseCountry.valueOf(country).getEiCode().equals(zone))
+            .orElse(false);
     }
 
     private Scalable getStackedScalable(String zone, Scalable scalable, Network network, double sum) {
@@ -147,27 +147,27 @@ public class DichotomyRunner {
     private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Network network) {
         if (processType == ProcessType.D2CC) {
             return new CseD2ccShiftDispatcher(
-                    convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                    convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true)),
-                    convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
+                convertSplittingFactors(cseData.getReducedSplittingFactors()),
+                convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true)),
+                convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
         } else {
             return new CseIdccShiftDispatcher(
-                    convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                    cseData.getCseReferenceExchanges().getExchanges(),
-                    cseData.getNtc2().getExchanges());
+                convertSplittingFactors(cseData.getReducedSplittingFactors()),
+                cseData.getCseReferenceExchanges().getExchanges(),
+                cseData.getNtc2().getExchanges());
         }
     }
 
     private NetworkValidator<RaoResponse> getNetworkValidator(CseRequest request, CseData cseData) {
         return new RaoRunnerValidator(
-                request.getProcessType(),
-                request.getId(),
-                request.getTargetProcessDateTime(),
-                cseData.getJsonCracUrl(),
-                fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType()),
-                raoRunnerClient,
-                fileExporter,
-                fileImporter);
+            request.getProcessType(),
+            request.getId(),
+            request.getTargetProcessDateTime(),
+            cseData.getJsonCracUrl(),
+            fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType()),
+            raoRunnerClient,
+            fileExporter,
+            fileImporter);
     }
 
     static Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
