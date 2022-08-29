@@ -200,6 +200,13 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="CurativeAction">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Action"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="Action">
     <xs:complexType>
       <xs:sequence>
@@ -253,6 +260,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="Outage"/>
+        <xs:element ref="CurativeAction"/>
         <xs:element minOccurs="0" ref="MonitoredElement"/>
       </xs:sequence>
     </xs:complexType>

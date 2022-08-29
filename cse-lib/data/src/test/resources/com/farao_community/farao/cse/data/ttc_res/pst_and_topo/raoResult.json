@@ -134,7 +134,12 @@
     },
     {
       "networkActionId": "ra_2",
-      "activatedStates": []
+      "activatedStates": [
+        {
+          "instant": "curative",
+          "contingency": "outage_3"
+        }
+      ]
     }
   ],
   "pstRangeActionResults": [
@@ -145,6 +150,19 @@
       "activatedStates": [
         {
           "instant": "preventive",
+          "tap": -16,
+          "setpoint": -6.2276423729910535
+        }
+      ]
+    },
+    {
+      "pstRangeActionId": "PST_cra_7_BBE2AA1  BBE3AA1  1",
+      "initialTap": 0,
+      "initialSetpoint": -0.0,
+      "activatedStates": [
+        {
+          "instant": "curative",
+          "contingency": "outage_2",
           "tap": -16,
           "setpoint": -6.2276423729910535
         }

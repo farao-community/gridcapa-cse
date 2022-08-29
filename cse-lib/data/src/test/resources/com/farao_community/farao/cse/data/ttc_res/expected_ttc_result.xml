@@ -163,6 +163,61 @@
         </CriticalBranch>
         <CriticalBranch>
             <Outage>
+                <Name v="outage_2"/>
+                <Element>
+                    <Code v="FFR1AA1  BBE1AA1W 1"/>
+                    <areafrom v="FR"/>
+                    <areato v="BE"/>
+                </Element>
+            </Outage>
+            <CurativeAction>
+                <Action>
+                    <Name v="cra_7"/>
+                    <PSTtap v="-16"/>
+                </Action>
+            </CurativeAction>
+            <MonitoredElement>
+                <Element>
+                    <Name v="French line 2"/>
+                    <Code v="FFR2AA1  FFR3AA1  1"/>
+                    <areafrom v="FR"/>
+                    <areato v="FR"/>
+                    <IAfterOutage unit="A" v="0"/>
+                    <ImaxAfterOutage unit="A" v="3071"/>
+                    <IAfterCRA unit="A" v="0"/>
+                    <ImaxAfterCRA unit="A" v="2585"/>
+                </Element>
+            </MonitoredElement>
+        </CriticalBranch>
+        <CriticalBranch>
+            <Outage>
+                <Name v="outage_3"/>
+                <Element>
+                    <Code v="FFR2AA1  FFR3AA1  1"/>
+                    <areafrom v="FR"/>
+                    <areato v="FR"/>
+                </Element>
+            </Outage>
+            <CurativeAction>
+                <Action>
+                    <Name v="ra_2"/>
+                </Action>
+            </CurativeAction>
+            <MonitoredElement>
+                <Element>
+                    <Name v="French line 2"/>
+                    <Code v="FFR2AA1  FFR3AA1  1"/>
+                    <areafrom v="FR"/>
+                    <areato v="FR"/>
+                    <IAfterOutage unit="A" v="0"/>
+                    <ImaxAfterOutage unit="A" v="3071"/>
+                    <IAfterCRA unit="A" v="0"/>
+                    <ImaxAfterCRA unit="A" v="2585"/>
+                </Element>
+            </MonitoredElement>
+        </CriticalBranch>
+        <CriticalBranch>
+            <Outage>
                 <Name v="outage_1"/>
                 <Element>
                     <Code v="BBE2AA1  FFR3AA1  1"/>
@@ -170,6 +225,7 @@
                     <areato v="FR"/>
                 </Element>
             </Outage>
+            <CurativeAction/>
             <MonitoredElement>
                 <Element>
                     <Name v="French line 1"/>
