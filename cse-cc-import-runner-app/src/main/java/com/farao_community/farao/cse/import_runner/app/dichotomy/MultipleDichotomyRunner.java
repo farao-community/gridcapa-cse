@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.commons.EICode;
+import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.import_runner.app.CseData;
@@ -17,6 +18,12 @@ import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataExceptio
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
+import com.farao_community.farao.data.crac_api.Instant;
+import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
+import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
+import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
+import com.farao_community.farao.data.rao_result_api.OptimizationState;
+import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
@@ -29,13 +36,15 @@ import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
-import org.apache.commons.lang3.tuple.Pair;
+import com.powsybl.loadflow.LoadFlow;
+import com.powsybl.loadflow.LoadFlowParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -44,119 +53,146 @@ import java.util.*;
 public class MultipleDichotomyRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(MultipleDichotomyRunner.class);
     private static final double SHIFT_TOLERANCE = 1;
-    private static final int MAX_DICHOTOMY_NUMBER = 6; //TODO: to be defined as config parameter
 
     private final DichotomyRunner dichotomyRunner;
     private final FileImporter fileImporter;
     private final ForcedPrasHandler forcedPrasHandler;
+    private final Logger businessLogger;
 
-    public MultipleDichotomyRunner(DichotomyRunner dichotomyRunner, FileImporter fileImporter, ForcedPrasHandler forcedPrasHandler) {
+    public MultipleDichotomyRunner(DichotomyRunner dichotomyRunner, FileImporter fileImporter, ForcedPrasHandler forcedPrasHandler, Logger logger) {
         this.dichotomyRunner = dichotomyRunner;
         this.fileImporter = fileImporter;
         this.forcedPrasHandler = forcedPrasHandler;
+        this.businessLogger = logger;
     }
 
     public MultipleDichotomyResult runMultipleDichotomy(CseRequest request,
                                                         CseData cseData,
                                                         Network network,
                                                         Crac crac,
-                                                        List<String> manualForcedPrasIds,
-                                                        Map<String, List<Set<String>>> automatedForcedPrasIds,
                                                         double initialItalianImport) throws IOException {
+
+        List<String> manualForcedPrasIds = request.getManualForcedPrasIds();
+        Integer maximumDichotomiesNumber = request.getMaximumDichotomiesNumber();
+        Map<String, List<Set<String>>> automatedForcedPrasIds = request.getAutomatedForcedPrasIds();
         MultipleDichotomyResult multipleDichotomyResult = new MultipleDichotomyResult();
 
-        // Shift first before evaluating the applicability of forced PRAs (maybe it will require to run a loadflow after that)
         NetworkShifter networkShifter = getNetworkShifter(request, cseData, network);
 
         try {
             networkShifter.shiftNetwork(initialItalianImport, network);
+            LoadFlow.run(network, LoadFlowParameters.load());
         } catch (GlskLimitationException e) {
-            // Handle errors properly
-            e.printStackTrace();
+            String errorMessage = String.format("Glsk limitation prevents the network to be shifted: %s", e.getMessage());
+            LOGGER.error(errorMessage);
+            throw new CseDataException(errorMessage);
         } catch (ShiftingException e) {
-            // Handle errors properly
-            e.printStackTrace();
+            String errorMessage = String.format("Exception occurred during the shift on network: %s", e.getMessage());
+            LOGGER.error(errorMessage);
+            throw new CseDataException(errorMessage);
         }
 
         // Force manual PRAs if specified
-        forcedPrasHandler.forcePras(manualForcedPrasIds, network, crac);
+        if (!manualForcedPrasIds.isEmpty()) {
+            forcedPrasHandler.forcePras(manualForcedPrasIds, network, crac);
+        }
 
         // Launch initial dichotomy and store result
         DichotomyResult<RaoResponse> initialDichotomyResult = dichotomyRunner.runDichotomy(request, cseData, network, networkShifter, initialItalianImport);
         multipleDichotomyResult.addResult(initialDichotomyResult, new HashSet<>(manualForcedPrasIds));
 
+        if (automatedForcedPrasIds.isEmpty() ||
+            (multipleDichotomyResult.getBestDichotomyResult().getHighestValidStep() != null && !multipleDichotomyResult.getBestDichotomyResult().getHighestValidStep().isValid())) {
+            return multipleDichotomyResult;
+        }
+
         int dichotomyCount = 1;
         String limitingElement;
-        Map<String, Integer> counterPerLimitingElement = new HashMap<>();
+        int counterPerLimitingElement = 0;
+        businessLogger.info("Dichotomies maximum number is '{}'", maximumDichotomiesNumber);
+        limitingElement = getLimitingElement(multipleDichotomyResult.getBestDichotomyResult().getHighestValidStep());
 
-        while (dichotomyCount <= MAX_DICHOTOMY_NUMBER) {
-            limitingElement = multipleDichotomyResult.getLimitingElement();
+        while (dichotomyCount <= maximumDichotomiesNumber) {
 
-            List<Set<String>> forcedPras = Optional
+            List<Set<String>> forcedPrasForLimitingElement = Optional
                 .ofNullable(automatedForcedPrasIds.get(limitingElement))
                 .orElse(automatedForcedPrasIds.get("default"));
-            if (forcedPras == null) {
-                // Limiting element not in the list and no default list of forced PRAs
+
+            if (forcedPrasForLimitingElement == null || counterPerLimitingElement >= forcedPrasForLimitingElement.size()) {
+                // Limiting element not in the list and no default list of forced PRAs  || all RAs combinations are tried
+                businessLogger.warn("No (more) RAs matching the limiting element '{}' found in the automatedForcedPras inputs. No more dichotomies can be performed", limitingElement);
                 return multipleDichotomyResult;
             }
 
-            Set<String> raToBeForced = forcedPras.get(counterPerLimitingElement.get(limitingElement));
+            Set<String> raToBeForced = forcedPrasForLimitingElement.get(counterPerLimitingElement);
+            String raListToString = raToBeForced.stream().map(Object::toString).collect(Collectors.joining(","));
+
+            if (!checkIfPrasCombinationHasImpactOnNetwork(raToBeForced, crac, network)) {
+                businessLogger.info("RAs combination '{}' has no impact on network. It will not be applied", raListToString);
+                counterPerLimitingElement++;
+                continue;
+            }
+
             try {
+                businessLogger.info("Trying to force pras combination '{}'", raListToString);
                 forcedPrasHandler.forcePras(new ArrayList<>(raToBeForced), network, crac);
-            } catch (CseDataException e) { // Set a more specific exception
-                LOGGER.info("No need to run for this config", e);
-                // Go to next forced pra set for this limiting element
-                counterPerLimitingElement.put(limitingElement, counterPerLimitingElement.get(limitingElement) + 1);
+            } catch (CseDataException e) {
+                businessLogger.info("RAs combination '{}' not allowed for the limiting element: '{}'. Next RAs combination will be tried. Exception details: {}", raListToString, limitingElement, e.getMessage());
+                // Go to next forced pra set for this limiting element without incrementing dichotomy counter
+                counterPerLimitingElement++;
                 continue;
             }
 
             Network bestNetwork = fileImporter.importNetwork(multipleDichotomyResult.getBestNetworkUrl());
+            businessLogger.info("Automated forced pras processing: Dichotomy number is : '{}'. Current limiting element is : '{}'.", dichotomyCount, limitingElement);
             DichotomyResult<RaoResponse> nextDichotomyResult = dichotomyRunner.runDichotomy(request, cseData, bestNetwork, networkShifter, initialItalianImport);
 
-            if (multipleDichotomyResult.getHighestTTC() < MultipleDichotomyResult.getTTC(nextDichotomyResult.getHighestValidStep())) {
+            double previousHighestTtc = getTTC(multipleDichotomyResult.getBestDichotomyResult().getHighestValidStep());
+            double newTtc = getTTC(nextDichotomyResult.getHighestValidStep());
+            if (previousHighestTtc < newTtc) {
                 multipleDichotomyResult.addResult(nextDichotomyResult, raToBeForced);
+                businessLogger.info("New TTC '{}' is higher than previous TTC '{}'. Result will be kept", newTtc, previousHighestTtc);
+            } else {
+                businessLogger.info("New TTC '{}' is lower than previous TTC '{}'. Result will be kept", newTtc, previousHighestTtc);
             }
-            if (limitingElement.equals(MultipleDichotomyResult.getLimitingElement(nextDichotomyResult))) {
-                counterPerLimitingElement.put(limitingElement, counterPerLimitingElement.get(limitingElement) + 1);
+
+            String newLimitingElement = getLimitingElement(nextDichotomyResult.getHighestValidStep());
+            if (limitingElement.equals(newLimitingElement)) {
+                businessLogger.info("The limiting element '{}' didn't change after the last dichotomy. Next RAs combination will be tried", limitingElement);
+                counterPerLimitingElement++;
+            } else {
+                businessLogger.info("The limiting element '{}' changed after the last dichotomy. New limiting element is '{}'", limitingElement, newLimitingElement);
+                limitingElement = newLimitingElement;
+                counterPerLimitingElement = 0;
             }
             dichotomyCount++;
         }
         return multipleDichotomyResult;
     }
 
-    /*
-        Stores the succession of DichotomyResults when it improves the TTC
-     */
-    public static final class MultipleDichotomyResult {
-        List<Pair<Set<String>, DichotomyResult<RaoResponse>>> dichotomyHistory = new ArrayList<>();
+    private boolean checkIfPrasCombinationHasImpactOnNetwork(Set<String> raToBeForced, Crac crac, Network network) {
+        //if one elementary action of the network action has an impact on the network then the network action has an impact on the network
+        List<String> availablePreventivePrasInCrac = crac.getNetworkActions().stream()
+            .filter(na -> na.getUsageMethod(crac.getPreventiveState()).equals(UsageMethod.AVAILABLE))
+            .map(NetworkAction::getId)
+            .collect(Collectors.toList());
 
-        // Stores a new increasing TTC dichotomy result alongside the set of forced PRAs to keep track of them
-        public void addResult(DichotomyResult<RaoResponse> initialDichotomyResult, Set<String> forcedPras) {
-            dichotomyHistory.add(Pair.of(forcedPras, initialDichotomyResult));
-        }
+        List<String> rasToBeForcedAvailableInCrac = raToBeForced.stream()
+            .filter(availablePreventivePrasInCrac::contains)
+            .collect(Collectors.toList());
 
-        public String getLimitingElement() {
-            return getLimitingElement(getBestDichotomyResult());
-        }
+        if (!rasToBeForcedAvailableInCrac.isEmpty()) {
 
-        public double getHighestTTC() {
-            return getTTC(getBestDichotomyResult().getHighestValidStep());
-        }
+            List<String> rasWithImpactOnNetwork = new ArrayList<>();
+            rasToBeForcedAvailableInCrac.stream().map(crac::getNetworkAction).forEach(networkAction -> {
+                if (networkAction.hasImpactOnNetwork(network)) {
+                    rasWithImpactOnNetwork.add(networkAction.getId());
+                }
+            });
+            return !rasWithImpactOnNetwork.isEmpty();
 
-        public String getBestNetworkUrl() {
-            return dichotomyHistory.get(dichotomyHistory.size() - 1).getRight().getHighestValidStep().getValidationData().getNetworkWithPraFileUrl();
-        }
-
-        public DichotomyResult<RaoResponse> getBestDichotomyResult() {
-            return dichotomyHistory.get(dichotomyHistory.size() - 1).getRight();
-        }
-
-        private static double getTTC(DichotomyStepResult<RaoResponse> highestValidStep) {
-            return 0.;
-        }
-
-        private static String getLimitingElement(DichotomyResult<RaoResponse> nextDichotomyResult) {
-            return null;
+        } else {
+            return false;
         }
     }
 
@@ -237,5 +273,34 @@ public class MultipleDichotomyRunner {
 
     private static String toEic(String country) {
         return new EICode(Country.valueOf(country)).getAreaCode();
+    }
+
+    private double getTTC(DichotomyStepResult<RaoResponse> dichotomyStepResult) throws IOException {
+        Network network = fileImporter.importNetwork(dichotomyStepResult.getValidationData().getNetworkWithPraFileUrl());
+        return BorderExchanges.computeItalianImport(network);
+    }
+
+    private String getLimitingElement(DichotomyStepResult<RaoResponse> dichotomyStepResult) throws IOException {
+        double worstMargin = Double.MAX_VALUE;
+        Optional<FlowCnec> worstCnec = Optional.empty();
+        Crac crac = fileImporter.importCracFromJson(dichotomyStepResult.getValidationData().getCracFileUrl());
+        RaoResult raoResult = fileImporter.importRaoResult(dichotomyStepResult.getValidationData().getRaoResultFileUrl(), crac);
+        for (FlowCnec flowCnec : crac.getFlowCnecs()) {
+            double margin = computeFlowMargin(raoResult, flowCnec);
+            if (margin < worstMargin) {
+                worstMargin = margin;
+                worstCnec = Optional.of(flowCnec);
+            }
+        }
+
+        return worstCnec.orElseThrow(() -> new CseDataException("Exception occurred while retrieving the most limiting element in preventive state.")).getName();
+    }
+
+    private double computeFlowMargin(RaoResult raoResult, FlowCnec flowCnec) {
+        if (flowCnec.getState().getInstant() == Instant.CURATIVE) {
+            return raoResult.getMargin(OptimizationState.AFTER_CRA, flowCnec, Unit.AMPERE);
+        } else {
+            return raoResult.getMargin(OptimizationState.AFTER_PRA, flowCnec, Unit.AMPERE);
+        }
     }
 }

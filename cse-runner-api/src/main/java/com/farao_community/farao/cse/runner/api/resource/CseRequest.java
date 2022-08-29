@@ -39,6 +39,7 @@ public class CseRequest {
     private final String yearlyNtcUrl;
     private final List<String> manualForcedPrasIds;
     private final Map<String, List<Set<String>>> automatedForcedPrasIds;
+    private final Integer maximumDichotomiesNumber;
     private final double dichotomyPrecision;
     private final double initialDichotomyStep;
     private final Double initialDichotomyIndex;
@@ -60,6 +61,7 @@ public class CseRequest {
                       @JsonProperty("yearlyNtcUrl") String yearlyNtcUrl,
                       @JsonProperty("manualForcedPrasIds") List<String> manualForcedPrasIds,
                       @JsonProperty("automatedForcedPras") Map<String, List<Set<String>>> automatedForcedPrasIds,
+                      @JsonProperty("maximumDichotomiesNumber") Integer maximumDichotomiesNumber,
                       @JsonProperty("dichotomyPrecision") double dichotomyPrecision,
                       @JsonProperty("initialDichotomyStep") double initialDichotomyStep,
                       @JsonProperty("initialDichotomyIndex") Double initialDichotomyIndex) {
@@ -79,6 +81,7 @@ public class CseRequest {
         this.yearlyNtcUrl = yearlyNtcUrl;
         this.manualForcedPrasIds = manualForcedPrasIds;
         this.automatedForcedPrasIds = automatedForcedPrasIds;
+        this.maximumDichotomiesNumber = maximumDichotomiesNumber;
         this.dichotomyPrecision = dichotomyPrecision;
         this.initialDichotomyStep = initialDichotomyStep;
         this.initialDichotomyIndex = initialDichotomyIndex;
@@ -94,13 +97,14 @@ public class CseRequest {
                                          String yearlyNtcUrl,
                                          List<String> manualFrcedPrasIds,
                                          Map<String, List<Set<String>>> automatedForcedPras,
+                                         Integer maximumDichotomiesNumber,
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex) {
         return new CseRequest(
             id, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
             null, null, null, targetChUrl, null, yearlyNtcUrl, manualFrcedPrasIds,
-            automatedForcedPras, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
+            automatedForcedPras, maximumDichotomiesNumber, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
     public static CseRequest idccProcess(String id,
@@ -117,12 +121,13 @@ public class CseRequest {
                                          String yearlyNtcUrl,
                                          List<String> manualForcedPrasIds,
                                          Map<String, List<Set<String>>> automatedForcedPras,
+                                         Integer maximumDichotomiesNumber,
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex) {
         return new CseRequest(id, ProcessType.IDCC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl,
             ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl, manualForcedPrasIds,
-            automatedForcedPras, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
+            automatedForcedPras, maximumDichotomiesNumber, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex);
     }
 
     public String getId() {
@@ -183,6 +188,10 @@ public class CseRequest {
 
     public List<String> getManualForcedPrasIds() {
         return manualForcedPrasIds;
+    }
+
+    public Integer getMaximumDichotomiesNumber() {
+        return maximumDichotomiesNumber;
     }
 
     public Map<String, List<Set<String>>> getAutomatedForcedPrasIds() {

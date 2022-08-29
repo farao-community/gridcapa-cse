@@ -10,6 +10,7 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
@@ -51,18 +52,15 @@ public class CseRunner {
     private final TtcResultService ttcResultService;
     private final PiSaService piSaService;
     private final MerchantLineService merchantLineService;
-    private final ForcedPrasHandler forcedPrasHandler;
     private final ProcessConfiguration processConfiguration;
 
-    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, MultipleDichotomyRunner multipleDichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
-                     ForcedPrasHandler forcedPrasHandler, ProcessConfiguration processConfiguration) {
+    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, MultipleDichotomyRunner multipleDichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService, ProcessConfiguration processConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.multipleDichotomyRunner = multipleDichotomyRunner;
         this.ttcResultService = ttcResultService;
         this.piSaService = piSaService;
         this.merchantLineService = merchantLineService;
-        this.forcedPrasHandler = forcedPrasHandler;
         this.processConfiguration = processConfiguration;
 
     }
@@ -70,7 +68,6 @@ public class CseRunner {
     @Threadable
     public CseResponse run(CseRequest cseRequest) throws IOException {
         CseData cseData = new CseData(cseRequest, fileImporter);
-
         // CRAC import and network pre-processing
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         merchantLineService.activateMerchantLine(cseRequest.getProcessType(), network, cseData);
@@ -105,13 +102,11 @@ public class CseRunner {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
-        MultipleDichotomyRunner.MultipleDichotomyResult multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
+        MultipleDichotomyResult multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
             cseRequest,
             cseData,
             network,
             cseCracCreationContext.getCrac(),
-            cseRequest.getManualForcedPrasIds(),
-            cseRequest.getAutomatedForcedPrasIds(),
             initialItalianImport);
 
         DichotomyResult<RaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();

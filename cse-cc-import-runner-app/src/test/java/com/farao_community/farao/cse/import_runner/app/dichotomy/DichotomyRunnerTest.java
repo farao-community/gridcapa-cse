@@ -28,7 +28,7 @@ class DichotomyRunnerTest {
             "FR", 0.3,
             "SI", 0.4
         );
-        Map<String, Double> convertedSplittingFactors = DichotomyRunner.convertSplittingFactors(splittingFactors);
+        Map<String, Double> convertedSplittingFactors = MultipleDichotomyRunner.convertSplittingFactors(splittingFactors);
         assertEquals(0.1, convertedSplittingFactors.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0.2, convertedSplittingFactors.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0.3, convertedSplittingFactors.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
@@ -44,7 +44,7 @@ class DichotomyRunnerTest {
             BorderExchanges.IT_FR, 300.,
             BorderExchanges.IT_SI, 400.
         );
-        Map<String, Double> convertedBorderExchanges = DichotomyRunner.convertBorderExchanges(borderExchanges);
+        Map<String, Double> convertedBorderExchanges = MultipleDichotomyRunner.convertBorderExchanges(borderExchanges);
         assertEquals(-100, convertedBorderExchanges.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(-200, convertedBorderExchanges.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(-300, convertedBorderExchanges.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
@@ -58,7 +58,7 @@ class DichotomyRunnerTest {
             "FR", 300.,
             "SI", 400.
         );
-        Map<String, Double> convertedFlowOnMerchantLinesPerCountry = DichotomyRunner.convertFlowsOnMerchantLines(flowOnMerchantLinesPerCountry);
+        Map<String, Double> convertedFlowOnMerchantLinesPerCountry = MultipleDichotomyRunner.convertFlowsOnMerchantLines(flowOnMerchantLinesPerCountry);
         assertEquals(100, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(300, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
