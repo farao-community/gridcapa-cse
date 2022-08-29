@@ -147,24 +147,29 @@ public class MultipleDichotomyRunner {
             businessLogger.info("Automated forced pras processing: Dichotomy number is : '{}'. Current limiting element is : '{}'.", dichotomyCount, limitingElement);
             DichotomyResult<RaoResponse> nextDichotomyResult = dichotomyRunner.runDichotomy(request, cseData, bestNetwork, networkShifter, initialItalianImport);
 
+            String newLimitingElement = getLimitingElement(nextDichotomyResult.getHighestValidStep());
             double previousHighestTtc = getTTC(multipleDichotomyResult.getBestDichotomyResult().getHighestValidStep());
             double newTtc = getTTC(nextDichotomyResult.getHighestValidStep());
-            if (previousHighestTtc < newTtc) {
-                multipleDichotomyResult.addResult(nextDichotomyResult, raToBeForced);
-                businessLogger.info("New TTC '{}' is higher than previous TTC '{}'. Result will be kept", newTtc, previousHighestTtc);
-            } else {
-                businessLogger.info("New TTC '{}' is lower than previous TTC '{}'. Result will be kept", newTtc, previousHighestTtc);
-            }
 
-            String newLimitingElement = getLimitingElement(nextDichotomyResult.getHighestValidStep());
             if (limitingElement.equals(newLimitingElement)) {
                 businessLogger.info("The limiting element '{}' didn't change after the last dichotomy. Next RAs combination will be tried", limitingElement);
                 counterPerLimitingElement++;
             } else {
                 businessLogger.info("The limiting element '{}' changed after the last dichotomy. New limiting element is '{}'", limitingElement, newLimitingElement);
-                limitingElement = newLimitingElement;
-                counterPerLimitingElement = 0;
+
+                if (newTtc > previousHighestTtc) {
+                    limitingElement = newLimitingElement;
+                    counterPerLimitingElement = 0;
+                }
             }
+
+            if (previousHighestTtc < newTtc) {
+                multipleDichotomyResult.addResult(nextDichotomyResult, raToBeForced);
+                businessLogger.info("New TTC '{}' is higher than previous TTC '{}'. Result will be kept", newTtc, previousHighestTtc);
+            } else {
+                businessLogger.info("New TTC '{}' is lower than previous TTC '{}'. Result will be ignored", newTtc, previousHighestTtc);
+            }
+
             dichotomyCount++;
         }
         return multipleDichotomyResult;
