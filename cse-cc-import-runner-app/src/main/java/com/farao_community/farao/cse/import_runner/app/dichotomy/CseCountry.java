@@ -9,6 +9,8 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 import com.powsybl.glsk.commons.CountryEICode;
 import com.powsybl.iidm.network.Country;
 
+import java.util.Arrays;
+
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
@@ -33,6 +35,27 @@ public enum CseCountry {
 
     public String getName() {
         return name;
+    }
+
+    public static boolean contains(Country country) {
+        return Arrays.stream(values())
+            .map(CseCountry::getName)
+            .anyMatch(name -> name.equals(country.toString()));
+    }
+
+    public static CseCountry byCountry(Country country) {
+        if (contains(country)) {
+            return valueOf(country.toString());
+        } else {
+            throw new IllegalArgumentException(String.format("CseCountry does not contain %s", country));
+        }
+    }
+
+    public static CseCountry byEiCode(String eiCode) {
+        return Arrays.stream(values())
+            .filter(cseCountry -> cseCountry.getEiCode().equals(eiCode))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(String.format("CseCountry does not contain %s", eiCode)));
     }
 
     @Override
