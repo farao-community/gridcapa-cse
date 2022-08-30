@@ -36,10 +36,13 @@ class DichotomyRunnerTest {
     @Autowired
     private MultipleDichotomyRunner multipleDichotomyRunner;
 
+    @Autowired
+    private ZonalScalableProvider zonalScalableProvider;
+
     @Test
     void testHandleLskD2CC() throws IOException {
         Network network = fileImporter.importNetwork(Objects.requireNonNull(getClass().getResource("CSE_no_normal_glsk_variation.uct")).toString());
-        ZonalData<Scalable> zonalScalable = multipleDichotomyRunner.getZonalScalable(Objects.requireNonNull(getClass().getResource("EmptyGlsk.xml")).toString(), network, ProcessType.D2CC);
+        ZonalData<Scalable> zonalScalable = zonalScalableProvider.get(Objects.requireNonNull(getClass().getResource("EmptyGlsk.xml")).toString(), network, ProcessType.D2CC);
         assertEquals(500, zonalScalable.getData("10YAT-APG------L").scale(network, 1000), DOUBLE_TOLERANCE);
         assertEquals(500, zonalScalable.getData("10YFR-RTE------C").scale(network, 1000), DOUBLE_TOLERANCE);
         assertEquals(1000, zonalScalable.getData("10YCH-SWISSGRIDZ").scale(network, 1000), DOUBLE_TOLERANCE);
@@ -51,7 +54,7 @@ class DichotomyRunnerTest {
     @Test
     void testHandleLskIDCC() throws IOException {
         Network network = fileImporter.importNetwork(Objects.requireNonNull(getClass().getResource("CSE_no_normal_glsk_variation.uct")).toString());
-        ZonalData<Scalable> zonalScalable = multipleDichotomyRunner.getZonalScalable(Objects.requireNonNull(getClass().getResource("EmptyGlsk.xml")).toString(), network, ProcessType.IDCC);
+        ZonalData<Scalable> zonalScalable = zonalScalableProvider.get(Objects.requireNonNull(getClass().getResource("EmptyGlsk.xml")).toString(), network, ProcessType.IDCC);
         assertEquals(500, zonalScalable.getData("10YAT-APG------L").scale(network, 1000), DOUBLE_TOLERANCE);
         assertEquals(500, zonalScalable.getData("10YFR-RTE------C").scale(network, 1000), DOUBLE_TOLERANCE);
         assertEquals(1000, zonalScalable.getData("10YCH-SWISSGRIDZ").scale(network, 1000), DOUBLE_TOLERANCE);

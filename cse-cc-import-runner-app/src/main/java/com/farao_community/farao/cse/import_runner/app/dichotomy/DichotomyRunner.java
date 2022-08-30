@@ -29,21 +29,18 @@ import java.util.*;
  */
 @Service
 public class DichotomyRunner {
-    private static final double SHIFT_TOLERANCE = 1;
     private static final double MIN_IMPORT_VALUE = 0;
     private static final double MAX_IMPORT_VALUE = 19999;
     private static final String DICHOTOMY_PARAMETERS_MSG = "Starting dichotomy index: {}, Minimum dichotomy index: {}, Maximum dichotomy index: {}, Initial dichotomy step: {}, Dichotomy precision: {}";
 
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
-    private final ZonalScalableProvider zonalScalableProvider;
     private final RaoRunnerClient raoRunnerClient;
     private final Logger logger;
 
-    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, ZonalScalableProvider zonalScalableProvider, RaoRunnerClient raoRunnerClient, Logger logger) {
+    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, RaoRunnerClient raoRunnerClient, Logger logger) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
-        this.zonalScalableProvider = zonalScalableProvider;
         this.raoRunnerClient = raoRunnerClient;
         this.logger = logger;
     }
@@ -65,8 +62,6 @@ public class DichotomyRunner {
             getNetworkValidator(cseRequest, cseData));
         return engine.run(network);
     }
-
-
 
     private NetworkValidator<RaoResponse> getNetworkValidator(CseRequest request, CseData cseData) {
         return new RaoRunnerValidator(
