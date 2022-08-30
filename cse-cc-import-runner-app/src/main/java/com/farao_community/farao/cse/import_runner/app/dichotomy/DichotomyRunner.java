@@ -11,7 +11,6 @@ import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
-import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.dichotomy.api.DichotomyEngine;
@@ -24,12 +23,8 @@ import com.farao_community.farao.dichotomy.shift.LinearScaler;
 import com.farao_community.farao.dichotomy.shift.ShiftDispatcher;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
-import com.powsybl.glsk.commons.ZonalData;
-import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.Substation;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -48,12 +43,14 @@ public class DichotomyRunner {
 
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
+    private final ZonalScalableProvider zonalScalableProvider;
     private final RaoRunnerClient raoRunnerClient;
     private final Logger logger;
 
-    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, RaoRunnerClient raoRunnerClient, Logger logger) {
+    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, ZonalScalableProvider zonalScalableProvider, RaoRunnerClient raoRunnerClient, Logger logger) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
+        this.zonalScalableProvider = zonalScalableProvider;
         this.raoRunnerClient = raoRunnerClient;
         this.logger = logger;
     }
@@ -79,65 +76,9 @@ public class DichotomyRunner {
                                              CseData cseData,
                                              Network network) throws IOException {
         return new LinearScaler(
-            getZonalScalable(request.getMergedGlskUrl(), network, request.getProcessType()),
+            zonalScalableProvider.get(request.getMergedGlskUrl(), network, request.getProcessType()),
             getShiftDispatcher(request.getProcessType(), cseData, network),
             SHIFT_TOLERANCE);
-    }
-
-    ZonalData<Scalable> getZonalScalable(String mergedGlskUrl, Network network, ProcessType processType) throws IOException {
-        ZonalData<Scalable> zonalScalable = fileImporter.importGlsk(mergedGlskUrl, network);
-        Arrays.stream(CseCountry.values()).forEach(country -> checkCseCountryInGlsk(zonalScalable, country));
-        stackScalableOnLoads(network, zonalScalable, processType);
-        return zonalScalable;
-    }
-
-    private void stackScalableOnLoads(Network network, ZonalData<Scalable> zonalScalable, ProcessType processType) {
-        zonalScalable.getDataPerZone().forEach((zone, scalable) -> {
-            if (processType == ProcessType.IDCC && zone.equals(CseCountry.IT.getEiCode())) {
-                return;
-            }
-            double sum = getZoneSumOfActiveLoads(network, zone);
-            // No need to go further if a country has no active load
-            if (sum == 0.0) {
-                return;
-            }
-            Scalable stackedScalable = getStackedScalable(zone, scalable, network, sum);
-            zonalScalable.getDataPerZone().put(zone, stackedScalable);
-        });
-    }
-
-    private double getZoneSumOfActiveLoads(Network network, String zone) {
-        return network.getLoadStream()
-            .filter(load -> isLoadCorrespondingToTheZone(load, zone))
-            .map(Load::getP0)
-            .reduce(0., Double::sum);
-    }
-
-    private boolean isLoadCorrespondingToTheZone(Load load, String zone) {
-        return load.getTerminal().getVoltageLevel().getSubstation()
-            .flatMap(Substation::getCountry)
-            .map(Country::toString)
-            .map(country -> CseCountry.valueOf(country).getEiCode().equals(zone))
-            .orElse(false);
-    }
-
-    private Scalable getStackedScalable(String zone, Scalable scalable, Network network, double sum) {
-        List<Scalable> listScalables = new ArrayList<>();
-        List<Float> listPercentages = new ArrayList<>();
-
-        for (Load load : network.getLoads()) {
-            if (isLoadCorrespondingToTheZone(load, zone)) {
-                listPercentages.add((float) (load.getP0() / sum) * 100);
-                listScalables.add(Scalable.onLoad(load.getId()));
-            }
-        }
-        return Scalable.stack(scalable, Scalable.proportional(listPercentages, listScalables));
-    }
-
-    private static void checkCseCountryInGlsk(ZonalData<Scalable> zonalScalable, CseCountry country) {
-        if (!zonalScalable.getDataPerZone().containsKey(country.getEiCode())) {
-            throw new CseInvalidDataException(String.format("Area '%s' was not found in the glsk file.", country.getEiCode()));
-        }
     }
 
     private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Network network) {

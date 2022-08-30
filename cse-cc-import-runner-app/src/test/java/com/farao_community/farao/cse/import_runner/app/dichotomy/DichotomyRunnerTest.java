@@ -9,17 +9,11 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.powsybl.glsk.commons.ZonalData;
-import com.powsybl.iidm.modification.scalable.Scalable;
-import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,30 +29,6 @@ class DichotomyRunnerTest {
 
     @Autowired
     private DichotomyRunner dichotomyRunner;
-
-    @Test
-    void testHandleLskD2CC() throws IOException {
-        Network network = fileImporter.importNetwork(Objects.requireNonNull(getClass().getResource("CSE_no_normal_glsk_variation.uct")).toString());
-        ZonalData<Scalable> zonalScalable = dichotomyRunner.getZonalScalable(Objects.requireNonNull(getClass().getResource("EmptyGlsk.xml")).toString(), network, ProcessType.D2CC);
-        assertEquals(500, zonalScalable.getData("10YAT-APG------L").scale(network, 1000), DOUBLE_TOLERANCE);
-        assertEquals(500, zonalScalable.getData("10YFR-RTE------C").scale(network, 1000), DOUBLE_TOLERANCE);
-        assertEquals(1000, zonalScalable.getData("10YCH-SWISSGRIDZ").scale(network, 1000), DOUBLE_TOLERANCE);
-        assertEquals(0, zonalScalable.getData("10YSI-ELES-----O").scale(network, 1000), DOUBLE_TOLERANCE);
-        assertEquals(6000, zonalScalable.getData("10YIT-GRTN-----B").scale(network, 10000), DOUBLE_TOLERANCE);
-        assertEquals(-10000, zonalScalable.getData("10YIT-GRTN-----B").scale(network, -10000), DOUBLE_TOLERANCE);
-    }
-
-    @Test
-    void testHandleLskIDCC() throws IOException {
-        Network network = fileImporter.importNetwork(Objects.requireNonNull(getClass().getResource("CSE_no_normal_glsk_variation.uct")).toString());
-        ZonalData<Scalable> zonalScalable = dichotomyRunner.getZonalScalable(Objects.requireNonNull(getClass().getResource("EmptyGlsk.xml")).toString(), network, ProcessType.IDCC);
-        assertEquals(500, zonalScalable.getData("10YAT-APG------L").scale(network, 1000), DOUBLE_TOLERANCE);
-        assertEquals(500, zonalScalable.getData("10YFR-RTE------C").scale(network, 1000), DOUBLE_TOLERANCE);
-        assertEquals(1000, zonalScalable.getData("10YCH-SWISSGRIDZ").scale(network, 1000), DOUBLE_TOLERANCE);
-        assertEquals(0, zonalScalable.getData("10YSI-ELES-----O").scale(network, 1000), DOUBLE_TOLERANCE);
-        assertEquals(0, zonalScalable.getData("10YIT-GRTN-----B").scale(network, 10000), DOUBLE_TOLERANCE);
-        assertEquals(0, zonalScalable.getData("10YIT-GRTN-----B").scale(network, -10000), DOUBLE_TOLERANCE);
-    }
 
     @Test
     void testSplittingFactorsConversion() {
