@@ -23,4 +23,7 @@ public class MultipleDichotomyResult {
         return dichotomyHistory.get(dichotomyHistory.size() - 1).getRight();
     }
 
+    public Set<String> getBestForcedPrasIds() {
+        return dichotomyHistory.get(dichotomyHistory.size() - 1).getLeft();
+    }
 }

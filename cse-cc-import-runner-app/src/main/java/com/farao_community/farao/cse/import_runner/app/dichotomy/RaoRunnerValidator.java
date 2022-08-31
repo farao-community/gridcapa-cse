@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
+import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Set;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -40,6 +42,8 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     private final RaoRunnerClient raoRunnerClient;
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
+    private final ForcedPrasHandler forcedPrasHandler;
+    private final Set<String> forcedPrasIds;
     private int variantCounter = 0;
 
     public RaoRunnerValidator(ProcessType processType,
@@ -49,7 +53,9 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
                               String raoParametersUrl,
                               RaoRunnerClient raoRunnerClient,
                               FileExporter fileExporter,
-                              FileImporter fileImporter) {
+                              FileImporter fileImporter,
+                              ForcedPrasHandler forcedPrasHandler,
+                              Set<String> forcedPrasIds) {
         this.processType = processType;
         this.requestId = requestId;
         this.processTargetDateTime = processTargetDateTime;
@@ -58,6 +64,8 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
         this.raoRunnerClient = raoRunnerClient;
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
+        this.forcedPrasHandler = forcedPrasHandler;
+        this.forcedPrasIds = forcedPrasIds;
     }
 
     @Override
@@ -66,12 +74,20 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
         String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, scaledNetworkDirPath + scaledNetworkName, "", processTargetDateTime, processType);
         RaoRequest raoRequest = buildRaoRequest(networkPresignedUrl, scaledNetworkDirPath);
+
         try {
+            Crac crac = fileImporter.importCracFromJson(cracUrl);
+
+            // For now, we ignore result of forcing, even if no RAs have been forced we continue computation.
+            // Worst case scenario is that we do useless computation.
+            forcedPrasHandler.forcePras(forcedPrasIds, network, crac);
+
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
             LOGGER.info("RAO response received: {}", raoResponse);
-            Crac crac = fileImporter.importCracFromJson(raoResponse.getCracFileUrl());
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), crac);
+
+            // TODO: Handle forced PRAs in the building of step result so that it could be reported
             return DichotomyStepResult.fromNetworkValidationResult(raoResult, raoResponse);
         } catch (RuntimeException | IOException e) {
             throw new ValidationException("RAO run failed. Nested exception: " + e.getMessage());

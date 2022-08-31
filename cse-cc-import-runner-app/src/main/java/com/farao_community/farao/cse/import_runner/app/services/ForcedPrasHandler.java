@@ -4,18 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
+
+/**
+ * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
+ */
 
 @Service
 public class ForcedPrasHandler {
@@ -26,36 +28,41 @@ public class ForcedPrasHandler {
         this.logger = logger;
     }
 
-    public void forcePras(List<String> inputForcesPrasIds, Network network, Crac crac) {
-        checkInputForcesPrasConsistencyWithCrac(inputForcesPrasIds, crac, network);
-        // call new adder method in farao to add forced_if_available preventive topo RA
-    }
-
-    void checkInputForcesPrasConsistencyWithCrac(List<String> inputForcesPrasIds, Crac crac, Network network) {
-        List<String> availablePreventivePrasInCrac = crac.getNetworkActions().stream()
-            .filter(na -> na.getUsageMethod(crac.getPreventiveState()).equals(UsageMethod.AVAILABLE))
-            .map(NetworkAction::getId)
-            .collect(Collectors.toList());
-
-        List<String> wrongInputForcedPras = inputForcesPrasIds.stream()
-            .filter(i -> !availablePreventivePrasInCrac.contains(i))
-            .collect(Collectors.toList());
-
-        if (!wrongInputForcedPras.isEmpty()) {
-            throw new CseDataException(String.format("inconsistency between CRAC and forced PRAs, crac file does not contain these topological remedial actions: %s", wrongInputForcedPras));
-        }
-
-        List<NetworkAction> applicableRemedialActions = inputForcesPrasIds.stream().map(crac::getNetworkAction).filter(networkAction -> {
-            boolean applySuccess = networkAction.apply(network);
-            if (applySuccess) {
-                logger.info("Network action {} has been forced", networkAction.getId());
-            } else {
-                logger.warn("Network action {} will not be forced because not available", networkAction.getId());
-            }
-            return applySuccess;
-        }).collect(Collectors.toList());
-        if (applicableRemedialActions.isEmpty()) {
-            throw new CseDataException("None of the forced PRAs can be applied, It is unnecessary to run the computation again");
-        }
+    /**
+     * Method logs which of the remedial action list are either not present in the CRAC or not available to be applied.
+     * With the remaining remedial action, it tries to apply them on the network and log if the application is
+     * successful or not.
+     *
+     * @param forcedPrasIds: Set of PRAs to be applied on the network.
+     * @param network: Network on which to apply these PRAs.
+     * @param crac: CRAC on which to check definition and applicability.
+     */
+    public void forcePras(Set<String> forcedPrasIds, Network network, Crac crac) {
+        // Filters out those that are not present in the CRAC or that are not available
+        forcedPrasIds.stream()
+            .filter(naId -> {
+                if (crac.getNetworkAction(naId) == null) {
+                    logger.info(String.format("Forced PRA %s is not defined in the CRAC as a network action", naId));
+                    return false;
+                }
+                return true;
+            })
+            .map(crac::getNetworkAction)
+            .filter(na -> {
+                // TODO: make this check more complete for OnConstraint usage rules
+                if (na.getUsageMethod(crac.getPreventiveState()) != UsageMethod.AVAILABLE) {
+                    logger.info(String.format("Forced PRA %s is not available. It won't be applied.", na));
+                    return false;
+                }
+                return true;
+            })
+            .forEach(networkAction -> {
+                boolean applySuccess = networkAction.apply(network);
+                if (applySuccess) {
+                    logger.info("Network action {} has been forced", networkAction.getId());
+                } else {
+                    logger.warn("Network action {} will not be forced because not available", networkAction.getId());
+                }
+            });
     }
 }
