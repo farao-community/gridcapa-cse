@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class MultipleDichotomyRunner {
+    private static final int DEFAULT_MAX_DICHOTOMIES_NUMBER = 1;
 
     private final DichotomyRunner dichotomyRunner;
     private final DichotomyResultHelper dichotomyResultHelper;
@@ -40,7 +41,7 @@ public class MultipleDichotomyRunner {
                                                                               Network network,
                                                                               Crac crac,
                                                                               double initialItalianImport) throws IOException {
-        Integer maximumDichotomiesNumber = request.getMaximumDichotomiesNumber();
+        int maximumDichotomiesNumber = Optional.ofNullable(request.getMaximumDichotomiesNumber()).orElse(DEFAULT_MAX_DICHOTOMIES_NUMBER);
         Map<String, List<Set<String>>> automatedForcedPrasIds = request.getAutomatedForcedPrasIds();
         MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = new MultipleDichotomyResult<>();
         List<Set<String>> forcedPrasIds = new ArrayList<>();
