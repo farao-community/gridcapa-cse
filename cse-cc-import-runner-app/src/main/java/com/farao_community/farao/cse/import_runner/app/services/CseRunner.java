@@ -10,6 +10,7 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
@@ -28,7 +29,6 @@ import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBa
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.CseCracCreationParameters;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,20 +102,21 @@ public class CseRunner {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
-        MultipleDichotomyResult multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
+        MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
             cseRequest,
             cseData,
             network,
             cseCracCreationContext.getCrac(),
             initialItalianImport);
 
-        DichotomyResult<RaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
+        DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
 
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
             String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-            Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl());
+            Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
+                .getRaoResponse().getNetworkWithPraFileUrl());
             finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
             ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, cseCracCreationContext,
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),

@@ -14,7 +14,6 @@ import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -124,9 +123,9 @@ class MultipleDichotomyRunnerTest {
         Mockito.when(crac.getNetworkAction("ra5")).thenReturn(ra5);
     }
 
-    private DichotomyResult<RaoResponse> mockDichotomyResult(String limitingElement, double lowestUnsecureItalianImport) throws IOException {
-        DichotomyStepResult<RaoResponse> highestValidStep = Mockito.mock(DichotomyStepResult.class);
-        DichotomyResult<RaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
+    private DichotomyResult<DichotomyRaoResponse> mockDichotomyResult(String limitingElement, double lowestUnsecureItalianImport) throws IOException {
+        DichotomyStepResult<DichotomyRaoResponse> highestValidStep = Mockito.mock(DichotomyStepResult.class);
+        DichotomyResult<DichotomyRaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
         Mockito.when(dichotomyResult.getHighestValidStep()).thenReturn(highestValidStep);
         Mockito.when(dichotomyResultHelper.getLimitingElement(dichotomyResult)).thenReturn(limitingElement);
         Mockito.when(dichotomyResultHelper.computeLowestUnsecureItalianImport(dichotomyResult)).thenReturn(lowestUnsecureItalianImport);
@@ -140,13 +139,14 @@ class MultipleDichotomyRunnerTest {
             5
         );
 
-        DichotomyResult<RaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
-        DichotomyResult<RaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
+        DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
+        DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
 
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any())).thenReturn(initialDichotomyResult);
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any())).thenReturn(secondDichotomyResult);
 
-        MultipleDichotomyResult dichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
 
         assertEquals(initialDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertTrue(dichotomyResult.getBestForcedPrasIds().isEmpty());
@@ -159,13 +159,14 @@ class MultipleDichotomyRunnerTest {
             1
         );
 
-        DichotomyResult<RaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
-        DichotomyResult<RaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
+        DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
+        DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
 
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any())).thenReturn(initialDichotomyResult);
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any())).thenReturn(secondDichotomyResult);
 
-        MultipleDichotomyResult dichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
 
         assertEquals(initialDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertTrue(dichotomyResult.getBestForcedPrasIds().isEmpty());
@@ -178,13 +179,14 @@ class MultipleDichotomyRunnerTest {
             2
         );
 
-        DichotomyResult<RaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
-        DichotomyResult<RaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
+        DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
+        DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
 
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any())).thenReturn(initialDichotomyResult);
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any())).thenReturn(secondDichotomyResult);
 
-        MultipleDichotomyResult dichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
 
         assertEquals(secondDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertEquals(1, dichotomyResult.getBestForcedPrasIds().size());
@@ -198,13 +200,14 @@ class MultipleDichotomyRunnerTest {
             5
         );
 
-        DichotomyResult<RaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
-        DichotomyResult<RaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
+        DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
+        DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
 
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any())).thenReturn(initialDichotomyResult);
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any())).thenReturn(secondDichotomyResult);
 
-        MultipleDichotomyResult dichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
 
         assertEquals(secondDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertEquals(1, dichotomyResult.getBestForcedPrasIds().size());
@@ -218,13 +221,14 @@ class MultipleDichotomyRunnerTest {
             5
         );
 
-        DichotomyResult<RaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
-        DichotomyResult<RaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 500);
+        DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
+        DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 500);
 
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any())).thenReturn(initialDichotomyResult);
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any())).thenReturn(secondDichotomyResult);
 
-        MultipleDichotomyResult dichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
 
         assertEquals(initialDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertTrue(dichotomyResult.getBestForcedPrasIds().isEmpty());
@@ -237,14 +241,15 @@ class MultipleDichotomyRunnerTest {
             3
         );
 
-        DichotomyResult<RaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
-        DichotomyResult<RaoResponse> secondDichotomyResult = mockDichotomyResult("element1", 1500);
-        DichotomyResult<RaoResponse> thirdDichotomyResult = mockDichotomyResult("element1", 2000);
+        DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
+        DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element1", 1500);
+        DichotomyResult<DichotomyRaoResponse> thirdDichotomyResult = mockDichotomyResult("element1", 2000);
 
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any())).thenReturn(initialDichotomyResult);
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any())).thenReturn(secondDichotomyResult, thirdDichotomyResult);
 
-        MultipleDichotomyResult dichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
 
         assertEquals(thirdDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertEquals(1, dichotomyResult.getBestForcedPrasIds().size());
@@ -258,14 +263,15 @@ class MultipleDichotomyRunnerTest {
             3
         );
 
-        DichotomyResult<RaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
-        DichotomyResult<RaoResponse> secondDichotomyResult = mockDichotomyResult("element1", 500);
-        DichotomyResult<RaoResponse> thirdDichotomyResult = mockDichotomyResult("element1", 2000);
+        DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
+        DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element1", 500);
+        DichotomyResult<DichotomyRaoResponse> thirdDichotomyResult = mockDichotomyResult("element1", 2000);
 
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any())).thenReturn(initialDichotomyResult);
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any())).thenReturn(secondDichotomyResult, thirdDichotomyResult);
 
-        MultipleDichotomyResult dichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
 
         assertEquals(thirdDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertEquals(1, dichotomyResult.getBestForcedPrasIds().size());
@@ -279,15 +285,16 @@ class MultipleDichotomyRunnerTest {
             5
         );
 
-        DichotomyResult<RaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
-        DichotomyResult<RaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 500);
-        DichotomyResult<RaoResponse> thirdDichotomyResult = mockDichotomyResult("element2", 800);
+        DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
+        DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 500);
+        DichotomyResult<DichotomyRaoResponse> thirdDichotomyResult = mockDichotomyResult("element2", 800);
 
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any())).thenReturn(initialDichotomyResult);
         Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any()))
             .thenReturn(secondDichotomyResult, thirdDichotomyResult);
 
-        MultipleDichotomyResult dichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000.);
 
         assertEquals(initialDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertTrue(dichotomyResult.getBestForcedPrasIds().isEmpty());

@@ -13,7 +13,9 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -36,10 +38,11 @@ public class ForcedPrasHandler {
      * @param forcedPrasIds: Set of PRAs to be applied on the network.
      * @param network: Network on which to apply these PRAs.
      * @param crac: CRAC on which to check definition and applicability.
+     * @return The set of PRAs IDs that have been actually applied on the network
      */
-    public void forcePras(Set<String> forcedPrasIds, Network network, Crac crac) {
+    public Set<String> forcePras(Set<String> forcedPrasIds, Network network, Crac crac) {
         // Filters out those that are not present in the CRAC or that are not available
-        forcedPrasIds.stream()
+        return forcedPrasIds.stream()
             .filter(naId -> {
                 if (crac.getNetworkAction(naId) == null) {
                     logger.info(String.format("Forced PRA %s is not defined in the CRAC as a network action", naId));
@@ -56,13 +59,17 @@ public class ForcedPrasHandler {
                 }
                 return true;
             })
-            .forEach(networkAction -> {
+            .<Optional<String>>map(networkAction -> {
                 boolean applySuccess = networkAction.apply(network);
                 if (applySuccess) {
                     logger.info("Network action {} has been forced", networkAction.getId());
+                    return Optional.of(networkAction.getId());
                 } else {
                     logger.warn("Network action {} will not be forced because not available", networkAction.getId());
+                    return Optional.empty();
                 }
-            });
+            })
+            .flatMap(Optional::stream)
+            .collect(Collectors.toSet());
     }
 }

@@ -31,7 +31,7 @@ import java.util.Set;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
+public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RaoRunnerValidator.class);
 
     private final ProcessType processType;
@@ -69,7 +69,7 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     }
 
     @Override
-    public DichotomyStepResult<RaoResponse> validateNetwork(Network network) throws ValidationException {
+    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network) throws ValidationException {
         String scaledNetworkDirPath = generateScaledNetworkDirPath(network);
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
         String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, scaledNetworkDirPath + scaledNetworkName, "", processTargetDateTime, processType);
@@ -78,17 +78,17 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
         try {
             Crac crac = fileImporter.importCracFromJson(cracUrl);
 
-            // For now, we ignore result of forcing, even if no RAs have been forced we continue computation.
-            // Worst case scenario is that we do useless computation.
-            forcedPrasHandler.forcePras(forcedPrasIds, network, crac);
+            // We get only the RAs that have been actually applied
+            // Even if the set is empty we still do the computation, in worst case scenario the computation is useless
+            Set<String> appliedForcedPras = forcedPrasHandler.forcePras(forcedPrasIds, network, crac);
 
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
             LOGGER.info("RAO response received: {}", raoResponse);
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), crac);
 
-            // TODO: Handle forced PRAs in the building of step result so that it could be reported
-            return DichotomyStepResult.fromNetworkValidationResult(raoResult, raoResponse);
+            DichotomyRaoResponse dichotomyRaoResponse = new DichotomyRaoResponse(raoResponse, appliedForcedPras);
+            return DichotomyStepResult.fromNetworkValidationResult(raoResult, dichotomyRaoResponse);
         } catch (RuntimeException | IOException e) {
             throw new ValidationException("RAO run failed. Nested exception: " + e.getMessage());
         }

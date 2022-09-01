@@ -12,7 +12,6 @@ import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
@@ -37,14 +36,14 @@ public class MultipleDichotomyRunner {
         this.businessLogger = logger;
     }
 
-    public MultipleDichotomyResult runMultipleDichotomy(CseRequest request,
-                                                        CseData cseData,
-                                                        Network network,
-                                                        Crac crac,
-                                                        double initialItalianImport) throws IOException {
+    public MultipleDichotomyResult<DichotomyRaoResponse> runMultipleDichotomy(CseRequest request,
+                                                                              CseData cseData,
+                                                                              Network network,
+                                                                              Crac crac,
+                                                                              double initialItalianImport) throws IOException {
         Integer maximumDichotomiesNumber = request.getMaximumDichotomiesNumber();
         Map<String, List<Set<String>>> automatedForcedPrasIds = request.getAutomatedForcedPrasIds();
-        MultipleDichotomyResult multipleDichotomyResult = new MultipleDichotomyResult();
+        MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = new MultipleDichotomyResult<>();
         List<Set<String>> forcedPrasIds = new ArrayList<>();
         forcedPrasIds.add(new HashSet<>(request.getManualForcedPrasIds()));
 
@@ -53,7 +52,8 @@ public class MultipleDichotomyRunner {
             printablePrasIds(forcedPrasIds));
 
         // Launch initial dichotomy and store result
-        DichotomyResult<RaoResponse> initialDichotomyResult = dichotomyRunner.runDichotomy(request, cseData, network, initialItalianImport, flattenPrasIds(forcedPrasIds));
+        DichotomyResult<DichotomyRaoResponse> initialDichotomyResult =
+            dichotomyRunner.runDichotomy(request, cseData, network, initialItalianImport, flattenPrasIds(forcedPrasIds));
         multipleDichotomyResult.addResult(initialDichotomyResult, flattenPrasIds(forcedPrasIds));
 
         if (automatedForcedPrasIds.isEmpty() || multipleDichotomyResult.getBestDichotomyResult().getHighestValidStep() == null) {
@@ -81,7 +81,7 @@ public class MultipleDichotomyRunner {
                 // As we already computed a reference TTC we tweak the index so that it doesn't go below the starting
                 // index -- if so we can just consider the previous result.
                 // We pass to the dichotomy all the forced PRAs we want to apply including manual forced PRAs
-                DichotomyResult<RaoResponse> nextDichotomyResult = dichotomyRunner.runDichotomy(
+                DichotomyResult<DichotomyRaoResponse> nextDichotomyResult = dichotomyRunner.runDichotomy(
                     request,
                     cseData,
                     network,

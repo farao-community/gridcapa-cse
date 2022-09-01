@@ -12,6 +12,7 @@ import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.data.xnode.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.import_runner.app.CseData;
@@ -19,7 +20,6 @@ import com.farao_community.farao.cse.import_runner.app.configurations.XNodesConf
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
@@ -50,12 +50,13 @@ public class TtcResultService {
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
     }
 
-    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, RaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String baseCaseFileUrl, String finalCgmUrl) throws IOException {
+    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String baseCaseFileUrl, String finalCgmUrl) throws IOException {
         TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, finalCgmUrl);
-        String networkWithPraUrl = highestSecureStepRaoResponse.getNetworkWithPraFileUrl();
+        String networkWithPraUrl = highestSecureStepRaoResponse.getRaoResponse().getNetworkWithPraFileUrl();
         Network networkWithPra = fileImporter.importNetwork(networkWithPraUrl);
         double finalItalianImport = BorderExchanges.computeItalianImport(networkWithPra);
         TtcResult.ProcessData processData = new TtcResult.ProcessData(
+            highestSecureStepRaoResponse.getForcedPrasIds(),
             BorderExchanges.computeCseBordersExchanges(networkWithPra),
             cseData.getReducedSplittingFactors(),
             BorderExchanges.computeCseCountriesBalances(networkWithPra),
@@ -65,7 +66,7 @@ public class TtcResultService {
             cseRequest.getTargetProcessDateTime().toString()
         );
 
-        RaoResult raoResult = fileImporter.importRaoResult(highestSecureStepRaoResponse.getRaoResultFileUrl(), cseCracCreationContext.getCrac());
+        RaoResult raoResult = fileImporter.importRaoResult(highestSecureStepRaoResponse.getRaoResponse().getRaoResultFileUrl(), cseCracCreationContext.getCrac());
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
             cseCracCreationContext, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath()));
         Timestamp timestamp = TtcResult.generate(ttcFiles, processData, cracResultsHelper);

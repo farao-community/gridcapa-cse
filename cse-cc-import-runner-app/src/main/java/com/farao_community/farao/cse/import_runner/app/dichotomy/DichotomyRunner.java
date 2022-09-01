@@ -16,7 +16,6 @@ import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.index.BiDirectionalStepsIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
@@ -50,26 +49,26 @@ public class DichotomyRunner {
         this.logger = logger;
     }
 
-    public DichotomyResult<RaoResponse> runDichotomy(CseRequest cseRequest,
-                                                     CseData cseData,
-                                                     Network network,
-                                                     double initialItalianImport,
-                                                     Set<String> forcedPrasIds) throws IOException {
+    public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
+                                                              CseData cseData,
+                                                              Network network,
+                                                              double initialItalianImport,
+                                                              Set<String> forcedPrasIds) throws IOException {
         return runDichotomy(cseRequest, cseData, network, initialItalianImport, MIN_IMPORT_VALUE, forcedPrasIds);
     }
 
-    public DichotomyResult<RaoResponse> runDichotomy(CseRequest cseRequest,
-                                                     CseData cseData,
-                                                     Network network,
-                                                     double initialItalianImport,
-                                                     double minImportValue,
-                                                     Set<String> forcedPrasIds) throws IOException {
+    public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
+                                                              CseData cseData,
+                                                              Network network,
+                                                              double initialItalianImport,
+                                                              double minImportValue,
+                                                              Set<String> forcedPrasIds) throws IOException {
         double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImport);
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
         logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, minImportValue, MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
-        Index<RaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
-        DichotomyEngine<RaoResponse> engine = new DichotomyEngine<>(
+        Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
+        DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,
             new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
             networkShifterProvider.get(cseRequest, cseData, network),
@@ -77,7 +76,7 @@ public class DichotomyRunner {
         return engine.run(network);
     }
 
-    private NetworkValidator<RaoResponse> getNetworkValidator(CseRequest request, CseData cseData, Set<String> forcedPrasIds) {
+    private NetworkValidator<DichotomyRaoResponse> getNetworkValidator(CseRequest request, CseData cseData, Set<String> forcedPrasIds) {
         return new RaoRunnerValidator(
             request.getProcessType(),
             request.getId(),

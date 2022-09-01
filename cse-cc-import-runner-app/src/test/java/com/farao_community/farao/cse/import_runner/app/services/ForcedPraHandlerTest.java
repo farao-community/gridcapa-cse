@@ -51,9 +51,10 @@ class ForcedPraHandlerTest {
         assertTrue(crac.getNetworkAction("Open line NL1-NL2").hasImpactOnNetwork(network));
         assertTrue(crac.getNetworkAction("Open line BE2-FR3").hasImpactOnNetwork(network));
 
-        forcedPrasHandler.forcePras(manualForcedPrasIds, network, crac);
+        Set<String> appliedForcedPras = forcedPrasHandler.forcePras(manualForcedPrasIds, network, crac);
 
         assertFalse(crac.getNetworkAction("Open line NL1-NL2").hasImpactOnNetwork(network));
         assertFalse(crac.getNetworkAction("Open line BE2-FR3").hasImpactOnNetwork(network));
+        assertEquals(2, appliedForcedPras.size());
     }
 }

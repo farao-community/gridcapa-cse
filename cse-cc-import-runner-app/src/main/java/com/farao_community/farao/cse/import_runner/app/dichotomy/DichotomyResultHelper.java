@@ -18,7 +18,6 @@ import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
@@ -37,12 +36,14 @@ public final class DichotomyResultHelper {
         this.fileImporter = fileImporter;
     }
 
-    public String getLimitingElement(DichotomyResult<RaoResponse> dichotomyResult) throws IOException {
-        DichotomyStepResult<RaoResponse> highestValidStepResult = dichotomyResult.getHighestValidStep();
+    public String getLimitingElement(DichotomyResult<DichotomyRaoResponse> dichotomyResult) throws IOException {
+        DichotomyStepResult<DichotomyRaoResponse> highestValidStepResult = dichotomyResult.getHighestValidStep();
         double worstMargin = Double.MAX_VALUE;
         Optional<FlowCnec> worstCnec = Optional.empty();
-        Crac crac = fileImporter.importCracFromJson(highestValidStepResult.getValidationData().getCracFileUrl());
-        RaoResult raoResult = fileImporter.importRaoResult(highestValidStepResult.getValidationData().getRaoResultFileUrl(), crac);
+        Crac crac = fileImporter.importCracFromJson(highestValidStepResult.getValidationData()
+            .getRaoResponse().getCracFileUrl());
+        RaoResult raoResult = fileImporter.importRaoResult(highestValidStepResult.getValidationData()
+            .getRaoResponse().getRaoResultFileUrl(), crac);
         for (FlowCnec flowCnec : crac.getFlowCnecs()) {
             double margin = computeFlowMargin(raoResult, flowCnec);
             if (margin < worstMargin) {
@@ -62,13 +63,15 @@ public final class DichotomyResultHelper {
         }
     }
 
-    public double computeLowestUnsecureItalianImport(DichotomyResult<RaoResponse> dichotomyResult) throws IOException {
-        Network network = fileImporter.importNetwork(dichotomyResult.getLowestInvalidStep().getValidationData().getNetworkWithPraFileUrl());
+    public double computeLowestUnsecureItalianImport(DichotomyResult<DichotomyRaoResponse> dichotomyResult) throws IOException {
+        Network network = fileImporter.importNetwork(dichotomyResult.getLowestInvalidStep().getValidationData()
+            .getRaoResponse().getNetworkWithPraFileUrl());
         return BorderExchanges.computeItalianImport(network);
     }
 
-    public double computeHighestSecureItalianImport(DichotomyResult<RaoResponse> dichotomyResult) throws IOException {
-        Network network = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl());
+    public double computeHighestSecureItalianImport(DichotomyResult<DichotomyRaoResponse> dichotomyResult) throws IOException {
+        Network network = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
+            .getRaoResponse().getNetworkWithPraFileUrl());
         return BorderExchanges.computeItalianImport(network);
     }
 }

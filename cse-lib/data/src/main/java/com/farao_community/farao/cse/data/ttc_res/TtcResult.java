@@ -57,6 +57,7 @@ public final class TtcResult {
     }
 
     public static class ProcessData {
+        private final Set<String> forcedPrasIds;
         private final Map<String, Double> borderExchanges;
         private final Map<String, Double> reducedSplittingFactors;
         private final Map<String, Double> countryBalances;
@@ -65,7 +66,8 @@ public final class TtcResult {
         private final double mniiOffsetValue;
         private final String processTargetDate;
 
-        public ProcessData(Map<String, Double> borderExchanges, Map<String, Double> reducedSplittingFactors, Map<String, Double> countryBalances, LimitingCause limitingCause, double finalItalianImport, double mniiOffsetValue, String processTargetDate) {
+        public ProcessData(Set<String> forcedPrasIds, Map<String, Double> borderExchanges, Map<String, Double> reducedSplittingFactors, Map<String, Double> countryBalances, LimitingCause limitingCause, double finalItalianImport, double mniiOffsetValue, String processTargetDate) {
+            this.forcedPrasIds = forcedPrasIds;
             this.borderExchanges = borderExchanges;
             this.reducedSplittingFactors = reducedSplittingFactors;
             this.countryBalances = countryBalances;
