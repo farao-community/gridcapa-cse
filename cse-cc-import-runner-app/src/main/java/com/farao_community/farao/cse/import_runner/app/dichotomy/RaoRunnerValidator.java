@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
+import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
@@ -19,6 +20,7 @@ import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
+import com.farao_community.farao.search_tree_rao.result.api.FlowResult;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -78,9 +81,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         try {
             Crac crac = fileImporter.importCracFromJson(cracUrl);
 
-            // We get only the RAs that have been actually applied
-            // Even if the set is empty we still do the computation, in worst case scenario the computation is useless
-            Set<String> appliedForcedPras = forcedPrasHandler.forcePras(forcedPrasIds, network, crac);
+            Set<String> appliedForcedPras = applyForcedPras(crac, network);
 
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
@@ -90,7 +91,21 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
             DichotomyRaoResponse dichotomyRaoResponse = new DichotomyRaoResponse(raoResponse, appliedForcedPras);
             return DichotomyStepResult.fromNetworkValidationResult(raoResult, dichotomyRaoResponse);
         } catch (RuntimeException | IOException e) {
+            LOGGER.error("Exception occured during validation", e);
             throw new ValidationException("RAO run failed. Nested exception: " + e.getMessage());
+        }
+    }
+
+    private Set<String> applyForcedPras(Crac crac, Network network) {
+        if (!forcedPrasIds.isEmpty()) {
+            // It computes reference flows on the network to be able to evaluate PRAs availability
+            FlowResult flowResult = FlowEvaluator.evaluate(crac, network);
+
+            // We get only the RAs that have been actually applied
+            // Even if the set is empty we still do the computation, in worst case scenario the computation is useless
+            return forcedPrasHandler.forcePras(forcedPrasIds, network, crac, flowResult);
+        } else {
+            return Collections.emptySet();
         }
     }
 

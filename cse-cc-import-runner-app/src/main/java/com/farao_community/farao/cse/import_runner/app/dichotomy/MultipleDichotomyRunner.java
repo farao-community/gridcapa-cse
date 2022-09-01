@@ -10,7 +10,6 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
@@ -56,7 +55,7 @@ public class MultipleDichotomyRunner {
             dichotomyRunner.runDichotomy(request, cseData, network, initialItalianImport, flattenPrasIds(forcedPrasIds));
         multipleDichotomyResult.addResult(initialDichotomyResult, flattenPrasIds(forcedPrasIds));
 
-        if (automatedForcedPrasIds.isEmpty() || multipleDichotomyResult.getBestDichotomyResult().getHighestValidStep() == null) {
+        if (automatedForcedPrasIds.isEmpty() || !multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
             return multipleDichotomyResult;
         }
 
@@ -155,10 +154,10 @@ public class MultipleDichotomyRunner {
 
     private static boolean checkIfPrasCombinationHasImpactOnNetwork(Set<String> raToBeForced, Crac crac, Network network) {
         // If one elementary action of the network action has an impact on the network then the network action has an impact on the network
+        // We don't check availability here as in any case it won't be tested against the proper level of exchanges
         return raToBeForced.stream()
             .map(crac::getNetworkAction)
             .filter(Objects::nonNull)
-            .filter(na -> na.getUsageMethod(crac.getPreventiveState()).equals(UsageMethod.AVAILABLE)) // TODO: make this check more complete for OnConstraint usage rules
             .anyMatch(na -> na.hasImpactOnNetwork(network));
     }
 }

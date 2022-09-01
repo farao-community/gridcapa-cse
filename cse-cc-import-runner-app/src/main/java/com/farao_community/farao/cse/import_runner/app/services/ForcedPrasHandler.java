@@ -8,7 +8,8 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
+import com.farao_community.farao.search_tree_rao.commons.RaoUtil;
+import com.farao_community.farao.search_tree_rao.result.api.FlowResult;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,10 @@ public class ForcedPrasHandler {
      * @param forcedPrasIds: Set of PRAs to be applied on the network.
      * @param network: Network on which to apply these PRAs.
      * @param crac: CRAC on which to check definition and applicability.
+     * @param flowResult: Flow result gathering power flows on the lines to evaluate RAs availability (flow constraint or country constraint)
      * @return The set of PRAs IDs that have been actually applied on the network
      */
-    public Set<String> forcePras(Set<String> forcedPrasIds, Network network, Crac crac) {
+    public Set<String> forcePras(Set<String> forcedPrasIds, Network network, Crac crac, FlowResult flowResult) {
         // Filters out those that are not present in the CRAC or that are not available
         return forcedPrasIds.stream()
             .filter(naId -> {
@@ -52,8 +54,7 @@ public class ForcedPrasHandler {
             })
             .map(crac::getNetworkAction)
             .filter(na -> {
-                // TODO: make this check more complete for OnConstraint usage rules
-                if (na.getUsageMethod(crac.getPreventiveState()) != UsageMethod.AVAILABLE) {
+                if (!RaoUtil.isRemedialActionAvailable(na, crac.getPreventiveState(), flowResult, crac.getFlowCnecs(crac.getPreventiveState()), network)) {
                     logger.info(String.format("Forced PRA %s is not available. It won't be applied.", na));
                     return false;
                 }
