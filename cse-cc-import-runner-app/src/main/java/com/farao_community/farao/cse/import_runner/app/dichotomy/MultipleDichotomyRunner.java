@@ -13,7 +13,6 @@ import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
-import org.slf4j.event.Level;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
