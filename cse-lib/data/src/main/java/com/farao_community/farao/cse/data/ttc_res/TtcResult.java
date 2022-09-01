@@ -155,7 +155,7 @@ public final class TtcResult {
         fillRequiredFiles(ttcFiles, ttcResults);
         fillLimitingElement(cracResultsHelper, ttcResults);
         Results results = new Results();
-        addPreventiveRemedialActions(cracResultsHelper, results);
+        addPreventiveRemedialActions(cracResultsHelper, results, processData.forcedPrasIds);
         fillCriticalBranches(cracResultsHelper, results);
         ttcResults.setResults(results);
         return ttcResults;
@@ -498,7 +498,7 @@ public final class TtcResult {
         preventiveCnecElement.setAreato(areaTo);
     }
 
-    private static void addPreventiveRemedialActions(CracResultsHelper cracResultsHelper, Results results) {
+    private static void addPreventiveRemedialActions(CracResultsHelper cracResultsHelper, Results results, Set<String> forcedPrasIds) {
         Preventive preventive = new Preventive();
         List<Action> actionList = new ArrayList<>();
 
@@ -510,6 +510,10 @@ public final class TtcResult {
 
         importedRemedialActionCreationContext.stream()
             .filter(remedialActionCreationContext -> cracResultsHelper.getPreventiveNetworkActionIds().contains(remedialActionCreationContext.getCreatedRAId()))
+            .forEach(remedialActionCreationContext -> addTopologicalAction(actionList, remedialActionCreationContext));
+
+        importedRemedialActionCreationContext.stream()
+            .filter(remedialActionCreationContext -> forcedPrasIds.contains(remedialActionCreationContext.getCreatedRAId()))
             .forEach(remedialActionCreationContext -> addTopologicalAction(actionList, remedialActionCreationContext));
 
         importedRemedialActionCreationContext.stream()
