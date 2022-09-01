@@ -72,9 +72,9 @@ public class MultipleDichotomyRunner {
                 double lastUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
                 forcedPrasIds.add(additionalPrasToBeForced); // We add the new forced PRAs to the historical register of the forced PRAs
 
-                businessLogger.info(
-                    "Multiple dichotomy runs: Dichotomy number is : {}, Starting Italian import : {}, Current limiting element is : {}, Forcing following PRAs: {}",
-                    dichotomyCount, lastUnsecureItalianImport, limitingElement, printablePrasIds(forcedPrasIds));
+                businessLogger.info(String.format(
+                    "Multiple dichotomy runs: Dichotomy number is : %d, Starting Italian import : %.0f, Current limiting element is : %s, Forcing following PRAs: %s",
+                    dichotomyCount, lastUnsecureItalianImport, limitingElement, printablePrasIds(forcedPrasIds)));
 
                 // We launch a new dichotomy still based on initial network but with a higher starting index -- previous unsecure index.
                 // As we already computed a reference TTC we tweak the index so that it doesn't go below the starting

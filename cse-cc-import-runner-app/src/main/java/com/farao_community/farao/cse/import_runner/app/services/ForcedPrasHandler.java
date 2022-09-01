@@ -47,7 +47,7 @@ public class ForcedPrasHandler {
         return forcedPrasIds.stream()
             .filter(naId -> {
                 if (crac.getNetworkAction(naId) == null) {
-                    logger.info(String.format("Forced PRA %s is not defined in the CRAC as a network action", naId));
+                    logger.info("Forced PRA {} is not defined in the CRAC as a network action", naId);
                     return false;
                 }
                 return true;
@@ -55,7 +55,7 @@ public class ForcedPrasHandler {
             .map(crac::getNetworkAction)
             .filter(na -> {
                 if (!RaoUtil.isRemedialActionAvailable(na, crac.getPreventiveState(), flowResult, crac.getFlowCnecs(crac.getPreventiveState()), network)) {
-                    logger.info(String.format("Forced PRA %s is not available. It won't be applied.", na));
+                    logger.info("Forced PRA {} is not available. It won't be applied.", na);
                     return false;
                 }
                 return true;
@@ -66,7 +66,7 @@ public class ForcedPrasHandler {
                     logger.info("Network action {} has been forced", networkAction.getId());
                     return Optional.of(networkAction.getId());
                 } else {
-                    logger.warn("Network action {} will not be forced because not available", networkAction.getId());
+                    logger.warn("Network action {} will not be forced because its application failed", networkAction.getId());
                     return Optional.empty();
                 }
             })

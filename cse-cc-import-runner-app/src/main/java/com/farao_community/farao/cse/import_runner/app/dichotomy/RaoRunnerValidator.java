@@ -81,6 +81,11 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         try {
             Crac crac = fileImporter.importCracFromJson(cracUrl);
 
+            // We don't stop computation even if there are no applied RAs, because we cannot be sure in the case where
+            // the RAs are applicable on constraint, that it won't be applicable later on in the dichotomy (higher index)
+            // So if we throw validation exception for example when no RAs are applied index will go lower, and it will
+            // downgrade dichotomy results. So it could represent extra unnecessary RAOs, but otherwise it would cause
+            // high losses of TTC.
             Set<String> appliedForcedPras = applyForcedPras(crac, network);
 
             LOGGER.info("RAO request sent: {}", raoRequest);
