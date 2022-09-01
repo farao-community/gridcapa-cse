@@ -13,6 +13,7 @@ import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
+import org.slf4j.event.Level;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 @Service
 public class MultipleDichotomyRunner {
     private static final int DEFAULT_MAX_DICHOTOMIES_NUMBER = 1;
+    private static final String NTH_DICHOTOMY_RUN_MSG = "Multiple dichotomy runs: Dichotomy number is : %d, Starting " +
+        "Italian import : %.0f, Current limiting element is : %s, Forcing following PRAs: %s";
 
     private final DichotomyRunner dichotomyRunner;
     private final DichotomyResultHelper dichotomyResultHelper;
@@ -47,9 +50,9 @@ public class MultipleDichotomyRunner {
         List<Set<String>> forcedPrasIds = new ArrayList<>();
         forcedPrasIds.add(new HashSet<>(request.getManualForcedPrasIds()));
 
-        businessLogger.info(
-            "Multiple dichotomy runs: Initial dichotomy running, Forcing following PRAs: {}",
-            printablePrasIds(forcedPrasIds));
+        if (businessLogger.isInfoEnabled()) {
+            businessLogger.info("Multiple dichotomy runs: Initial dichotomy running, Forcing following PRAs: {}", printablePrasIds(forcedPrasIds));
+        }
 
         // Launch initial dichotomy and store result
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult =
@@ -67,15 +70,17 @@ public class MultipleDichotomyRunner {
 
         while (dichotomyCount <= maximumDichotomiesNumber && !additionalPrasToBeForced.isEmpty()) {
             if (!checkIfPrasCombinationHasImpactOnNetwork(additionalPrasToBeForced, crac, network)) {
-                businessLogger.info("RAs combination '{}' has no impact on network. It will not be applied", printablePrasIds(additionalPrasToBeForced));
+                if (businessLogger.isInfoEnabled()) {
+                    businessLogger.info("RAs combination '{}' has no impact on network. It will not be applied", printablePrasIds(additionalPrasToBeForced));
+                }
                 counterPerLimitingElement++;
             } else {
                 double lastUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
                 forcedPrasIds.add(additionalPrasToBeForced); // We add the new forced PRAs to the historical register of the forced PRAs
 
-                businessLogger.info(String.format(
-                    "Multiple dichotomy runs: Dichotomy number is : %d, Starting Italian import : %.0f, Current limiting element is : %s, Forcing following PRAs: %s",
-                    dichotomyCount, lastUnsecureItalianImport, limitingElement, printablePrasIds(forcedPrasIds)));
+                if (businessLogger.isInfoEnabled()) {
+                    businessLogger.info(String.format(NTH_DICHOTOMY_RUN_MSG, dichotomyCount, lastUnsecureItalianImport, limitingElement, printablePrasIds(forcedPrasIds)));
+                }
 
                 // We launch a new dichotomy still based on initial network but with a higher starting index -- previous unsecure index.
                 // As we already computed a reference TTC we tweak the index so that it doesn't go below the starting
