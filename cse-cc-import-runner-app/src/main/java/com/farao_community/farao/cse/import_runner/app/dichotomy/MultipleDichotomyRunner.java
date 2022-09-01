@@ -89,29 +89,36 @@ public class MultipleDichotomyRunner {
                     lastUnsecureItalianImport,
                     flattenPrasIds(forcedPrasIds));
 
-                String newLimitingElement = dichotomyResultHelper.getLimitingElement(nextDichotomyResult);
-                double previousHighestTtc = dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
-                double newTtc = dichotomyResultHelper.computeLowestUnsecureItalianImport(nextDichotomyResult);
+                if (nextDichotomyResult.hasValidStep()) {
+                    String newLimitingElement = dichotomyResultHelper.getLimitingElement(nextDichotomyResult);
+                    double previousLowestUnsecureItalianImport =
+                        dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
+                    double newLowestUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(nextDichotomyResult);
 
-                if (previousHighestTtc < newTtc) {
-                    // If result is improved we store this new result
-                    multipleDichotomyResult.addResult(nextDichotomyResult, flattenPrasIds(forcedPrasIds));
-                    businessLogger.info("New TTC '{}' is higher than previous TTC '{}'. Result will be kept", newTtc, previousHighestTtc);
-                    if (limitingElement.equals(newLimitingElement)) {
-                        // If limiting element remains the same we remove the last tested combination and go to the next one
-                        businessLogger.info("The limiting element '{}' didn't change after the last dichotomy. Next RAs combination will be tried", limitingElement);
+                    if (previousLowestUnsecureItalianImport < newLowestUnsecureItalianImport) {
+                        // If result is improved we store this new result
+                        multipleDichotomyResult.addResult(nextDichotomyResult, flattenPrasIds(forcedPrasIds));
+                        businessLogger.info("New TTC '{}' is higher than previous TTC '{}'. Result will be kept", newLowestUnsecureItalianImport, previousLowestUnsecureItalianImport);
+                        if (limitingElement.equals(newLimitingElement)) {
+                            // If limiting element remains the same we remove the last tested combination and go to the next one
+                            businessLogger.info("The limiting element '{}' didn't change after the last dichotomy. Next RAs combination will be tried", limitingElement);
+                            forcedPrasIds.remove(forcedPrasIds.size() - 1); // Remove from the historical forced PRAs to apply the last we tried.
+                            counterPerLimitingElement++;
+                        } else {
+                            // If not, we keep the current combination and follow the next ones according to the new limiting element
+                            businessLogger.info("The limiting element '{}' changed after the last dichotomy. New limiting element is '{}'", limitingElement, newLimitingElement);
+                            limitingElement = newLimitingElement;
+                            counterPerLimitingElement = 0;
+                        }
+                    } else {
+                        // If the result is not improved we don't store the result, keep the previous limiting element and goes to the next combination for this limiting element.
+                        // For that we don't even consider if the limiting element has changed or not, as the reference remains the previous case
+                        businessLogger.info("New TTC '{}' is lower or equal than previous TTC '{}'. Result will be ignored", newLowestUnsecureItalianImport, previousLowestUnsecureItalianImport);
                         forcedPrasIds.remove(forcedPrasIds.size() - 1); // Remove from the historical forced PRAs to apply the last we tried.
                         counterPerLimitingElement++;
-                    } else {
-                        // If not, we keep the current combination and follow the next ones according to the new limiting element
-                        businessLogger.info("The limiting element '{}' changed after the last dichotomy. New limiting element is '{}'", limitingElement, newLimitingElement);
-                        limitingElement = newLimitingElement;
-                        counterPerLimitingElement = 0;
                     }
                 } else {
-                    // If the result is not improved we don't store the result, keep the previous limiting element and goes to the next combination for this limiting element.
-                    // For that we don't even consider if the limiting element has changed or not, as the reference remains the previous case
-                    businessLogger.info("New TTC '{}' is lower or equal than previous TTC '{}'. Result will be ignored", newTtc, previousHighestTtc);
+                    businessLogger.info("No valid step computed in previous dichotomy. Result will be ignored");
                     forcedPrasIds.remove(forcedPrasIds.size() - 1); // Remove from the historical forced PRAs to apply the last we tried.
                     counterPerLimitingElement++;
                 }
