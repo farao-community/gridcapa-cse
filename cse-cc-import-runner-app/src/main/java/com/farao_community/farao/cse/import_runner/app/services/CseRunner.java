@@ -10,13 +10,15 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
-import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRunner;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
@@ -27,7 +29,6 @@ import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBa
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.CseCracCreationParameters;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,22 +48,19 @@ public class CseRunner {
 
     private final FileImporter fileImporter;
     private final FileExporter fileExporter;
-    private final DichotomyRunner dichotomyRunner;
+    private final MultipleDichotomyRunner multipleDichotomyRunner;
     private final TtcResultService ttcResultService;
     private final PiSaService piSaService;
     private final MerchantLineService merchantLineService;
-    private final ForcedPrasHandler forcedPrasHandler;
     private final ProcessConfiguration processConfiguration;
 
-    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, DichotomyRunner dichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
-                     ForcedPrasHandler forcedPrasHandler, ProcessConfiguration processConfiguration) {
+    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, MultipleDichotomyRunner multipleDichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService, ProcessConfiguration processConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
-        this.dichotomyRunner = dichotomyRunner;
+        this.multipleDichotomyRunner = multipleDichotomyRunner;
         this.ttcResultService = ttcResultService;
         this.piSaService = piSaService;
         this.merchantLineService = merchantLineService;
-        this.forcedPrasHandler = forcedPrasHandler;
         this.processConfiguration = processConfiguration;
 
     }
@@ -70,7 +68,6 @@ public class CseRunner {
     @Threadable
     public CseResponse run(CseRequest cseRequest) throws IOException {
         CseData cseData = new CseData(cseRequest, fileImporter);
-
         // CRAC import and network pre-processing
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
         merchantLineService.activateMerchantLine(cseRequest.getProcessType(), network, cseData);
@@ -105,16 +102,21 @@ public class CseRunner {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
-        if (!cseRequest.getManualForcedPrasIds().isEmpty()) {
-            forcedPrasHandler.forcePras(cseRequest.getManualForcedPrasIds(), network, cseCracCreationContext.getCrac());
-        }
-        DichotomyResult<RaoResponse> dichotomyResult = dichotomyRunner.runDichotomy(cseRequest, cseData, network, initialItalianImport);
+        MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
+            cseRequest,
+            cseData,
+            network,
+            cseCracCreationContext.getCrac(),
+            initialItalianImport);
+
+        DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
 
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
             String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-            Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData().getNetworkWithPraFileUrl());
+            Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
+                .getRaoResponse().getNetworkWithPraFileUrl());
             finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
             ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, cseCracCreationContext,
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),

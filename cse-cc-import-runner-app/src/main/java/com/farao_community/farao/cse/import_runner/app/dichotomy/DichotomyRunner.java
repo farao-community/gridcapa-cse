@@ -6,24 +6,17 @@
  */
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
-import com.farao_community.farao.commons.EICode;
-import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
+import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.dichotomy.api.DichotomyEngine;
-import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.index.BiDirectionalStepsIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
-import com.farao_community.farao.dichotomy.shift.LinearScaler;
-import com.farao_community.farao.dichotomy.shift.ShiftDispatcher;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
-import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
@@ -36,66 +29,54 @@ import java.util.*;
  */
 @Service
 public class DichotomyRunner {
-    private static final double SHIFT_TOLERANCE = 1;
     private static final double MIN_IMPORT_VALUE = 0;
     private static final double MAX_IMPORT_VALUE = 19999;
     private static final String DICHOTOMY_PARAMETERS_MSG = "Starting dichotomy index: {}, Minimum dichotomy index: {}, Maximum dichotomy index: {}, Initial dichotomy step: {}, Dichotomy precision: {}";
 
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
-    private final ZonalScalableProvider zonalScalableProvider;
+    private final NetworkShifterProvider networkShifterProvider;
+    private final ForcedPrasHandler forcedPrasHandler;
     private final RaoRunnerClient raoRunnerClient;
     private final Logger logger;
 
-    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, ZonalScalableProvider zonalScalableProvider, RaoRunnerClient raoRunnerClient, Logger logger) {
+    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, Logger logger) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
-        this.zonalScalableProvider = zonalScalableProvider;
+        this.networkShifterProvider = networkShifterProvider;
+        this.forcedPrasHandler = forcedPrasHandler;
         this.raoRunnerClient = raoRunnerClient;
         this.logger = logger;
     }
 
-    public DichotomyResult<RaoResponse> runDichotomy(CseRequest cseRequest,
-                                                     CseData cseData,
-                                                     Network network,
-                                                     double initialItalianImport) throws IOException {
+    public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
+                                                              CseData cseData,
+                                                              Network network,
+                                                              double initialItalianImport,
+                                                              Set<String> forcedPrasIds) throws IOException {
+        return runDichotomy(cseRequest, cseData, network, initialItalianImport, MIN_IMPORT_VALUE, forcedPrasIds);
+    }
+
+    public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
+                                                              CseData cseData,
+                                                              Network network,
+                                                              double initialItalianImport,
+                                                              double minImportValue,
+                                                              Set<String> forcedPrasIds) throws IOException {
         double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImport);
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
-        logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, MIN_IMPORT_VALUE, MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
-        Index<RaoResponse> index = new Index<>(MIN_IMPORT_VALUE, MAX_IMPORT_VALUE, dichotomyPrecision);
-        DichotomyEngine<RaoResponse> engine = new DichotomyEngine<>(
+        logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, minImportValue, MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
+        Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
+        DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,
             new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
-            getNetworkShifter(cseRequest, cseData, network),
-            getNetworkValidator(cseRequest, cseData));
+            networkShifterProvider.get(cseRequest, cseData, network),
+            getNetworkValidator(cseRequest, cseData, forcedPrasIds));
         return engine.run(network);
     }
 
-    private NetworkShifter getNetworkShifter(CseRequest request,
-                                             CseData cseData,
-                                             Network network) throws IOException {
-        return new LinearScaler(
-            zonalScalableProvider.get(request.getMergedGlskUrl(), network, request.getProcessType()),
-            getShiftDispatcher(request.getProcessType(), cseData, network),
-            SHIFT_TOLERANCE);
-    }
-
-    private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Network network) {
-        if (processType == ProcessType.D2CC) {
-            return new CseD2ccShiftDispatcher(
-                convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true)),
-                convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
-        } else {
-            return new CseIdccShiftDispatcher(
-                convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                cseData.getCseReferenceExchanges().getExchanges(),
-                cseData.getNtc2().getExchanges());
-        }
-    }
-
-    private NetworkValidator<RaoResponse> getNetworkValidator(CseRequest request, CseData cseData) {
+    private NetworkValidator<DichotomyRaoResponse> getNetworkValidator(CseRequest request, CseData cseData, Set<String> forcedPrasIds) {
         return new RaoRunnerValidator(
             request.getProcessType(),
             request.getId(),
@@ -104,50 +85,8 @@ public class DichotomyRunner {
             fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType()),
             raoRunnerClient,
             fileExporter,
-            fileImporter);
-    }
-
-    static Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
-        Map<String, Double> splittingFactors = new TreeMap<>();
-        tSplittingFactors.forEach((key, value) -> splittingFactors.put(toEic(key), value));
-        splittingFactors.put(toEic("IT"), -splittingFactors.values().stream().reduce(0., Double::sum));
-        return splittingFactors;
-    }
-
-    static Map<String, Double> convertBorderExchanges(Map<String, Double> borderExchanges) {
-        Map<String, Double> convertedBorderExchanges = new HashMap<>();
-        borderExchanges.forEach((key, value) -> {
-            // We take -value because we want flow towards Italy
-            switch (key) {
-                case BorderExchanges.IT_AT:
-                    convertedBorderExchanges.put(CseCountry.AT.getEiCode(), -value);
-                    break;
-                case BorderExchanges.IT_CH:
-                    convertedBorderExchanges.put(CseCountry.CH.getEiCode(), -value);
-                    break;
-                case BorderExchanges.IT_FR:
-                    convertedBorderExchanges.put(CseCountry.FR.getEiCode(), -value);
-                    break;
-                case BorderExchanges.IT_SI:
-                    convertedBorderExchanges.put(CseCountry.SI.getEiCode(), -value);
-                    break;
-                default:
-                    break;
-            }
-        });
-        return convertedBorderExchanges;
-    }
-
-    static Map<String, Double> convertFlowsOnMerchantLines(Map<String, Double> flowOnMerchantLinesPerCountry) {
-        Map<String, Double> convertedFlowOnMerchantLinesPerCountry = new HashMap<>();
-        Set.of(CseCountry.FR, CseCountry.CH, CseCountry.AT, CseCountry.SI).forEach(country -> {
-            double exchange = flowOnMerchantLinesPerCountry.getOrDefault(country.getName(), 0.);
-            convertedFlowOnMerchantLinesPerCountry.put(country.getEiCode(), exchange);
-        });
-        return convertedFlowOnMerchantLinesPerCountry;
-    }
-
-    private static String toEic(String country) {
-        return new EICode(Country.valueOf(country)).getAreaCode();
+            fileImporter,
+            forcedPrasHandler,
+            forcedPrasIds);
     }
 }

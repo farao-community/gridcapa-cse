@@ -91,6 +91,7 @@ class TtcResultTest {
         splittingFactorPerCountry.put("SI", 0.08);
 
         return new TtcResult.ProcessData(
+            Collections.emptySet(),
             borderExchanges,
             splittingFactorPerCountry,
             countryBalances,

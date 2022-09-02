@@ -31,6 +31,7 @@ class CseRequestTest {
             "yearlyNtcUrl",
             Collections.emptyList(),
             Collections.emptyMap(),
+            4,
             50,
             650,
             null);
@@ -62,6 +63,7 @@ class CseRequestTest {
             "yearlyNtcUrl",
             Collections.emptyList(),
             Collections.emptyMap(),
+            4,
             50,
             650,
             2500.);

@@ -6,6 +6,8 @@
  */
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
+import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
+import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
@@ -18,6 +20,7 @@ import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
+import com.farao_community.farao.search_tree_rao.result.api.FlowResult;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +28,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
+public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RaoRunnerValidator.class);
 
     private final ProcessType processType;
@@ -40,6 +45,8 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
     private final RaoRunnerClient raoRunnerClient;
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
+    private final ForcedPrasHandler forcedPrasHandler;
+    private final Set<String> forcedPrasIds;
     private int variantCounter = 0;
 
     public RaoRunnerValidator(ProcessType processType,
@@ -49,7 +56,9 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
                               String raoParametersUrl,
                               RaoRunnerClient raoRunnerClient,
                               FileExporter fileExporter,
-                              FileImporter fileImporter) {
+                              FileImporter fileImporter,
+                              ForcedPrasHandler forcedPrasHandler,
+                              Set<String> forcedPrasIds) {
         this.processType = processType;
         this.requestId = requestId;
         this.processTargetDateTime = processTargetDateTime;
@@ -58,23 +67,50 @@ public class RaoRunnerValidator implements NetworkValidator<RaoResponse> {
         this.raoRunnerClient = raoRunnerClient;
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
+        this.forcedPrasHandler = forcedPrasHandler;
+        this.forcedPrasIds = forcedPrasIds;
     }
 
     @Override
-    public DichotomyStepResult<RaoResponse> validateNetwork(Network network) throws ValidationException {
+    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network) throws ValidationException {
         String scaledNetworkDirPath = generateScaledNetworkDirPath(network);
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
         String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, scaledNetworkDirPath + scaledNetworkName, "", processTargetDateTime, processType);
         RaoRequest raoRequest = buildRaoRequest(networkPresignedUrl, scaledNetworkDirPath);
+
         try {
+            Crac crac = fileImporter.importCracFromJson(cracUrl);
+
+            // We don't stop computation even if there are no applied RAs, because we cannot be sure in the case where
+            // the RAs are applicable on constraint, that it won't be applicable later on in the dichotomy (higher index)
+            // So if we throw validation exception for example when no RAs are applied index will go lower, and it will
+            // downgrade dichotomy results. So it could represent extra unnecessary RAOs, but otherwise it would cause
+            // high losses of TTC.
+            Set<String> appliedForcedPras = applyForcedPras(crac, network);
+
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
             LOGGER.info("RAO response received: {}", raoResponse);
-            Crac crac = fileImporter.importCracFromJson(raoResponse.getCracFileUrl());
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), crac);
-            return DichotomyStepResult.fromNetworkValidationResult(raoResult, raoResponse);
+
+            DichotomyRaoResponse dichotomyRaoResponse = new DichotomyRaoResponse(raoResponse, appliedForcedPras);
+            return DichotomyStepResult.fromNetworkValidationResult(raoResult, dichotomyRaoResponse);
         } catch (RuntimeException | IOException e) {
+            LOGGER.error("Exception occured during validation", e);
             throw new ValidationException("RAO run failed. Nested exception: " + e.getMessage());
+        }
+    }
+
+    private Set<String> applyForcedPras(Crac crac, Network network) {
+        if (!forcedPrasIds.isEmpty()) {
+            // It computes reference flows on the network to be able to evaluate PRAs availability
+            FlowResult flowResult = FlowEvaluator.evaluate(crac, network);
+
+            // We get only the RAs that have been actually applied
+            // Even if the set is empty we still do the computation, in worst case scenario the computation is useless
+            return forcedPrasHandler.forcePras(forcedPrasIds, network, crac, flowResult);
+        } else {
+            return Collections.emptySet();
         }
     }
 

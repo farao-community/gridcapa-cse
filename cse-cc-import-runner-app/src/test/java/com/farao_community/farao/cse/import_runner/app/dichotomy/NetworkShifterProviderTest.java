@@ -8,9 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.cse.computation.BorderExchanges;
-import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Map;
@@ -21,14 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @SpringBootTest
-class DichotomyRunnerTest {
+class NetworkShifterProviderTest {
     private static final double DOUBLE_TOLERANCE = 0.01;
-
-    @Autowired
-    private FileImporter fileImporter;
-
-    @Autowired
-    private DichotomyRunner dichotomyRunner;
 
     @Test
     void testSplittingFactorsConversion() {
@@ -38,7 +30,7 @@ class DichotomyRunnerTest {
             "FR", 0.3,
             "SI", 0.4
         );
-        Map<String, Double> convertedSplittingFactors = DichotomyRunner.convertSplittingFactors(splittingFactors);
+        Map<String, Double> convertedSplittingFactors = NetworkShifterProvider.convertSplittingFactors(splittingFactors);
         assertEquals(0.1, convertedSplittingFactors.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0.2, convertedSplittingFactors.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0.3, convertedSplittingFactors.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
@@ -54,7 +46,7 @@ class DichotomyRunnerTest {
             BorderExchanges.IT_FR, 300.,
             BorderExchanges.IT_SI, 400.
         );
-        Map<String, Double> convertedBorderExchanges = DichotomyRunner.convertBorderExchanges(borderExchanges);
+        Map<String, Double> convertedBorderExchanges = NetworkShifterProvider.convertBorderExchanges(borderExchanges);
         assertEquals(-100, convertedBorderExchanges.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(-200, convertedBorderExchanges.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(-300, convertedBorderExchanges.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
@@ -62,16 +54,17 @@ class DichotomyRunnerTest {
     }
 
     @Test
-    void testFlowOnmerchantLinesConversion() {
+    void testFlowOnMerchantLinesConversion() {
         Map<String, Double> flowOnMerchantLinesPerCountry = Map.of(
             "AT", 100.,
             "FR", 300.,
             "SI", 400.
         );
-        Map<String, Double> convertedFlowOnMerchantLinesPerCountry = DichotomyRunner.convertFlowsOnMerchantLines(flowOnMerchantLinesPerCountry);
+        Map<String, Double> convertedFlowOnMerchantLinesPerCountry = NetworkShifterProvider.convertFlowsOnMerchantLines(flowOnMerchantLinesPerCountry);
         assertEquals(100, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(300, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(400, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
     }
+
 }
