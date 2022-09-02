@@ -180,14 +180,14 @@ public class MultipleDichotomyRunner {
         return multipleDichotomyResult;
     }
 
-    private void logSummary(String dichotomyCount, String ttcString, String limitingCause, String limitingElement, String printablePrasIds, String printableForcedPrasIdsIds) {
+    private void logSummary(String dichotomyCount, String ttcString, String limitingCause, String limitingElement, String printablePrasIds, String printableForcedPrasIds) {
         businessLogger.info(SUMMARY,
             dichotomyCount,
             ttcString,
             limitingCause,
             limitingElement,
             printablePrasIds,
-            printableForcedPrasIdsIds);
+            printableForcedPrasIds);
     }
 
     private static Set<String> getAdditionalPrasToBeForced(Map<String, List<Set<String>>> automatedForcedPrasIds, String limitingElement, int counterPerLimitingElement) {
