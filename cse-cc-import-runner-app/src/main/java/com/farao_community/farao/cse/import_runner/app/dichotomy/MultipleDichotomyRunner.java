@@ -30,7 +30,7 @@ public class MultipleDichotomyRunner {
         "Italian import : %.0f, Current limiting element is : %s, Forcing following PRAs: %s";
 
     public static final String SUMMARY = "Summary :  " +
-        "Progress in the forcing : Dichotomy count: {},  " +
+        "Progress in the forcing : {},  " +
         "TTC : {} MW',  " +
         "Limiting cause : {},  " +
         "Limiting element : {},  " +
@@ -75,17 +75,13 @@ public class MultipleDichotomyRunner {
         if (flattenPrasIds(forcedPrasIds) != null) {
             printablePrasIdsIds = toString(flattenPrasIds(forcedPrasIds));
         }
+        String initialLimitingCause = TtcResult.limitingCauseToString(initialDichotomyResult.getLimitingCause());
 
-        businessLogger.info(SUMMARY, "First run",
-            round(dichotomyResultHelper.computeHighestSecureItalianImport(initialDichotomyResult)),
-            TtcResult.limitingCauseToString(initialDichotomyResult.getLimitingCause()),
-            dichotomyResultHelper.getLimitingElement(initialDichotomyResult),
-            printablePrasIdsIds,
-            "NONE");
-        businessLogger.info(SUMMARY_BD,
-            "First run",
-            round(dichotomyResultHelper.computeHighestSecureItalianImport(initialDichotomyResult)),
-            TtcResult.limitingCauseToString(initialDichotomyResult.getLimitingCause()));
+        String limitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
+
+        logSummaries("First run",
+            dichotomyResultHelper.computeHighestSecureItalianImport(initialDichotomyResult),
+            initialLimitingCause, limitingElement, printablePrasIdsIds, "NONE");
 
         if (automatedForcedPrasIds.isEmpty() || !multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
             return multipleDichotomyResult;
@@ -93,7 +89,6 @@ public class MultipleDichotomyRunner {
 
         int dichotomyCount = 2;
         int counterPerLimitingElement = 0;
-        String limitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
         Set<String> additionalPrasToBeForced = getAdditionalPrasToBeForced(automatedForcedPrasIds, limitingElement, counterPerLimitingElement);
 
         while (dichotomyCount <= maximumDichotomiesNumber && !additionalPrasToBeForced.isEmpty()) {
@@ -128,22 +123,16 @@ public class MultipleDichotomyRunner {
                         dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
                     double newLowestUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(nextDichotomyResult);
 
+                    String lastLimitingCause = "";
+                    if (multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
+                        lastLimitingCause = TtcResult.limitingCauseToString(nextDichotomyResult.getLimitingCause());
+                    }
                     if (flattenPrasIds(forcedPrasIds) != null) {
                         printablePrasIdsIds = toString(flattenPrasIds(forcedPrasIds));
                     }
-                    String printableAdditionalPrasToBeForced = "";
-                    printableAdditionalPrasToBeForced = toString(additionalPrasToBeForced);
-                    businessLogger.info(SUMMARY,
-                        dichotomyCount,
-                        round(dichotomyResultHelper.computeHighestSecureItalianImport(nextDichotomyResult)),
-                        TtcResult.limitingCauseToString(nextDichotomyResult.getLimitingCause()),
-                        newLimitingElement,
-                        printablePrasIdsIds,
-                        printableAdditionalPrasToBeForced);
-                    businessLogger.info(SUMMARY_BD,
-                        dichotomyCount,
-                        round(newLowestUnsecureItalianImport),
-                        TtcResult.limitingCauseToString(nextDichotomyResult.getLimitingCause()));
+                    String printableAdditionalPrasToBeForced = toString(additionalPrasToBeForced);
+
+                    logSummaries("Dichotomy count: " + dichotomyCount, dichotomyResultHelper.computeHighestSecureItalianImport(nextDichotomyResult), lastLimitingCause, newLimitingElement, printablePrasIdsIds, printableAdditionalPrasToBeForced);
 
                     if (previousLowestUnsecureItalianImport < newLowestUnsecureItalianImport) {
                         // If result is improved we store this new result
@@ -181,22 +170,26 @@ public class MultipleDichotomyRunner {
         if (multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
             lastLimitingCause = TtcResult.limitingCauseToString(multipleDichotomyResult.getBestDichotomyResult().getLimitingCause());
         }
-
         if (flattenPrasIds(forcedPrasIds) != null) {
             printablePrasIdsIds = toString(flattenPrasIds(forcedPrasIds));
         }
-        businessLogger.info(SUMMARY, "Calculation finished",
-            round(dichotomyResultHelper.computeHighestSecureItalianImport(multipleDichotomyResult.getBestDichotomyResult())),
-            lastLimitingCause,
+
+        logSummaries("Calculation finished", dichotomyResultHelper.computeHighestSecureItalianImport(multipleDichotomyResult.getBestDichotomyResult()), lastLimitingCause, limitingElement, printablePrasIdsIds, "NONE");
+        return multipleDichotomyResult;
+    }
+
+    private void logSummaries(String dichotomyCount, double ttc,  String limitingCause, String limitingElement, String printablePrasIdsIds, String printableForcedPrasIdsIds) {
+        businessLogger.info(SUMMARY,
+            dichotomyCount,
+            round(ttc),
+            limitingCause,
             limitingElement,
             printablePrasIdsIds,
-            "NONE");
+            printableForcedPrasIdsIds);
         businessLogger.info(SUMMARY_BD,
-            "Calculation finished",
-            round(dichotomyResultHelper.computeHighestSecureItalianImport(multipleDichotomyResult.getBestDichotomyResult())),
-            lastLimitingCause);
-
-        return multipleDichotomyResult;
+            dichotomyCount,
+            round(ttc),
+            limitingCause);
     }
 
     private static Set<String> getAdditionalPrasToBeForced(Map<String, List<Set<String>>> automatedForcedPrasIds, String limitingElement, int counterPerLimitingElement) {
