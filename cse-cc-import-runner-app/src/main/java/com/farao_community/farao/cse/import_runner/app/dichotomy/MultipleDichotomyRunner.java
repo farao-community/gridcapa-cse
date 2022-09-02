@@ -74,7 +74,8 @@ public class MultipleDichotomyRunner {
         String limitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
         logSummary("First run",
             dichotomyResultHelper.computeHighestSecureItalianImport(initialDichotomyResult),
-            initialLimitingCause, limitingElement, printablePrasIdsIds, "NONE");
+            initialLimitingCause, limitingElement, printablePrasIdsIds,
+            toString(getForcedPrasIds(initialDichotomyResult)));
 
         if (automatedForcedPrasIds.isEmpty() || !multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
             return multipleDichotomyResult;
@@ -122,9 +123,10 @@ public class MultipleDichotomyRunner {
                     }
                     printablePrasIdsIds = toString(getActivatedRangeActionInPreventive(crac, nextDichotomyResult));
 
-                    String printableAdditionalPrasToBeForced = toString(additionalPrasToBeForced);
-
-                    logSummary("Dichotomy count: " + dichotomyCount, dichotomyResultHelper.computeHighestSecureItalianImport(nextDichotomyResult), lastLimitingCause, newLimitingElement, printablePrasIdsIds, printableAdditionalPrasToBeForced);
+                    logSummary("Dichotomy count: " + dichotomyCount,
+                        dichotomyResultHelper.computeHighestSecureItalianImport(nextDichotomyResult),
+                        lastLimitingCause, newLimitingElement, printablePrasIdsIds,
+                        toString(getForcedPrasIds(nextDichotomyResult)));
 
                     if (previousLowestUnsecureItalianImport < newLowestUnsecureItalianImport) {
                         // If result is improved we store this new result
@@ -163,7 +165,10 @@ public class MultipleDichotomyRunner {
             lastLimitingCause = TtcResult.limitingCauseToString(multipleDichotomyResult.getBestDichotomyResult().getLimitingCause());
         }
         printablePrasIdsIds = toString(getActivatedRangeActionInPreventive(crac, multipleDichotomyResult.getBestDichotomyResult()));
-        logSummary("Calculation finished", dichotomyResultHelper.computeHighestSecureItalianImport(multipleDichotomyResult.getBestDichotomyResult()), lastLimitingCause, limitingElement, printablePrasIdsIds, "NONE");
+        logSummary("Calculation finished",
+            dichotomyResultHelper.computeHighestSecureItalianImport(multipleDichotomyResult.getBestDichotomyResult()),
+            lastLimitingCause, limitingElement, printablePrasIdsIds,
+            toString(getForcedPrasIds(multipleDichotomyResult.getBestDichotomyResult())));
 
         return multipleDichotomyResult;
     }
@@ -206,6 +211,14 @@ public class MultipleDichotomyRunner {
             return prasNames;
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    private Set<String> getForcedPrasIds(DichotomyResult<DichotomyRaoResponse> dichotomyResult) {
+        if (dichotomyResult.hasValidStep() && dichotomyResult.getHighestValidStep().getValidationData() != null) {
+            return dichotomyResult.getHighestValidStep().getValidationData().getForcedPrasIds();
+        } else {
+            return Collections.emptySet();
         }
     }
 
