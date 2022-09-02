@@ -7,9 +7,12 @@
 
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
+import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.data.crac_api.Crac;
+import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
+import com.farao_community.farao.data.crac_api.range_action.RangeAction;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
@@ -25,8 +28,14 @@ import java.util.stream.Collectors;
 @Service
 public class MultipleDichotomyRunner {
     private static final int DEFAULT_MAX_DICHOTOMIES_NUMBER = 1;
-    private static final String NTH_DICHOTOMY_RUN_MSG = "Multiple dichotomy runs: Dichotomy number is : %d, Starting " +
-        "Italian import : %.0f, Current limiting element is : %s, Forcing following PRAs: %s";
+
+    public static final String SUMMARY = "Summary :  " +
+        "Progress in the forcing : {},  " +
+        "TTC : {} MW',  " +
+        "Limiting cause : {},  " +
+        "Limiting element : {},  " +
+        "PRAs : {},  " +
+        "fPRA : {}.";
 
     private final DichotomyRunner dichotomyRunner;
     private final DichotomyResultHelper dichotomyResultHelper;
@@ -49,14 +58,29 @@ public class MultipleDichotomyRunner {
         List<Set<String>> forcedPrasIds = new ArrayList<>();
         forcedPrasIds.add(new HashSet<>(request.getManualForcedPrasIds()));
 
-        if (businessLogger.isInfoEnabled()) {
-            businessLogger.info("Multiple dichotomy runs: Initial dichotomy running, Forcing following PRAs: {}", printablePrasIds(forcedPrasIds));
-        }
-
         // Launch initial dichotomy and store result
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult =
             dichotomyRunner.runDichotomy(request, cseData, network, initialItalianImport, flattenPrasIds(forcedPrasIds));
         multipleDichotomyResult.addResult(initialDichotomyResult, flattenPrasIds(forcedPrasIds));
+
+        String limitingElement = "NONE";
+        String ttcString = "NONE";
+        String printablePrasIds = "NONE";
+        String printableForcedPrasIds = "NONE";
+        String limitingCause = TtcResult.limitingCauseToString(initialDichotomyResult.getLimitingCause());
+
+        if (initialDichotomyResult.hasValidStep()) {
+            limitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
+            ttcString = String.valueOf(round(dichotomyResultHelper.computeHighestSecureItalianImport(initialDichotomyResult)));
+            printablePrasIds = toString(getActivatedRangeActionInPreventive(crac, initialDichotomyResult));
+            printableForcedPrasIds = toString(getForcedPrasIds(initialDichotomyResult));
+        }
+
+        logSummary("First run",
+            ttcString,
+            limitingCause, limitingElement,
+            printablePrasIds,
+            printableForcedPrasIds);
 
         if (automatedForcedPrasIds.isEmpty() || !multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
             return multipleDichotomyResult;
@@ -64,22 +88,17 @@ public class MultipleDichotomyRunner {
 
         int dichotomyCount = 2;
         int counterPerLimitingElement = 0;
-        String limitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
         Set<String> additionalPrasToBeForced = getAdditionalPrasToBeForced(automatedForcedPrasIds, limitingElement, counterPerLimitingElement);
 
         while (dichotomyCount <= maximumDichotomiesNumber && !additionalPrasToBeForced.isEmpty()) {
             if (!checkIfPrasCombinationHasImpactOnNetwork(additionalPrasToBeForced, crac, network)) {
                 if (businessLogger.isInfoEnabled()) {
-                    businessLogger.info("RAs combination '{}' has no impact on network. It will not be applied", printablePrasIds(additionalPrasToBeForced));
+                    businessLogger.info("RAs combination '{}' has no impact on network. It will not be applied", toString(additionalPrasToBeForced));
                 }
                 counterPerLimitingElement++;
             } else {
                 double lastUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
                 forcedPrasIds.add(additionalPrasToBeForced); // We add the new forced PRAs to the historical register of the forced PRAs
-
-                if (businessLogger.isInfoEnabled()) {
-                    businessLogger.info(String.format(NTH_DICHOTOMY_RUN_MSG, dichotomyCount, lastUnsecureItalianImport, limitingElement, printablePrasIds(forcedPrasIds)));
-                }
 
                 // We launch a new dichotomy still based on initial network but with a higher starting index -- previous unsecure index.
                 // As we already computed a reference TTC we tweak the index so that it doesn't go below the starting
@@ -98,6 +117,15 @@ public class MultipleDichotomyRunner {
                     double previousLowestUnsecureItalianImport =
                         dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
                     double newLowestUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(nextDichotomyResult);
+
+                    limitingCause = TtcResult.limitingCauseToString(nextDichotomyResult.getLimitingCause());
+                    ttcString = String.valueOf(round(dichotomyResultHelper.computeHighestSecureItalianImport(nextDichotomyResult)));
+                    printablePrasIds = toString(getActivatedRangeActionInPreventive(crac, nextDichotomyResult));
+                    printableForcedPrasIds = toString(getForcedPrasIds(nextDichotomyResult));
+                    logSummary("Dichotomy count: " + dichotomyCount,
+                        ttcString,
+                        limitingCause, newLimitingElement,
+                        printablePrasIds, printableForcedPrasIds);
 
                     if (previousLowestUnsecureItalianImport < newLowestUnsecureItalianImport) {
                         // If result is improved we store this new result
@@ -130,7 +158,36 @@ public class MultipleDichotomyRunner {
             additionalPrasToBeForced = getAdditionalPrasToBeForced(automatedForcedPrasIds, limitingElement, counterPerLimitingElement);
             dichotomyCount++;
         }
+
+        String finalLimitingElement = "NONE";
+        String finalTtcString = "NONE";
+        String finalPrintablePrasIds = "NONE";
+        String finalPrintableForcedPrasIds = "NONE";
+        String finalLimitingCause = TtcResult.limitingCauseToString(multipleDichotomyResult.getBestDichotomyResult().getLimitingCause());
+
+        if (multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
+            finalLimitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
+            finalTtcString = String.valueOf(round(dichotomyResultHelper.computeHighestSecureItalianImport(multipleDichotomyResult.getBestDichotomyResult())));
+            finalPrintablePrasIds = toString(getActivatedRangeActionInPreventive(crac, multipleDichotomyResult.getBestDichotomyResult()));
+            finalPrintableForcedPrasIds = toString(getForcedPrasIds(multipleDichotomyResult.getBestDichotomyResult()));
+        }
+
+        logSummary("Calculation finished",
+            finalTtcString,
+            finalLimitingCause, finalLimitingElement,
+            finalPrintablePrasIds, finalPrintableForcedPrasIds);
+
         return multipleDichotomyResult;
+    }
+
+    private void logSummary(String dichotomyCount, String ttcString, String limitingCause, String limitingElement, String printablePrasIds, String printableForcedPrasIds) {
+        businessLogger.info(SUMMARY,
+            dichotomyCount,
+            ttcString,
+            limitingCause,
+            limitingElement,
+            printablePrasIds,
+            printableForcedPrasIds);
     }
 
     private static Set<String> getAdditionalPrasToBeForced(Map<String, List<Set<String>>> automatedForcedPrasIds, String limitingElement, int counterPerLimitingElement) {
@@ -145,18 +202,6 @@ public class MultipleDichotomyRunner {
         return new HashSet<>(forcedPrasForLimitingElement.get(counterPerLimitingElement));
     }
 
-    private static Set<String> flattenPrasIds(List<Set<String>> prasIds) {
-        return prasIds.stream().flatMap(Collection::stream).collect(Collectors.toSet());
-    }
-
-    private static String printablePrasIds(List<Set<String>> prasIds) {
-        return flattenPrasIds(prasIds).stream().map(Object::toString).collect(Collectors.joining(","));
-    }
-
-    private static String printablePrasIds(Set<String> prasIds) {
-        return prasIds.stream().map(Object::toString).collect(Collectors.joining(","));
-    }
-
     private static boolean checkIfPrasCombinationHasImpactOnNetwork(Set<String> raToBeForced, Crac crac, Network network) {
         // If one elementary action of the network action has an impact on the network then the network action has an impact on the network
         // We don't check availability here as in any case it won't be tested against the proper level of exchanges
@@ -164,5 +209,36 @@ public class MultipleDichotomyRunner {
             .map(crac::getNetworkAction)
             .filter(Objects::nonNull)
             .anyMatch(na -> na.hasImpactOnNetwork(network));
+    }
+
+    private List<String> getActivatedRangeActionInPreventive(Crac crac, DichotomyResult<DichotomyRaoResponse> dichotomyResult) {
+        if (dichotomyResult.hasValidStep() && dichotomyResult.getHighestValidStep().getRaoResult() != null) {
+            List<String> prasNames = dichotomyResult.getHighestValidStep().getRaoResult().getActivatedNetworkActionsDuringState(crac.getPreventiveState()).stream().map(NetworkAction::getName).collect(Collectors.toList());
+            prasNames.addAll(dichotomyResult.getHighestValidStep().getRaoResult().getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream().map(RangeAction::getName).collect(Collectors.toList()));
+            return prasNames;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private Set<String> getForcedPrasIds(DichotomyResult<DichotomyRaoResponse> dichotomyResult) {
+        if (dichotomyResult.hasValidStep() && dichotomyResult.getHighestValidStep().getValidationData() != null) {
+            return dichotomyResult.getHighestValidStep().getValidationData().getForcedPrasIds();
+        } else {
+            return Collections.emptySet();
+        }
+    }
+
+    private static Set<String> flattenPrasIds(List<Set<String>> prasIds) {
+        return prasIds.stream().flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+
+    private static double round(double value) {
+        double scale = Math.pow(10, 2);
+        return Math.round(value * scale) / scale;
+    }
+
+    private static String toString(Collection<String> c) {
+        return c.stream().map(Object::toString).collect(Collectors.joining(","));
     }
 }
