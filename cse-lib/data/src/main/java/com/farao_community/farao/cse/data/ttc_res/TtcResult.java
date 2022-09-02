@@ -599,7 +599,7 @@ public final class TtcResult {
         actions.add(action);
     }
 
-    private static String limitingCauseToString(LimitingCause limitingCause) {
+    public static String limitingCauseToString(LimitingCause limitingCause) {
         switch (limitingCause) {
             case CRITICAL_BRANCH:
                 return "Critical Branch";
