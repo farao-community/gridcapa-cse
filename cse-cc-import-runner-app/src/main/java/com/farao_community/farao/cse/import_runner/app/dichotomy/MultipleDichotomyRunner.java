@@ -28,8 +28,6 @@ import java.util.stream.Collectors;
 @Service
 public class MultipleDichotomyRunner {
     private static final int DEFAULT_MAX_DICHOTOMIES_NUMBER = 1;
-    private static final String NTH_DICHOTOMY_RUN_MSG = "Multiple dichotomy runs: Dichotomy number is : %d, Starting " +
-        "Italian import : %.0f, Current limiting element is : %s, Forcing following PRAs: %s";
 
     public static final String SUMMARY = "Summary :  " +
         "Progress in the forcing : {},  " +
@@ -60,22 +58,29 @@ public class MultipleDichotomyRunner {
         List<Set<String>> forcedPrasIds = new ArrayList<>();
         forcedPrasIds.add(new HashSet<>(request.getManualForcedPrasIds()));
 
-        if (businessLogger.isInfoEnabled()) {
-            businessLogger.info("Multiple dichotomy runs: Initial dichotomy running, Forcing following PRAs: {}", toString(flattenPrasIds(forcedPrasIds)));
-        }
-
         // Launch initial dichotomy and store result
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult =
             dichotomyRunner.runDichotomy(request, cseData, network, initialItalianImport, flattenPrasIds(forcedPrasIds));
         multipleDichotomyResult.addResult(initialDichotomyResult, flattenPrasIds(forcedPrasIds));
 
-        String printablePrasIdsIds = toString(getActivatedRangeActionInPreventive(crac, initialDichotomyResult));
-        String initialLimitingCause = TtcResult.limitingCauseToString(initialDichotomyResult.getLimitingCause());
-        String limitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
+        String limitingElement = "NONE";
+        String ttcString = "NONE";
+        String printablePrasIds = "NONE";
+        String printableForcedPrasIds = "NONE";
+        String limitingCause = TtcResult.limitingCauseToString(initialDichotomyResult.getLimitingCause());
+
+        if (initialDichotomyResult.hasValidStep()) {
+            limitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
+            ttcString = String.valueOf(round(dichotomyResultHelper.computeHighestSecureItalianImport(initialDichotomyResult)));
+            printablePrasIds = toString(getActivatedRangeActionInPreventive(crac, initialDichotomyResult));
+            printableForcedPrasIds = toString(getForcedPrasIds(initialDichotomyResult));
+        }
+
         logSummary("First run",
-            dichotomyResultHelper.computeHighestSecureItalianImport(initialDichotomyResult),
-            initialLimitingCause, limitingElement, printablePrasIdsIds,
-            toString(getForcedPrasIds(initialDichotomyResult)));
+            ttcString,
+            limitingCause, limitingElement,
+            printablePrasIds,
+            printableForcedPrasIds);
 
         if (automatedForcedPrasIds.isEmpty() || !multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
             return multipleDichotomyResult;
@@ -95,10 +100,6 @@ public class MultipleDichotomyRunner {
                 double lastUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
                 forcedPrasIds.add(additionalPrasToBeForced); // We add the new forced PRAs to the historical register of the forced PRAs
 
-                if (businessLogger.isInfoEnabled()) {
-                    businessLogger.info(String.format(NTH_DICHOTOMY_RUN_MSG, dichotomyCount, lastUnsecureItalianImport, limitingElement, toString(flattenPrasIds(forcedPrasIds))));
-                }
-
                 // We launch a new dichotomy still based on initial network but with a higher starting index -- previous unsecure index.
                 // As we already computed a reference TTC we tweak the index so that it doesn't go below the starting
                 // index -- if so we can just consider the previous result.
@@ -117,16 +118,14 @@ public class MultipleDichotomyRunner {
                         dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
                     double newLowestUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(nextDichotomyResult);
 
-                    String lastLimitingCause = "";
-                    if (multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
-                        lastLimitingCause = TtcResult.limitingCauseToString(nextDichotomyResult.getLimitingCause());
-                    }
-                    printablePrasIdsIds = toString(getActivatedRangeActionInPreventive(crac, nextDichotomyResult));
-
+                    limitingCause = TtcResult.limitingCauseToString(nextDichotomyResult.getLimitingCause());
+                    ttcString = String.valueOf(round(dichotomyResultHelper.computeHighestSecureItalianImport(nextDichotomyResult)));
+                    printablePrasIds = toString(getActivatedRangeActionInPreventive(crac, nextDichotomyResult));
+                    printableForcedPrasIds = toString(getForcedPrasIds(nextDichotomyResult));
                     logSummary("Dichotomy count: " + dichotomyCount,
-                        dichotomyResultHelper.computeHighestSecureItalianImport(nextDichotomyResult),
-                        lastLimitingCause, newLimitingElement, printablePrasIdsIds,
-                        toString(getForcedPrasIds(nextDichotomyResult)));
+                        ttcString,
+                        limitingCause, newLimitingElement,
+                        printablePrasIds, printableForcedPrasIds);
 
                     if (previousLowestUnsecureItalianImport < newLowestUnsecureItalianImport) {
                         // If result is improved we store this new result
@@ -160,26 +159,34 @@ public class MultipleDichotomyRunner {
             dichotomyCount++;
         }
 
-        String lastLimitingCause = "";
+        String finalLimitingElement = "NONE";
+        String finalTtcString = "NONE";
+        String finalPrintablePrasIds = "NONE";
+        String finalPrintableForcedPrasIds = "NONE";
+        String finalLimitingCause = TtcResult.limitingCauseToString(multipleDichotomyResult.getBestDichotomyResult().getLimitingCause());
+
         if (multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
-            lastLimitingCause = TtcResult.limitingCauseToString(multipleDichotomyResult.getBestDichotomyResult().getLimitingCause());
+            finalLimitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
+            finalTtcString = String.valueOf(round(dichotomyResultHelper.computeHighestSecureItalianImport(multipleDichotomyResult.getBestDichotomyResult())));
+            finalPrintablePrasIds = toString(getActivatedRangeActionInPreventive(crac, multipleDichotomyResult.getBestDichotomyResult()));
+            finalPrintableForcedPrasIds = toString(getForcedPrasIds(multipleDichotomyResult.getBestDichotomyResult()));
         }
-        printablePrasIdsIds = toString(getActivatedRangeActionInPreventive(crac, multipleDichotomyResult.getBestDichotomyResult()));
+
         logSummary("Calculation finished",
-            dichotomyResultHelper.computeHighestSecureItalianImport(multipleDichotomyResult.getBestDichotomyResult()),
-            lastLimitingCause, limitingElement, printablePrasIdsIds,
-            toString(getForcedPrasIds(multipleDichotomyResult.getBestDichotomyResult())));
+            finalTtcString,
+            finalLimitingCause, finalLimitingElement,
+            finalPrintablePrasIds, finalPrintableForcedPrasIds);
 
         return multipleDichotomyResult;
     }
 
-    private void logSummary(String dichotomyCount, double ttc, String limitingCause, String limitingElement, String printablePrasIdsIds, String printableForcedPrasIdsIds) {
+    private void logSummary(String dichotomyCount, String ttcString, String limitingCause, String limitingElement, String printablePrasIds, String printableForcedPrasIdsIds) {
         businessLogger.info(SUMMARY,
             dichotomyCount,
-            round(ttc),
+            ttcString,
             limitingCause,
             limitingElement,
-            printablePrasIdsIds,
+            printablePrasIds,
             printableForcedPrasIdsIds);
     }
 
