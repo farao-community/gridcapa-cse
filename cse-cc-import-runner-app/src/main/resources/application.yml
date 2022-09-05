@@ -14,7 +14,6 @@ spring:
         definition: interrupt;request
       default:
         binder: rabbit
-        group: cse-idcc-runner
       bindings:
         interrupt-in-0:
           destination: cse-interrupt
