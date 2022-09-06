@@ -52,21 +52,20 @@ public class DichotomyRunner {
     public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
                                                               CseData cseData,
                                                               Network network,
-                                                              double initialItalianImport,
+                                                              double initialIndexValue,
                                                               Set<String> forcedPrasIds) throws IOException {
-        return runDichotomy(cseRequest, cseData, network, initialItalianImport, MIN_IMPORT_VALUE, forcedPrasIds);
+        return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, forcedPrasIds);
     }
 
     public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
                                                               CseData cseData,
                                                               Network network,
-                                                              double initialItalianImport,
+                                                              double initialIndexValue,
                                                               double minImportValue,
                                                               Set<String> forcedPrasIds) throws IOException {
-        double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImport);
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
-        logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, minImportValue, MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
+        logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) minImportValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
         Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,

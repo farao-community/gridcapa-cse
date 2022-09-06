@@ -15,6 +15,7 @@ import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.crac_api.range_action.RangeAction;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.powsybl.iidm.network.Network;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +32,12 @@ public class MultipleDichotomyRunner {
 
     public static final String SUMMARY = "Summary :  " +
         "Progress in the forcing : {},  " +
-        "TTC : {} MW',  " +
+        "MNII : {} MW,  " +
         "Limiting cause : {},  " +
         "Limiting element : {},  " +
         "PRAs : {},  " +
         "fPRA : {}.";
+    private static final String DICHOTOMY_COUNT = "Dichotomy count: ";
 
     private final DichotomyRunner dichotomyRunner;
     private final DichotomyResultHelper dichotomyResultHelper;
@@ -51,7 +53,7 @@ public class MultipleDichotomyRunner {
                                                                               CseData cseData,
                                                                               Network network,
                                                                               Crac crac,
-                                                                              double initialItalianImport) throws IOException {
+                                                                              double initialIndexValue) throws IOException {
         int maximumDichotomiesNumber = Optional.ofNullable(request.getMaximumDichotomiesNumber()).orElse(DEFAULT_MAX_DICHOTOMIES_NUMBER);
         Map<String, List<Set<String>>> automatedForcedPrasIds = request.getAutomatedForcedPrasIds();
         MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = new MultipleDichotomyResult<>();
@@ -60,7 +62,7 @@ public class MultipleDichotomyRunner {
 
         // Launch initial dichotomy and store result
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult =
-            dichotomyRunner.runDichotomy(request, cseData, network, initialItalianImport, flattenPrasIds(forcedPrasIds));
+            dichotomyRunner.runDichotomy(request, cseData, network, initialIndexValue, flattenPrasIds(forcedPrasIds));
         multipleDichotomyResult.addResult(initialDichotomyResult, flattenPrasIds(forcedPrasIds));
 
         String limitingElement = "NONE";
@@ -76,7 +78,9 @@ public class MultipleDichotomyRunner {
             printableForcedPrasIds = toString(getForcedPrasIds(initialDichotomyResult));
         }
 
-        logSummary("First run",
+        int dichotomyCount = 1;
+
+        logSummary(DICHOTOMY_COUNT + dichotomyCount,
             ttcString,
             limitingCause, limitingElement,
             printablePrasIds,
@@ -86,14 +90,16 @@ public class MultipleDichotomyRunner {
             return multipleDichotomyResult;
         }
 
-        int dichotomyCount = 2;
+        dichotomyCount++;
         int counterPerLimitingElement = 0;
         Set<String> additionalPrasToBeForced = getAdditionalPrasToBeForced(automatedForcedPrasIds, limitingElement, counterPerLimitingElement);
 
         while (dichotomyCount <= maximumDichotomiesNumber && !additionalPrasToBeForced.isEmpty()) {
             if (!checkIfPrasCombinationHasImpactOnNetwork(additionalPrasToBeForced, crac, network)) {
                 if (businessLogger.isInfoEnabled()) {
-                    businessLogger.info("RAs combination '{}' has no impact on network. It will not be applied", toString(additionalPrasToBeForced));
+                    logSummary(DICHOTOMY_COUNT + dichotomyCount,
+                        "Additional forced PRAs have no impact on the network",
+                        toString(CollectionUtils.union(flattenPrasIds(forcedPrasIds), additionalPrasToBeForced)));
                 }
                 counterPerLimitingElement++;
             } else {
@@ -122,7 +128,7 @@ public class MultipleDichotomyRunner {
                     ttcString = String.valueOf(round(dichotomyResultHelper.computeHighestSecureItalianImport(nextDichotomyResult)));
                     printablePrasIds = toString(getActivatedRangeActionInPreventive(crac, nextDichotomyResult));
                     printableForcedPrasIds = toString(getForcedPrasIds(nextDichotomyResult));
-                    logSummary("Dichotomy count: " + dichotomyCount,
+                    logSummary(DICHOTOMY_COUNT + dichotomyCount,
                         ttcString,
                         limitingCause, newLimitingElement,
                         printablePrasIds, printableForcedPrasIds);
@@ -150,7 +156,9 @@ public class MultipleDichotomyRunner {
                         counterPerLimitingElement++;
                     }
                 } else {
-                    businessLogger.info("No valid step computed in previous dichotomy. Result will be ignored");
+                    logSummary(DICHOTOMY_COUNT + dichotomyCount,
+                        TtcResult.limitingCauseToString(nextDichotomyResult.getLimitingCause()),
+                        toString(flattenPrasIds(forcedPrasIds)));
                     forcedPrasIds.remove(forcedPrasIds.size() - 1); // Remove from the historical forced PRAs to apply the last we tried.
                     counterPerLimitingElement++;
                 }
@@ -180,13 +188,23 @@ public class MultipleDichotomyRunner {
         return multipleDichotomyResult;
     }
 
-    private void logSummary(String dichotomyCount, String ttcString, String limitingCause, String limitingElement, String printablePrasIds, String printableForcedPrasIds) {
+    private void logSummary(String dichotomyCount, String mniiString, String limitingCause, String limitingElement, String printablePrasIds, String printableForcedPrasIds) {
         businessLogger.info(SUMMARY,
             dichotomyCount,
-            ttcString,
+            mniiString,
             limitingCause,
             limitingElement,
             printablePrasIds,
+            printableForcedPrasIds);
+    }
+
+    private void logSummary(String dichotomyCount, String limitingCause, String printableForcedPrasIds) {
+        businessLogger.info(SUMMARY,
+            dichotomyCount,
+            "NONE",
+            limitingCause,
+            "NONE",
+            "NONE",
             printableForcedPrasIds);
     }
 
