@@ -14,6 +14,7 @@ import com.farao_community.farao.search_tree_rao.result.impl.FlowResultImpl;
 import com.farao_community.farao.sensitivity_analysis.SystematicSensitivityInterface;
 import com.farao_community.farao.sensitivity_analysis.SystematicSensitivityResult;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.sensitivity.SensitivityAnalysis;
 import com.powsybl.sensitivity.SensitivityAnalysisParameters;
 
 import java.util.Set;
@@ -31,7 +32,7 @@ public final class FlowEvaluator {
         SystematicSensitivityInterface systematicSensitivityInterface = SystematicSensitivityInterface.builder()
             .withLoadflow(crac.getFlowCnecs(), Set.of(Unit.MEGAWATT))
             .withDefaultParameters(SensitivityAnalysisParameters.load())
-            .withSensitivityProviderName("Sensi2")
+            .withSensitivityProviderName(SensitivityAnalysis.find().getName())
             .build();
         SystematicSensitivityResult sensitivityResult = systematicSensitivityInterface.run(network);
         return new FlowResultImpl(sensitivityResult, null, null);
