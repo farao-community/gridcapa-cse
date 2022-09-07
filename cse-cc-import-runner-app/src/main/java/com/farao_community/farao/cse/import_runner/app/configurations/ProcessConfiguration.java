@@ -29,6 +29,9 @@ public class ProcessConfiguration {
     @Value("${cse-cc-runner.outputs.ttc-res}")
     private String ttcRes;
 
+    @Value("${cse-cc-runner.default-max-dichotomies-number}")
+    private Integer defaultMaxDichotomiesNumber;
+
     public String getZoneId() {
         return zoneId;
     }
@@ -47,5 +50,9 @@ public class ProcessConfiguration {
 
     public String getTtcRes() {
         return ttcRes;
+    }
+
+    public Integer getDefaultMaxDichotomiesNumber() {
+        return defaultMaxDichotomiesNumber;
     }
 }

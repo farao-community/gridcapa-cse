@@ -15,6 +15,7 @@ minio-adapter:
 cse-cc-runner:
   zone-id: "Europe/Paris"
   trm: 500
+  default-max-dichotomies-number: 4
   outputs:
     initial-cgm: INITIAL_CGM
     final-cgm: FINAL_CGM
