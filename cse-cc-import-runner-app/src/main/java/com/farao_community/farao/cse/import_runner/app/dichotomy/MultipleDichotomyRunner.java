@@ -9,6 +9,7 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.CseData;
+import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
@@ -28,8 +29,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class MultipleDichotomyRunner {
-    private static final int DEFAULT_MAX_DICHOTOMIES_NUMBER = 1;
-
     public static final String SUMMARY = "Summary :  " +
         "Progress in the forcing : {},  " +
         "MNII : {} MW,  " +
@@ -39,11 +38,14 @@ public class MultipleDichotomyRunner {
         "fPRA : {}.";
     private static final String DICHOTOMY_COUNT = "Dichotomy count: ";
 
+    private final ProcessConfiguration processConfiguration;
     private final DichotomyRunner dichotomyRunner;
     private final DichotomyResultHelper dichotomyResultHelper;
     private final Logger businessLogger;
 
-    public MultipleDichotomyRunner(DichotomyRunner dichotomyRunner, DichotomyResultHelper dichotomyResultHelper, Logger logger) {
+    public MultipleDichotomyRunner(ProcessConfiguration processConfiguration, DichotomyRunner dichotomyRunner,
+                                   DichotomyResultHelper dichotomyResultHelper, Logger logger) {
+        this.processConfiguration = processConfiguration;
         this.dichotomyRunner = dichotomyRunner;
         this.dichotomyResultHelper = dichotomyResultHelper;
         this.businessLogger = logger;
@@ -54,7 +56,7 @@ public class MultipleDichotomyRunner {
                                                                               Network network,
                                                                               Crac crac,
                                                                               double initialIndexValue) throws IOException {
-        int maximumDichotomiesNumber = Optional.ofNullable(request.getMaximumDichotomiesNumber()).orElse(DEFAULT_MAX_DICHOTOMIES_NUMBER);
+        int maximumDichotomiesNumber = Optional.ofNullable(request.getMaximumDichotomiesNumber()).orElse(processConfiguration.getDefaultMaxDichotomiesNumber());
         Map<String, List<Set<String>>> automatedForcedPrasIds = request.getAutomatedForcedPrasIds();
         MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = new MultipleDichotomyResult<>();
         List<Set<String>> forcedPrasIds = new ArrayList<>();
