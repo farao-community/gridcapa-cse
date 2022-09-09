@@ -116,6 +116,7 @@
                     <areato v="FR"/>
                     <IAfterOutage unit="A" v="50"/>
                     <ImaxAfterOutage unit="A" v="4318"/>
+                    <Selected v="true"/>
                 </Element>
             </MonitoredElement>
         </CriticalBranch>
@@ -142,6 +143,7 @@
                     <areato v="NL"/>
                     <I unit="A" v="818"/>
                     <Imax unit="A" v="4000"/>
+                    <Selected v="true"/>
                 </Element>
                 <Element>
                     <Name v="basecase_branch_2"/>
@@ -150,6 +152,7 @@
                     <areato v="NL"/>
                     <I unit="A" v="-769"/>
                     <Imax unit="A" v="4000"/>
+                    <Selected v="true"/>
                 </Element>
                 <Element>
                     <Name v="basecase_branch_3"/>
@@ -158,6 +161,7 @@
                     <areato v="NL"/>
                     <I unit="A" v="48"/>
                     <Imax unit="A" v="4500"/>
+                    <Selected v="true"/>
                 </Element>
             </MonitoredElement>
         </CriticalBranch>
@@ -186,6 +190,7 @@
                     <ImaxAfterOutage unit="A" v="3071"/>
                     <IAfterCRA unit="A" v="0"/>
                     <ImaxAfterCRA unit="A" v="2585"/>
+                    <Selected v="true"/>
                 </Element>
             </MonitoredElement>
         </CriticalBranch>
@@ -213,6 +218,7 @@
                     <ImaxAfterOutage unit="A" v="3071"/>
                     <IAfterCRA unit="A" v="0"/>
                     <ImaxAfterCRA unit="A" v="2585"/>
+                    <Selected v="true"/>
                 </Element>
             </MonitoredElement>
         </CriticalBranch>
@@ -236,6 +242,7 @@
                     <ImaxAfterOutage unit="A" v="4318"/>
                     <IAfterCRA unit="A" v="0"/>
                     <ImaxAfterCRA unit="A" v="3099"/>
+                    <Selected v="true"/>
                 </Element>
             </MonitoredElement>
         </CriticalBranch>
