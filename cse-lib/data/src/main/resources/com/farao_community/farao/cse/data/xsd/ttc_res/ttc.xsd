@@ -143,24 +143,8 @@
   <xs:element name="Inputfiles">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="CRACfiles"/>
-        <xs:element ref="GSKfiles"/>
         <xs:element ref="NTCRedfiles"/>
         <xs:element ref="IDCFfiles"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="CRACfiles">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="File"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="GSKfiles">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="File"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
