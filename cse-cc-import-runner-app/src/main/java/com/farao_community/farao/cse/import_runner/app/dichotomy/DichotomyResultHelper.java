@@ -11,6 +11,7 @@ import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
+import com.farao_community.farao.cse.import_runner.app.services.PiSaService;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
@@ -31,9 +32,11 @@ import java.util.Optional;
 public final class DichotomyResultHelper {
 
     private final FileImporter fileImporter;
+    private final PiSaService piSaService;
 
-    public DichotomyResultHelper(FileImporter fileImporter) {
+    public DichotomyResultHelper(FileImporter fileImporter, PiSaService piSaService) {
         this.fileImporter = fileImporter;
+        this.piSaService = piSaService;
     }
 
     public String getLimitingElement(DichotomyResult<DichotomyRaoResponse> dichotomyResult) throws IOException {
@@ -66,12 +69,12 @@ public final class DichotomyResultHelper {
     public double computeLowestUnsecureItalianImport(DichotomyResult<DichotomyRaoResponse> dichotomyResult) throws IOException {
         Network network = fileImporter.importNetwork(dichotomyResult.getLowestInvalidStep().getValidationData()
             .getRaoResponse().getNetworkWithPraFileUrl());
-        return BorderExchanges.computeItalianImport(network);
+        return BorderExchanges.computeItalianImport(network, piSaService.getPiSaLinkProcessors());
     }
 
     public double computeHighestSecureItalianImport(DichotomyResult<DichotomyRaoResponse> dichotomyResult) throws IOException {
         Network network = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
             .getRaoResponse().getNetworkWithPraFileUrl());
-        return BorderExchanges.computeItalianImport(network);
+        return BorderExchanges.computeItalianImport(network, piSaService.getPiSaLinkProcessors());
     }
 }

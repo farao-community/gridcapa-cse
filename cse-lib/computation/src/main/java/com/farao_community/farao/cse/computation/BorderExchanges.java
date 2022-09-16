@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.computation;
 
+import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkProcessor;
 import com.powsybl.balances_adjustment.util.CountryArea;
 import com.powsybl.balances_adjustment.util.CountryAreaFactory;
 import com.powsybl.iidm.network.Country;
@@ -17,8 +18,7 @@ import com.powsybl.loadflow.LoadFlowResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,19 +40,37 @@ public final class BorderExchanges {
         // Should not be instantiated
     }
 
-    public static double computeItalianImport(Network network) {
+    public static double computeItalianImport(Network network, Collection<PiSaLinkProcessor> piSaLinkProcessors) {
         runLoadFlow(network);
         CountryArea itArea = new CountryAreaFactory(Country.IT).create(network);
         return Stream.of(Country.FR, Country.AT, Country.CH, Country.SI)
-            .map(country -> new CountryAreaFactory(country).create(network).getLeavingFlowToCountry(itArea))
+            .map(country -> {
+                double flow = new CountryAreaFactory(country).create(network).getLeavingFlowToCountry(itArea);
+                if (country == Country.FR) {
+                    flow += getPiSaFlowToItaly(network, piSaLinkProcessors);
+                }
+                return flow;
+            })
             .reduce(0., Double::sum);
     }
 
-    public static Map<String, Double> computeCseBordersExchanges(Network network) {
-        return computeCseBordersExchanges(network, true);
+    private static double getPiSaFlowToItaly(Network network, Collection<PiSaLinkProcessor> piSaLinkProcessors) {
+        return piSaLinkProcessors.stream().mapToDouble(piSaLinkProcessor -> getFlowToItalyForOnePiSaLink(network, piSaLinkProcessor)).sum();
     }
 
-    public static Map<String, Double> computeCseBordersExchanges(Network network, boolean withLoadflow) {
+    private static double getFlowToItalyForOnePiSaLink(Network network, PiSaLinkProcessor piSaLinkProcessor) {
+        // As it is on French side, positive P means consumption, means flow directed towards Italy
+        return Optional.ofNullable(piSaLinkProcessor.getFrFictiveGenerator(network))
+            .map(g -> g.getTerminal().getP())
+            .filter(d -> !d.isNaN())
+            .orElse(0.);
+    }
+
+    public static Map<String, Double> computeCseBordersExchanges(Network network, Collection<PiSaLinkProcessor> piSaLinkProcessors) {
+        return computeCseBordersExchanges(network, piSaLinkProcessors, true);
+    }
+
+    public static Map<String, Double> computeCseBordersExchanges(Network network, Collection<PiSaLinkProcessor> piSaLinkProcessors, boolean withLoadflow) {
         if (withLoadflow) {
             runLoadFlow(network);
         }
@@ -63,7 +81,7 @@ public final class BorderExchanges {
                 country -> new CountryAreaFactory(country).create(network)
             ));
         borderExchanges.put(IT_CH, getBorderExchange(Country.IT, Country.CH, countryAreaPerCountry));
-        borderExchanges.put(IT_FR, getBorderExchange(Country.IT, Country.FR, countryAreaPerCountry));
+        borderExchanges.put(IT_FR, getBorderExchange(Country.IT, Country.FR, countryAreaPerCountry) - getPiSaFlowToItaly(network, piSaLinkProcessors));
         borderExchanges.put(IT_AT, getBorderExchange(Country.IT, Country.AT, countryAreaPerCountry));
         borderExchanges.put(IT_SI, getBorderExchange(Country.IT, Country.SI, countryAreaPerCountry));
         borderExchanges.put(CH_FR, getBorderExchange(Country.CH, Country.FR, countryAreaPerCountry));
@@ -76,14 +94,14 @@ public final class BorderExchanges {
         return countryAreaPerCountry.get(fromCountry).getLeavingFlowToCountry(countryAreaPerCountry.get(toCountry));
     }
 
-    public static Map<String, Double> computeCseCountriesBalances(Network network) {
+    public static Map<String, Double> computeCseCountriesBalances(Network network, Collection<PiSaLinkProcessor> piSaLinkProcessors) {
         runLoadFlow(network);
         Map<String, Double> countriesBalances = new HashMap<>();
         countriesBalances.put("AT", new CountryAreaFactory(Country.AT).create(network).getNetPosition());
         countriesBalances.put("CH", new CountryAreaFactory(Country.CH).create(network).getNetPosition());
-        countriesBalances.put("FR", new CountryAreaFactory(Country.FR).create(network).getNetPosition());
+        countriesBalances.put("FR", new CountryAreaFactory(Country.FR).create(network).getNetPosition() + getPiSaFlowToItaly(network, piSaLinkProcessors));
         countriesBalances.put("SI", new CountryAreaFactory(Country.SI).create(network).getNetPosition());
-        countriesBalances.put("IT", new CountryAreaFactory(Country.IT).create(network).getNetPosition());
+        countriesBalances.put("IT", new CountryAreaFactory(Country.IT).create(network).getNetPosition() - getPiSaFlowToItaly(network, piSaLinkProcessors));
         countriesBalances.put("DE", new CountryAreaFactory(Country.DE).create(network).getNetPosition());
         return countriesBalances;
     }

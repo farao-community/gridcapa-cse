@@ -33,11 +33,13 @@ public class TtcResultService {
 
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
+    private final PiSaService piSaService;
     private final XNodesConfiguration xNodesConfiguration;
 
-    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter, XNodesConfiguration xNodesConfiguration) {
+    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter, PiSaService piSaService, XNodesConfiguration xNodesConfiguration) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
+        this.piSaService = piSaService;
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
@@ -54,12 +56,12 @@ public class TtcResultService {
         TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, finalCgmUrl);
         String networkWithPraUrl = highestSecureStepRaoResponse.getRaoResponse().getNetworkWithPraFileUrl();
         Network networkWithPra = fileImporter.importNetwork(networkWithPraUrl);
-        double finalItalianImport = BorderExchanges.computeItalianImport(networkWithPra);
+        double finalItalianImport = BorderExchanges.computeItalianImport(networkWithPra, piSaService.getPiSaLinkProcessors());
         TtcResult.ProcessData processData = new TtcResult.ProcessData(
             highestSecureStepRaoResponse.getForcedPrasIds(),
-            BorderExchanges.computeCseBordersExchanges(networkWithPra),
+            BorderExchanges.computeCseBordersExchanges(networkWithPra, piSaService.getPiSaLinkProcessors()),
             cseData.getReducedSplittingFactors(),
-            BorderExchanges.computeCseCountriesBalances(networkWithPra),
+            BorderExchanges.computeCseCountriesBalances(networkWithPra, piSaService.getPiSaLinkProcessors()),
             limitingCause,
             finalItalianImport,
             cseData.getMniiOffset(),
