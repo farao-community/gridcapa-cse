@@ -61,7 +61,7 @@ class DichotomyResultHelperTest {
 
         double lowestUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(dichotomyResult);
 
-        assertEquals(6000, lowestUnsecureItalianImport, 1);
+        assertEquals(5500, lowestUnsecureItalianImport, 1);
     }
 
     @Test
@@ -78,6 +78,6 @@ class DichotomyResultHelperTest {
 
         double highestSecureItalianImport = dichotomyResultHelper.computeHighestSecureItalianImport(dichotomyResult);
 
-        assertEquals(6000, highestSecureItalianImport, 1);
+        assertEquals(5500, highestSecureItalianImport, 1);
     }
 }
