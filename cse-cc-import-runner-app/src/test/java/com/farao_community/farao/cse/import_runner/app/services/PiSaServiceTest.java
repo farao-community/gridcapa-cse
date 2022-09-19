@@ -34,11 +34,6 @@ class PiSaServiceTest {
     private PiSaService piSaService;
 
     @Test
-    void testPisaLinkProcessorsGetter() {
-        assertEquals(2, piSaService.getPiSaLinkProcessors().size());
-    }
-
-    @Test
     void testPiSaPreProcessInIdccWithOneLinkInSetpoint() {
         String networkFilename = "20210901_2230_test_network_pisa_test_one_link_connected_and_setpoint.uct";
         Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));

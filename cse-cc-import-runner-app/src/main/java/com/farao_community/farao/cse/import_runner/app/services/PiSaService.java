@@ -14,9 +14,6 @@ import com.farao_community.farao.data.crac_api.Crac;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Set;
-
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
@@ -37,10 +34,6 @@ public class PiSaService {
 
     PiSaLinkProcessor getPiSaLink2Processor() {
         return piSaLink2Processor;
-    }
-
-    public Collection<PiSaLinkProcessor> getPiSaLinkProcessors() {
-        return Set.of(piSaLink1Processor, piSaLink2Processor);
     }
 
     public void alignGenerators(Network network) {

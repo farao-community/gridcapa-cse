@@ -10,7 +10,6 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.farao_community.farao.cse.import_runner.app.services.PiSaService;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.dichotomy.api.NetworkShifter;
@@ -33,11 +32,9 @@ import java.util.TreeMap;
 public class NetworkShifterProvider {
     private static final double SHIFT_TOLERANCE = 1;
 
-    private final PiSaService piSaService;
     private final ZonalScalableProvider zonalScalableProvider;
 
-    public NetworkShifterProvider(PiSaService piSaService, ZonalScalableProvider zonalScalableProvider) {
-        this.piSaService = piSaService;
+    public NetworkShifterProvider(ZonalScalableProvider zonalScalableProvider) {
         this.zonalScalableProvider = zonalScalableProvider;
     }
 
@@ -54,7 +51,7 @@ public class NetworkShifterProvider {
         if (processType == ProcessType.D2CC) {
             return new CseD2ccShiftDispatcher(
                 convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, piSaService.getPiSaLinkProcessors(), true)),
+                convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true)),
                 convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
         } else {
             return new CseIdccShiftDispatcher(
