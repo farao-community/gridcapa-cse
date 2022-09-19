@@ -88,7 +88,7 @@ public class CseRunner {
         double initialItalianImport;
         if (cseRequest.getProcessType() == ProcessType.IDCC) {
             try {
-                initialItalianImport = BorderExchanges.computeItalianImport(network, piSaService.getPiSaLinkProcessors());
+                initialItalianImport = BorderExchanges.computeItalianImport(network);
             } catch (CseComputationException e) {
                 String ttcResultUrl = ttcResultService.saveFailedTtcResult(
                     cseRequest,
