@@ -47,6 +47,9 @@
     <xs:complexType name="Int_value">
         <xs:attribute name="v" type="xs:int"/>
     </xs:complexType>
+    <xs:complexType name="Boolean_value">
+        <xs:attribute name="v" type="xs:boolean"/>
+    </xs:complexType>
     <xs:complexType name="I_value">
         <xs:attribute name="unit" type="xs:string"/>
         <xs:attribute name="v" type="xs:int"/>
@@ -89,6 +92,7 @@
             <xs:element name="FromNode" type="String_value"/>
             <xs:element name="ToNode" type="String_value"/>
             <xs:element name="Code" type="String_value"/>
+            <xs:element name="Selected" type="Boolean_value"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="Outage">
