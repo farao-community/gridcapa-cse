@@ -18,6 +18,7 @@ import com.farao_community.farao.data.crac_creation.creator.api.ElementaryCreati
 import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.BranchCnecCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.NativeBranch;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
+import com.farao_community.farao.data.crac_creation.creator.cse.critical_branch.CseCriticalBranchCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.outage.CseOutageCreationContext;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
@@ -130,7 +131,8 @@ public class CracResultsHelper {
                 // Native ID is actually modified at import to be unique, the only way we can find back original
                 // CNEC name is in the FlowCnec name
                 FlowCnec flowCnecPrev = crac.getFlowCnec(branchCnecCreationContext.getCreatedCnecsIds().get(Instant.PREVENTIVE));
-                CnecCommon cnecCommon = makeCnecCommon(flowCnecPrev.getName(), branchCnecCreationContext.getNativeBranch());
+                CnecCommon cnecCommon = makeCnecCommon(flowCnecPrev.getName(), branchCnecCreationContext.getNativeBranch(),
+                    ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected());
                 CnecPreventive cnecPrev = new CnecPreventive();
                 cnecPrev.setCnecCommon(cnecCommon);
                 FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.AFTER_PRA);
@@ -177,13 +179,14 @@ public class CracResultsHelper {
                         throw new CseDataException("Couldn't find Cnec type in cnec Id : " + flowCnec.getId());
                 }
             }
-            CnecCommon cnecCommon = makeCnecCommon(cnecName, branchCnecCreationContext.getNativeBranch());
+            CnecCommon cnecCommon = makeCnecCommon(cnecName, branchCnecCreationContext.getNativeBranch(),
+                ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected());
             mergedCnec.setCnecCommon(cnecCommon);
         });
         return mergedCnecs;
     }
 
-    private CnecCommon makeCnecCommon(String nativeId, NativeBranch nativeBranch) {
+    private CnecCommon makeCnecCommon(String nativeId, NativeBranch nativeBranch, boolean selected) {
         CnecCommon cnecCommon = new CnecCommon();
         cnecCommon.setName(nativeId);
         cnecCommon.setCode(makeCode(nativeBranch));
@@ -192,6 +195,7 @@ public class CracResultsHelper {
         cnecCommon.setNodeFrom(nativeBranch.getFrom());
         cnecCommon.setNodeTo(nativeBranch.getTo());
         cnecCommon.setOrderCode(nativeBranch.getSuffix());
+        cnecCommon.setSelected(selected);
         return cnecCommon;
     }
 

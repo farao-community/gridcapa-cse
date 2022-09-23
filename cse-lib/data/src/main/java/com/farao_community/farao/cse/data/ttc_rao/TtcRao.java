@@ -120,6 +120,7 @@ public final class TtcRao {
         branch.setCode(getStringValue(cnecCommon.getOrderCode()));
         branch.setFromNode(getStringValue(cnecCommon.getNodeFrom()));
         branch.setToNode(getStringValue(cnecCommon.getNodeTo()));
+        branch.setSelected(getBooleanValue(cnecCommon.isSelected()));
     }
 
     static void addPreventiveResult(CseRaoResult.Results results, PreventiveResult preventiveResult) {
@@ -215,6 +216,12 @@ public final class TtcRao {
         IntValue intValue = new IntValue();
         intValue.setV(value);
         return intValue;
+    }
+
+    private static BooleanValue getBooleanValue(boolean bool) {
+        BooleanValue boolValue = new BooleanValue();
+        boolValue.setV(bool);
+        return boolValue;
     }
 
     private static IValue getIValue(int i) {
