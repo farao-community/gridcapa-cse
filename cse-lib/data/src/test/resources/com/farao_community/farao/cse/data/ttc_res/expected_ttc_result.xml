@@ -84,8 +84,6 @@
         </SplittingFactor>
     </SplittingFactors>
     <Inputfiles>
-        <CRACfiles/>
-        <GSKfiles/>
         <NTCRedfiles>
             <File>
                 <Filename v="20210101_2D5_NTC_reductions_CSE1.xml"/>

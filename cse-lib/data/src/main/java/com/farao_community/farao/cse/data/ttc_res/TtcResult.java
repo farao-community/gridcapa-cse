@@ -198,10 +198,6 @@ public final class TtcResult {
         ttcResults.setBASECASEfile(baseCaseFile);
 
         Inputfiles inputFiles = new Inputfiles();
-        CRACfiles cracFiles = new CRACfiles();
-        inputFiles.setCRACfiles(cracFiles);
-        GSKfiles gskFiles = new GSKfiles();
-        inputFiles.setGSKfiles(gskFiles);
         NTCRedfiles ntcRedFiles = new NTCRedfiles();
         File ntcRedFile = new File();
         Filename ntcRedFileName = new Filename();
