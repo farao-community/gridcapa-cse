@@ -58,7 +58,7 @@ class CseRunnerTest {
                 "SI", 375.
         );
         Mockito.when(cseData.getNtcPerCountry()).thenReturn(ntcPerCountry);
-        assertEquals(6600., cseRunner.getInitialItalianImportForD2ccProcess(cseData));
+        assertEquals(6600., cseRunner.getInitialIndexValueForD2ccProcess(cseData));
 
     }
 }
