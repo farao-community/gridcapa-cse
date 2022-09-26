@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
+import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstInitializer;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
@@ -20,6 +21,7 @@ import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -36,13 +38,16 @@ public class CseExportRunner {
     private final PiSaService pisaService;
     private final RaoRunnerService raoRunnerService;
     private final TtcRaoService ttcRaoService;
+    private final Logger businessLogger;
 
-    public CseExportRunner(FileImporter fileImporter, FileExporter fileExporter, PiSaService pisaService, RaoRunnerService raoRunnerService, TtcRaoService ttcRaoService) {
+    public CseExportRunner(FileImporter fileImporter, FileExporter fileExporter, PiSaService pisaService,
+                           RaoRunnerService raoRunnerService, TtcRaoService ttcRaoService, Logger businessLogger) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.pisaService = pisaService;
         this.raoRunnerService = raoRunnerService;
         this.ttcRaoService = ttcRaoService;
+        this.businessLogger = businessLogger;
     }
 
     public CseExportResponse run(CseExportRequest cseExportRequest) throws IOException {
@@ -58,6 +63,9 @@ public class CseExportRunner {
         CracCreationParameters cracCreationParameters = getCracCreationParameters(busBarChangeSwitchesSet);
         CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) CracCreators.createCrac(nativeCseCrac,
             network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);
+
+        // Put all PSTs within their ranges to be able to optimize them
+        PstInitializer.withLogger(businessLogger).initializePsts(network, cseCracCreationContext.getCrac());
 
         String initialNetworkUrl = saveInitialNetwork(cseExportRequest, network);
         String cracInJsonFormatUrl = fileExporter.saveCracInJsonFormat(cseCracCreationContext.getCrac(),
