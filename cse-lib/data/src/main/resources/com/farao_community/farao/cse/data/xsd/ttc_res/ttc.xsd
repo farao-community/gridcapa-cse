@@ -294,6 +294,7 @@
             <xs:element ref="ImaxAfterCRA"/>
           </xs:sequence>
         </xs:choice>
+        <xs:element ref="Selected"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -358,6 +359,11 @@
     <xs:complexType>
       <xs:attribute name="unit" use="required" type="xs:NCName"/>
       <xs:attribute name="v" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Selected">
+    <xs:complexType>
+      <xs:attribute name="v" use="required" type="xs:NCName"/>
     </xs:complexType>
   </xs:element>
 </xs:schema>

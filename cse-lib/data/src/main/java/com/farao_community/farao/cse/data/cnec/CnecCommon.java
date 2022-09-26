@@ -19,6 +19,7 @@ public class CnecCommon {
     private String nodeFrom;
     private String nodeTo;
     private String orderCode;
+    private boolean selected;
 
     public String getName() {
         return name;
@@ -74,5 +75,13 @@ public class CnecCommon {
 
     public void setOrderCode(String orderCode) {
         this.orderCode = orderCode;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

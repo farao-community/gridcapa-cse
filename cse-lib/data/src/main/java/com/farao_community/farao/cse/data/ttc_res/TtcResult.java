@@ -311,7 +311,9 @@ public final class TtcResult {
         FlowCnec worstCnec = cracResultsHelper.getWorstCnec();
         MonitoredElement monitoredElement = new MonitoredElement();
         Element mostLimitingElement = new Element();
-        fillCommonElementInformation(mostLimitingElement, worstCnec.getName(), worstCnec.getNetworkElement().getName(), cracResultsHelper.getAreaFrom(worstCnec.getNetworkElement()), cracResultsHelper.getAreaTo(worstCnec.getNetworkElement()));
+        fillCommonElementInformation(mostLimitingElement, worstCnec.getName(), worstCnec.getNetworkElement().getName(),
+            cracResultsHelper.getAreaFrom(worstCnec.getNetworkElement()), cracResultsHelper.getAreaTo(worstCnec.getNetworkElement()),
+            worstCnec.isOptimized());
         if (worstCnec.getState().isPreventive()) {
             outageName.setV(CracResultsHelper.PREVENTIVE_OUTAGE_NAME);
             outage.setName(outageName);
@@ -397,7 +399,7 @@ public final class TtcResult {
             mergedMonitoredCnecs.values().forEach(mergedCnec -> {
                 Element monitoredBranchElement = new Element();
                 fillCommonElementInformation(monitoredBranchElement, mergedCnec.getCnecCommon().getName(), mergedCnec.getCnecCommon().getCode(),
-                    mergedCnec.getCnecCommon().getAreaFrom(), mergedCnec.getCnecCommon().getAreaTo());
+                    mergedCnec.getCnecCommon().getAreaFrom(), mergedCnec.getCnecCommon().getAreaTo(), mergedCnec.getCnecCommon().isSelected());
                 if (mergedCnec.getiMaxAfterOutage() != 0) {
                     IAfterOutage iAfterOutage = new IAfterOutage();
                     iAfterOutage.setV(BigInteger.valueOf((int) mergedCnec.getiAfterOutage()));
@@ -449,7 +451,9 @@ public final class TtcResult {
         MonitoredElement monitoredElementPreventive = new MonitoredElement();
         preventiveCnecs.forEach(cnecPrev -> {
             Element preventiveCnecElement = new Element();
-            fillCommonElementInformation(preventiveCnecElement, cnecPrev.getCnecCommon().getName(), cnecPrev.getCnecCommon().getCode(), cnecPrev.getCnecCommon().getAreaFrom(), cnecPrev.getCnecCommon().getAreaTo());
+            fillCommonElementInformation(preventiveCnecElement, cnecPrev.getCnecCommon().getName(),
+                cnecPrev.getCnecCommon().getCode(), cnecPrev.getCnecCommon().getAreaFrom(),
+                cnecPrev.getCnecCommon().getAreaTo(), cnecPrev.getCnecCommon().isSelected());
             fillPreventiveCnecFlow(preventiveCnecElement, cnecPrev);
             monitoredElementPreventive.getElement().add(preventiveCnecElement);
         });
@@ -479,7 +483,7 @@ public final class TtcResult {
         preventiveCnecElement.setImax(imax);
     }
 
-    private static void fillCommonElementInformation(Element preventiveCnecElement, String nameValue, String codeValue, String areaFromValue, String areaToValue) {
+    private static void fillCommonElementInformation(Element preventiveCnecElement, String nameValue, String codeValue, String areaFromValue, String areaToValue, boolean selected) {
         Name name = new Name();
         name.setV(nameValue);
         preventiveCnecElement.setName(name);
@@ -492,6 +496,9 @@ public final class TtcResult {
         Areato areaTo = new Areato();
         areaTo.setV(areaToValue);
         preventiveCnecElement.setAreato(areaTo);
+        Selected tSelected = new Selected();
+        tSelected.setV(selected ? "true" : "false");
+        preventiveCnecElement.setSelected(tSelected);
     }
 
     private static void addPreventiveRemedialActions(CracResultsHelper cracResultsHelper, Results results, Set<String> forcedPrasIds) {

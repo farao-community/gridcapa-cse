@@ -28,6 +28,7 @@ import java.util.UUID;
 @Service
 public class RequestService {
     private static final String TASK_STATUS_UPDATE = "task-status-update";
+    private static final String STOP_RAO_BINDING = "stop-rao";
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
     private final CseRunner cseServer;
     private final Logger businessLogger;
@@ -61,7 +62,9 @@ public class RequestService {
                 LOGGER.info("Cse response sent: {}", resp.get());
             } else {
                 businessLogger.info("CSE run has been interrupted");
+                streamBridge.send(STOP_RAO_BINDING, cseRequest.getId());
                 result = sendCseResponse(new CseResponse(cseRequest.getId(), null, null));
+
             }
         } catch (Exception e) {
             result = handleError(e, cseRequest.getId());

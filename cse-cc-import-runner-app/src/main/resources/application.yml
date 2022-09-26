@@ -23,6 +23,8 @@ spring:
           destination: cse-response
         task-status-update:
           destination: cse-import-idcc-task-status-updated
+        stop-rao:
+          destination: cse-import-stop-rao
 
 logback:
   amqp:
