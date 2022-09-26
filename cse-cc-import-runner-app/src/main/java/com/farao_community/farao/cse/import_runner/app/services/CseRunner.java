@@ -15,6 +15,7 @@ import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichoto
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
+import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstInitializer;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.CseData;
@@ -54,8 +55,11 @@ public class CseRunner {
     private final PiSaService piSaService;
     private final MerchantLineService merchantLineService;
     private final ProcessConfiguration processConfiguration;
+    private final Logger businessLogger;
 
-    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, MultipleDichotomyRunner multipleDichotomyRunner, TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService, ProcessConfiguration processConfiguration) {
+    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, MultipleDichotomyRunner multipleDichotomyRunner,
+                     TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
+                     ProcessConfiguration processConfiguration, Logger businessLogger) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.multipleDichotomyRunner = multipleDichotomyRunner;
@@ -63,7 +67,7 @@ public class CseRunner {
         this.piSaService = piSaService;
         this.merchantLineService = merchantLineService;
         this.processConfiguration = processConfiguration;
-
+        this.businessLogger = businessLogger;
     }
 
     @Threadable
@@ -78,6 +82,9 @@ public class CseRunner {
             cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network);
 
         piSaService.forceSetPoint(cseRequest.getProcessType(), network, cseCracCreationContext.getCrac());
+
+        // Put all PSTs within their ranges to be able to optimize them
+        PstInitializer.withLogger(businessLogger).initializePsts(network, cseCracCreationContext.getCrac());
 
         // Saving pre-processed network in IIDM and CRAC in JSON format
         cseData.setPreProcesedNetworkUrl(fileExporter.saveNetworkInArtifact(network, cseRequest.getTargetProcessDateTime(), "", cseRequest.getProcessType()));
