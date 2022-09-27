@@ -92,10 +92,15 @@ public class CseRunner {
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String baseCaseFileUrl = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, baseCaseFilePath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
 
-        double initialItalianImport;
+        double initialIndexValueForProcess;
         if (cseRequest.getProcessType() == ProcessType.IDCC) {
             try {
-                initialItalianImport = BorderExchanges.computeItalianImport(network);
+                // We compute real Italian import on network just to compare with Vulcanus reference and log an event
+                // if the difference is too high (> 5%)
+                double initialItalianImportOnNetwork = BorderExchanges.computeItalianImport(network);
+                // Then we set initial index from Vulcanus reference value
+                initialIndexValueForProcess = getInitialIndexValueForIdccProcess(cseData);
+                checkNetworkAndReferenceExchangesDifference(initialIndexValueForProcess, initialItalianImportOnNetwork);
             } catch (CseComputationException e) {
                 String ttcResultUrl = ttcResultService.saveFailedTtcResult(
                     cseRequest,
@@ -103,14 +108,13 @@ public class CseRunner {
                     TtcResult.FailedProcessData.FailedProcessReason.LOAD_FLOW_FAILURE);
                 return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
             }
-            checkNetworkAndReferenceExchangesDifference(cseData, initialItalianImport);
         } else if (cseRequest.getProcessType() == ProcessType.D2CC) {
-            initialItalianImport = getInitialItalianImportForD2ccProcess(cseData);
+            initialIndexValueForProcess = getInitialIndexValueForD2ccProcess(cseData);
         } else {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
-        double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialItalianImport);
+        double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialIndexValueForProcess);
 
         MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
             cseRequest,
@@ -142,8 +146,12 @@ public class CseRunner {
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
-    double getInitialItalianImportForD2ccProcess(CseData cseData) {
+    double getInitialIndexValueForD2ccProcess(CseData cseData) {
         return cseData.getNtcPerCountry().values().stream().reduce(0., Double::sum) + processConfiguration.getTrm();
+    }
+
+    double getInitialIndexValueForIdccProcess(CseData cseData) {
+        return cseData.getCseReferenceExchanges().getExchanges().values().stream().reduce(0., Double::sum);
     }
 
     CseCracCreationContext importCracAndModifyNetworkForBusBars(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
@@ -163,9 +171,10 @@ public class CseRunner {
         return cracCreationParameters;
     }
 
-    private void checkNetworkAndReferenceExchangesDifference(CseData cseData, double initialItalianImportFromNetwork) {
-        double referenceItalianImport = cseData.getCseReferenceExchanges().getExchanges().values().stream().reduce(0., Double::sum);
-        if (Math.abs(referenceItalianImport - initialItalianImportFromNetwork) / Math.abs(referenceItalianImport) > NETWORK_AND_REFERENCE_EXCHANGES_DIFFERENCE_THRESHOLD) {
+    private void checkNetworkAndReferenceExchangesDifference(double initialItalianImportFromReference, double initialItalianImportFromNetwork) {
+        double relativeDifference = Math.abs(initialItalianImportFromReference - initialItalianImportFromNetwork)
+            / Math.abs(initialItalianImportFromReference);
+        if (relativeDifference > NETWORK_AND_REFERENCE_EXCHANGES_DIFFERENCE_THRESHOLD) {
             LOGGER.warn("Difference between vulcanus exchanges and network exchanges too high.");
         }
     }
