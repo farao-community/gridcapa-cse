@@ -102,10 +102,10 @@ class NetworkModifierTest {
 
     void assertSameCurrentLimits(Branch<?> expected, Branch<?> actual) {
         for (Branch.Side side : Set.of(Branch.Side.ONE, Branch.Side.TWO)) {
-            if (expected.getCurrentLimits(side) != null) {
-                assertEquals(expected.getCurrentLimits(side).getPermanentLimit(), actual.getCurrentLimits(side).getPermanentLimit());
+            if (expected.getNullableCurrentLimits(side) != null) {
+                assertEquals(expected.getNullableCurrentLimits(side).getPermanentLimit(), actual.getNullableCurrentLimits(side).getPermanentLimit());
             } else {
-                assertNull(actual.getCurrentLimits(side));
+                assertNull(actual.getNullableCurrentLimits(side));
             }
         }
     }
