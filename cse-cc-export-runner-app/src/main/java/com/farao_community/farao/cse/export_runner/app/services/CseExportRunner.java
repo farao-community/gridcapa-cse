@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.cse.export_runner.app.services;
 
-import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
+import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
 import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstInitializer;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
@@ -59,7 +59,7 @@ public class CseExportRunner {
 
         // Create CRAC creation context
         CseCrac nativeCseCrac = fileImporter.importCseCrac(cseExportRequest.getMergedCracUrl());
-        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangeProcessor.process(network, nativeCseCrac); // Pre-treatment on network
+        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, nativeCseCrac); // Pre-treatment on network
         CracCreationParameters cracCreationParameters = getCracCreationParameters(busBarChangeSwitchesSet);
         CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) CracCreators.createCrac(nativeCseCrac,
             network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);

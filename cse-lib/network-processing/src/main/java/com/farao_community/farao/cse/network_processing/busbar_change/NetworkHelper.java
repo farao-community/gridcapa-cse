@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A utility class to help querying the network
@@ -157,14 +158,25 @@ public final class NetworkHelper {
     }
 
     /**
+     * Returns the two buses at the two ends of a switch
+     */
+    public static Set<Bus> getBuses(Switch networkSwitch) {
+        VoltageLevel voltageLevel = networkSwitch.getVoltageLevel();
+        return Set.of(
+            voltageLevel.getBusBreakerView().getBus1(networkSwitch.getId()),
+            voltageLevel.getBusBreakerView().getBus2(networkSwitch.getId())
+        );
+    }
+
+    /**
      * Contains needed info to create a pair of switches
      */
     public static class SwitchPairToCreate implements Comparable<SwitchPairToCreate> {
-        private String branchId; // ID of the branch in the network
-        private String initialNodeId; // ID of the initial node to connect the switch to
-        private String finalNodeId; // ID of the final node to connect the switch to
-        private String uniqueId;
-        private Branch.Side branchSideToModify;
+        private final String branchId; // ID of the branch in the network
+        private final String initialNodeId; // ID of the initial node to connect the switch to
+        private final String finalNodeId; // ID of the final node to connect the switch to
+        private final String uniqueId;
+        private final Branch.Side branchSideToModify;
 
         SwitchPairToCreate(String branchId, String initialNodeId, String finalNodeId, Network network) {
             this.branchId = branchId;
@@ -178,7 +190,7 @@ public final class NetworkHelper {
             } else {
                 this.uniqueId = String.format("%s {%s, %s}", branchId, finalNodeId, initialNodeId);
             }
-            computeBranchSideToModify(network);
+            this.branchSideToModify = computeBranchSideToModify(network);
         }
 
         /**
@@ -186,7 +198,7 @@ public final class NetworkHelper {
          * to move to the fictitious bus
          * @param network: the Network
          */
-        private void computeBranchSideToModify(Network network) {
+        private Branch.Side computeBranchSideToModify(Network network) {
             String node1 = initialNodeId;
             String node2 = finalNodeId;
             Branch<?> branch = network.getBranch(branchId);
@@ -194,9 +206,9 @@ public final class NetworkHelper {
             String bus2 = branch.getTerminal2().getBusBreakerView().getConnectableBus().getId();
 
             if (bus1.equals(node1) || bus1.equals(node2)) {
-                branchSideToModify = Branch.Side.ONE;
+                return Branch.Side.ONE;
             } else if (bus2.equals(node1) || bus2.equals(node2)) {
-                branchSideToModify = Branch.Side.TWO;
+                return Branch.Side.TWO;
             } else {
                 // Should not happen
                 throw new FaraoException(String.format("The SwitchPairToCreate %s is not coherent", uniqueId));
@@ -253,7 +265,7 @@ public final class NetworkHelper {
     }
 
     public static class BusBarEquivalentModel {
-        private Map<String, String> switchesId;
+        private final Map<String, String> switchesId;
 
         public BusBarEquivalentModel(Map<String, String> switchesId) {
             this.switchesId = switchesId;

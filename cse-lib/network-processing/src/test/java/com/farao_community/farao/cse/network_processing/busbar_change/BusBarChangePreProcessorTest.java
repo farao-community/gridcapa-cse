@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Peter Mitri {@literal <peter.mitri@rte-france.com>}
  */
-class BusBarChangeProcessorTest {
+class BusBarChangePreProcessorTest {
 
     private Network network;
     private Set<BusBarChangeSwitches> busBarChangeSwitchesSet;
@@ -29,7 +29,7 @@ class BusBarChangeProcessorTest {
     private void setUp(String networkFile, String cracFile) {
         network = Importers.loadNetwork(networkFile, getClass().getResourceAsStream(networkFile));
         InputStream is = getClass().getResourceAsStream(cracFile);
-        busBarChangeSwitchesSet = BusBarChangeProcessor.process(network, is);
+        busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, is);
     }
 
     @Test

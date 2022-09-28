@@ -14,7 +14,7 @@ import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoRes
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
-import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
+import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
 import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstInitializer;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -158,7 +158,7 @@ public class CseRunner {
         // Create CRAC creation context
         CseCrac nativeCseCrac = fileImporter.importCseCrac(cracUrl);
         // Pre-treatment on network
-        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangeProcessor.process(network, nativeCseCrac);
+        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, nativeCseCrac);
         CracCreationParameters cracCreationParameters = getCracCreationParameters(busBarChangeSwitchesSet);
         return (CseCracCreationContext) CracCreators.createCrac(nativeCseCrac, network, targetProcessDateTime, cracCreationParameters);
     }
