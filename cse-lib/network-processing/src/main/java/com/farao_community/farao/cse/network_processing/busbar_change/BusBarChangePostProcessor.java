@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  *
  * @author Peter Mitri {@literal <peter.mitri@rte-france.com>}
  */
-public class BusBarChangePostProcessor {
+public final class BusBarChangePostProcessor {
     private BusBarChangePostProcessor() {
         // utility class
     }
