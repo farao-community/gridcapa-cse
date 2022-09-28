@@ -95,7 +95,7 @@ public class BusBarChangePostProcessor {
     }
 
     /**
-     * Collects that there is exactly one element and returns it
+     * Checks that there is exactly one element and returns it
      */
     private static <T> Collector<T, ?, T> toSingleton() {
         return Collectors.collectingAndThen(
