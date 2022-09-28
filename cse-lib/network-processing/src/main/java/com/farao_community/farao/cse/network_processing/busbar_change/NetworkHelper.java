@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * A utility class to help querying the network
@@ -130,15 +132,11 @@ public final class NetworkHelper {
     }
 
     private static Double getMinimumCurrentLimit(Branch<?> branch) {
-        if (branch.getCurrentLimits1() != null && branch.getCurrentLimits2() != null) {
-            return Math.min(branch.getCurrentLimits1().getPermanentLimit(), branch.getCurrentLimits2().getPermanentLimit());
-        } else if (branch.getCurrentLimits1() != null) {
-            return branch.getCurrentLimits1().getPermanentLimit();
-        } else if (branch.getCurrentLimits2() != null) {
-            return branch.getCurrentLimits2().getPermanentLimit();
-        } else {
-            return null;
-        }
+        return Stream.of(branch.getCurrentLimits1(), branch.getCurrentLimits2())
+            .flatMap(Optional::stream)
+            .map(LoadingLimits::getPermanentLimit)
+            .min(Double::compareTo)
+            .orElse(null);
     }
 
     /**
