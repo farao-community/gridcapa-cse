@@ -66,7 +66,7 @@ public class FileImporter {
         }
     }
 
-    public InputStream openUrlStream(String urlString) {
+    private InputStream openUrlStream(String urlString) {
         try {
             if (urlWhitelistConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
                 throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelisted url's.", urlString));
@@ -79,7 +79,7 @@ public class FileImporter {
         }
     }
 
-    public String getFileNameFromUrl(String stringUrl) {
+    private String getFileNameFromUrl(String stringUrl) {
         try {
             URL url = new URL(stringUrl);
             return FilenameUtils.getName(url.getPath());
