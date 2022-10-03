@@ -25,7 +25,6 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -95,7 +94,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
 
             DichotomyRaoResponse dichotomyRaoResponse = new DichotomyRaoResponse(raoResponse, appliedForcedPras);
             return DichotomyStepResult.fromNetworkValidationResult(raoResult, dichotomyRaoResponse);
-        } catch (RuntimeException | IOException e) {
+        } catch (RuntimeException e) {
             LOGGER.error("Exception occured during validation", e);
             throw new ValidationException("RAO run failed. Nested exception: " + e.getMessage());
         }

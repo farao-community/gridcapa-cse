@@ -356,16 +356,16 @@ public class NetworkModifier {
     }
 
     private static void copyCurrentLimits(Branch<?> branchFrom, Branch<?> branchTo) {
-        if (branchFrom.getCurrentLimits1() != null) {
+        branchFrom.getCurrentLimits1().ifPresent(currentLimits ->
             branchTo.newCurrentLimits1()
-                .setPermanentLimit(branchFrom.getCurrentLimits1().getPermanentLimit())
-                .add();
-        }
-        if (branchFrom.getCurrentLimits2() != null) {
+                .setPermanentLimit(currentLimits.getPermanentLimit())
+                .add()
+        );
+        branchFrom.getCurrentLimits2().ifPresent(currentLimits ->
             branchTo.newCurrentLimits2()
-                .setPermanentLimit(branchFrom.getCurrentLimits2().getPermanentLimit())
-                .add();
-        }
+                .setPermanentLimit(currentLimits.getPermanentLimit())
+                .add()
+        );
     }
 
     /**
