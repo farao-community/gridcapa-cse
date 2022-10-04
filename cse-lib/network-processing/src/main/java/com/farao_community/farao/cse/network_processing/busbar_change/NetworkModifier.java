@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class exposes useful methods to modify a network
@@ -24,12 +26,14 @@ import java.util.Map;
 public class NetworkModifier {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkModifier.class);
 
-    private Network network;
+    private final Network network;
     private Map<Branch<?>, Branch<?>> movedBranches;
+    private Set<Bus> busesToRemove;
 
     public NetworkModifier(Network network) {
         this.network = network;
         this.movedBranches = new HashMap<>();
+        this.busesToRemove = new HashSet<>();
     }
 
     public Network getNetwork() {
@@ -58,6 +62,20 @@ public class NetworkModifier {
         } catch (PowsyblException e) {
             throw new FaraoException(String.format("Could not create bus %s: %s", newBusId, e.getMessage()));
         }
+    }
+
+    /**
+     * Remove a bus from the network
+     */
+    public void removeBus(Bus bus) {
+        // Should be done after committing branch changes
+        busesToRemove.add(bus);
+        LOGGER.debug("Bus {} has been removed", bus.getId());
+    }
+
+    private void effectivelyRemoveBus(Bus bus) {
+        // Should be done after committing branch changes
+        bus.getVoltageLevel().getBusBreakerView().removeBus(bus.getId());
     }
 
     /**
@@ -94,6 +112,14 @@ public class NetworkModifier {
         } catch (PowsyblException e) {
             throw new FaraoException(String.format("Could not create switch between %s and %s: %s", bus1Id, bus2Id, e.getMessage()));
         }
+    }
+
+    /**
+     * Remove a switch from the network
+     */
+    public void removeSwitch(Switch networkSwitch) {
+        networkSwitch.getVoltageLevel().getBusBreakerView().removeSwitch(networkSwitch.getId());
+        LOGGER.debug("Switch {} has been removed", networkSwitch.getId());
     }
 
     /**
@@ -343,13 +369,33 @@ public class NetworkModifier {
     }
 
     /**
+     * Returns the connected branches to a given bus, and the side they're connected to it
+     * If the branch has been moved, the move shall be taken into account
+     */
+    public Map<Branch<?>, Branch.Side> getBranchesStillConnectedToBus(Bus bus) {
+        Map<Branch<?>, Branch.Side> connectedBranches = new HashMap<>();
+        network.getBranchStream()
+            .map(branch -> movedBranches.getOrDefault(branch, branch))
+            .forEach(branch -> {
+                if (branch.getTerminal1().getBusBreakerView().getConnectableBus().equals(bus)) {
+                    connectedBranches.put(branch, Branch.Side.ONE);
+                } else if (branch.getTerminal2().getBusBreakerView().getConnectableBus().equals(bus)) {
+                    connectedBranches.put(branch, Branch.Side.TWO);
+                }
+            });
+        return connectedBranches;
+    }
+
+    /**
      * Objects moved by the modifier are not removed until they are no longer needed
      * Call this function when you want to remove these objects
      */
     public void commitAllChanges() {
         try {
-            movedBranches.keySet().forEach(Connectable::remove);
+            movedBranches.keySet().forEach(branch -> branch.remove(true));
             movedBranches = new HashMap<>();
+            busesToRemove.forEach(this::effectivelyRemoveBus);
+            busesToRemove = new HashSet<>();
         } catch (PowsyblException e) {
             throw new FaraoException(String.format("Could not apply all changes to network: %s", e.getMessage()));
         }

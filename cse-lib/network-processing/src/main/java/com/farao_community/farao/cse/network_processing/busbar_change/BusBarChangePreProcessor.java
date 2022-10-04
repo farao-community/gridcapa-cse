@@ -35,10 +35,10 @@ import static com.farao_community.farao.cse.network_processing.busbar_change.Net
  *
  * @author Peter Mitri {@literal <peter.mitri@rte-france.com>}
  */
-public final class BusBarChangeProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BusBarChangeProcessor.class);
+public final class BusBarChangePreProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BusBarChangePreProcessor.class);
 
-    private BusBarChangeProcessor() {
+    private BusBarChangePreProcessor() {
         // utility class
     }
 

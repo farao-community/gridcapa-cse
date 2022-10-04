@@ -14,7 +14,8 @@ import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoRes
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
-import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangeProcessor;
+import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
+import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
 import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstInitializer;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -22,6 +23,7 @@ import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
+import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
 import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
@@ -78,17 +80,19 @@ public class CseRunner {
         merchantLineService.activateMerchantLine(cseRequest.getProcessType(), network, cseData);
         piSaService.alignGenerators(network);
 
-        CseCracCreationContext cseCracCreationContext = importCracAndModifyNetworkForBusBars(
+        CracImportData cracImportData = importCracAndModifyNetworkForBusBars(
             cseRequest.getMergedCracUrl(), cseRequest.getTargetProcessDateTime(), network);
 
-        piSaService.forceSetPoint(cseRequest.getProcessType(), network, cseCracCreationContext.getCrac());
+        Crac crac = cracImportData.cseCracCreationContext.getCrac();
+
+        piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);
 
         // Put all PSTs within their ranges to be able to optimize them
-        PstInitializer.withLogger(businessLogger).initializePsts(network, cseCracCreationContext.getCrac());
+        PstInitializer.withLogger(businessLogger).initializePsts(network, crac);
 
         // Saving pre-processed network in IIDM and CRAC in JSON format
         cseData.setPreProcesedNetworkUrl(fileExporter.saveNetworkInArtifact(network, cseRequest.getTargetProcessDateTime(), "", cseRequest.getProcessType()));
-        cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(cseCracCreationContext.getCrac(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
+        cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType()));
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String baseCaseFileUrl = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, baseCaseFilePath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
 
@@ -120,7 +124,7 @@ public class CseRunner {
             cseRequest,
             cseData,
             network,
-            cseCracCreationContext.getCrac(),
+            crac,
             initialIndexValue);
 
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
@@ -131,8 +135,9 @@ public class CseRunner {
             String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
             Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
                 .getRaoResponse().getNetworkWithPraFileUrl());
+            BusBarChangePostProcessor.process(finalNetwork, cracImportData.busBarChangeSwitchesSet);
             finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
-            ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, cseCracCreationContext,
+            ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, cracImportData.cseCracCreationContext,
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
                 baseCaseFileUrl, finalCgmUrl);
         } else {
@@ -154,13 +159,15 @@ public class CseRunner {
         return cseData.getCseReferenceExchanges().getExchanges().values().stream().reduce(0., Double::sum);
     }
 
-    CseCracCreationContext importCracAndModifyNetworkForBusBars(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
+    CracImportData importCracAndModifyNetworkForBusBars(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) {
         // Create CRAC creation context
         CseCrac nativeCseCrac = fileImporter.importCseCrac(cracUrl);
         // Pre-treatment on network
-        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangeProcessor.process(network, nativeCseCrac);
+        Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, nativeCseCrac);
         CracCreationParameters cracCreationParameters = getCracCreationParameters(busBarChangeSwitchesSet);
-        return (CseCracCreationContext) CracCreators.createCrac(nativeCseCrac, network, targetProcessDateTime, cracCreationParameters);
+        CseCracCreationContext cracCreationContext = (CseCracCreationContext) CracCreators.createCrac(
+            nativeCseCrac, network, targetProcessDateTime, cracCreationParameters);
+        return new CracImportData(cracCreationContext, busBarChangeSwitchesSet);
     }
 
     private CracCreationParameters getCracCreationParameters(Set<BusBarChangeSwitches> busBarChangeSwitches) {
@@ -176,6 +183,16 @@ public class CseRunner {
             / Math.abs(initialItalianImportFromReference);
         if (relativeDifference > NETWORK_AND_REFERENCE_EXCHANGES_DIFFERENCE_THRESHOLD) {
             LOGGER.warn("Difference between vulcanus exchanges and network exchanges too high.");
+        }
+    }
+
+    static final class CracImportData {
+        final CseCracCreationContext cseCracCreationContext;
+        final Set<BusBarChangeSwitches> busBarChangeSwitchesSet;
+
+        private CracImportData(CseCracCreationContext cseCracCreationContext, Set<BusBarChangeSwitches> busBarChangeSwitchesSet) {
+            this.cseCracCreationContext = cseCracCreationContext;
+            this.busBarChangeSwitchesSet = busBarChangeSwitchesSet;
         }
     }
 }
