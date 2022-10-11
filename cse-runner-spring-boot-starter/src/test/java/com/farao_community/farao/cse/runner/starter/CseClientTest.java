@@ -8,17 +8,14 @@ package com.farao_community.farao.cse.runner.starter;
 
 import com.farao_community.farao.cse.runner.api.JsonApiConverter;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
-import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
-import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.amqp.core.AmqpTemplate;
+
 import org.springframework.amqp.core.Message;
 
 import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -35,9 +32,7 @@ class CseClientTest {
 
         Mockito.when(responseMessage.getBody()).thenReturn(getClass().getResourceAsStream("/cseResponseMessage.json").readAllBytes());
         Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any())).thenReturn(responseMessage);
-        CseResponse cseResponse = cseClient.run(cseRequest, CseRequest.class, CseResponse.class);
-
-        assertEquals("ttcFileUrl", cseResponse.getTtcFileUrl());
+        cseClient.run(cseRequest, CseRequest.class);
     }
 
     @Test
@@ -49,9 +44,7 @@ class CseClientTest {
 
         Mockito.when(responseMessage.getBody()).thenReturn(getClass().getResourceAsStream("/cseExportResponseMessage.json").readAllBytes());
         Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any())).thenReturn(responseMessage);
-        CseExportResponse cseExportResponse = cseClient.run(cseExportRequest, CseExportRequest.class, CseExportResponse.class);
-
-        assertEquals("logsFileUrl", cseExportResponse.getLogsFileUrl());
+        cseClient.run(cseExportRequest, CseExportRequest.class);
     }
 
     private CseClientProperties buildProperties() {
