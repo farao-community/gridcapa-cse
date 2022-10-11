@@ -16,6 +16,9 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -30,9 +33,15 @@ class CseClientTest {
         CseRequest cseRequest = jsonApiConverter.fromJsonMessage(getClass().getResourceAsStream("/cseRequestMessage.json").readAllBytes(), CseRequest.class);
         Message responseMessage = Mockito.mock(Message.class);
 
+        AtomicBoolean messageSent = new AtomicBoolean(false);
         Mockito.when(responseMessage.getBody()).thenReturn(getClass().getResourceAsStream("/cseResponseMessage.json").readAllBytes());
-        Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any())).thenReturn(responseMessage);
+        Mockito.doAnswer(invocation -> {
+            messageSent.set(true);
+            return null;
+        }).when(amqpTemplate).send(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any());
+
         cseClient.run(cseRequest, CseRequest.class);
+        assertTrue(messageSent.get());
     }
 
     @Test
@@ -42,9 +51,15 @@ class CseClientTest {
         CseExportRequest cseExportRequest = jsonApiConverter.fromJsonMessage(getClass().getResourceAsStream("/cseExportRequestMessage.json").readAllBytes(), CseExportRequest.class);
         Message responseMessage = Mockito.mock(Message.class);
 
+        AtomicBoolean messageSent = new AtomicBoolean(false);
         Mockito.when(responseMessage.getBody()).thenReturn(getClass().getResourceAsStream("/cseExportResponseMessage.json").readAllBytes());
-        Mockito.when(amqpTemplate.sendAndReceive(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any())).thenReturn(responseMessage);
+        Mockito.doAnswer(invocation -> {
+            messageSent.set(true);
+            return null;
+        }).when(amqpTemplate).send(Mockito.same("my-exchange"), Mockito.same("#"), Mockito.any());
+
         cseClient.run(cseExportRequest, CseExportRequest.class);
+        assertTrue(messageSent.get());
     }
 
     private CseClientProperties buildProperties() {
