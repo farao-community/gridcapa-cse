@@ -14,6 +14,9 @@ import com.farao_community.farao.data.crac_api.Crac;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
@@ -58,5 +61,12 @@ public class PiSaService {
             && processType == ProcessType.IDCC && piSaLinkProcessor.isLinkInACEmulation(network)) {
             piSaLinkProcessor.setLinkInSetpointMode(network, crac);
         }
+    }
+
+    public Map<String, Double> getSetPointPerPisaPraname(Network network) {
+        Map<String, Double> preprocessedPisalinks = new HashMap<>();
+        preprocessedPisalinks.put(piSaLink1Processor.getPisaLinkPraName(), piSaLink1Processor.getItFictiveGeneratorTargetP(network));
+        preprocessedPisalinks.put(piSaLink2Processor.getPisaLinkPraName(), piSaLink2Processor.getItFictiveGeneratorTargetP(network));
+        return preprocessedPisalinks;
     }
 }

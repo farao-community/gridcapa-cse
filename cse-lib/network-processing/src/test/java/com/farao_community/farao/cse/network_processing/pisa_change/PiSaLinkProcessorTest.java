@@ -37,13 +37,15 @@ class PiSaLinkProcessorTest {
         piSaLink1Configuration = new PiSaLinkConfiguration(
             "SWISS111",
             "SWISS211",
-            List.of("SWISS111 SWISS211 1", "SWISS111 SWISS211 2", "SWISS111 SWISS211 3")
+            List.of("SWISS111 SWISS211 1", "SWISS111 SWISS211 2", "SWISS111 SWISS211 3"),
+            "PRA_HVDC_GILE_PIOSSASCO_1"
         );
         piSaLink1Processor = new PiSaLinkProcessor(piSaLink1Configuration);
         piSaLink2Configuration = new PiSaLinkConfiguration(
             "SWISS311",
             "SWISS411",
-            List.of("SWISS311 SWISS411 1", "SWISS311 SWISS411 2", "SWISS311 SWISS411 3")
+            List.of("SWISS311 SWISS411 1", "SWISS311 SWISS411 2", "SWISS311 SWISS411 3"),
+            "PRA_HVDC_GILE_PIOSSASCO_2"
         );
         piSaLink2Processor = new PiSaLinkProcessor(piSaLink2Configuration);
     }
