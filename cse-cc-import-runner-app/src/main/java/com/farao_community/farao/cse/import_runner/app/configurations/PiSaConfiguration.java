@@ -40,7 +40,7 @@ public class PiSaConfiguration {
             getLink1().getNodeFr(),
             getLink1().getNodeIt(),
             getLink1().getFictiveLines(),
-             getLink1().getPraName());
+            getLink1().getPraName());
     }
 
     @Bean(name = "piSaLink2Configuration")
