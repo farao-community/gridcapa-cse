@@ -86,10 +86,10 @@
                 <version>${gridcapa.rao.runner.version}</version>
             </dependency>
             <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>gridcapa-starter-minio-adapter</artifactId>
-            <version>${gridcapa.starter.minio.adapter.version}</version>
-        </dependency>
+                <groupId>com.farao-community.farao</groupId>
+                <artifactId>gridcapa-starter-minio-adapter</artifactId>
+                <version>${gridcapa.starter.minio.adapter.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.farao-community.farao</groupId>
                 <artifactId>gridcapa-task-manager-api</artifactId>
