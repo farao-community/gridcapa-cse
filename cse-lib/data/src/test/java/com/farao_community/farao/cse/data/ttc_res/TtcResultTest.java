@@ -113,7 +113,7 @@ class TtcResultTest {
     @Test
     void validateTtcResultCreation() throws JAXBException {
         TtcResult.ProcessData processData = initProcessData(LimitingCause.CRITICAL_BRANCH, 4200, 3925);
-        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, Collections.EMPTY_MAP, Collections.EMPTY_MAP);
+        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, Collections.emptyMap(), Collections.emptyMap());
 
         assertEquals("2021-01-01T18:30Z", ttcResults.getTime().getV());
         String ttcResultXml = new String(writeInBytes(ttcResults)).trim();
@@ -125,7 +125,7 @@ class TtcResultTest {
     @Test
     void testTtcAndMniiValuesForGlskLimitationWithPositiveValues() {
         TtcResult.ProcessData processData = initProcessData(LimitingCause.GLSK_LIMITATION, 1200, 700);
-        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, Collections.EMPTY_MAP, Collections.EMPTY_MAP);
+        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, Collections.emptyMap(), Collections.emptyMap());
 
         assertEquals(BigInteger.valueOf(1200), ttcResults.getTTC().getV());
         assertEquals(BigInteger.valueOf(500), ttcResults.getMNII().getV());
@@ -134,7 +134,7 @@ class TtcResultTest {
     @Test
     void testTtcAndMniiValuesForGlskLimitationWithNegativeMniiValue() {
         TtcResult.ProcessData processData = initProcessData(LimitingCause.GLSK_LIMITATION, 700, 2100);
-        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, Collections.EMPTY_MAP, Collections.EMPTY_MAP);
+        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, Collections.emptyMap(), Collections.emptyMap());
 
         assertEquals(BigInteger.valueOf(700), ttcResults.getTTC().getV());
         assertEquals(BigInteger.valueOf(-1400), ttcResults.getMNII().getV());
@@ -143,7 +143,7 @@ class TtcResultTest {
     @Test
     void testTtcAndMniiValuesForCriticalBranch() {
         TtcResult.ProcessData processData = initProcessData(LimitingCause.CRITICAL_BRANCH, 700, 2100);
-        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, Collections.EMPTY_MAP, Collections.EMPTY_MAP);
+        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, Collections.emptyMap(), Collections.emptyMap());
 
         assertEquals(BigInteger.valueOf(2800), ttcResults.getTTC().getV());
         assertEquals(BigInteger.valueOf(700), ttcResults.getMNII().getV());
@@ -155,7 +155,7 @@ class TtcResultTest {
         preprocessedPsts.put("PST_cra_7_BBE2AA1  BBE3AA1  1", 2);
 
         TtcResult.ProcessData processData = initProcessData(LimitingCause.CRITICAL_BRANCH, 700, 2100);
-        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, Collections.EMPTY_MAP);
+        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, Collections.emptyMap());
 
         assertEquals("cra_7", ttcResults.getResults().getPreventive().getAction().get(2).getName().getV());
         assertEquals(2, ttcResults.getResults().getPreventive().getAction().get(2).getPSTtap().getV().intValue());
@@ -167,7 +167,7 @@ class TtcResultTest {
         preprocessedPsts.put("PST_cra_3_BBE2AA1  BBE3AA1  1", 2);
 
         TtcResult.ProcessData processData = initProcessData(LimitingCause.CRITICAL_BRANCH, 700, 2100);
-        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, Collections.EMPTY_MAP);
+        Timestamp ttcResults = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, Collections.emptyMap());
 
         assertEquals("cra_3", ttcResults.getResults().getPreventive().getAction().get(1).getName().getV());
         assertNotEquals(2, ttcResults.getResults().getPreventive().getAction().get(1).getPSTtap().getV().intValue());

@@ -86,8 +86,7 @@ public class CseRunner {
 
         Crac crac = cracImportData.cseCracCreationContext.getCrac();
 
-        piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);
-        Map<String, Double> preprocessedPisaLinks = piSaService.getSetPointPerPisaPraname(network);
+        Map<String, Double> preprocessedPisaLinks = piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);
         // Put all PSTs within their ranges to be able to optimize them
         Map<String, Integer> preprocessedPsts = PstInitializer.withLogger(businessLogger).initializePsts(network, crac);
 

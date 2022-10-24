@@ -44,9 +44,11 @@ public class PiSaService {
         alignGenerators(network, piSaLink2Processor);
     }
 
-    public void forceSetPoint(ProcessType processType, Network network, Crac crac) {
-        forceSetPoint(processType, network, crac, piSaLink1Processor);
-        forceSetPoint(processType, network, crac, piSaLink2Processor);
+    public Map<String, Double> forceSetPoint(ProcessType processType, Network network, Crac crac) {
+        Map<String, Double> preprocessedPisalinks = new HashMap<>();
+        preprocessedPisalinks.put(piSaLink1Processor.getPisaLinkPraName(), forceSetPoint(processType, network, crac, piSaLink1Processor));
+        preprocessedPisalinks.put(piSaLink2Processor.getPisaLinkPraName(), forceSetPoint(processType, network, crac, piSaLink2Processor));
+        return preprocessedPisalinks;
     }
 
     static void alignGenerators(Network network, PiSaLinkProcessor piSaLinkProcessor) {
@@ -55,18 +57,12 @@ public class PiSaService {
         }
     }
 
-    static void forceSetPoint(ProcessType processType, Network network, Crac crac, PiSaLinkProcessor piSaLinkProcessor) {
+    static double forceSetPoint(ProcessType processType, Network network, Crac crac, PiSaLinkProcessor piSaLinkProcessor) {
         if (piSaLinkProcessor.isLinkPresent(network)
             && piSaLinkProcessor.isLinkConnected(network)
             && processType == ProcessType.IDCC && piSaLinkProcessor.isLinkInACEmulation(network)) {
             piSaLinkProcessor.setLinkInSetpointMode(network, crac);
         }
-    }
-
-    public Map<String, Double> getSetPointPerPisaPraname(Network network) {
-        Map<String, Double> preprocessedPisalinks = new HashMap<>();
-        preprocessedPisalinks.put(piSaLink1Processor.getPisaLinkPraName(), piSaLink1Processor.getItFictiveGeneratorTargetP(network));
-        preprocessedPisalinks.put(piSaLink2Processor.getPisaLinkPraName(), piSaLink2Processor.getItFictiveGeneratorTargetP(network));
-        return preprocessedPisalinks;
+        return piSaLinkProcessor.getItFictiveGeneratorTargetP(network);
     }
 }

@@ -523,14 +523,14 @@ public final class TtcResult {
             .filter(CsePstCreationContext.class::isInstance)
             .map(CsePstCreationContext.class::cast)
             .filter(csePstCreationContext -> cracResultsHelper.getPreventivePstRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
-                .forEach(csePstCreationContext -> addPstAction(actionList, csePstCreationContext, cracResultsHelper::getTapOfPstRangeActionInPreventive));
+            .forEach(csePstCreationContext -> addPstAction(actionList, csePstCreationContext, cracResultsHelper::getTapOfPstRangeActionInPreventive));
         addPstsActionsModifiedByPreprocessingAndNotByRao(importedRemedialActionCreationContext, preprocessedPsts, cracResultsHelper, actionList);
 
         importedRemedialActionCreationContext.stream()
-              .filter(CseHvdcCreationContext.class::isInstance)
-              .map(CseHvdcCreationContext.class::cast)
-              .filter(csePstCreationContext -> cracResultsHelper.getPreventiveHvdcRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
-              .forEach(cseHvdcCreationContext -> addHvdcAction(actionList, cseHvdcCreationContext, cracResultsHelper::getSetpointOfHvdcRangeActionInPreventive));
+            .filter(CseHvdcCreationContext.class::isInstance)
+            .map(CseHvdcCreationContext.class::cast)
+            .filter(csePstCreationContext -> cracResultsHelper.getPreventiveHvdcRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
+            .forEach(cseHvdcCreationContext -> addHvdcAction(actionList, cseHvdcCreationContext, cracResultsHelper::getSetpointOfHvdcRangeActionInPreventive));
         addPisaActionsModifiedByPreprocessingAndNotByRao(importedRemedialActionCreationContext, preprocessedPisaLinks, cracResultsHelper, actionList);
 
         preventive.getAction().addAll(actionList);
@@ -584,27 +584,6 @@ public final class TtcResult {
         int tap = csePstCreationContext.isInverted() ?
                 -finder.findSetPoint(csePstCreationContext.getCreatedRAId()) :
                 finder.findSetPoint(csePstCreationContext.getCreatedRAId());
-        fillPstAction(actions, nativeId, tap);
-    }
-
-    private static void addPstsActionsModifiedByPreprocessingAndNotByRao(List<RemedialActionCreationContext> importedRemedialActionCreationContext, Map<String, Integer> preprocessedPsts, CracResultsHelper cracResultsHelper, List<Action> actions) {
-
-        List<RemedialActionCreationContext> remedialActionCreationContextListNotModifiedByRaoAndExistInPreprocess  = importedRemedialActionCreationContext.stream()
-                .filter(CsePstCreationContext.class::isInstance)
-                .map(CsePstCreationContext.class::cast)
-                .filter(csePstCreationContext -> !cracResultsHelper.getPreventivePstRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
-                .filter(csePstCreationContext -> preprocessedPsts.containsKey(csePstCreationContext.getCreatedRAId()))
-                .collect(Collectors.toList());
-
-        remedialActionCreationContextListNotModifiedByRaoAndExistInPreprocess.stream()
-                 .forEach(remedialActionCreationContext -> {
-                     String nativeId = remedialActionCreationContext.getNativeId();
-                     int pstTap = preprocessedPsts.get(remedialActionCreationContext.getCreatedRAId());
-                     fillPstAction(actions, nativeId, pstTap);
-                 });
-    }
-
-    private static void fillPstAction(List<Action> actions, String nativeId, int tap) {
         Action action = new Action();
         Name name = new Name();
         name.setV(nativeId);
@@ -615,30 +594,34 @@ public final class TtcResult {
         actions.add(action);
     }
 
+    private static void addPstsActionsModifiedByPreprocessingAndNotByRao(List<RemedialActionCreationContext> importedRemedialActionCreationContext, Map<String, Integer> preprocessedPsts, CracResultsHelper cracResultsHelper, List<Action> actions) {
+        importedRemedialActionCreationContext.stream()
+            .filter(CsePstCreationContext.class::isInstance)
+            .map(CsePstCreationContext.class::cast)
+            .filter(csePstCreationContext -> !cracResultsHelper.getPreventivePstRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
+            .filter(csePstCreationContext -> preprocessedPsts.containsKey(csePstCreationContext.getCreatedRAId()))
+            .forEach(remedialActionCreationContext -> {
+                int pstTap = preprocessedPsts.get(remedialActionCreationContext.getCreatedRAId());
+                addPstAction(actions, remedialActionCreationContext, ra -> pstTap);
+            });
+    }
+
     private static void addPisaActionsModifiedByPreprocessingAndNotByRao(List<RemedialActionCreationContext> importedRemedialActionCreationContext, Map<String, Double> prepocessedHvdc, CracResultsHelper cracResultsHelper, List<Action> actions) {
 
-        List<RemedialActionCreationContext> remedialActionCreationContextListNotModifiedByRaoAndExistInPreprocess  =  importedRemedialActionCreationContext.stream()
-                .filter(CseHvdcCreationContext.class::isInstance)
-                .map(CseHvdcCreationContext.class::cast)
-                .filter(csePstCreationContext -> !cracResultsHelper.getPreventiveHvdcRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
-                .filter(csePstCreationContext -> prepocessedHvdc.containsKey(csePstCreationContext.getNativeId()))
-                .collect(Collectors.toList());
-
-        remedialActionCreationContextListNotModifiedByRaoAndExistInPreprocess.stream()
-                .forEach(remedialActionCreationContext -> {
-                    String nativeId = remedialActionCreationContext.getNativeId();
-                    int setPoint = prepocessedHvdc.get(remedialActionCreationContext.getNativeId()).intValue();
-                    fillHvdcAction(actions, nativeId, setPoint);
-                });
+        importedRemedialActionCreationContext.stream()
+            .filter(CseHvdcCreationContext.class::isInstance)
+            .map(CseHvdcCreationContext.class::cast)
+            .filter(csePstCreationContext -> !cracResultsHelper.getPreventiveHvdcRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
+            .filter(csePstCreationContext -> prepocessedHvdc.containsKey(csePstCreationContext.getNativeId()))
+            .forEach(remedialActionCreationContext -> {
+                int setPoint = prepocessedHvdc.get(remedialActionCreationContext.getNativeId()).intValue();
+                addHvdcAction(actions, remedialActionCreationContext, ra -> setPoint);
+            });
     }
 
     private static void addHvdcAction(List<Action> actions, CseHvdcCreationContext cseHvdcCreationContext, SetPointFinder finder) {
         String nativeId = cseHvdcCreationContext.getNativeId();
         int setPoint = finder.findSetPoint(cseHvdcCreationContext.getCreatedRAId());
-        fillHvdcAction(actions, nativeId, setPoint);
-    }
-
-    private static void fillHvdcAction(List<Action> actions, String nativeId, int setPoint) {
         Action action = new Action();
         Name name = new Name();
         name.setV(nativeId);
