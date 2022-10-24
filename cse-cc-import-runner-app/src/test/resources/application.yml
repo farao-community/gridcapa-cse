@@ -38,6 +38,7 @@ cse-cc-runner:
         - SWISS111 SWISS211 1
         - SWISS111 SWISS211 2
         - SWISS111 SWISS211 3
+      pra-name: PRA_HVDC_GILE_PIOSSASCO_1
     link2:
       node-fr: SWISS311
       node-it: SWISS411
@@ -45,6 +46,7 @@ cse-cc-runner:
         - SWISS311 SWISS411 1
         - SWISS311 SWISS411 2
         - SWISS311 SWISS411 3
+      pra-name: PRA_HVDC_GILE_PIOSSASCO_2
   bindings:
     request:
       destination: cse-request

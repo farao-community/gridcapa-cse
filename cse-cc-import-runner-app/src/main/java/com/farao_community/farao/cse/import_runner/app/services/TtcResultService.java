@@ -23,7 +23,7 @@ import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.util.Map;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -50,7 +50,7 @@ public class TtcResultService {
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
     }
 
-    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String baseCaseFileUrl, String finalCgmUrl) throws IOException {
+    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String baseCaseFileUrl, String finalCgmUrl, Map<String, Integer> preprocessedPsts, Map<String, Double> preprocessedPisaLinks) {
         TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, finalCgmUrl);
         String networkWithPraUrl = highestSecureStepRaoResponse.getRaoResponse().getNetworkWithPraFileUrl();
         Network networkWithPra = fileImporter.importNetwork(networkWithPraUrl);
@@ -69,7 +69,7 @@ public class TtcResultService {
         RaoResult raoResult = fileImporter.importRaoResult(highestSecureStepRaoResponse.getRaoResponse().getRaoResultFileUrl(), cseCracCreationContext.getCrac());
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
             cseCracCreationContext, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath()));
-        Timestamp timestamp = TtcResult.generate(ttcFiles, processData, cracResultsHelper);
+        Timestamp timestamp = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, preprocessedPisaLinks);
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
     }
 
