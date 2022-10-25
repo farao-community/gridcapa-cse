@@ -10,6 +10,7 @@ import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.xnode.XNode;
 import com.farao_community.farao.data.crac_api.*;
+import com.farao_community.farao.data.crac_api.cnec.Cnec;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_api.cnec.Side;
 import com.farao_community.farao.data.crac_api.range_action.InjectionRangeAction;
@@ -291,7 +292,8 @@ public class CracResultsHelper {
     public FlowCnec getWorstCnec() {
         double worstMargin = Double.MAX_VALUE;
         Optional<FlowCnec> worstCnec = Optional.empty();
-        for (FlowCnec flowCnec : crac.getFlowCnecs()) {
+        Set<FlowCnec> optimizedFlowCnecs = crac.getFlowCnecs().stream().filter(Cnec::isOptimized).collect(Collectors.toSet());
+        for (FlowCnec flowCnec : optimizedFlowCnecs) {
             double margin = computeFlowMargin(flowCnec);
             if (margin < worstMargin) {
                 worstMargin = margin;

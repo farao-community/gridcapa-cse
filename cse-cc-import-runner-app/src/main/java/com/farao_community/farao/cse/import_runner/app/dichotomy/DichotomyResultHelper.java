@@ -13,6 +13,7 @@ import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_api.Instant;
+import com.farao_community.farao.data.crac_api.cnec.Cnec;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
@@ -23,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -36,7 +39,7 @@ public final class DichotomyResultHelper {
         this.fileImporter = fileImporter;
     }
 
-    public String getLimitingElement(DichotomyResult<DichotomyRaoResponse> dichotomyResult) throws IOException {
+    public String getLimitingElement(DichotomyResult<DichotomyRaoResponse> dichotomyResult) {
         DichotomyStepResult<DichotomyRaoResponse> highestValidStepResult = dichotomyResult.getHighestValidStep();
         double worstMargin = Double.MAX_VALUE;
         Optional<FlowCnec> worstCnec = Optional.empty();
@@ -44,7 +47,8 @@ public final class DichotomyResultHelper {
             .getRaoResponse().getCracFileUrl());
         RaoResult raoResult = fileImporter.importRaoResult(highestValidStepResult.getValidationData()
             .getRaoResponse().getRaoResultFileUrl(), crac);
-        for (FlowCnec flowCnec : crac.getFlowCnecs()) {
+        Set<FlowCnec> optimizedFlowCnecs = crac.getFlowCnecs().stream().filter(Cnec::isOptimized).collect(Collectors.toSet());
+        for (FlowCnec flowCnec : optimizedFlowCnecs) {
             double margin = computeFlowMargin(raoResult, flowCnec);
             if (margin < worstMargin) {
                 worstMargin = margin;
