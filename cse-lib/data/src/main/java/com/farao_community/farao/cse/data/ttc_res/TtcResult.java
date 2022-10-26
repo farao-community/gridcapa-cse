@@ -7,10 +7,7 @@
 package com.farao_community.farao.cse.data.ttc_res;
 
 import com.farao_community.farao.cse.data.CseDataException;
-import com.farao_community.farao.cse.data.cnec.CnecPreventive;
-import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
-import com.farao_community.farao.cse.data.cnec.FlowCnecResult;
-import com.farao_community.farao.cse.data.cnec.MergedCnec;
+import com.farao_community.farao.cse.data.cnec.*;
 import com.farao_community.farao.cse.data.xsd.ttc_res.*;
 import com.farao_community.farao.data.crac_api.Contingency;
 import com.farao_community.farao.data.crac_api.Instant;
@@ -308,7 +305,7 @@ public final class TtcResult {
         CriticalBranch mostLimitingCriticalBranch = new CriticalBranch();
         Outage outage = new Outage();
         Name outageName = new Name();
-        FlowCnec worstCnec = cracResultsHelper.getWorstCnec();
+        FlowCnec worstCnec = CnecUtil.getWorstCnec(cracResultsHelper.getCrac(), cracResultsHelper.getRaoResult());
         MonitoredElement monitoredElement = new MonitoredElement();
         Element mostLimitingElement = new Element();
         fillCommonElementInformation(mostLimitingElement, worstCnec.getName(), worstCnec.getNetworkElement().getName(),

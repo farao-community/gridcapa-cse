@@ -10,7 +10,6 @@ import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.xnode.XNode;
 import com.farao_community.farao.data.crac_api.*;
-import com.farao_community.farao.data.crac_api.cnec.Cnec;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_api.cnec.Side;
 import com.farao_community.farao.data.crac_api.range_action.InjectionRangeAction;
@@ -287,28 +286,6 @@ public class CracResultsHelper {
 
     public String getOrderCode(NetworkElement networkElement) {
         return networkElement.getId().substring(18);
-    }
-
-    public FlowCnec getWorstCnec() {
-        double worstMargin = Double.MAX_VALUE;
-        Optional<FlowCnec> worstCnec = Optional.empty();
-        Set<FlowCnec> optimizedFlowCnecs = crac.getFlowCnecs().stream().filter(Cnec::isOptimized).collect(Collectors.toSet());
-        for (FlowCnec flowCnec : optimizedFlowCnecs) {
-            double margin = computeFlowMargin(flowCnec);
-            if (margin < worstMargin) {
-                worstMargin = margin;
-                worstCnec = Optional.of(flowCnec);
-            }
-        }
-        return worstCnec.orElseThrow(() -> new CseDataException("Exception occurred while retrieving the most limiting element."));
-    }
-
-    private double computeFlowMargin(FlowCnec flowCnec) {
-        if (flowCnec.getState().getInstant() == Instant.CURATIVE) {
-            return raoResult.getMargin(OptimizationState.AFTER_CRA, flowCnec, Unit.AMPERE);
-        } else {
-            return raoResult.getMargin(OptimizationState.AFTER_PRA, flowCnec, Unit.AMPERE);
-        }
     }
 
     public static String getOutageName(FlowCnec flowCnec) {
