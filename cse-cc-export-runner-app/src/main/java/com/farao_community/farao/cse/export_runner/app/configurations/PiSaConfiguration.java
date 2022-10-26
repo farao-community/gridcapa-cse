@@ -38,7 +38,8 @@ public class PiSaConfiguration {
         return new PiSaLinkConfiguration(
                 getLink1().getNodeFr(),
                 getLink1().getNodeIt(),
-                getLink1().getFictiveLines());
+                getLink1().getFictiveLines(),
+                ""); // Temporary change
     }
 
     @Bean(name = "piSaLink2Configuration")
@@ -46,6 +47,7 @@ public class PiSaConfiguration {
         return new PiSaLinkConfiguration(
                 getLink2().getNodeFr(),
                 getLink2().getNodeIt(),
-                getLink2().getFictiveLines());
+                getLink2().getFictiveLines(),
+                ""); // Temporary change
     }
 }

@@ -15,12 +15,14 @@ import java.util.List;
 public class PiSaLinkConfiguration {
     private final String piSaLinkFictiveNodeFr;
     private final String piSaLinkFictiveNodeIt;
+    private final String piSaLinkPraName;
     private final List<String> piSaLinkFictiveLines;
 
-    public PiSaLinkConfiguration(String piSaLinkFictiveNodeFr, String piSaLinkFictiveNodeIt, List<String> piSaLinkFictiveLines) {
+    public PiSaLinkConfiguration(String piSaLinkFictiveNodeFr, String piSaLinkFictiveNodeIt, List<String> piSaLinkFictiveLines, String piSaLinkPraName) {
         this.piSaLinkFictiveNodeFr = piSaLinkFictiveNodeFr;
         this.piSaLinkFictiveNodeIt = piSaLinkFictiveNodeIt;
         this.piSaLinkFictiveLines = piSaLinkFictiveLines;
+        this.piSaLinkPraName = piSaLinkPraName;
     }
 
     public String getPiSaLinkFictiveNodeFr() {
@@ -33,5 +35,9 @@ public class PiSaLinkConfiguration {
 
     public List<String> getPiSaLinkFictiveLines() {
         return piSaLinkFictiveLines;
+    }
+
+    public String getPiSaLinkPraName() {
+        return piSaLinkPraName;
     }
 }
