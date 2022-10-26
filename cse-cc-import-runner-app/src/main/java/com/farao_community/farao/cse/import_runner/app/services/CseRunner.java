@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -85,10 +86,9 @@ public class CseRunner {
 
         Crac crac = cracImportData.cseCracCreationContext.getCrac();
 
-        piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);
-
+        Map<String, Double> preprocessedPisaLinks = piSaService.forceSetPoint(cseRequest.getProcessType(), network, crac);
         // Put all PSTs within their ranges to be able to optimize them
-        PstInitializer.withLogger(businessLogger).initializePsts(network, crac);
+        Map<String, Integer> preprocessedPsts = PstInitializer.withLogger(businessLogger).initializePsts(network, crac);
 
         // Saving pre-processed network in IIDM and CRAC in JSON format
         cseData.setPreProcesedNetworkUrl(fileExporter.saveNetworkInArtifact(network, cseRequest.getTargetProcessDateTime(), "", cseRequest.getProcessType()));
@@ -139,7 +139,7 @@ public class CseRunner {
             finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
             ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, cracImportData.cseCracCreationContext,
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
-                baseCaseFileUrl, finalCgmUrl);
+                baseCaseFileUrl, finalCgmUrl, preprocessedPsts, preprocessedPisaLinks);
         } else {
             ttcResultUrl = ttcResultService.saveFailedTtcResult(
                 cseRequest,

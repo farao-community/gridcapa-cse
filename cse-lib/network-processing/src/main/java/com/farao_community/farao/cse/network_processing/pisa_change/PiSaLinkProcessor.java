@@ -143,6 +143,14 @@ public class PiSaLinkProcessor {
         return getGenerator(network, piSaLinkConfiguration.getPiSaLinkFictiveNodeIt());
     }
 
+    public double getItFictiveGeneratorTargetP(Network network) {
+        return getItFictiveGenerator(network).getTargetP();
+    }
+
+    public String getPisaLinkPraName() {
+        return piSaLinkConfiguration.getPiSaLinkPraName();
+    }
+
     static Generator getGenerator(Network network, String nodeId) {
         return network.getGenerator(getGeneratorId(nodeId));
     }
