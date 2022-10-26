@@ -16,6 +16,9 @@ import com.powsybl.iidm.network.PhaseTapChanger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
@@ -36,7 +39,8 @@ public final class PstInitializer {
         return new PstInitializer(DEFAULT_LOGGER);
     }
 
-    public void initializePsts(Network network, Crac crac) {
+    public Map<String, Integer> initializePsts(Network network, Crac crac) {
+        Map<String, Integer> preprocessedPsts =  new HashMap<>();
         crac.getRangeActions(crac.getPreventiveState(), UsageMethod.AVAILABLE).stream()
             .filter(PstRangeAction.class::isInstance)
             .map(PstRangeAction.class::cast)
@@ -47,10 +51,13 @@ public final class PstInitializer {
                         .map(TapRange::getMinTap)
                         .max(Integer::compareTo)
                         .orElse(pstRangeAction.getInitialTap());
+                    preprocessedPsts.put(pstRangeAction.getId(), newTapPosition);
                     logger.warn("PST tap has been changed from {} to {} because it was initially out of CRAC ranges: {}",
                         ptc.getTapPosition(), newTapPosition, pstRangeAction.getNetworkElement().getId());
                     ptc.setTapPosition(newTapPosition);
                 }
             });
+        return preprocessedPsts;
     }
 }
+
