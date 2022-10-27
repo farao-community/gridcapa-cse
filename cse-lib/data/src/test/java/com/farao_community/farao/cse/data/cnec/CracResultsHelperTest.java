@@ -109,13 +109,6 @@ class CracResultsHelperTest {
         assertEquals(0, frFrMergedCnec.getiMaxAfterSps(), .1);
     }
 
-    @Test
-    void mostLimitingElementTest() {
-        CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
-        FlowCnec worstCnec = cracResultsHelper.getWorstCnec();
-        assertEquals("French line 1", worstCnec.getName());
-    }
-
     private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) {
         InputStream cracInputStream = getClass().getResourceAsStream(cracXmlFileName);
         CseCracImporter importer = new CseCracImporter();

@@ -288,27 +288,6 @@ public class CracResultsHelper {
         return networkElement.getId().substring(18);
     }
 
-    public FlowCnec getWorstCnec() {
-        double worstMargin = Double.MAX_VALUE;
-        Optional<FlowCnec> worstCnec = Optional.empty();
-        for (FlowCnec flowCnec : crac.getFlowCnecs()) {
-            double margin = computeFlowMargin(flowCnec);
-            if (margin < worstMargin) {
-                worstMargin = margin;
-                worstCnec = Optional.of(flowCnec);
-            }
-        }
-        return worstCnec.orElseThrow(() -> new CseDataException("Exception occurred while retrieving the most limiting element."));
-    }
-
-    private double computeFlowMargin(FlowCnec flowCnec) {
-        if (flowCnec.getState().getInstant() == Instant.CURATIVE) {
-            return raoResult.getMargin(OptimizationState.AFTER_CRA, flowCnec, Unit.AMPERE);
-        } else {
-            return raoResult.getMargin(OptimizationState.AFTER_PRA, flowCnec, Unit.AMPERE);
-        }
-    }
-
     public static String getOutageName(FlowCnec flowCnec) {
         Optional<Contingency> contingencyOpt = flowCnec.getState().getContingency();
         if (contingencyOpt.isPresent()) {
