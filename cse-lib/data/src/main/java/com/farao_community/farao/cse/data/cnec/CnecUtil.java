@@ -9,7 +9,6 @@ package com.farao_community.farao.cse.data.cnec;
 import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_api.cnec.Cnec;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
@@ -42,11 +41,7 @@ public final class CnecUtil {
     }
 
     private static double computeFlowMargin(FlowCnec flowCnec, RaoResult raoResult) {
-        if (flowCnec.getState().getInstant() == Instant.CURATIVE) {
-            return raoResult.getMargin(OptimizationState.AFTER_CRA, flowCnec, Unit.AMPERE);
-        } else {
-            return raoResult.getMargin(OptimizationState.AFTER_PRA, flowCnec, Unit.AMPERE);
-        }
+        return raoResult.getMargin(OptimizationState.afterOptimizing(flowCnec.getState()), flowCnec, Unit.AMPERE);
     }
 
 }
