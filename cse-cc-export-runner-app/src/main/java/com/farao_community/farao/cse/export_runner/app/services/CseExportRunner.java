@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.export_runner.app.services;
 
+import com.farao_community.farao.cse.export_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
 import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstInitializer;
@@ -26,6 +27,10 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 /**
@@ -34,21 +39,23 @@ import java.util.Set;
 @Service
 public class CseExportRunner {
     private static final String NETWORK_PRE_PROCESSED_FILE_NAME = "network_pre_processed";
+    private static final DateTimeFormatter OUTPUTS_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
     private final FileImporter fileImporter;
     private final FileExporter fileExporter;
     private final PiSaService pisaService;
     private final RaoRunnerService raoRunnerService;
     private final TtcRaoService ttcRaoService;
     private final Logger businessLogger;
+    private final ProcessConfiguration processConfiguration;
 
-    public CseExportRunner(FileImporter fileImporter, FileExporter fileExporter, PiSaService pisaService,
-                           RaoRunnerService raoRunnerService, TtcRaoService ttcRaoService, Logger businessLogger) {
+    public CseExportRunner(FileImporter fileImporter, FileExporter fileExporter, PiSaService pisaService, RaoRunnerService raoRunnerService, TtcRaoService ttcRaoService, Logger businessLogger, ProcessConfiguration processConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.pisaService = pisaService;
         this.raoRunnerService = raoRunnerService;
         this.ttcRaoService = ttcRaoService;
         this.businessLogger = businessLogger;
+        this.processConfiguration = processConfiguration;
     }
 
     public CseExportResponse run(CseExportRequest cseExportRequest) {
@@ -105,6 +112,13 @@ public class CseExportRunner {
 
     private String saveNetworkWithPra(CseExportRequest cseExportRequest, Network networkWithPra) {
         return fileExporter.saveNetwork(networkWithPra, "UCTE", GridcapaFileGroup.OUTPUT,
-            cseExportRequest.getProcessType(), networkWithPra.getNameOrId(), cseExportRequest.getTargetProcessDateTime());
+            cseExportRequest.getProcessType(), getFinalNetworkFilenameWithoutExtension(cseExportRequest.getTargetProcessDateTime()), cseExportRequest.getTargetProcessDateTime());
+    }
+
+    String getFinalNetworkFilenameWithoutExtension(OffsetDateTime processTargetDate) {
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
+        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
+        String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
+        return dateAndTime + "_2D" + dayOfWeek + "_ce_Transit_RAO_CSE1";
     }
 }
