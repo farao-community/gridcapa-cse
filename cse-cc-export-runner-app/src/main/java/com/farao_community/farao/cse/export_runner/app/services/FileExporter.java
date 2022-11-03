@@ -115,7 +115,7 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
     }
 
-    String saveTtcRao(CseRaoResult cseRaoResult, ProcessType processType, OffsetDateTime processTargetDate) {
+    String saveTtcRao(CseRaoResult cseRaoResult, ProcessType processType, OffsetDateTime processTargetDate, String initialCgmFilename) {
         StringWriter stringWriter = new StringWriter();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(CseRaoResult.class);
@@ -133,15 +133,29 @@ public class FileExporter {
             throw new CseInternalException("XSD matching error");
         }
         ByteArrayInputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
-        String ttcPath =  getDestinationPath(processTargetDate, processType, GridcapaFileGroup.OUTPUT) + getTtcRaoResultOutputFilename(processTargetDate);
+        String ttcPath =  getDestinationPath(processTargetDate, processType, GridcapaFileGroup.OUTPUT) + getTtcRaoResultOutputFilename(processTargetDate, initialCgmFilename, processType);
         minioAdapter.uploadOutputForTimestamp(ttcPath, is, adaptTargetProcessName(processType), processConfiguration.getTtcRao(), processTargetDate);
         return minioAdapter.generatePreSignedUrl(ttcPath);
     }
 
-    private String getTtcRaoResultOutputFilename(OffsetDateTime processTargetDate) {
+    private String getTtcRaoResultOutputFilename(OffsetDateTime processTargetDate, String initialCgmFilename, ProcessType processType) {
         ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
-        return  "TTC_Calculation_" + dateAndTime + "_2D0_CO_RAO_Transit_CSE0.xml";
+        return  "TTC_Calculation_" + dateAndTime + "_2D0_CO_RAO_Transit_CSE" + getFileVersion(initialCgmFilename, processType) + ".xml";
+    }
+
+    String getFileVersion(String cgmFilename,  ProcessType processType) {
+        if (processType == ProcessType.IDCC) {
+            // The naming rule of the cgm initial for Idcc process is YYYYMMDD_hhmm_NNp_Transit_CSEq.uct
+            // with q is the version number
+            return cgmFilename.substring(29, 30);
+        } else if (processType == ProcessType.D2CC) {
+            // The naming rule of the cgm initial for D2cc process is YYYYMMDD_hhmm_2Dp_CO_Transit_CSEq.uct
+            // with q is the version number
+            return cgmFilename.substring(32, 33);
+        } else {
+            throw new CseInternalException(String.format("Process type %s is not handled", processType));
+        }
     }
 
     InputStream getNetworkInputStream(Network network, String format) throws IOException {
