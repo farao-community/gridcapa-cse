@@ -15,11 +15,13 @@ public class PisaLinkProperties {
     private final String nodeFr;
     private final String nodeIt;
     private final List<String> fictiveLines;
+    private final String praName;
 
-    public PisaLinkProperties(String nodeFr, String nodeIt, List<String> fictiveLines) {
+    public PisaLinkProperties(String nodeFr, String nodeIt, List<String> fictiveLines, String praName) {
         this.nodeFr = nodeFr;
         this.nodeIt = nodeIt;
         this.fictiveLines = fictiveLines;
+        this.praName = praName;
     }
 
     public String getNodeFr() {
@@ -32,5 +34,9 @@ public class PisaLinkProperties {
 
     public List<String> getFictiveLines() {
         return fictiveLines;
+    }
+
+    public String getPraName() {
+        return praName;
     }
 }

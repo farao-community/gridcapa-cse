@@ -25,7 +25,7 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -51,7 +51,7 @@ public class CseExportRunner {
         this.businessLogger = businessLogger;
     }
 
-    public CseExportResponse run(CseExportRequest cseExportRequest) throws IOException {
+    public CseExportResponse run(CseExportRequest cseExportRequest) {
         String logsFileUrl = ""; //TODO
 
         // Import and pre-treatment on Network
@@ -66,7 +66,7 @@ public class CseExportRunner {
             network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);
 
         // Put all PSTs within their ranges to be able to optimize them
-        PstInitializer.withLogger(businessLogger).initializePsts(network, cseCracCreationContext.getCrac());
+        Map<String, Integer> preprocessedPsts = PstInitializer.withLogger(businessLogger).initializePsts(network, cseCracCreationContext.getCrac());
 
         String initialNetworkUrl = saveInitialNetwork(cseExportRequest, network);
         String cracInJsonFormatUrl = fileExporter.saveCracInJsonFormat(cseCracCreationContext.getCrac(),
@@ -82,7 +82,7 @@ public class CseExportRunner {
             // Save again on MinIO to proper process location and naming
             String networkWithPraUrl = saveNetworkWithPra(cseExportRequest, networkWithPra);
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), cseCracCreationContext.getCrac());
-            String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, cseCracCreationContext, raoResult);
+            String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, cseCracCreationContext, raoResult, preprocessedPsts);
             return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, networkWithPraUrl, logsFileUrl);
         } catch (CseInternalException e) {
             // Temporary return of an empty string for ttc logs file and cgm file

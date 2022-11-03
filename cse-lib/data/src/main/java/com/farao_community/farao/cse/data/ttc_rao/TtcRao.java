@@ -36,7 +36,7 @@ public final class TtcRao {
         // Should not be instantiated
     }
 
-    public static CseRaoResult generate(OffsetDateTime timestamp, CracResultsHelper cracResultsHelper) {
+    public static CseRaoResult generate(OffsetDateTime timestamp, CracResultsHelper cracResultsHelper, Map<String, Integer> preprocessedPsts) {
         CseRaoResult cseRaoResult = new CseRaoResult();
         addTime(cseRaoResult, timestamp.toString());
 
@@ -45,7 +45,7 @@ public final class TtcRao {
         } else {
             addStatus(cseRaoResult, Status.UNSECURE);
         }
-        addResults(cseRaoResult, cracResultsHelper);
+        addResults(cseRaoResult, cracResultsHelper, preprocessedPsts);
         return cseRaoResult;
     }
 
@@ -68,9 +68,9 @@ public final class TtcRao {
         ttcRao.setStatus(cseStatus);
     }
 
-    private static void addResults(CseRaoResult cseRaoResult, CracResultsHelper cracResultsHelper) {
+    private static void addResults(CseRaoResult cseRaoResult, CracResultsHelper cracResultsHelper, Map<String, Integer> preprocessedPsts) {
         CseRaoResult.Results results = new CseRaoResult.Results();
-        List<Action> preventiveActions = getPreventiveActions(cracResultsHelper);
+        List<Action> preventiveActions = getPreventiveActions(cracResultsHelper, preprocessedPsts);
         List<PreventiveBranchResult> preventiveBranchResults = getPreventiveBranchResults(cracResultsHelper);
         PreventiveResult preventiveResult = getPreventiveResult(preventiveActions, preventiveBranchResults);
         List<OutageResult> outageResults = getOutageResults(cracResultsHelper);
@@ -146,7 +146,7 @@ public final class TtcRao {
         return preventiveResult;
     }
 
-    private static List<Action> getPreventiveActions(CracResultsHelper cracResultsHelper) {
+    private static List<Action> getPreventiveActions(CracResultsHelper cracResultsHelper, Map<String, Integer> preprocessedPsts) {
         List<Action> preventiveActions = new ArrayList<>();
         List<RemedialActionCreationContext> importedRemedialActionCreationContext = cracResultsHelper.getCseCracCreationContext()
             .getRemedialActionCreationContexts()
@@ -163,13 +163,12 @@ public final class TtcRao {
             .map(CsePstCreationContext.class::cast)
             .filter(csePstCreationContext -> cracResultsHelper.getPreventivePstRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
             .forEach(csePstCreationContext -> addPstAction(preventiveActions, csePstCreationContext, cracResultsHelper::getTapOfPstRangeActionInPreventive));
-
+        addPstsActionsModifiedByPreprocessingAndNotByRao(importedRemedialActionCreationContext, preprocessedPsts, cracResultsHelper, preventiveActions);
         importedRemedialActionCreationContext.stream()
             .filter(CseHvdcCreationContext.class::isInstance)
             .map(CseHvdcCreationContext.class::cast)
             .filter(csePstCreationContext -> cracResultsHelper.getPreventiveHvdcRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
             .forEach(cseHvdcCreationContext -> addHvdcAction(preventiveActions, cseHvdcCreationContext, cracResultsHelper::getSetpointOfHvdcRangeActionInPreventive));
-
         return preventiveActions;
     }
 
@@ -224,6 +223,18 @@ public final class TtcRao {
 
     interface SetPointFinder {
         int findSetPoint(String raId);
+    }
+
+    private static void addPstsActionsModifiedByPreprocessingAndNotByRao(List<RemedialActionCreationContext> importedRemedialActionCreationContext, Map<String, Integer> preprocessedPsts, CracResultsHelper cracResultsHelper, List<Action> actions) {
+        importedRemedialActionCreationContext.stream()
+                .filter(CsePstCreationContext.class::isInstance)
+                .map(CsePstCreationContext.class::cast)
+                .filter(csePstCreationContext -> !cracResultsHelper.getPreventivePstRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
+                .filter(csePstCreationContext -> preprocessedPsts.containsKey(csePstCreationContext.getCreatedRAId()))
+                .forEach(remedialActionCreationContext -> {
+                    int pstTap = preprocessedPsts.get(remedialActionCreationContext.getCreatedRAId());
+                    addPstAction(actions, remedialActionCreationContext, ra -> pstTap);
+                });
     }
 
     private static void addPstAction(List<Action> actions, CsePstCreationContext csePstCreationContext, SetPointFinder finder) {

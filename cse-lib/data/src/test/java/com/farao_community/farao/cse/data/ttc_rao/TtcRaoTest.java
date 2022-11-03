@@ -26,8 +26,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.*;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 class TtcRaoTest {
 
     private void checkGeneratedXmlMatchesExpectedXml(CracResultsHelper cracResultsHelper, String expectedResultFilename) throws JAXBException {
-        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), cracResultsHelper);
+        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), cracResultsHelper, Collections.emptyMap());
         assertEqualsXml(cseRaoResult, expectedResultFilename);
     }
 

@@ -39,7 +39,7 @@ public class PiSaConfiguration {
                 getLink1().getNodeFr(),
                 getLink1().getNodeIt(),
                 getLink1().getFictiveLines(),
-                ""); // Temporary change
+                getLink1().getPraName());
     }
 
     @Bean(name = "piSaLink2Configuration")
@@ -48,6 +48,6 @@ public class PiSaConfiguration {
                 getLink2().getNodeFr(),
                 getLink2().getNodeIt(),
                 getLink2().getFictiveLines(),
-                ""); // Temporary change
+                getLink2().getPraName());
     }
 }
