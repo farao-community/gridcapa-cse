@@ -194,12 +194,13 @@ class FileExporterTest {
         fileExporter.saveTtcRao(
             Mockito.mock(CseRaoResult.class),
             ProcessType.D2CC,
-            OffsetDateTime.parse("2021-01-01T15:30Z")
+            OffsetDateTime.parse("2021-01-01T15:30Z"),
+            "20210101_1630_2D1_CO_Transit_CSE1.uct"
         );
 
-        MinioMock.MinioEntry minioEntry = minioMock.getEntry("CSE/EXPORT/D2CC/2021/01/01/16_30/OUTPUT/TTC_Calculation_20210101_1630_2D0_CO_RAO_Transit_CSE0.xml");
+        MinioMock.MinioEntry minioEntry = minioMock.getEntry("CSE/EXPORT/D2CC/2021/01/01/16_30/OUTPUT/TTC_Calculation_20210101_1630_2D0_CO_RAO_Transit_CSE1.xml");
         assertNotNull(minioEntry);
-        assertEquals("TTC_Calculation_20210101_1630_2D0_CO_RAO_Transit_CSE0.xml", minioEntry.getFilename());
+        assertEquals("TTC_Calculation_20210101_1630_2D0_CO_RAO_Transit_CSE1.xml", minioEntry.getFilename());
         assertEquals(processConfiguration.getTtcRao(), minioEntry.getFileType());
         assertEquals("CSE_EXPORT_D2CC", minioEntry.getProcessTag());
         assertEquals(GridcapaFileGroup.OUTPUT, minioEntry.getGridcapaFileGroup());
@@ -210,7 +211,8 @@ class FileExporterTest {
         fileExporter.saveTtcRao(
             Mockito.mock(CseRaoResult.class),
             ProcessType.IDCC,
-            OffsetDateTime.parse("2021-01-01T15:30Z")
+            OffsetDateTime.parse("2021-01-01T15:30Z"),
+            "20210101_1630_155_Transit_CSE0.uct"
         );
 
         MinioMock.MinioEntry minioEntry = minioMock.getEntry("CSE/EXPORT/IDCC/2021/01/01/16_30/OUTPUT/TTC_Calculation_20210101_1630_2D0_CO_RAO_Transit_CSE0.xml");

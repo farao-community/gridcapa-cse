@@ -10,6 +10,7 @@ import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_rao.TtcRao;
 import com.farao_community.farao.cse.data.xnode.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.CseRaoResult;
+import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.XNodesConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
@@ -36,11 +37,11 @@ public class TtcRaoService {
             raoResult,
             XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath()));
         CseRaoResult cseRaoResult = TtcRao.generate(request.getTargetProcessDateTime(), cracResultsHelper);
-        return fileExporter.saveTtcRao(cseRaoResult, request.getProcessType(), request.getTargetProcessDateTime());
+        return fileExporter.saveTtcRao(cseRaoResult, request.getProcessType(), request.getTargetProcessDateTime(), FileUtil.getFilenameFromUrl(request.getCgmUrl()));
     }
 
     public String saveFailedTtcRao(CseExportRequest request) {
         CseRaoResult cseRaoResult = TtcRao.failed(request.getTargetProcessDateTime());
-        return fileExporter.saveTtcRao(cseRaoResult, request.getProcessType(), request.getTargetProcessDateTime());
+        return fileExporter.saveTtcRao(cseRaoResult, request.getProcessType(), request.getTargetProcessDateTime(), FileUtil.getFilenameFromUrl(request.getCgmUrl()));
     }
 }
