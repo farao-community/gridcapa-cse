@@ -7,23 +7,21 @@
 package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.data.CseDataException;
+import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.UrlWhitelistConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
-import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -40,7 +38,7 @@ public class FileImporter {
     }
 
     Network importNetwork(String cgmUrl) {
-        return Importers.loadNetwork(getFilenameFromUrl(cgmUrl), openUrlStream(cgmUrl));
+        return Importers.loadNetwork(FileUtil.getFilenameFromUrl(cgmUrl), openUrlStream(cgmUrl));
     }
 
     CseCrac importCseCrac(String cracUrl) {
@@ -53,19 +51,6 @@ public class FileImporter {
         return new RaoResultImporter().importRaoResult(openUrlStream(raoResultUrl), crac);
     }
 
-    public Crac importCracFromJson(String cracUrl) {
-        InputStream cracResultStream = openUrlStream(cracUrl);
-        return CracImporters.importCrac(getFilenameFromUrl(cracUrl), cracResultStream);
-    }
-
-    private String getFilenameFromUrl(String url) {
-        try {
-            return FilenameUtils.getName(new URL(url).getPath());
-        } catch (MalformedURLException e) {
-            throw new CseInvalidDataException(String.format("URL is invalid: %s", url));
-        }
-    }
-
     private InputStream openUrlStream(String urlString) {
         try {
             if (urlWhitelistConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
@@ -74,17 +59,9 @@ public class FileImporter {
             URL url = new URL(urlString);
             return url.openStream(); // NOSONAR Usage of whitelist not triggered by Sonar quality assessment, even if listed as a solution to the vulnerability
         } catch (IOException e) {
-            businessLogger.error("Error while retrieving content of file : {}, Link may have expired.", getFileNameFromUrl(urlString));
+            businessLogger.error("Error while retrieving content of file : {}, Link may have expired.", FileUtil.getFilenameFromUrl(urlString));
             throw new CseDataException(String.format("Exception occurred while retrieving file content from : %s Cause: %s ", urlString, e.getMessage()));
         }
     }
 
-    private String getFileNameFromUrl(String stringUrl) {
-        try {
-            URL url = new URL(stringUrl);
-            return FilenameUtils.getName(url.getPath());
-        } catch (IOException e) {
-            throw new CseDataException(String.format("Exception occurred while retrieving file name from : %s Cause: %s ", stringUrl, e.getMessage()));
-        }
-    }
 }
