@@ -39,7 +39,7 @@ public class PiSaConfiguration {
                 getLink1().getNodeFr(),
                 getLink1().getNodeIt(),
                 getLink1().getFictiveLines(),
-                getLink1().getPraName());
+                ""); // Pisa PraName is not used for cse export corner
     }
 
     @Bean(name = "piSaLink2Configuration")
@@ -48,6 +48,6 @@ public class PiSaConfiguration {
                 getLink2().getNodeFr(),
                 getLink2().getNodeIt(),
                 getLink2().getFictiveLines(),
-                getLink2().getPraName());
+                "");
     }
 }

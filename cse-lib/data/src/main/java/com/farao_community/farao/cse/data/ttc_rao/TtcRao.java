@@ -10,12 +10,10 @@ package com.farao_community.farao.cse.data.ttc_rao;
 import com.farao_community.farao.cse.data.cnec.CnecCommon;
 import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.cnec.CnecPreventive;
-import com.farao_community.farao.cse.data.cnec.MergedCnec;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.*;
 import com.farao_community.farao.data.crac_api.Contingency;
 import com.farao_community.farao.data.crac_creation.creator.api.ElementaryCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.RemedialActionCreationContext;
-import com.farao_community.farao.data.crac_creation.creator.cse.outage.CseOutageCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CseHvdcCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CsePstCreationContext;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
@@ -81,8 +79,7 @@ public final class TtcRao {
 
     private static List<OutageResult> getOutageResults(CracResultsHelper cracResultsHelper) {
         List<OutageResult> outageResultList = new ArrayList<>();
-        List<CseOutageCreationContext> cseOutageCreationContexts = cracResultsHelper.getOutageCreationContext();
-        cseOutageCreationContexts.forEach(cseOutageCreationContext -> {
+        cracResultsHelper.getOutageCreationContext().forEach(cseOutageCreationContext -> {
             OutageResult outageResult = new OutageResult();
             Outage outage = new Outage();
             outage.setName(cseOutageCreationContext.getNativeId());
@@ -102,8 +99,7 @@ public final class TtcRao {
             outageResult.setCurativeActions(curativeActions);
 
             List<AfterOutageBranchResult> afterOutageBranchResults = new ArrayList<>();
-            Map<String, MergedCnec> mergedMonitoredCnecs = cracResultsHelper.getMergedCnecs(contingency.getId());
-            mergedMonitoredCnecs.values().forEach(mergedCnec -> {
+            cracResultsHelper.getMergedCnecs(contingency.getId()).values().forEach(mergedCnec -> {
                 AfterOutageBranchResult afterOutageBranchResult = new AfterOutageBranchResult();
                 afterOutageBranchResult.setName(mergedCnec.getCnecCommon().getName());
                 fillBranchCommonPropertiesFromCnecCommon(mergedCnec.getCnecCommon(), afterOutageBranchResult);

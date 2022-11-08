@@ -46,14 +46,12 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL12 FFG.IL11 1
         - FFG.IL12 FFG.IL11 2
-      pra-name: PRA_HVDC_GILE_PIOSSASCO_1
     link2:
       node-fr: FFG.IL14
       node-it: FFG.IL13
       fictive-lines:
         - FFG.IL14 FFG.IL13 1
         - FFG.IL14 FFG.IL13 2
-      pra-name: PRA_HVDC_GILE_PIOSSASCO_2
   bindings:
     request:
       destination: cse-export-request
