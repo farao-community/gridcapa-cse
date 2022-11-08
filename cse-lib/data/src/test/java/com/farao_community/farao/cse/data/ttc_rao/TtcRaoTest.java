@@ -18,7 +18,6 @@ import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -28,6 +27,9 @@ import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -46,7 +48,7 @@ class TtcRaoTest {
         marshaller.marshal(cseRaoResult, bos);
         String expectedTtcResultXml = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(expectedResultFilename))))
             .lines().collect(Collectors.joining("\n"));
-        Assertions.assertEquals(expectedTtcResultXml, bos.toString().trim());
+        assertEquals(expectedTtcResultXml, bos.toString().trim());
     }
 
     private CracResultsHelper getCracResultsHelper(String raoResultFileName) {
@@ -83,5 +85,27 @@ class TtcRaoTest {
     void testFailedCseRaoResultGeneration() throws JAXBException {
         CseRaoResult cseRaoResult = TtcRao.failed(OffsetDateTime.parse("2022-05-06T16:30Z"));
         assertEqualsXml(cseRaoResult, "expected-simple-failed-cse-rao-result.xml");
+    }
+
+    @Test
+    void testPreprocessedPstsModifiedByRaoNotAddedToTtcRes() {
+        Map<String, Integer> preprocessedPsts = new HashMap<>();
+        preprocessedPsts.put("PST_cra_3_BBE2AA1  BBE3AA1  1", 2);
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("raoResult-secure.json");
+        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), cracResultsHelper, preprocessedPsts);
+
+        assertEquals("cra_3", cseRaoResult.getResults().getPreventiveResult().getPreventiveActions().getAction().get(1).getName());
+        assertNotEquals(2, cseRaoResult.getResults().getPreventiveResult().getPreventiveActions().getAction().get(1).getPSTtap().getV().intValue());
+    }
+
+    @Test
+    void testPreprocessedPstsNotModifiedByRaoCorrectlyAddedToTtcRes() {
+        Map<String, Integer> preprocessedPsts = new HashMap<>();
+        preprocessedPsts.put("PST_cra_7_BBE2AA1  BBE3AA1  1", 5);
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("raoResult-secure.json");
+        CseRaoResult cseRaoResult = TtcRao.generate(OffsetDateTime.parse("2022-05-06T16:30Z"), cracResultsHelper, preprocessedPsts);
+
+        assertEquals("cra_7", cseRaoResult.getResults().getPreventiveResult().getPreventiveActions().getAction().get(2).getName());
+        assertEquals(5, cseRaoResult.getResults().getPreventiveResult().getPreventiveActions().getAction().get(2).getPSTtap().getV().intValue());
     }
 }
