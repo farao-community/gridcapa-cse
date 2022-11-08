@@ -6,7 +6,7 @@
         <PreventiveResult>
             <PreventiveActions>
                 <Action name="ra_1"/>
-                <Action name="PST_cra_3_BBE2AA1  BBE3AA1  1">
+                <Action name="cra_3">
                     <PSTtap v="-16"/>
                 </Action>
             </PreventiveActions>

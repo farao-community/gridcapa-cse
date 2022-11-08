@@ -17,6 +17,8 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationC
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
@@ -31,12 +33,12 @@ public class TtcRaoService {
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveTtcRao(CseExportRequest request, CseCracCreationContext cracCreationContext, RaoResult raoResult) {
+    public String saveTtcRao(CseExportRequest request, CseCracCreationContext cracCreationContext, RaoResult raoResult, Map<String, Integer> preprocessedPsts) {
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
             cracCreationContext,
             raoResult,
             XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath()));
-        CseRaoResult cseRaoResult = TtcRao.generate(request.getTargetProcessDateTime(), cracResultsHelper);
+        CseRaoResult cseRaoResult = TtcRao.generate(request.getTargetProcessDateTime(), cracResultsHelper, preprocessedPsts);
         return fileExporter.saveTtcRao(cseRaoResult, request.getProcessType(), request.getTargetProcessDateTime(), FileUtil.getFilenameFromUrl(request.getCgmUrl()));
     }
 
