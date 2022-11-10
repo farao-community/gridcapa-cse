@@ -285,7 +285,7 @@ public class CracResultsHelper {
     }
 
     public String getOrderCode(NetworkElement networkElement) {
-        return networkElement.getId().substring(18);
+        return networkElement.getId().substring(18, 19);
     }
 
     public static String getOutageName(FlowCnec flowCnec) {
