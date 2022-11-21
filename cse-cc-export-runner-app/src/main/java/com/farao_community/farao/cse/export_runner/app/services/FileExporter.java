@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.data.xsd.ttc_rao.CseRaoResult;
+import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -141,21 +142,7 @@ public class FileExporter {
     private String getTtcRaoResultOutputFilename(OffsetDateTime processTargetDate, String initialCgmFilename, ProcessType processType) {
         ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
-        return  "TTC_Calculation_" + dateAndTime + "_2D0_CO_RAO_Transit_CSE" + getFileVersion(initialCgmFilename, processType) + ".xml";
-    }
-
-    String getFileVersion(String cgmFilename,  ProcessType processType) {
-        if (processType == ProcessType.IDCC) {
-            // The naming rule of the initial cgm for Idcc process is YYYYMMDD_hhmm_NNp_Transit_CSEq.uct
-            // with q is the version number
-            return cgmFilename.substring(29, 30);
-        } else if (processType == ProcessType.D2CC) {
-            // The naming rule of the initial cgm for D2cc process is YYYYMMDD_hhmm_2Dp_CO_Transit_CSEq.uct
-            // with q is the version number
-            return cgmFilename.substring(32, 33);
-        } else {
-            throw new CseInternalException(String.format("Process type %s is not handled", processType));
-        }
+        return  "TTC_Calculation_" + dateAndTime + "_2D0_CO_RAO_Transit_CSE" + FileUtil.getFileVersion(initialCgmFilename, processType) + ".xml";
     }
 
     InputStream getNetworkInputStream(Network network, String format) throws IOException {

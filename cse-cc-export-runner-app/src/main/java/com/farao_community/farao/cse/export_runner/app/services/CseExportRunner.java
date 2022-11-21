@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.export_runner.app.services;
 
+import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
@@ -13,6 +14,7 @@ import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstIniti
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
 import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
@@ -112,13 +114,13 @@ public class CseExportRunner {
 
     private String saveNetworkWithPra(CseExportRequest cseExportRequest, Network networkWithPra) {
         return fileExporter.saveNetwork(networkWithPra, "UCTE", GridcapaFileGroup.OUTPUT,
-            cseExportRequest.getProcessType(), getFinalNetworkFilenameWithoutExtension(cseExportRequest.getTargetProcessDateTime()), cseExportRequest.getTargetProcessDateTime());
+            cseExportRequest.getProcessType(), getFinalNetworkFilenameWithoutExtension(cseExportRequest.getTargetProcessDateTime(), FileUtil.getFilenameFromUrl(cseExportRequest.getCgmUrl()), cseExportRequest.getProcessType()), cseExportRequest.getTargetProcessDateTime());
     }
 
-    String getFinalNetworkFilenameWithoutExtension(OffsetDateTime processTargetDate) {
+    String getFinalNetworkFilenameWithoutExtension(OffsetDateTime processTargetDate, String initialCgmFilename, ProcessType processType) {
         ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
         String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
-        return dateAndTime + "_2D" + dayOfWeek + "_ce_Transit_RAO_CSE1";
+        return dateAndTime + "_2D" + dayOfWeek + "_ce_Transit_RAO_CSE" + FileUtil.getFileVersion(initialCgmFilename, processType);
     }
 }
