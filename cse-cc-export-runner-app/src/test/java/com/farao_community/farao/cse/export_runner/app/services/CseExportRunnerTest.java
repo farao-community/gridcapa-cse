@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.export_runner.app.services;
 
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +27,8 @@ class CseExportRunnerTest {
     @Test
     void getFinalNetworkFilenameTest() {
         OffsetDateTime processTargetDate = OffsetDateTime.parse("2022-10-20T16:30Z");
-        String actualFilenameWithoutExtension = cseExportRunner.getFinalNetworkFilenameWithoutExtension(processTargetDate);
+        String initialCgmFilename = "20221020_1830_155_Transit_CSE1.uct";
+        String actualFilenameWithoutExtension = cseExportRunner.getFinalNetworkFilenameWithoutExtension(processTargetDate, initialCgmFilename, ProcessType.IDCC);
         String expectedFilenameWithoutExtension = "20221020_1830_2D4_ce_Transit_RAO_CSE1";
         assertEquals(expectedFilenameWithoutExtension, actualFilenameWithoutExtension);
 
