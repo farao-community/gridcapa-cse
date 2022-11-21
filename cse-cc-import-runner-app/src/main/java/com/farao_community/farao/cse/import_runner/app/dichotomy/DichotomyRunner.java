@@ -13,7 +13,7 @@ import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandle
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.dichotomy.api.DichotomyEngine;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
-import com.farao_community.farao.dichotomy.api.index.BiDirectionalStepsIndexStrategy;
+import com.farao_community.farao.dichotomy.api.index.BiDirectionalStepsWithReferenceIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
@@ -69,7 +69,7 @@ public class DichotomyRunner {
         Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,
-            new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
+            new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, initialIndexValue),
             networkShifterProvider.get(cseRequest, cseData, network),
             getNetworkValidator(cseRequest, cseData, forcedPrasIds));
         return engine.run(network);
