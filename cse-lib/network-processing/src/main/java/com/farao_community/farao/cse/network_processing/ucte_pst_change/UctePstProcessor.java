@@ -31,7 +31,7 @@ public final class UctePstProcessor {
 
     public void forcePhaseTapChangerInActivePowerRegulationForIdcc(Network network) {
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
-        PhaseTapChanger phaseTapChanger =  getPhaseTapChanger(transformer);
+        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
         // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
         double regulationValue = -phaseTapChanger.getRegulationValue();
         setTransformerInActivePowerRegulation(transformer, phaseTapChanger, regulationValue);
@@ -39,7 +39,7 @@ public final class UctePstProcessor {
 
     public void forcePhaseTapChangerInActivePowerRegulationForD2cc(Network network, double regulationValue) {
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
-        PhaseTapChanger phaseTapChanger =  getPhaseTapChanger(transformer);
+        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
         setTransformerInActivePowerRegulation(transformer, phaseTapChanger, regulationValue);
     }
 
@@ -60,7 +60,7 @@ public final class UctePstProcessor {
             throw new UctePstException(String.format(
                 "Transformer is not present in the network with the following ID : %s", pstId));
         }
-        PhaseTapChanger phaseTapChanger =  transformer.getPhaseTapChanger();
+        PhaseTapChanger phaseTapChanger = transformer.getPhaseTapChanger();
         if (phaseTapChanger == null) {
             throw new UctePstException(String.format(
                 "Transformer (%s) has no phase tap changer", pstId));
