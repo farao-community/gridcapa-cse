@@ -29,28 +29,33 @@ public final class UctePstProcessor {
         this.nodeId = nodeId;
     }
 
-    public void forcePhaseTapChangerInActivePowerRegulation(Network network) {
-        PhaseTapChanger phaseTapChanger = forceAndGetPhaseTapChangerInActivePowerRegulation(network);
-        // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
-        phaseTapChanger.setRegulationValue(-phaseTapChanger.getRegulationValue());
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(String.format("PST (%s) has been set in active power control to %.0f MW",
-                pstId, phaseTapChanger.getRegulationValue()));
-        }
-    }
-
-    public void forcePhaseTapChangerInActivePowerRegulation(Network network, double regulationValue) {
-        PhaseTapChanger phaseTapChanger = forceAndGetPhaseTapChangerInActivePowerRegulation(network);
-        // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
-        phaseTapChanger.setRegulationValue(regulationValue);
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(String.format("PST (%s) has been set in active power control to %.0f MW",
-                pstId, phaseTapChanger.getRegulationValue()));
-        }
-    }
-
-    private PhaseTapChanger forceAndGetPhaseTapChangerInActivePowerRegulation(Network network) {
+    public void forcePhaseTapChangerInActivePowerRegulationForIdcc(Network network) {
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
+        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
+        // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
+        double regulationValue = -phaseTapChanger.getRegulationValue();
+        setTransformerInActivePowerRegulation(transformer, phaseTapChanger, regulationValue);
+    }
+
+    public void forcePhaseTapChangerInActivePowerRegulationForD2cc(Network network, double regulationValue) {
+        TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
+        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
+        setTransformerInActivePowerRegulation(transformer, phaseTapChanger, regulationValue);
+    }
+
+    private void setTransformerInActivePowerRegulation(TwoWindingsTransformer transformer, PhaseTapChanger phaseTapChanger, double regulationValue) {
+        phaseTapChanger.setRegulationValue(regulationValue); // Powsybl iidm model requirement: regulationValue must be not empty in order to activate regulation mode
+        phaseTapChanger.setRegulationTerminal(getRegulatedTerminal(transformer));
+        phaseTapChanger.setRegulationMode(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL);
+        phaseTapChanger.setTargetDeadband(5);
+        phaseTapChanger.setRegulating(true);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format("PST (%s) has been set in active power control to %.0f MW",
+                pstId, phaseTapChanger.getRegulationValue()));
+        }
+    }
+
+    private PhaseTapChanger getPhaseTapChanger(TwoWindingsTransformer transformer) {
         if (transformer == null) {
             throw new UctePstException(String.format(
                 "Transformer is not present in the network with the following ID : %s", pstId));
@@ -60,11 +65,6 @@ public final class UctePstProcessor {
             throw new UctePstException(String.format(
                 "Transformer (%s) has no phase tap changer", pstId));
         }
-
-        phaseTapChanger.setRegulationTerminal(getRegulatedTerminal(transformer));
-        phaseTapChanger.setRegulationMode(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL);
-        phaseTapChanger.setTargetDeadband(5);
-        phaseTapChanger.setRegulating(true);
         return phaseTapChanger;
     }
 
