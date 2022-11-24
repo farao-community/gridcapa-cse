@@ -50,7 +50,7 @@ public class MerchantLineService {
     }
 
     private void activateMerchantLineForIdcc(Network network) {
-        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network);
     }
 
     private void activateMerchantLineForD2cc(Network network, CseData cseData) {
@@ -61,7 +61,7 @@ public class MerchantLineService {
         double mendrisioCagnoTargetFlow = getMendrisioTargetFlowForD2cc(network, cseData);
         double pstSetPoint = mendrisioCagnoTargetFlow + offset;
 
-        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network, pstSetPoint);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForD2cc(network, pstSetPoint);
     }
 
     private double getMendrisioTargetFlowForD2cc(Network network, CseData cseData) {
