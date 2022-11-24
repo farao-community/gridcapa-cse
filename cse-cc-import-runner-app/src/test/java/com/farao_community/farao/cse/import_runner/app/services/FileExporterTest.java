@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,11 +88,27 @@ class FileExporterTest {
 
     @Test
     void getRaoParametersTest() {
-        RaoParameters raoParameters = fileExporter.getRaoParameters();
+        RaoParameters raoParameters = fileExporter.getRaoParameters(Collections.emptyList());
         assertEquals(1, raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().size());
         List<String> raCombination = raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().get(0);
         assertEquals(2, raCombination.size());
         assertTrue(raCombination.contains("PRA_2N_VALPELLINE"));
         assertTrue(raCombination.contains("PRA_2N_AVISE"));
+    }
+
+    @Test
+    void getRaoParametersTestWhenRemedialActionsAppliedInPreviousStepIsNotEmpty() {
+        List<List<String>> networkActionIds = List.of(List.of("PRA_XX"), List.of("PRA_YY"));
+        RaoParameters raoParameters = fileExporter.getRaoParameters(networkActionIds);
+        assertEquals(3, raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().size());
+    }
+
+    @Test
+    void getRaoParametersFilePathTest() {
+        String expectedFilePathWhenBasePathIsEmptyOrNull = "CSE/IMPORT/IDCC/2021/09/14/01_30/ARTIFACTS/raoParameters.json";
+        String expectedFilePathWhenBasePathIsNotEmpty = "FAKE_PATH/raoParameters.json";
+        assertEquals(expectedFilePathWhenBasePathIsEmptyOrNull, fileExporter.getRaoParametersDestinationPath("", ProcessType.IDCC, OffsetDateTime.parse("2021-09-13T23:30Z")));
+        assertEquals(expectedFilePathWhenBasePathIsEmptyOrNull, fileExporter.getRaoParametersDestinationPath(null, ProcessType.IDCC, OffsetDateTime.parse("2021-09-13T23:30Z")));
+        assertEquals(expectedFilePathWhenBasePathIsNotEmpty, fileExporter.getRaoParametersDestinationPath("FAKE_PATH/", ProcessType.IDCC, OffsetDateTime.parse("2021-09-13T23:30Z")));
     }
 }

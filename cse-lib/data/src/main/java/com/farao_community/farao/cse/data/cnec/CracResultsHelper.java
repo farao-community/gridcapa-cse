@@ -209,14 +209,14 @@ public class CracResultsHelper {
         double flow;
         double iMax;
         if (upperBound.isPresent() && lowerBound.isEmpty()) {
-            flow = raoResult.getFlow(optimizationState, flowCnec, Unit.AMPERE);
+            flow = raoResult.getFlow(optimizationState, flowCnec, Side.LEFT, Unit.AMPERE);
             iMax = upperBound.get();
         } else if (upperBound.isEmpty() && lowerBound.isPresent()) {
             // Case where it is limited in opposite direction so the flow is inverted
-            flow = -raoResult.getFlow(optimizationState, flowCnec, Unit.AMPERE);
+            flow = -raoResult.getFlow(optimizationState, flowCnec, Side.LEFT, Unit.AMPERE);
             iMax = Math.abs(lowerBound.get());
         } else if (upperBound.isPresent() && lowerBound.isPresent()) {
-            double flowTemp = raoResult.getFlow(optimizationState, flowCnec, Unit.AMPERE);
+            double flowTemp = raoResult.getFlow(optimizationState, flowCnec, Side.LEFT, Unit.AMPERE);
             flow = Math.abs(flowTemp);
             if (flowTemp >= 0) {
                 iMax = upperBound.get();
