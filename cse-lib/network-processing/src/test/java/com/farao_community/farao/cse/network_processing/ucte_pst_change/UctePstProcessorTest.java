@@ -36,7 +36,7 @@ class UctePstProcessorTest {
     @Test
     void testTransformerSettings() {
         UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
-        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network);
         TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer("SMENDR3T SMENDR32 1");
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL, phaseTapChanger.getRegulationMode());
@@ -48,7 +48,7 @@ class UctePstProcessorTest {
     @Test
     void testTransformerSettingsWithSpecifiedValue() {
         UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
-        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network, 150);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForD2cc(network, 150);
         TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer("SMENDR3T SMENDR32 1");
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL, phaseTapChanger.getRegulationMode());
@@ -60,7 +60,7 @@ class UctePstProcessorTest {
     @Test
     void testWithLoadFlow() {
         UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
-        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network);
         TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer("SMENDR3T SMENDR32 1");
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(0, phaseTapChanger.getTapPosition());
@@ -72,7 +72,7 @@ class UctePstProcessorTest {
     @Test
     void testFailWithMissingTransformer() {
         UctePstProcessor uctePstProcessor = new UctePstProcessor("Fake transformer", "SMENDR3T");
-        assertThrows(UctePstException.class, () -> uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(network, 150));
+        assertThrows(UctePstException.class, () -> uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForD2cc(network, 150));
     }
 
     @Test
@@ -80,6 +80,6 @@ class UctePstProcessorTest {
         String filename = "network_with_mendrisio_disconnected.uct";
         Network disconnectedTransformerNetwork = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
         UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
-        assertDoesNotThrow(() -> uctePstProcessor.forcePhaseTapChangerInActivePowerRegulation(disconnectedTransformerNetwork));
+        assertDoesNotThrow(() -> uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(disconnectedTransformerNetwork));
     }
 }
