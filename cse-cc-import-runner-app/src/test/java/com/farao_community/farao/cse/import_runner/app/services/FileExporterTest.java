@@ -98,9 +98,9 @@ class FileExporterTest {
 
     @Test
     void getRaoParametersTestWhenRemedialActionsAppliedInPreviousStepIsNotEmpty() {
-        List<List<String>> networkActionIds = List.of(List.of("PRA_XX"), List.of("PRA_YY"));
+        List<String> networkActionIds = List.of("PRA_XX", "PRA_YY");
         RaoParameters raoParameters = fileExporter.getRaoParameters(networkActionIds);
-        assertEquals(3, raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().size());
+        assertEquals(2, raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().size());
     }
 
     @Test

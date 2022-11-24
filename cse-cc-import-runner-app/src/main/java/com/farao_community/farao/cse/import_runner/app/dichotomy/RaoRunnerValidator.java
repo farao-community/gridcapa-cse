@@ -122,8 +122,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         if (appliedRemedialActionInPreviousStep.isEmpty() || appliedRemedialActionInPreviousStep.size() == 1) {
             return new RaoRequest(requestId, networkPreSignedUrl, cracUrl, raoParametersUrl, baseDirPathForCurrentStep);
         } else {
-            List<List<String>> networkActionIdCombinationsAppliedInPreviousStep = List.of(appliedRemedialActionInPreviousStep);
-            String raoParametersWithAppliedRemedialActionInPreviousStepUrl = fileExporter.saveRaoParameters(baseDirPathForCurrentStep, networkActionIdCombinationsAppliedInPreviousStep, processTargetDateTime, processType);
+            String raoParametersWithAppliedRemedialActionInPreviousStepUrl = fileExporter.saveRaoParameters(baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep, processTargetDateTime, processType);
             return new RaoRequest(requestId, networkPreSignedUrl, cracUrl, raoParametersWithAppliedRemedialActionInPreviousStepUrl, baseDirPathForCurrentStep);
         }
     }

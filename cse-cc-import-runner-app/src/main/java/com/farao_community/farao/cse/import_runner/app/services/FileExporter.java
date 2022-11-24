@@ -37,10 +37,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -93,7 +92,11 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(networkFilePath);
     }
 
-    public String saveRaoParameters(String basePath, List<List<String>> remedialActionsAppliedInPreviousStep, OffsetDateTime offsetDateTime, ProcessType processType) {
+    public String saveRaoParameters(OffsetDateTime offsetDateTime, ProcessType processType) {
+        return saveRaoParameters("", Collections.emptyList(), offsetDateTime, processType);
+    }
+
+    public String saveRaoParameters(String basePath, List<String> remedialActionsAppliedInPreviousStep, OffsetDateTime offsetDateTime, ProcessType processType) {
         RaoParameters raoParameters = getRaoParameters(remedialActionsAppliedInPreviousStep);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
@@ -107,15 +110,17 @@ public class FileExporter {
         return !StringUtils.isBlank(basePath) ? basePath + RAO_PARAMETERS_FILE_NAME : MinioStorageHelper.makeDestinationMinioPath(offsetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(processConfiguration.getZoneId())) + RAO_PARAMETERS_FILE_NAME;
     }
 
-    RaoParameters getRaoParameters(List<List<String>> remedialActionsAppliedInPreviousStep) {
+    RaoParameters getRaoParameters(List<String> remedialActionsAppliedInPreviousStep) {
         RaoParameters raoParameters = RaoParameters.load();
         try (InputStream is = new FileInputStream(combinedRasFilePath)) {
             ObjectMapper objectMapper = new ObjectMapper();
             List<List<String>> combinedRas = objectMapper.readValue(is.readAllBytes(), List.class);
-            List<List<String>> networkActionIdCombinationsList = !remedialActionsAppliedInPreviousStep.isEmpty() ? Stream.concat(combinedRas.stream(), remedialActionsAppliedInPreviousStep.stream()).distinct().collect(Collectors.toList()) : combinedRas;
+            if (!remedialActionsAppliedInPreviousStep.isEmpty()) {
+                combinedRas.add(remedialActionsAppliedInPreviousStep);
+            }
             SearchTreeRaoParameters searchTreeRaoParameters = raoParameters.getExtension(SearchTreeRaoParameters.class);
             if (searchTreeRaoParameters != null) {
-                searchTreeRaoParameters.setNetworkActionIdCombinations(networkActionIdCombinationsList);
+                searchTreeRaoParameters.setNetworkActionIdCombinations(combinedRas);
             }
         } catch (IOException e) {
             throw new CseDataException(String.format("Impossible to read combined RAs file: %s", combinedRasFilePath));
