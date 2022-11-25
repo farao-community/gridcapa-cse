@@ -51,12 +51,12 @@ public class NetworkShifterProvider {
         if (processType == ProcessType.D2CC) {
             return new CseD2ccShiftDispatcher(
                 convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true)),
+                getReferenceExchanges(processType, cseData, network),
                 convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
         } else {
             return new CseIdccShiftDispatcher(
                 convertSplittingFactors(cseData.getReducedSplittingFactors()),
-                cseData.getCseReferenceExchanges().getExchanges(),
+                getReferenceExchanges(processType, cseData, network),
                 cseData.getNtc2().getExchanges());
         }
     }
@@ -103,5 +103,17 @@ public class NetworkShifterProvider {
 
     private static String toEic(String country) {
         return new EICode(Country.valueOf(country)).getAreaCode();
+    }
+
+    static Map<String, Double> getReferenceExchanges(ProcessType processType, CseData cseData, Network network) {
+        if (processType.equals(ProcessType.D2CC)) {
+            return NetworkShifterProvider.convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true));
+        } else {
+            return cseData.getCseReferenceExchanges().getExchanges();
+        }
+    }
+
+    public static double getReferenceExchangesPoint(ProcessType processType, CseData cseData, Network network) {
+        return getReferenceExchanges(processType, cseData, network).values().stream().reduce(0., Double::sum);
     }
 }

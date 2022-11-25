@@ -53,8 +53,9 @@ public class DichotomyRunner {
                                                               CseData cseData,
                                                               Network network,
                                                               double initialIndexValue,
+                                                              double referenceExchanges,
                                                               Set<String> forcedPrasIds) throws IOException {
-        return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, forcedPrasIds);
+        return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, referenceExchanges, forcedPrasIds);
     }
 
     public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
@@ -62,6 +63,7 @@ public class DichotomyRunner {
                                                               Network network,
                                                               double initialIndexValue,
                                                               double minImportValue,
+                                                              double referenceExchanges,
                                                               Set<String> forcedPrasIds) throws IOException {
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
@@ -69,7 +71,7 @@ public class DichotomyRunner {
         Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,
-            new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, initialIndexValue),
+            new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, referenceExchanges),
             networkShifterProvider.get(cseRequest, cseData, network),
             getNetworkValidator(cseRequest, cseData, forcedPrasIds));
         return engine.run(network);

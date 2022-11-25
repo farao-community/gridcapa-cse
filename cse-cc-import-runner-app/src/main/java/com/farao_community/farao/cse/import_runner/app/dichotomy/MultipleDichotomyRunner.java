@@ -55,7 +55,9 @@ public class MultipleDichotomyRunner {
                                                                               CseData cseData,
                                                                               Network network,
                                                                               Crac crac,
-                                                                              double initialIndexValue) throws IOException {
+                                                                              double initialIndexValue,
+                                                                              double referenceExchanges) throws IOException {
+
         int maximumDichotomiesNumber = Optional.ofNullable(request.getMaximumDichotomiesNumber()).orElse(processConfiguration.getDefaultMaxDichotomiesNumber());
         Map<String, List<Set<String>>> automatedForcedPrasIds = request.getAutomatedForcedPrasIds();
         MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = new MultipleDichotomyResult<>();
@@ -64,7 +66,7 @@ public class MultipleDichotomyRunner {
 
         // Launch initial dichotomy and store result
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult =
-            dichotomyRunner.runDichotomy(request, cseData, network, initialIndexValue, flattenPrasIds(forcedPrasIds));
+            dichotomyRunner.runDichotomy(request, cseData, network, initialIndexValue, referenceExchanges, flattenPrasIds(forcedPrasIds));
         multipleDichotomyResult.addResult(initialDichotomyResult, flattenPrasIds(forcedPrasIds));
 
         String limitingElement = "NONE";
@@ -118,6 +120,7 @@ public class MultipleDichotomyRunner {
                     network,
                     lastUnsecureItalianImport,
                     lastUnsecureItalianImport,
+                    referenceExchanges,
                     flattenPrasIds(forcedPrasIds));
 
                 if (nextDichotomyResult.hasValidStep()) {
