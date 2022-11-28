@@ -55,7 +55,7 @@ class CracResultsHelperTest {
     @Test
     void pstTapPositionRetrievingTest() {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
-        assertEquals(-16, cracResultsHelper.getTapOfPstRangeActionInPreventive("PST_cra_3_BBE2AA1  BBE3AA1  1"));
+        assertEquals(16, cracResultsHelper.getTapOfPstRangeActionInPreventive("PST_cra_3_BBE2AA1  BBE3AA1  1"));
     }
 
     @Test

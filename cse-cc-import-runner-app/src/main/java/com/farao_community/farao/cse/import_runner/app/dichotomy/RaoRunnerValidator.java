@@ -13,6 +13,7 @@ import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
 import com.farao_community.farao.data.crac_api.Crac;
+import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
@@ -28,10 +29,13 @@ import org.slf4j.LoggerFactory;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
+ * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RaoRunnerValidator.class);
@@ -71,15 +75,16 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
     }
 
     @Override
-    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network) throws ValidationException {
-        String scaledNetworkDirPath = generateScaledNetworkDirPath(network);
+    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network, DichotomyStepResult lastDichotomyStepResult) throws ValidationException {
+        String baseDirPathForCurrentStep = generateBaseDirPathFromScaledNetwork(network);
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
-        String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, scaledNetworkDirPath + scaledNetworkName, "", processTargetDateTime, processType);
-        RaoRequest raoRequest = buildRaoRequest(networkPresignedUrl, scaledNetworkDirPath);
+        String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkName, "", processTargetDateTime, processType);
 
         try {
             Crac crac = fileImporter.importCracFromJson(cracUrl);
-
+            List<String> appliedRemedialActionInPreviousStep = lastDichotomyStepResult != null && lastDichotomyStepResult.getRaoResult() != null ? lastDichotomyStepResult.getRaoResult().getActivatedNetworkActionsDuringState(crac.getPreventiveState())
+                     .stream().map(NetworkAction::getId).collect(Collectors.toList()) : Collections.emptyList();
+            RaoRequest raoRequest = buildRaoRequest(networkPresignedUrl, baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep);
             // We don't stop computation even if there are no applied RAs, because we cannot be sure in the case where
             // the RAs are applicable on constraint, that it won't be applicable later on in the dichotomy (higher index)
             // So if we throw validation exception for example when no RAs are applied index will go lower, and it will
@@ -113,11 +118,16 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         }
     }
 
-    private RaoRequest buildRaoRequest(String networkPresignedUrl, String scaledNetworkDirPath) {
-        return new RaoRequest(requestId, networkPresignedUrl, cracUrl, raoParametersUrl, scaledNetworkDirPath);
+    private RaoRequest buildRaoRequest(String networkPreSignedUrl, String baseDirPathForCurrentStep, List<String> appliedRemedialActionInPreviousStep) {
+        if (appliedRemedialActionInPreviousStep.isEmpty() || appliedRemedialActionInPreviousStep.size() == 1) {
+            return new RaoRequest(requestId, networkPreSignedUrl, cracUrl, raoParametersUrl, baseDirPathForCurrentStep);
+        } else {
+            String raoParametersWithAppliedRemedialActionInPreviousStepUrl = fileExporter.saveRaoParameters(baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep, processTargetDateTime, processType);
+            return new RaoRequest(requestId, networkPreSignedUrl, cracUrl, raoParametersWithAppliedRemedialActionInPreviousStepUrl, baseDirPathForCurrentStep);
+        }
     }
 
-    private String generateScaledNetworkDirPath(Network network) {
+    private String generateBaseDirPathFromScaledNetwork(Network network) {
         String basePath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(fileExporter.getZoneId()));
         String variantName = network.getVariantManager().getWorkingVariantId();
         return String.format("%s/%s-%s/", basePath, ++variantCounter, variantName);

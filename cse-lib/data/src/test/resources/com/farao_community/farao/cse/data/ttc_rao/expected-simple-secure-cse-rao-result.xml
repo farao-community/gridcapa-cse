@@ -7,7 +7,7 @@
             <PreventiveActions>
                 <Action name="ra_1"/>
                 <Action name="cra_3">
-                    <PSTtap v="-16"/>
+                    <PSTtap v="16"/>
                 </Action>
             </PreventiveActions>
             <MonitoredElement name="basecase_branch_1">

@@ -150,7 +150,6 @@
       "activatedStates": [
         {
           "instant": "preventive",
-          "tap": -16,
           "setpoint": -6.2276423729910535
         }
       ]
@@ -163,7 +162,6 @@
         {
           "instant": "curative",
           "contingency": "outage_2",
-          "tap": -16,
           "setpoint": -6.2276423729910535
         }
       ]
