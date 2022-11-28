@@ -126,7 +126,7 @@
             </Action>
             <Action>
                 <Name v="cra_3"/>
-                <PSTtap v="-16"/>
+                <PSTtap v="16"/>
             </Action>
         </Preventive>
         <CriticalBranch>
@@ -175,7 +175,7 @@
             <CurativeAction>
                 <Action>
                     <Name v="cra_7"/>
-                    <PSTtap v="-16"/>
+                    <PSTtap v="16"/>
                 </Action>
             </CurativeAction>
             <MonitoredElement>

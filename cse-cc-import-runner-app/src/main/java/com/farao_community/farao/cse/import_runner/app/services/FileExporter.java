@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.network.Network;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBContext;
@@ -36,11 +37,13 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
+ * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Service
 public class FileExporter {
@@ -90,20 +93,31 @@ public class FileExporter {
     }
 
     public String saveRaoParameters(OffsetDateTime offsetDateTime, ProcessType processType) {
-        RaoParameters raoParameters = getRaoParameters();
+        return saveRaoParameters("", Collections.emptyList(), offsetDateTime, processType);
+    }
+
+    public String saveRaoParameters(String basePath, List<String> remedialActionsAppliedInPreviousStep, OffsetDateTime offsetDateTime, ProcessType processType) {
+        RaoParameters raoParameters = getRaoParameters(remedialActionsAppliedInPreviousStep);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonRaoParameters.write(raoParameters, baos);
-        String raoParametersDestinationPath = MinioStorageHelper.makeDestinationMinioPath(offsetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(processConfiguration.getZoneId())) + RAO_PARAMETERS_FILE_NAME;
+        String raoParametersDestinationPath = getRaoParametersDestinationPath(basePath, processType, offsetDateTime);
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         minioAdapter.uploadArtifactForTimestamp(raoParametersDestinationPath, bais, adaptTargetProcessName(processType), "", offsetDateTime);
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
     }
 
-    RaoParameters getRaoParameters() {
+    String getRaoParametersDestinationPath(String basePath, ProcessType processType, OffsetDateTime offsetDateTime) {
+        return !StringUtils.isBlank(basePath) ? basePath + RAO_PARAMETERS_FILE_NAME : MinioStorageHelper.makeDestinationMinioPath(offsetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(processConfiguration.getZoneId())) + RAO_PARAMETERS_FILE_NAME;
+    }
+
+    RaoParameters getRaoParameters(List<String> remedialActionsAppliedInPreviousStep) {
         RaoParameters raoParameters = RaoParameters.load();
         try (InputStream is = new FileInputStream(combinedRasFilePath)) {
             ObjectMapper objectMapper = new ObjectMapper();
             List<List<String>> combinedRas = objectMapper.readValue(is.readAllBytes(), List.class);
+            if (!remedialActionsAppliedInPreviousStep.isEmpty()) {
+                combinedRas.add(remedialActionsAppliedInPreviousStep);
+            }
             SearchTreeRaoParameters searchTreeRaoParameters = raoParameters.getExtension(SearchTreeRaoParameters.class);
             if (searchTreeRaoParameters != null) {
                 searchTreeRaoParameters.setNetworkActionIdCombinations(combinedRas);

@@ -294,7 +294,6 @@
     "initialSetpoint" : 0.0,
     "activatedStates" : [ {
       "instant" : "preventive",
-      "tap" : -7,
       "setpoint" : -3.2
     } ]
   }, {

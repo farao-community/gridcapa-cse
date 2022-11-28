@@ -204,19 +204,20 @@ public class CracResultsHelper {
     }
 
     public FlowCnecResult getFlowCnecResultInAmpere(FlowCnec flowCnec, OptimizationState optimizationState) {
-        Optional<Double> upperBound = flowCnec.getUpperBound(Side.LEFT, Unit.AMPERE);
-        Optional<Double> lowerBound = flowCnec.getLowerBound(Side.LEFT, Unit.AMPERE);
+        Side monitoredSide = flowCnec.getMonitoredSides().contains(Side.LEFT) ? Side.LEFT : Side.RIGHT;
+        Optional<Double> upperBound = flowCnec.getUpperBound(monitoredSide, Unit.AMPERE);
+        Optional<Double> lowerBound = flowCnec.getLowerBound(monitoredSide, Unit.AMPERE);
         double flow;
         double iMax;
         if (upperBound.isPresent() && lowerBound.isEmpty()) {
-            flow = raoResult.getFlow(optimizationState, flowCnec, Unit.AMPERE);
+            flow = raoResult.getFlow(optimizationState, flowCnec, monitoredSide, Unit.AMPERE);
             iMax = upperBound.get();
         } else if (upperBound.isEmpty() && lowerBound.isPresent()) {
             // Case where it is limited in opposite direction so the flow is inverted
-            flow = -raoResult.getFlow(optimizationState, flowCnec, Unit.AMPERE);
+            flow = -raoResult.getFlow(optimizationState, flowCnec, monitoredSide, Unit.AMPERE);
             iMax = Math.abs(lowerBound.get());
         } else if (upperBound.isPresent() && lowerBound.isPresent()) {
-            double flowTemp = raoResult.getFlow(optimizationState, flowCnec, Unit.AMPERE);
+            double flowTemp = raoResult.getFlow(optimizationState, flowCnec, monitoredSide, Unit.AMPERE);
             flow = Math.abs(flowTemp);
             if (flowTemp >= 0) {
                 iMax = upperBound.get();
