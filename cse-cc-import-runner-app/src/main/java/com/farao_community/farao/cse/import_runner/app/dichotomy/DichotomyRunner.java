@@ -13,7 +13,7 @@ import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandle
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.dichotomy.api.DichotomyEngine;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
-import com.farao_community.farao.dichotomy.api.index.BiDirectionalStepsIndexStrategy;
+import com.farao_community.farao.dichotomy.api.index.BiDirectionalStepsWithReferenceIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
@@ -53,8 +53,9 @@ public class DichotomyRunner {
                                                               CseData cseData,
                                                               Network network,
                                                               double initialIndexValue,
+                                                              Map<String, Double> referenceExchanges,
                                                               Set<String> forcedPrasIds) throws IOException {
-        return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, forcedPrasIds);
+        return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, referenceExchanges, forcedPrasIds);
     }
 
     public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
@@ -62,6 +63,7 @@ public class DichotomyRunner {
                                                               Network network,
                                                               double initialIndexValue,
                                                               double minImportValue,
+                                                              Map<String, Double> referenceExchanges,
                                                               Set<String> forcedPrasIds) throws IOException {
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
@@ -69,8 +71,8 @@ public class DichotomyRunner {
         Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,
-            new BiDirectionalStepsIndexStrategy(initialIndexValue, initialDichotomyStep),
-            networkShifterProvider.get(cseRequest, cseData, network),
+            new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, NetworkShifterUtil.getReferenceItalianImport(referenceExchanges)),
+            networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges),
             getNetworkValidator(cseRequest, cseData, forcedPrasIds));
         return engine.run(network);
     }

@@ -10,9 +10,7 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
-import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
-import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
-import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.*;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
@@ -125,7 +123,8 @@ public class CseRunner {
             cseData,
             network,
             crac,
-            initialIndexValue);
+            initialIndexValue,
+            NetworkShifterUtil.getReferenceExchanges(cseRequest.getProcessType(), cseData, network));
 
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
 

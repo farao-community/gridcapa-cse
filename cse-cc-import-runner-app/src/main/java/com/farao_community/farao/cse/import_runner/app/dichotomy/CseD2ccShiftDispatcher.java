@@ -35,7 +35,7 @@ public class CseD2ccShiftDispatcher implements ShiftDispatcher {
     @Override
     public Map<String, Double> dispatch(double value) {
         Map<String, Double> shifts = new HashMap<>();
-        double referenceItalianImport = referenceExchanges.values().stream().reduce(0., Double::sum);
+        double referenceItalianImport = NetworkShifterUtil.getReferenceItalianImport(referenceExchanges);
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("Italian import reference: %.2f", referenceItalianImport));
         }
