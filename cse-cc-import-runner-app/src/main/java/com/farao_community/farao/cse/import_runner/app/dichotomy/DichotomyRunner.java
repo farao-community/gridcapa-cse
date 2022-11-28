@@ -53,7 +53,7 @@ public class DichotomyRunner {
                                                               CseData cseData,
                                                               Network network,
                                                               double initialIndexValue,
-                                                              double referenceExchanges,
+                                                              Map<String, Double> referenceExchanges,
                                                               Set<String> forcedPrasIds) throws IOException {
         return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, referenceExchanges, forcedPrasIds);
     }
@@ -63,7 +63,7 @@ public class DichotomyRunner {
                                                               Network network,
                                                               double initialIndexValue,
                                                               double minImportValue,
-                                                              double referenceExchanges,
+                                                              Map<String, Double> referenceExchanges,
                                                               Set<String> forcedPrasIds) throws IOException {
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
@@ -71,8 +71,8 @@ public class DichotomyRunner {
         Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,
-            new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, referenceExchanges),
-            networkShifterProvider.get(cseRequest, cseData, network),
+            new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, NetworkShifterUtil.getReferenceItalianImport(referenceExchanges)),
+            networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges),
             getNetworkValidator(cseRequest, cseData, forcedPrasIds));
         return engine.run(network);
     }

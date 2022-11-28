@@ -32,7 +32,7 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
         this.splittingFactors = splittingFactors;
         this.referenceExchanges = referenceExchanges;
         this.ntcs2 = ntcs2;
-        referenceItalianImport = referenceExchanges.values().stream().reduce(0., Double::sum);
+        referenceItalianImport = NetworkShifterUtil.getReferenceItalianImport(referenceExchanges);
         ntc2ItalianImport = ntcs2.values().stream().reduce(0., Double::sum);
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("Italian import reference: %.2f", referenceItalianImport));

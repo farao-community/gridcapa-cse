@@ -56,7 +56,7 @@ public class MultipleDichotomyRunner {
                                                                               Network network,
                                                                               Crac crac,
                                                                               double initialIndexValue,
-                                                                              double referenceExchanges) throws IOException {
+                                                                              Map<String, Double> referenceExchanges) throws IOException {
 
         int maximumDichotomiesNumber = Optional.ofNullable(request.getMaximumDichotomiesNumber()).orElse(processConfiguration.getDefaultMaxDichotomiesNumber());
         Map<String, List<Set<String>>> automatedForcedPrasIds = request.getAutomatedForcedPrasIds();
