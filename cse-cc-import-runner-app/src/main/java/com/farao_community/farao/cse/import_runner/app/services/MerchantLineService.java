@@ -80,4 +80,8 @@ public class MerchantLineService {
         }
         return mendrisioCagnoTargetFlow;
     }
+
+    void postProcessingMerchantLine(Network network) {
+        uctePstProcessor.invertRegulationValueForIdcc(network);
+    }
 }

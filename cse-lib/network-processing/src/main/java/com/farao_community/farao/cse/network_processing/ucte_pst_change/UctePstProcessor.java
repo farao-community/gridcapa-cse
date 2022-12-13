@@ -82,4 +82,14 @@ public final class UctePstProcessor {
             return transformer.getTerminal1();
         }
     }
+
+    /**
+     * Regulation value initially inverted in preprocessing for IDCC process to prevent an issue that comes from PowSyBl UCTE importer
+     * should be re-inverted when exporting UCTE network
+     */
+    public void invertRegulationValueForIdcc(Network network) {
+        TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
+        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
+        phaseTapChanger.setRegulationValue(-phaseTapChanger.getRegulationValue());
+    }
 }
