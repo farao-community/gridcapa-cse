@@ -392,7 +392,7 @@ public class NetworkModifier {
      */
     public void commitAllChanges() {
         try {
-            movedBranches.keySet().forEach(branch -> branch.remove(true));
+            movedBranches.keySet().forEach(branch -> branch.remove());
             movedBranches = new HashMap<>();
             busesToRemove.forEach(this::effectivelyRemoveBus);
             busesToRemove = new HashSet<>();

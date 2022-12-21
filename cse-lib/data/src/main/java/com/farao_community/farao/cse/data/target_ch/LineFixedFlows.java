@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.data.target_ch;
 
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteCnecElementHelper;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteFlowElementHelper;
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Network;
@@ -61,7 +61,7 @@ public final class LineFixedFlows {
     }
 
     private static Optional<Branch<?>> findBranch(OutageInformation outageInformation, Network network, UcteNetworkAnalyzer ucteNetworkAnalyzer) {
-        UcteCnecElementHelper ucteCnecElementHelper = new UcteCnecElementHelper(
+        UcteFlowElementHelper ucteCnecElementHelper = new UcteFlowElementHelper(
                 outageInformation.getFromNode(),
                 outageInformation.getToNode(),
                 outageInformation.getOrderCode(),

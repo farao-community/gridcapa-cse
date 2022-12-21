@@ -9,7 +9,6 @@ package com.farao_community.farao.cse.data.target_ch;
 
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzerProperties;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +23,7 @@ class LineFixedFlowsTest {
     @Test
     void testFixedFlowWhenNoLinesAreInOutage() throws JAXBException {
         String filename = "TestCase12NodesNoOutages.uct";
-        Network network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
+        Network network = Network.read(filename, getClass().getResourceAsStream(filename));
 
         LineFixedFlows lineFixedFlows = LineFixedFlows.create(
                 OffsetDateTime.parse("2021-09-13T12:30Z"),
@@ -39,7 +38,7 @@ class LineFixedFlowsTest {
     @Test
     void testFixedFlowWhenOneLineIsInOutage() throws JAXBException {
         String filename = "TestCase12NodesOneOutage.uct";
-        Network network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
+        Network network = Network.read(filename, getClass().getResourceAsStream(filename));
 
         LineFixedFlows lineFixedFlows = LineFixedFlows.create(
                 OffsetDateTime.parse("2021-09-13T12:30Z"),
@@ -55,7 +54,7 @@ class LineFixedFlowsTest {
     @Test
     void testFixedFlowWhenTwoLinesAreInOutage() throws JAXBException {
         String filename = "TestCase12NodesTwoOutages.uct";
-        Network network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
+        Network network = Network.read(filename, getClass().getResourceAsStream(filename));
 
         LineFixedFlows lineFixedFlows = LineFixedFlows.create(
                 OffsetDateTime.parse("2021-09-13T12:30Z"),

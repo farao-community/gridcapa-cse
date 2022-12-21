@@ -7,7 +7,6 @@
 
 package com.farao_community.farao.cse.network_processing.ucte_pst_change;
 
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.PhaseTapChanger;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
@@ -23,14 +22,14 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class UctePstProcessorTest {
     private static final double DOUBLE_PRECISION = 0.1;
-    private static final double DOUBLE_PRECISION_FOR_REGULATED_FLOW = 20;
+    private static final double DOUBLE_PRECISION_FOR_REGULATED_FLOW = 33;
 
     private Network network;
 
     @BeforeEach
     void setUp() {
         String filename = "network_with_mendrisio.uct";
-        network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
+        network = Network.read(filename, getClass().getResourceAsStream(filename));
     }
 
     @Test
@@ -65,7 +64,7 @@ class UctePstProcessorTest {
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(0, phaseTapChanger.getTapPosition());
         LoadFlow.run(network, LoadFlowParameters.load());
-        assertEquals(12, phaseTapChanger.getTapPosition());
+        assertEquals(16, phaseTapChanger.getTapPosition());
         assertEquals(-300, twoWindingsTransformer.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
     }
 
@@ -78,7 +77,7 @@ class UctePstProcessorTest {
     @Test
     void testMendrisioSetpointWorksWithDisconnectedTransformer() {
         String filename = "network_with_mendrisio_disconnected.uct";
-        Network disconnectedTransformerNetwork = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
+        Network disconnectedTransformerNetwork = Network.read(filename, getClass().getResourceAsStream(filename));
         UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
         assertDoesNotThrow(() -> uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(disconnectedTransformerNetwork));
     }

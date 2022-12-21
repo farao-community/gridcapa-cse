@@ -16,7 +16,6 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +54,7 @@ class TtcRaoTest {
         InputStream cracInputStream = getClass().getResourceAsStream("crac.xml");
         CseCracImporter importer = new CseCracImporter();
         CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
-        Network network = Importers.loadNetwork("network.uct", getClass().getResourceAsStream("network.uct"));
+        Network network = Network.read("network.uct", getClass().getResourceAsStream("network.uct"));
         CseCracCreator cseCracCreator = new CseCracCreator();
         CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);

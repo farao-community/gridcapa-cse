@@ -9,7 +9,6 @@ package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.data.crac_api.Crac;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -36,7 +35,7 @@ class CseRunnerTest {
     @Test
     void testCracImportAndBusbarPreprocess() {
         String cracUrl = Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1_busbar.xml")).toString();
-        Network network = Importers.loadNetwork("20210901_2230_test_network.uct", getClass().getResourceAsStream("20210901_2230_test_network.uct"));
+        Network network = Network.read("20210901_2230_test_network.uct", getClass().getResourceAsStream("20210901_2230_test_network.uct"));
         // Initially only one bus in this voltage level ITALY111
         assertEquals(1, Stream.of(network.getVoltageLevel("ITALY11").getBusBreakerView().getBuses()).count());
 

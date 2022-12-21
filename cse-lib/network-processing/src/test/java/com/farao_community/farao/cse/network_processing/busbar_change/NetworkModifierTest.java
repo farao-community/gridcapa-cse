@@ -8,7 +8,6 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.farao_community.farao.commons.FaraoException;
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
@@ -37,7 +36,7 @@ class NetworkModifierTest {
     }
 
     private void setUp(String networkFile) {
-        network = Importers.loadNetwork(networkFile, getClass().getResourceAsStream(networkFile));
+        network = Network.read(networkFile, getClass().getResourceAsStream(networkFile));
         networkModifier = new NetworkModifier(network);
     }
 
@@ -145,7 +144,7 @@ class NetworkModifierTest {
         assertEquals("BBE2AA1", createdLine.getTerminal2().getVoltageLevel().getId());
 
         // re-import network and check that the created line has the same properties as the old line
-        Network initialNetwork = Importers.loadNetwork("BaseNetwork.uct", getClass().getResourceAsStream("BaseNetwork.uct"));
+        Network initialNetwork = Network.read("BaseNetwork.uct", getClass().getResourceAsStream("BaseNetwork.uct"));
         Branch<?> initialBranch = initialNetwork.getLine("BBE1AA11 BBE2AA1  1");
         assertBranchesAreSimilar(initialBranch, createdLine);
 
@@ -174,7 +173,7 @@ class NetworkModifierTest {
         assertEquals("BBE2AA1N", createdLine.getTerminal2().getBusBreakerView().getBus().getId());
         assertEquals("BBE2AA1", createdLine.getTerminal2().getVoltageLevel().getId());
 
-        Network initialNetwork = Importers.loadNetwork("BaseNetwork.uct", getClass().getResourceAsStream("BaseNetwork.uct"));
+        Network initialNetwork = Network.read("BaseNetwork.uct", getClass().getResourceAsStream("BaseNetwork.uct"));
         Branch<?> initialBranch = initialNetwork.getLine("BBE1AA11 BBE2AA1  1");
         assertBranchesAreSimilar(initialBranch, createdLine);
 
@@ -208,7 +207,7 @@ class NetworkModifierTest {
         assertEquals("FFR2AA1", createdTieLine.getTerminal2().getVoltageLevel().getId());
 
         // re-import network and check that the created line has the same properties as the old line
-        Network initialNetwork = Importers.loadNetwork("BaseNetwork_tieline.uct", getClass().getResourceAsStream("BaseNetwork_tieline.uct"));
+        Network initialNetwork = Network.read("BaseNetwork_tieline.uct", getClass().getResourceAsStream("BaseNetwork_tieline.uct"));
         Branch<?> initialBranch = initialNetwork.getBranch(initialTieLineId);
         assertBranchesAreSimilar(initialBranch, createdTieLine);
 
@@ -241,7 +240,7 @@ class NetworkModifierTest {
         assertEquals("BBE2AA1", createdTransformer.getTerminal1().getVoltageLevel().getId());
 
         // re-import network and check that the created line has the same properties as the old line
-        Network initialNetwork = Importers.loadNetwork("BaseNetwork.uct", getClass().getResourceAsStream("BaseNetwork.uct"));
+        Network initialNetwork = Network.read("BaseNetwork.uct", getClass().getResourceAsStream("BaseNetwork.uct"));
         TwoWindingsTransformer initialTransformer = initialNetwork.getTwoWindingsTransformer("BBE2AA1  BBE3AA1  1");
         assertBranchesAreSimilar(initialTransformer, createdTransformer);
 

@@ -7,7 +7,6 @@
 
 package com.farao_community.farao.cse.computation;
 
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +23,7 @@ class BorderExchangesTest {
     @Test
     void computeItalianImportTest() {
         String filename = "20210901_2230_test_network.uct";
-        Network network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
+        Network network = Network.read(filename, getClass().getResourceAsStream(filename));
         double itInitialImport = BorderExchanges.computeItalianImport(network);
         assertEquals(6000, itInitialImport, TOLERANCE);
     }
@@ -32,7 +31,7 @@ class BorderExchangesTest {
     @Test
     void testBorderExchanges() {
         String networkFileName = "20210901_2230_test_network.uct";
-        Network network = Importers.loadNetwork(networkFileName, getClass().getResourceAsStream(networkFileName));
+        Network network = Network.read(networkFileName, getClass().getResourceAsStream(networkFileName));
 
         Map<String, Double> borderExchanges = BorderExchanges.computeCseBordersExchanges(network);
         assertEquals(0, borderExchanges.get("IT-SI"), TOLERANCE);
@@ -47,7 +46,7 @@ class BorderExchangesTest {
     @Test
     void testCountryBalances() {
         String networkFileName = "20210901_2230_test_network.uct";
-        Network network = Importers.loadNetwork(networkFileName, getClass().getResourceAsStream(networkFileName));
+        Network network = Network.read(networkFileName, getClass().getResourceAsStream(networkFileName));
 
         Map<String, Double> borderExchanges = BorderExchanges.computeCseCountriesBalances(network);
         assertEquals(2500, borderExchanges.get("FR"), TOLERANCE);
