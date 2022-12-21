@@ -12,7 +12,6 @@ import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracC
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,7 @@ class PiSaLinkProcessorTest {
     @Test
     void testCheckPiSaWithMissingElement() {
         String networkFilename = "20210901_2230_test_network_pisa_uncomplete_model_test.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         // Missing generator
         assertThrows(PiSaLinkException.class, () -> piSaLink1Processor.isLinkPresent(network));
@@ -64,7 +63,7 @@ class PiSaLinkProcessorTest {
     @Test
     void testCheckPiSaWithCompleteModels() {
         String networkFilename = "20210901_2230_test_network_pisa_no_model_test.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         assertTrue(piSaLink1Processor.isLinkPresent(network));
         assertFalse(piSaLink2Processor.isLinkPresent(network));
@@ -73,7 +72,7 @@ class PiSaLinkProcessorTest {
     @Test
     void testCheckConnectedLinks() {
         String networkFilename = "20210901_2230_test_network_pisa_test.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         assertFalse(piSaLink1Processor.isLinkConnected(network));
         assertTrue(piSaLink2Processor.isLinkConnected(network));
@@ -82,7 +81,7 @@ class PiSaLinkProcessorTest {
     @Test
     void testGeneratorAlignment() {
         String networkFilename = "20210901_2230_test_network_pisa_test.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         assertEquals(1000, PiSaLinkProcessor.getGenerator(network, piSaLink1Configuration.getPiSaLinkFictiveNodeFr()).getTargetP());
         assertEquals(-987, PiSaLinkProcessor.getGenerator(network, piSaLink1Configuration.getPiSaLinkFictiveNodeIt()).getTargetP());
@@ -101,7 +100,7 @@ class PiSaLinkProcessorTest {
     @Test
     void testLinkMode() {
         String networkFilename = "20210901_2230_test_network_different_link_config_test.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         assertFalse(piSaLink1Processor.isLinkInACEmulation(network));
         assertTrue(piSaLink2Processor.isLinkInACEmulation(network));
@@ -110,7 +109,7 @@ class PiSaLinkProcessorTest {
     @Test
     void testForcingSetpointMode() {
         String networkFilename = "20210901_2230_test_network_different_link_config_test.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
         // Need to align first or remedial actions will be excluded
         piSaLink2Processor.alignFictiveGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
@@ -126,7 +125,7 @@ class PiSaLinkProcessorTest {
     @Test
     void testForcingSetpointModeWithDifferentLimitation() {
         String networkFilename = "20210901_2230_test_network_both_emulation_test.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
         // Need to align first or remedial actions will be excluded
         piSaLink1Processor.alignFictiveGenerators(network);
         // Here we don't align link2 so that RAs for link2 are excluded

@@ -70,10 +70,6 @@
             <artifactId>gridcapa-task-manager-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-iidm-converter-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-crac-io-api</artifactId>
         </dependency>

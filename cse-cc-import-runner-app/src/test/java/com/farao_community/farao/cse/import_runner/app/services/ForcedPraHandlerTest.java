@@ -9,7 +9,6 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.search_tree_rao.result.api.FlowResult;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -46,7 +45,7 @@ class ForcedPraHandlerTest {
     @Test
     void checkCracAndForcedPrasAreConsistent() {
         Crac crac = CracImporters.importCrac("crac-for-forced-pras.json", Objects.requireNonNull(getClass().getResourceAsStream("crac-for-forced-pras.json")));
-        Network network = Importers.loadNetwork("network-for-forced-pras.xiidm", getClass().getResourceAsStream("network-for-forced-pras.xiidm"));
+        Network network = Network.read("network-for-forced-pras.xiidm", getClass().getResourceAsStream("network-for-forced-pras.xiidm"));
         Set<String> manualForcedPrasIds = Set.of("Open line NL1-NL2", "Open line BE2-FR3", "PRA_PST_BE");
 
         assertNull(crac.getNetworkAction("PRA_PST_BE"));

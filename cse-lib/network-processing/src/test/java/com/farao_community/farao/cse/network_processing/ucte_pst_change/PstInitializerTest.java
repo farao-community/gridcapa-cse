@@ -9,7 +9,6 @@ package com.farao_community.farao.cse.network_processing.ucte_pst_change;
 
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.PhaseTapChanger;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ class PstInitializerTest {
         String networkFilename = "pst_initially_out_of_range.uct";
         String cracFilename = "pst_with_range.xml";
 
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
         Crac crac = CracCreators.importAndCreateCrac(
             cracFilename,
             Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
@@ -47,7 +46,7 @@ class PstInitializerTest {
         String networkFilename = "pst_initially_inside_range.uct";
         String cracFilename = "pst_with_range.xml";
 
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
         Crac crac = CracCreators.importAndCreateCrac(
             cracFilename,
             Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),

@@ -15,7 +15,6 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class FileImporter {
     }
 
     Network importNetwork(String cgmUrl) {
-        return Importers.loadNetwork(FileUtil.getFilenameFromUrl(cgmUrl), openUrlStream(cgmUrl));
+        return Network.read(FileUtil.getFilenameFromUrl(cgmUrl), openUrlStream(cgmUrl));
     }
 
     CseCrac importCseCrac(String cracUrl) {

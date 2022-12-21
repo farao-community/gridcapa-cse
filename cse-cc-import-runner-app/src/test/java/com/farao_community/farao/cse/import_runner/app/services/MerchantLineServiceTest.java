@@ -12,7 +12,6 @@ import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.import_runner.app.configurations.MendrisioConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.PhaseTapChanger;
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class MerchantLineServiceTest {
     private static final double DOUBLE_PRECISION = 0.1;
-    private static final double DOUBLE_PRECISION_FOR_REGULATED_FLOW = 20;
+    private static final double DOUBLE_PRECISION_FOR_REGULATED_FLOW = 33;
 
     private Network network;
     private Network networkWithMendrisioCagnoLine;
@@ -57,8 +56,8 @@ class MerchantLineServiceTest {
     void setUp() {
         String filename = "network_with_mendrisio.uct";
         String filenameNetworkWithMendrisioCagnoLine = "network_with_mendrisio_cagno_line.uct";
-        network = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
-        networkWithMendrisioCagnoLine = Importers.loadNetwork(filenameNetworkWithMendrisioCagnoLine, getClass().getResourceAsStream(filenameNetworkWithMendrisioCagnoLine));
+        network = Network.read(filename, getClass().getResourceAsStream(filename));
+        networkWithMendrisioCagnoLine = Network.read(filenameNetworkWithMendrisioCagnoLine, getClass().getResourceAsStream(filenameNetworkWithMendrisioCagnoLine));
     }
 
     @Test
@@ -79,7 +78,7 @@ class MerchantLineServiceTest {
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(0, phaseTapChanger.getTapPosition());
         LoadFlow.run(network, LoadFlowParameters.load());
-        assertEquals(12, phaseTapChanger.getTapPosition());
+        assertEquals(16, phaseTapChanger.getTapPosition());
         assertEquals(-300, twoWindingsTransformer.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
     }
 
@@ -108,7 +107,7 @@ class MerchantLineServiceTest {
     @Test
     void testMendrisioSetpointWorksWithDisconnectedTransformer() {
         String filename = "network_with_mendrisio_disconnected.uct";
-        Network disconnectedTransformerNetwork = Importers.loadNetwork(filename, getClass().getResourceAsStream(filename));
+        Network disconnectedTransformerNetwork = Network.read(filename, getClass().getResourceAsStream(filename));
 
         assertDoesNotThrow(() -> merchantLineService.activateMerchantLine(ProcessType.IDCC, disconnectedTransformerNetwork, Mockito.mock(CseData.class)));
     }

@@ -18,7 +18,6 @@ import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.farao_community.farao.rao_api.json.JsonRaoParameters;
 import com.farao_community.farao.rao_api.parameters.RaoParameters;
 import com.powsybl.commons.datasource.MemDataSource;
-import com.powsybl.iidm.export.Exporters;
 import com.powsybl.iidm.network.Network;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
@@ -149,10 +148,10 @@ public class FileExporter {
         MemDataSource memDataSource = new MemDataSource();
         switch (format) {
             case UCTE_FORMAT:
-                Exporters.export(UCTE_FORMAT, network, new Properties(), memDataSource);
+                network.write(UCTE_FORMAT, new Properties(), memDataSource);
                 return memDataSource.newInputStream("", UCTE_EXTENSION);
             case XIIDM_FORMAT:
-                Exporters.export(XIIDM_FORMAT, network, new Properties(), memDataSource);
+                network.write(XIIDM_FORMAT, new Properties(), memDataSource);
                 return memDataSource.newInputStream("", XIIDM_EXTENSION);
             default:
                 throw new UnsupportedOperationException(String.format("Network format %s not supported.", format));

@@ -16,7 +16,6 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
@@ -114,7 +113,7 @@ class CracResultsHelperTest {
         CseCracImporter importer = new CseCracImporter();
         CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
 
-        Network network = Importers.loadNetwork(networkFileName, getClass().getResourceAsStream(networkFileName));
+        Network network = Network.read(networkFileName, getClass().getResourceAsStream(networkFileName));
 
         CseCracCreator cseCracCreator = new CseCracCreator();
         CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());

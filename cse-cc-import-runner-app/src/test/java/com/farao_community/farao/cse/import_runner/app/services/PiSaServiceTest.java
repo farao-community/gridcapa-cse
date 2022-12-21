@@ -13,7 +13,6 @@ import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracC
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ class PiSaServiceTest {
     @Test
     void testPiSaPreProcessInIdccWithOneLinkInSetpoint() {
         String networkFilename = "20210901_2230_test_network_pisa_test_one_link_connected_and_setpoint.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
@@ -67,7 +66,7 @@ class PiSaServiceTest {
     @Test
     void testPiSaPreProcessInIdccWithBothLinksSetpointAndACEmulation() {
         String networkFilename = "20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
@@ -98,7 +97,7 @@ class PiSaServiceTest {
     @Test
     void testPiSaPreProcessInD2ccWithOneLinkInSetpoint() {
         String networkFilename = "20210901_2230_test_network_pisa_test_one_link_connected_and_setpoint.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
@@ -129,7 +128,7 @@ class PiSaServiceTest {
     @Test
     void testPiSaPreProcessInD2ccWithBothLinksSetpointAndACEmulation() {
         String networkFilename = "20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation.uct";
-        Network network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         assertEquals(1000, piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);
         assertEquals(-987, piSaService.getPiSaLink1Processor().getItFictiveGenerator(network).getTargetP(), DOUBLE_TOLERANCE);

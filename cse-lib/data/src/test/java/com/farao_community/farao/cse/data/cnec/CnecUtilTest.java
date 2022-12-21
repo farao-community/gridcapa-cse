@@ -15,7 +15,6 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +32,7 @@ class CnecUtilTest {
         InputStream cracInputStream = getClass().getResourceAsStream("pst_and_topo/crac.xml");
         CseCracImporter importer = new CseCracImporter();
         CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
-        Network network = Importers.loadNetwork("pst_and_topo/network.uct", getClass().getResourceAsStream("pst_and_topo/network.uct"));
+        Network network = Network.read("pst_and_topo/network.uct", getClass().getResourceAsStream("pst_and_topo/network.uct"));
         CseCracCreator cseCracCreator = new CseCracCreator();
         CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
         InputStream raoResultInputStream = getClass().getResourceAsStream("pst_and_topo/raoResult.json");

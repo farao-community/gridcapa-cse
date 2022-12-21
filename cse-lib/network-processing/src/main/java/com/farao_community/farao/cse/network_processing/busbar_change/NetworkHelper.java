@@ -7,7 +7,7 @@
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.farao_community.farao.commons.FaraoException;
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteCnecElementHelper;
+import com.farao_community.farao.data.crac_creation.util.ucte.UcteFlowElementHelper;
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
 import com.powsybl.iidm.network.*;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public final class NetworkHelper {
         Network network = ucteNetworkAnalyzer.getNetwork();
         String triedIds = "tried IDs: ";
         // Try to get from->to line
-        UcteCnecElementHelper branchHelper = getBranchHelper(fromNodeId, toNodeId, suffix, ucteNetworkAnalyzer);
+        UcteFlowElementHelper branchHelper = getBranchHelper(fromNodeId, toNodeId, suffix, ucteNetworkAnalyzer);
         triedIds += branchHelper.getUcteId();
         // Line may be already on final node, try from/to->final node
         if (!branchHelper.isValid()) {
@@ -68,8 +68,8 @@ public final class NetworkHelper {
         return branchHelper.getIdInNetwork();
     }
 
-    private static UcteCnecElementHelper getBranchHelper(String from, String to, String suffix, UcteNetworkAnalyzer ucteNetworkAnalyzer) {
-        return new UcteCnecElementHelper(from, to, suffix, ucteNetworkAnalyzer);
+    private static UcteFlowElementHelper getBranchHelper(String from, String to, String suffix, UcteNetworkAnalyzer ucteNetworkAnalyzer) {
+        return new UcteFlowElementHelper(from, to, suffix, ucteNetworkAnalyzer);
     }
 
     /**

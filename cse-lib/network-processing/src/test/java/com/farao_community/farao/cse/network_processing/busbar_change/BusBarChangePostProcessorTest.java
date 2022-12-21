@@ -9,7 +9,6 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 import com.farao_community.farao.cse.network_processing.TestUtils;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
 import com.farao_community.farao.data.crac_creation.creator.cse.parameters.SwitchPairId;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
@@ -24,13 +23,13 @@ class BusBarChangePostProcessorTest {
     private Set<BusBarChangeSwitches> busBarChangeSwitchesSet;
 
     private void setUpPreProcessing(String networkFile, String cracFile) {
-        network = Importers.loadNetwork(networkFile, getClass().getResourceAsStream(networkFile));
+        network = Network.read(networkFile, getClass().getResourceAsStream(networkFile));
         InputStream is = getClass().getResourceAsStream(cracFile);
         busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, is);
     }
 
     private void setUpRoundTrip(String networkFile, String cracFile) {
-        network = Importers.loadNetwork(networkFile, getClass().getResourceAsStream(networkFile));
+        network = Network.read(networkFile, getClass().getResourceAsStream(networkFile));
         InputStream is = getClass().getResourceAsStream(cracFile);
         busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, is);
         BusBarChangePostProcessor.process(network, busBarChangeSwitchesSet);
