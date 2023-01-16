@@ -65,5 +65,5 @@ class CseRunnerTest {
     void getStartingPointForD2ccTest() {
         assertEquals(850, cseRunner.getStartingPointForD2cc(1000));
         assertEquals(7500, cseRunner.getStartingPointForD2cc(10000));
- }
+    }
 }
