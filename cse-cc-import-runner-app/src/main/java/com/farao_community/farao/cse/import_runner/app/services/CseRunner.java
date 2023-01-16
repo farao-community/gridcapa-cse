@@ -156,7 +156,10 @@ public class CseRunner {
     }
 
     double getInitialIndexValueForD2ccProcess(CseData cseData) {
-        return cseData.getNtcPerCountry().values().stream().reduce(0., Double::sum) + processConfiguration.getTrm();
+        double initialIndexValue = cseData.getNtcPerCountry().values().stream().reduce(0., Double::sum) + processConfiguration.getTrm();
+        // starting point = min(7500, current starting point - 15%) only in D2
+        // CORESO requirement and that is expected to improve performances
+        return Math.min(7500., initialIndexValue - (initialIndexValue * 0.15));
     }
 
     double getInitialIndexValueForIdccProcess(CseData cseData) {
