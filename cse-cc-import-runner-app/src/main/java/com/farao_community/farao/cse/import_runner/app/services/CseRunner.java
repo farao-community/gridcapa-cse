@@ -109,16 +109,13 @@ public class CseRunner {
                 return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
             }
         } else if (cseRequest.getProcessType() == ProcessType.D2CC) {
-            initialIndexValueForProcess = getInitialIndexValueForD2ccProcess(cseData);
+            initialIndexValueForProcess = getStartingPointForD2cc(getInitialIndexValueForD2ccProcess(cseData));
         } else {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
 
         double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialIndexValueForProcess);
 
-        if (cseRequest.getProcessType() == ProcessType.D2CC) {
-            initialIndexValue = getStartingPointForD2cc(initialIndexValue);
-        }
         MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
             cseRequest,
             cseData,
@@ -159,6 +156,8 @@ public class CseRunner {
     }
 
     double getStartingPointForD2cc(double initialIndexValue) {
+        // starting point = min(7500, current starting point - 15%) only in D2
+        // CORESO requirement and that is expected to improve performances
         return Math.min(7500., initialIndexValue - (initialIndexValue * 0.15));
     }
 
