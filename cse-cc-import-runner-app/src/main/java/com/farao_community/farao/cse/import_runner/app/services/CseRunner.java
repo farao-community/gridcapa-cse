@@ -109,7 +109,7 @@ public class CseRunner {
                 return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
             }
         } else if (cseRequest.getProcessType() == ProcessType.D2CC) {
-            initialIndexValueForProcess = getStartingPointForD2cc(getInitialIndexValueForD2ccProcess(cseData));
+            initialIndexValueForProcess = getInitialIndexValueForD2ccProcess(cseData);
         } else {
             throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
         }
@@ -155,14 +155,11 @@ public class CseRunner {
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
-    double getStartingPointForD2cc(double initialIndexValue) {
+    double getInitialIndexValueForD2ccProcess(CseData cseData) {
+        double initialIndexValue = cseData.getNtcPerCountry().values().stream().reduce(0., Double::sum) + processConfiguration.getTrm();
         // starting point = min(7500, current starting point - 15%) only in D2
         // CORESO requirement and that is expected to improve performances
         return Math.min(7500., initialIndexValue - (initialIndexValue * 0.15));
-    }
-
-    double getInitialIndexValueForD2ccProcess(CseData cseData) {
-        return cseData.getNtcPerCountry().values().stream().reduce(0., Double::sum) + processConfiguration.getTrm();
     }
 
     double getInitialIndexValueForIdccProcess(CseData cseData) {

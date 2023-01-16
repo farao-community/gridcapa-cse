@@ -57,13 +57,6 @@ class CseRunnerTest {
                 "SI", 375.
         );
         Mockito.when(cseData.getNtcPerCountry()).thenReturn(ntcPerCountry);
-        assertEquals(6600., cseRunner.getInitialIndexValueForD2ccProcess(cseData));
-
-    }
-
-    @Test
-    void getStartingPointForD2ccTest() {
-        assertEquals(850, cseRunner.getStartingPointForD2cc(1000));
-        assertEquals(7500, cseRunner.getStartingPointForD2cc(10000));
+        assertEquals(5610., cseRunner.getInitialIndexValueForD2ccProcess(cseData));
     }
 }
