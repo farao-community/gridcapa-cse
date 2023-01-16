@@ -116,6 +116,9 @@ public class CseRunner {
 
         double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialIndexValueForProcess);
 
+        if (cseRequest.getProcessType() == ProcessType.D2CC) {
+            initialIndexValue = getStartingPointForD2cc(initialIndexValue);
+        }
         MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
             cseRequest,
             cseData,
@@ -153,6 +156,10 @@ public class CseRunner {
         }
 
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
+    }
+
+    double getStartingPointForD2cc(double initialIndexValue) {
+        return Math.min(7500., initialIndexValue - (initialIndexValue * 0.15));
     }
 
     double getInitialIndexValueForD2ccProcess(CseData cseData) {

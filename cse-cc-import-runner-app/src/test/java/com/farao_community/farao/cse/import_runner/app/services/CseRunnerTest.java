@@ -60,4 +60,10 @@ class CseRunnerTest {
         assertEquals(6600., cseRunner.getInitialIndexValueForD2ccProcess(cseData));
 
     }
+
+    @Test
+    void getStartingPointForD2ccTest() {
+        assertEquals(850, cseRunner.getStartingPointForD2cc(1000));
+        assertEquals(7500, cseRunner.getStartingPointForD2cc(10000));
+ }
 }
