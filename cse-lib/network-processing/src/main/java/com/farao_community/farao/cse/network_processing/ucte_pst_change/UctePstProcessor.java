@@ -39,6 +39,20 @@ public final class UctePstProcessor {
         }
     }
 
+    public void forcePhaseTapChangerInActivePowerRegulationIdcc(Network network, double defaultRegulationValue) {
+        PhaseTapChanger phaseTapChanger = forceAndGetPhaseTapChangerInActivePowerRegulation(network);
+        // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
+        double regulationValue = -phaseTapChanger.getRegulationValue();
+        if (phaseTapChanger.getRegulationValue() == 0.0) {
+            regulationValue = defaultRegulationValue;
+        }
+        phaseTapChanger.setRegulationValue(regulationValue);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format("PST (%s) has been set in active power control to %.0f MW",
+                    pstId, phaseTapChanger.getRegulationValue()));
+        }
+    }
+
     public void forcePhaseTapChangerInActivePowerRegulation(Network network, double regulationValue) {
         PhaseTapChanger phaseTapChanger = forceAndGetPhaseTapChangerInActivePowerRegulation(network);
         // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
