@@ -114,7 +114,7 @@ class MerchantLineServiceTest {
     void testMendrisioIdccWorksWithDefaultValue() {
         TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
-        phaseTapChanger.setRegulationValue(0.0);
+        phaseTapChanger.setRegulationValue(Double.NaN);
         assertDoesNotThrow(() -> merchantLineService.activateMerchantLine(ProcessType.IDCC, network, cseData));
         assertEquals(75.0, phaseTapChanger.getRegulationValue(), 0.1);
     }

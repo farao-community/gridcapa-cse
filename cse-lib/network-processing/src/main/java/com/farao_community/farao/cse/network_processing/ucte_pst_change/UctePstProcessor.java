@@ -33,6 +33,8 @@ public final class UctePstProcessor {
         PhaseTapChanger phaseTapChanger = forceAndGetPhaseTapChangerInActivePowerRegulation(network);
         // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
         phaseTapChanger.setRegulationValue(-phaseTapChanger.getRegulationValue());
+        //Validation is triggered on set Regulating => must have regulation value set before !
+        phaseTapChanger.setRegulating(true);
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("PST (%s) has been set in active power control to %.0f MW",
                 pstId, phaseTapChanger.getRegulationValue()));
@@ -43,10 +45,12 @@ public final class UctePstProcessor {
         PhaseTapChanger phaseTapChanger = forceAndGetPhaseTapChangerInActivePowerRegulation(network);
         // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
         double regulationValue = -phaseTapChanger.getRegulationValue();
-        if (phaseTapChanger.getRegulationValue() == 0.0) {
+        if (Double.isNaN(phaseTapChanger.getRegulationValue())) {
             regulationValue = defaultRegulationValue;
         }
         phaseTapChanger.setRegulationValue(regulationValue);
+        //Validation is triggered on set Regulating => must have regulation value set before !
+        phaseTapChanger.setRegulating(true);
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("PST (%s) has been set in active power control to %.0f MW",
                     pstId, phaseTapChanger.getRegulationValue()));
@@ -57,6 +61,8 @@ public final class UctePstProcessor {
         PhaseTapChanger phaseTapChanger = forceAndGetPhaseTapChangerInActivePowerRegulation(network);
         // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
         phaseTapChanger.setRegulationValue(regulationValue);
+        //Validation is triggered on set Regulating => must have regulation value set before !
+        phaseTapChanger.setRegulating(true);
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("PST (%s) has been set in active power control to %.0f MW",
                 pstId, phaseTapChanger.getRegulationValue()));
@@ -78,7 +84,6 @@ public final class UctePstProcessor {
         phaseTapChanger.setRegulationTerminal(getRegulatedTerminal(transformer));
         phaseTapChanger.setRegulationMode(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL);
         phaseTapChanger.setTargetDeadband(5);
-        phaseTapChanger.setRegulating(true);
         return phaseTapChanger;
     }
 
