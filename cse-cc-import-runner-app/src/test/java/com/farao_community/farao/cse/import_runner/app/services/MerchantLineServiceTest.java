@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -58,6 +58,14 @@ class MerchantLineServiceTest {
         String filenameNetworkWithMendrisioCagnoLine = "network_with_mendrisio_cagno_line.uct";
         network = Network.read(filename, getClass().getResourceAsStream(filename));
         networkWithMendrisioCagnoLine = Network.read(filenameNetworkWithMendrisioCagnoLine, getClass().getResourceAsStream(filenameNetworkWithMendrisioCagnoLine));
+        Map<String, Double> fixedFlowLines = Map.of(
+                mendrisioConfiguration.getMendrisioCagnoNtcId(), 75.
+        );
+        Ntc ntc = mock(Ntc.class);
+        LineFixedFlows lineFixedFlows = mock(LineFixedFlows.class);
+        when(cseData.getNtc()).thenReturn(ntc);
+        when(cseData.getNtc().getFlowOnFixedFlowLines()).thenReturn(fixedFlowLines);
+        when(cseData.getLineFixedFlows()).thenReturn(lineFixedFlows);
     }
 
     @Test
@@ -84,20 +92,10 @@ class MerchantLineServiceTest {
 
     @Test
     void testTransformerSettingsForD2ccProcess() {
-        Map<String, Double> fixedFlowLines = Map.of(
-                mendrisioConfiguration.getMendrisioCagnoNtcId(), 75.
-        );
         TwoWindingsTransformer twoWindingsTransformer = networkWithMendrisioCagnoLine.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
-
-        Ntc ntc = Mockito.mock(Ntc.class);
-        LineFixedFlows lineFixedFlows = Mockito.mock(LineFixedFlows.class);
-        Mockito.when(cseData.getNtc()).thenReturn(ntc);
-        Mockito.when(cseData.getNtc().getFlowOnFixedFlowLines()).thenReturn(fixedFlowLines);
-        Mockito.when(cseData.getLineFixedFlows()).thenReturn(lineFixedFlows);
         when(cseData.getLineFixedFlows().getFixedFlow(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
         merchantLineService.activateMerchantLine(ProcessType.D2CC, networkWithMendrisioCagnoLine, cseData);
-
         LoadFlow.run(networkWithMendrisioCagnoLine, LoadFlowParameters.load());
         assertEquals(175, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
         Line mendrisioCagnoLine = networkWithMendrisioCagnoLine.getLine("SMENDR11 XME_CA11 1 + XME_CA11 NNL1AA1  1");
@@ -109,6 +107,15 @@ class MerchantLineServiceTest {
         String filename = "network_with_mendrisio_disconnected.uct";
         Network disconnectedTransformerNetwork = Network.read(filename, getClass().getResourceAsStream(filename));
 
-        assertDoesNotThrow(() -> merchantLineService.activateMerchantLine(ProcessType.IDCC, disconnectedTransformerNetwork, Mockito.mock(CseData.class)));
+        assertDoesNotThrow(() -> merchantLineService.activateMerchantLine(ProcessType.IDCC, disconnectedTransformerNetwork, cseData));
+    }
+
+    @Test
+    void testMendrisioIdccWorksWithDefaultValue() {
+        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
+        PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
+        phaseTapChanger.setRegulationValue(Double.NaN);
+        assertDoesNotThrow(() -> merchantLineService.activateMerchantLine(ProcessType.IDCC, network, cseData));
+        assertEquals(75.0, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
     }
 }
