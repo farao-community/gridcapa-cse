@@ -41,7 +41,7 @@ public class MerchantLineService {
 
     public void activateMerchantLine(ProcessType processType, Network network, CseData cseData) {
         if (processType == ProcessType.IDCC) {
-            activateMerchantLineForIdcc(network);
+            activateMerchantLineForIdcc(network, cseData);
         } else if (processType == ProcessType.D2CC) {
             activateMerchantLineForD2cc(network, cseData);
         } else {
@@ -49,8 +49,9 @@ public class MerchantLineService {
         }
     }
 
-    private void activateMerchantLineForIdcc(Network network) {
-        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network);
+    private void activateMerchantLineForIdcc(Network network, CseData cseData) {
+        double defaultFlow = getMendrisioTargetFlowForIdcc(cseData);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network, defaultFlow);
     }
 
     private void activateMerchantLineForD2cc(Network network, CseData cseData) {
@@ -79,6 +80,14 @@ public class MerchantLineService {
             LOGGER.info(String.format("Target flow for Mendrisio-Cagno is %.0f MW", mendrisioCagnoTargetFlow));
         }
         return mendrisioCagnoTargetFlow;
+    }
+
+    private double getMendrisioTargetFlowForIdcc(CseData cseData) {
+        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(mendrisioConfiguration.getMendrisioCagnoNtcId());
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format("Target default flow for Mendrisio-Cagno is %.0f MW", defaultFlow));
+        }
+        return defaultFlow;
     }
 
     void postProcessingMerchantLine(Network network) {

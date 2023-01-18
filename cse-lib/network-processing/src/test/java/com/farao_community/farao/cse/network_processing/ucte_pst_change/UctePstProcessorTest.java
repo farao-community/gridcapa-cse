@@ -35,7 +35,7 @@ class UctePstProcessorTest {
     @Test
     void testTransformerSettings() {
         UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
-        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network, -150.0);
         TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer("SMENDR3T SMENDR32 1");
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL, phaseTapChanger.getRegulationMode());
@@ -59,7 +59,7 @@ class UctePstProcessorTest {
     @Test
     void testWithLoadFlow() {
         UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
-        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network);
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network, -233.0);
         TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer("SMENDR3T SMENDR32 1");
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(0, phaseTapChanger.getTapPosition());
@@ -79,6 +79,19 @@ class UctePstProcessorTest {
         String filename = "network_with_mendrisio_disconnected.uct";
         Network disconnectedTransformerNetwork = Network.read(filename, getClass().getResourceAsStream(filename));
         UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
-        assertDoesNotThrow(() -> uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(disconnectedTransformerNetwork));
+        assertDoesNotThrow(() -> uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(disconnectedTransformerNetwork, 133.0));
+    }
+
+    @Test
+    void testWithLoadFlowUsesDefaultRegulationValue() {
+        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer("SMENDR3T SMENDR32 1");
+        PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
+        phaseTapChanger.setRegulationValue(Double.NaN);
+        UctePstProcessor uctePstProcessor = new UctePstProcessor("SMENDR3T SMENDR32 1", "SMENDR3T");
+        uctePstProcessor.forcePhaseTapChangerInActivePowerRegulationForIdcc(network, 100.0);
+        assertEquals(0, phaseTapChanger.getTapPosition());
+        LoadFlow.run(network, LoadFlowParameters.load());
+        assertEquals(16, phaseTapChanger.getTapPosition());
+        assertEquals(-333.0, twoWindingsTransformer.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
     }
 }
