@@ -33,7 +33,7 @@ public final class UctePstProcessor {
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
         PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
         double regulationValue = phaseTapChanger.getRegulationValue();
-        if (Double.isNaN(phaseTapChanger.getRegulationValue())) {
+        if (Double.isNaN(regulationValue)) {
             regulationValue = defaultRegulationValue;
         } else {
             // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
