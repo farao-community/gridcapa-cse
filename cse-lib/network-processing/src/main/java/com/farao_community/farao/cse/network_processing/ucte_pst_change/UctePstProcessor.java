@@ -32,10 +32,12 @@ public final class UctePstProcessor {
     public void forcePhaseTapChangerInActivePowerRegulationForIdcc(Network network, double defaultRegulationValue) {
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
         PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
-        // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
-        double regulationValue = -phaseTapChanger.getRegulationValue();
+        double regulationValue = phaseTapChanger.getRegulationValue();
         if (Double.isNaN(phaseTapChanger.getRegulationValue())) {
             regulationValue = defaultRegulationValue;
+        } else {
+            // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
+            regulationValue = -regulationValue;
         }
         setTransformerInActivePowerRegulation(transformer, phaseTapChanger, regulationValue);
     }
