@@ -36,11 +36,11 @@ public final class FileUtil {
         if (processType == ProcessType.IDCC) {
             // The naming rule of the initial cgm for Idcc process is YYYYMMDD_hhmm_NNp_Transit_CSEq.uct
             // with q is the version number
-            return cgmFilename.substring(29, 30);
+            return cgmFilename.substring(29, cgmFilename.indexOf('.'));
         } else if (processType == ProcessType.D2CC) {
             // The naming rule of the initial cgm for D2cc process is YYYYMMDD_hhmm_2Dp_CO_Transit_CSEq.uct
             // with q is the version number
-            return cgmFilename.substring(32, 33);
+            return cgmFilename.substring(32, cgmFilename.indexOf('.'));
         } else {
             throw new CseInternalException(String.format("Process type %s is not handled", processType));
         }

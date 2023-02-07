@@ -21,5 +21,7 @@ class FileUtilTest {
     void getFileVersionTest() {
         assertEquals("1", FileUtil.getFileVersion("20220131_1530_155_Transit_CSE1.uct", ProcessType.IDCC));
         assertEquals("3", FileUtil.getFileVersion("20221020_1530_2D4_CO_Transit_CSE3.uct", ProcessType.D2CC));
+        assertEquals("12", FileUtil.getFileVersion("20220131_1530_155_Transit_CSE12.uct", ProcessType.IDCC));
+        assertEquals("11", FileUtil.getFileVersion("20220530_1130_2D4_CO_Transit_CSE11.uct", ProcessType.D2CC));
     }
 }
