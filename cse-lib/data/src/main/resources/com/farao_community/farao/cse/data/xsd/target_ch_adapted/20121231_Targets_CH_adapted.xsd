@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2021, RTE (http://www.rte-france.com)
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<!--W3C Schema erstellt mit XMLSpy v2013 rel. 2 sp2 (x64) (http://www.altova.com)-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ecc="etso-core-cmpts.xsd">
+	<xs:import namespace="etso-core-cmpts.xsd" schemaLocation="../etso-core-cmpts.xsd"/>
+
+	<!-- Modified 13/09/2021 by adding T_DayOfWeek as type in the DayOfWeek property of T_Outage -->
+
+	<xs:element name="Targets_document">
+		<xs:complexType>
+			<xs:annotation>
+				<xs:documentation/>
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="DocumentIdentification" type="ecc:IdentificationType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentVersion" type="ecc:VersionType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentType" type="ecc:MessageType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ProcessType" type="ecc:ProcessType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SenderIdentification" type="ecc:PartyType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SenderRole" type="ecc:RoleType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="CreationDateTime" type="ecc:MessageDateTimeType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Target_data_CH_IT" type="T_Target_data_CH_IT" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="Target_data_IT_CH" type="T_Target_data_IT_CH" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="Reason" type="Reason_Type" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="DtdVersion" type="xs:string" use="required"/>
+			<xs:attribute name="DtdRelease" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="Reason_Type">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ReasonCode" type="ecc:ReasonCodeType">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ReasonText" type="ecc:ReasonTextType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="T_TimeInterval">
+		<xs:sequence>
+			<xs:element name="NTC" type="T_NTC"/>
+			<xs:element name="FixedFlow" type="T_FixedFlow"/>
+		</xs:sequence>
+		<xs:attribute name="tini" type="xs:string" use="required"/>
+		<xs:attribute name="tfin" type="xs:string" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="T_Target_data_CH_IT">
+		<xs:sequence>
+			<xs:element name="SpecialLines" type="T_SpecialLines"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="T_Target_data_IT_CH">
+		<xs:sequence>
+			<xs:element name="SpecialLines" type="T_SpecialLines"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="T_SpecialLines">
+		<xs:sequence>
+			<xs:element name="Line" type="T_Line"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="T_Period">
+		<xs:sequence>
+			<xs:element name="Outages" type="T_Outages"/>
+		</xs:sequence>
+		<xs:attribute name="tini" type="xs:string" use="required"/>
+		<xs:attribute name="tfin" type="xs:string" use="required"/>
+		<xs:attribute name="description"  type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="T_Outages">
+		<xs:sequence>
+			<xs:element name="Outage" type="T_Outage" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="T_Outage">
+		<xs:sequence>
+			<xs:element name="DayOfWeek" type="T_DayOfWeek" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="order" type="xs:byte" use="required"/>
+		<xs:attribute name="node_to" type="xs:string" use="required"/>
+		<xs:attribute name="node_from" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="modelized" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="T_NTC">
+		<xs:simpleContent>
+			<xs:extension base="xs:byte">
+				<xs:attribute name="type" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	
+	<xs:complexType name="T_Line">
+		<xs:sequence>
+			<xs:element name="Period" type="T_Period" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="n_to" type="xs:string" use="required"/>
+		<xs:attribute name="n_from" type="xs:string" use="required"/>
+		<xs:attribute name="modelized" type="xs:boolean" use="required"/>
+		<xs:attribute name="fixed_flow" type="xs:boolean" use="required"/>
+		<xs:attribute name="code" type="xs:string" use="required"/>
+		<xs:attribute name="c_ntc" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="T_FixedFlow">
+		<xs:simpleContent>
+			<xs:extension base="xs:short">
+				<xs:attribute name="type" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	
+	<xs:complexType name="T_DayOfWeek">
+		<xs:sequence>
+			<xs:element name="TimeInterval" type="T_TimeInterval" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="description" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="everyday"/>
+					<xs:enumeration value="mon-sat"/>
+					<xs:enumeration value="sunday"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="daynum" type="xs:byte" use="required"/>
+	</xs:complexType>
+
+</xs:schema>

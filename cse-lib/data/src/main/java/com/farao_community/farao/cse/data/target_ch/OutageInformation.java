@@ -28,6 +28,10 @@ class OutageInformation {
         this(tOutage.getName(), tOutage.getNodeFrom(), tOutage.getNodeTo(), String.valueOf(tOutage.getOrder()), fixedFlow);
     }
 
+    public OutageInformation(com.farao_community.farao.cse.data.xsd.target_ch_adapted.TOutage tOutageadapted, double fixedFlow) {
+        this(tOutageadapted.getName(), tOutageadapted.getNodeFrom(), tOutageadapted.getNodeTo(), String.valueOf(tOutageadapted.getOrder()), fixedFlow);
+    }
+
     String getName() {
         return name;
     }
