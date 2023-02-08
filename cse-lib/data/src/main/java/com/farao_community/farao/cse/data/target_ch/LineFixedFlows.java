@@ -22,11 +22,19 @@ import java.util.Optional;
 public final class LineFixedFlows {
     private final Map<String, List<OutageInformation>> outagesInformationPerLineId;
 
-    public static LineFixedFlows create(OffsetDateTime targetDateTime, InputStream targetChInputStream) throws JAXBException {
-        return new LineFixedFlows(targetDateTime, TargetChDocument.create(targetChInputStream));
+    public static LineFixedFlows create(OffsetDateTime targetDateTime, InputStream targetChInputStream, boolean isImportAdaptedProcess) throws JAXBException {
+        if (!isImportAdaptedProcess) {
+            return new LineFixedFlows(targetDateTime, TargetChDocument.create(targetChInputStream));
+        } else {
+            return new LineFixedFlows(targetDateTime, TargetChDocumentAdapted.create(targetChInputStream));
+        }
     }
 
     private LineFixedFlows(OffsetDateTime targetDateTime, TargetChDocument targetChDocument) {
+        this.outagesInformationPerLineId = targetChDocument.getOutagesInformationPerLineId(targetDateTime);
+    }
+
+    private LineFixedFlows(OffsetDateTime targetDateTime, TargetChDocumentAdapted targetChDocument) {
         this.outagesInformationPerLineId = targetChDocument.getOutagesInformationPerLineId(targetDateTime);
     }
 

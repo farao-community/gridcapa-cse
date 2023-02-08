@@ -82,6 +82,18 @@
                             <generateDirectory>${project.build.directory}/generated-sources/xjc-ttc_rao</generateDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>target_ch_adapted</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>src/main/resources/com/farao_community/farao/cse/data/xsd/target_ch_adapted</schemaDirectory>
+                            <generatePackage>com.farao_community.farao.cse.data.xsd.target_ch_adapted</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/xjc-target_ch_adapted</generateDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

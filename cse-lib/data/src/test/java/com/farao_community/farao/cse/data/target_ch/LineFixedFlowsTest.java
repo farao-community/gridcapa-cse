@@ -27,12 +27,21 @@ class LineFixedFlowsTest {
 
         LineFixedFlows lineFixedFlows = LineFixedFlows.create(
                 OffsetDateTime.parse("2021-09-13T12:30Z"),
-                getClass().getResourceAsStream("simple_target_ch.xml")
+                getClass().getResourceAsStream("simple_target_ch.xml"),
+                false
+        );
+
+        LineFixedFlows lineFixedFlowsCreatedFromAdaptedTargetCH = LineFixedFlows.create(
+                OffsetDateTime.parse("2021-09-13T12:30Z"),
+                getClass().getResourceAsStream("simple_target_ch_adapted.xml"),
+                true
         );
 
         UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         Optional<Double> fixedFlow = lineFixedFlows.getFixedFlow("BBE2AA1  BBE3AA1  1", network, ucteNetworkHelper);
+        Optional<Double> fixedFlow1 = lineFixedFlowsCreatedFromAdaptedTargetCH.getFixedFlow("BBE2AA1  BBE3AA1  1", network, ucteNetworkHelper);
         assertTrue(fixedFlow.isEmpty());
+        assertTrue(fixedFlow1.isEmpty());
     }
 
     @Test
@@ -42,13 +51,23 @@ class LineFixedFlowsTest {
 
         LineFixedFlows lineFixedFlows = LineFixedFlows.create(
                 OffsetDateTime.parse("2021-09-13T12:30Z"),
-                getClass().getResourceAsStream("simple_target_ch.xml")
+                getClass().getResourceAsStream("simple_target_ch.xml"),
+                false
+        );
+
+        LineFixedFlows lineFixedFlowsCreatedFromAdaptedTargetCH = LineFixedFlows.create(
+                OffsetDateTime.parse("2021-09-13T12:30Z"),
+                getClass().getResourceAsStream("simple_target_ch_adapted.xml"),
+                true
         );
 
         UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         Optional<Double> fixedFlow = lineFixedFlows.getFixedFlow("BBE2AA1  BBE3AA1  1", network, ucteNetworkHelper);
+        Optional<Double> fixedFlow1 = lineFixedFlowsCreatedFromAdaptedTargetCH.getFixedFlow("BBE2AA1  BBE3AA1  1", network, ucteNetworkHelper);
         assertTrue(fixedFlow.isPresent());
+        assertTrue(fixedFlow1.isPresent());
         assertEquals(100, fixedFlow.get());
+        assertEquals(100, fixedFlow1.get());
     }
 
     @Test
@@ -58,12 +77,22 @@ class LineFixedFlowsTest {
 
         LineFixedFlows lineFixedFlows = LineFixedFlows.create(
                 OffsetDateTime.parse("2021-09-13T12:30Z"),
-                getClass().getResourceAsStream("simple_target_ch.xml")
+                getClass().getResourceAsStream("simple_target_ch.xml"),
+                false
+        );
+
+        LineFixedFlows lineFixedFlowsCreatedFromAdaptedTargetCH = LineFixedFlows.create(
+                OffsetDateTime.parse("2021-09-13T12:30Z"),
+                getClass().getResourceAsStream("simple_target_ch_adapted.xml"),
+                true
         );
 
         UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         Optional<Double> fixedFlow = lineFixedFlows.getFixedFlow("BBE2AA1  BBE3AA1  1", network, ucteNetworkHelper);
+        Optional<Double> fixedFlow1 = lineFixedFlowsCreatedFromAdaptedTargetCH.getFixedFlow("BBE2AA1  BBE3AA1  1", network, ucteNetworkHelper);
         assertTrue(fixedFlow.isPresent());
+        assertTrue(fixedFlow1.isPresent());
         assertEquals(50, fixedFlow.get());
+        assertEquals(50, fixedFlow1.get());
     }
 }
