@@ -20,7 +20,6 @@ import static com.farao_community.farao.cse.data.DataUtil.toOptional;
 /*
 * An adapted import process will temporarily coexist with the old import
 * and the two xsd target CH files are different
-µ
 * */
 final class TargetChDocumentAdapted {
     private final TargetsDocument targetsDocument;
