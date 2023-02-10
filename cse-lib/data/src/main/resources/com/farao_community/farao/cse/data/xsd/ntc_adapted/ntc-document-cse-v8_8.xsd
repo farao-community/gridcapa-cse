@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--W3C Schema erstellt mit XMLSpy v2013 rel. 2 sp2 (x64) (http://www.altova.com)-->
+<!--NTC_Document : Version 8 Release 8 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ecc="etso-core-cmpts.xsd">
+	<xs:import namespace="etso-core-cmpts.xsd" schemaLocation="etso-core-cmpts.xsd"/>
+	<!--______________NTC_annual_document____________________ -->
+	<xs:element name="NTC_annual_document">
+		<xs:complexType>
+			<xs:annotation>
+				<xs:documentation/>
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="DocumentIdentification" type="ecc:LongIdentificationType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentVersion" type="ecc:VersionType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentType" type="ecc:MessageType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ProcessType" type="ecc:ProcessType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SenderIdentification" type="ecc:PartyType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SenderRole" type="ecc:RoleType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ReceiverIdentification" type="ecc:PartyType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ReceiverRole" type="ecc:RoleType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="CreationDateTime" type="ecc:MessageDateTimeType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Domain" type="ecc:AreaType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="NTCvalues" type="T_NTCValues" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="NTCvaluesExport" type="T_NTCvaluesExport" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="NTCvaluesImport" type="T_NTCvaluesImport" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="SplittingFactors" type="T_NTCValues" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="TRM" type="T_TRM" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="DtdVersion" type="xs:string" use="required"/>
+			<xs:attribute name="DtdRelease" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<!--_____________________________________________________ -->
+	<!--______________NTC_reductions_document_________________ -->
+	<!--_____________________________________________________ -->
+	<xs:element name="NTC_reductions_document">
+		<xs:complexType>
+			<xs:annotation>
+				<xs:documentation/>
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="DocumentIdentification" type="ecc:IdentificationType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentVersion" type="ecc:VersionType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentType" type="ecc:MessageType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ProcessType" type="ecc:ProcessType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SenderIdentification" type="ecc:PartyType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SenderRole" type="ecc:RoleType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ReceiverIdentification" type="ecc:PartyType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ReceiverRole" type="ecc:RoleType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="CreationDateTime" type="ecc:MessageDateTimeType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Domain" type="ecc:AreaType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="NTCreductions" type="T_NTCreductions" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="NTCreductionsImport" type="T_NTCreductionsImport" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="NTCreductionsExport" type="T_NTCreductionsExport" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="SplittingFactors" type="T_SplittingFactors" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="SpecialLinesImport" type="T_SpecialLines" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="SpecialLinesExport" type="T_SpecialLines" minOccurs="0" maxOccurs="1"/>
+
+			</xs:sequence>
+			<xs:attribute name="DtdVersion" type="xs:string" use="required"/>
+			<xs:attribute name="DtdRelease" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<!--_____________________________________________________ -->
+	<!--_____________________________________________________ -->
+	<!--_____________________________________________________ -->
+	<xs:element name="Targets_document">
+		<xs:complexType>
+			<xs:annotation>
+				<xs:documentation/>
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="DocumentIdentification" type="ecc:IdentificationType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentVersion" type="ecc:VersionType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentType" type="ecc:MessageType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ProcessType" type="ecc:ProcessType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SenderIdentification" type="ecc:PartyType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SenderRole" type="ecc:RoleType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ReceiverIdentification" type="ecc:PartyType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ReceiverRole" type="ecc:RoleType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="CreationDateTime" type="ecc:MessageDateTimeType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Domain" type="ecc:AreaType">
+					<xs:annotation>
+						<xs:documentation/>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Target_data" type="T_Target_data" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="DtdVersion" type="xs:string" use="required"/>
+			<xs:attribute name="DtdRelease" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<!--_____________________________________________________ -->
+	<!--_____________________________________________________ -->
+	<!--___________________T_Target_data______________________ -->
+	<xs:complexType name="T_Target_data">
+		<xs:sequence>
+			<xs:element name="SpecialLines" type="T_SpecialLines"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--___________________T_TRM____________________________ -->
+	<xs:complexType name="T_TRM">
+		<xs:annotation>
+			<xs:documentation>
+				<Definition>Transmission Reliability Margin is the reserve cross-border transmission capacity maintained in case of possible emergency events and due to uncertainty as to the accuracy of data used in determining of TTC value.</Definition>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="v" type="xs:integer" use="required"/>
+	</xs:complexType>
+	<!--___________________T_SplittingFactors____________________ -->
+	<xs:complexType name="T_SplittingFactors">
+		<xs:sequence>
+			<xs:element name="Period" type="T_Period" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--___________________T_NTCreductionsImport____________________ -->
+	<xs:complexType name="T_NTCreductionsImport">
+		<xs:sequence>
+			<xs:element name="Period" type="T_Period" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--___________________T_NTCreductionsExport____________________ -->
+	<xs:complexType name="T_NTCreductionsExport">
+		<xs:sequence>
+			<xs:element name="Period" type="T_Period" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--___________________T_NTCreductions____________________ -->
+	<xs:complexType name="T_NTCreductions">
+		<xs:sequence>
+			<xs:element name="Period" type="T_Period" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--__________________T_TimeInterval___________________ -->
+	<xs:complexType name="T_TimeInterval">
+		<xs:sequence>
+			<xs:element name="NTC" type="T_NTC" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="TARGET" type="xs:short" minOccurs="0"/>
+			<xs:element name="SplittingFactor" type="T_NTC" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="FixedFlow" type="T_NTC" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="tini" type="THourMinuteUTCType" use="required"/>
+		<xs:attribute name="tfin" type="THourMinuteUTCType" use="required"/>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<xs:complexType name="T_SpecialLines">
+		<xs:sequence>
+			<xs:element name="Line" type="T_Line" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<xs:complexType name="T_SpecialDays">
+		<xs:sequence>
+			<xs:element name="Day" type="T_Day" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<xs:complexType name="T_NTCvaluesExport">
+		<xs:sequence>
+			<xs:element name="SpecialDays" type="T_SpecialDays" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="BasicDays" type="T_BasicDays" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="SpecialLines" type="T_SpecialLines" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<xs:complexType name="T_NTCvaluesImport">
+		<xs:sequence>
+			<xs:element name="SpecialDays" type="T_SpecialDays" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="BasicDays" type="T_BasicDays" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="SpecialLines" type="T_SpecialLines" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<xs:complexType name="T_NTCValues">
+		<xs:sequence>
+			<xs:element name="SpecialDays" type="T_SpecialDays" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="BasicDays" type="T_BasicDays" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="SpecialLines" type="T_SpecialLines" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<xs:complexType name="T_Line">
+		<xs:sequence>
+			<xs:element name="Period" type="T_Period" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="n_to" type="T_CountryList" use="required"/>
+		<xs:attribute name="n_from" type="T_CountryList" use="required"/>
+		<xs:attribute name="modelized" type="xs:boolean" use="required"/>
+		<xs:attribute name="fixed_flow" type="xs:boolean" use="required"/>
+		<xs:attribute name="code" type="xs:string" use="required"/>
+		<xs:attribute name="c_ntc" type="T_CountryList" use="required"/>
+		<xs:attribute name="merchant_line" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<xs:complexType name="T_Day">
+		<xs:sequence>
+			<xs:element name="TimeInterval" type="T_TimeInterval" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="description" type="xs:string" use="required"/>
+		<xs:attribute name="day" type="DateUTCType" use="required"/>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<xs:complexType name="T_BasicDays">
+		<xs:sequence>
+			<xs:element name="Period" type="T_Period" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<!--________________ US V4:introduce new types_______________-->
+	<!--___________________T_Outages_________________________ -->
+	<xs:complexType name="T_Outages">
+		<xs:sequence>
+			<xs:element name="Outage" type="T_Outage" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--_____________________________________________________ -->
+	<xs:complexType name="T_Outage">
+		<xs:sequence>
+			<xs:element name="DayOfWeek" type="T_DayOfWeek" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="order" type="xs:byte" use="required"/>
+		<xs:attribute name="node_to" type="xs:string" use="required"/>
+		<xs:attribute name="node_from" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="modelized" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	<!--_________________T_NTC_______________________________ -->
+	<xs:complexType name="T_NTC">
+		<xs:attribute name="v" type="xs:decimal" use="required"/>
+		<xs:attribute name="type" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="absolute"/>
+					<xs:enumeration value="relative"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="country" type="T_CountryList" use="optional"/>
+	</xs:complexType>
+	<!--_________________T_CountryList_______________________________ -->
+	<xs:simpleType name="T_CountryList">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AT"/>
+			<xs:enumeration value="CH"/>
+			<xs:enumeration value="FR"/>
+			<xs:enumeration value="SI"/>
+			<xs:enumeration value="IT"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--___________________T_Period___________________________ -->
+	<xs:complexType name="T_Period">
+		<xs:choice>
+			<xs:element name="DayOfWeek" type="T_DayOfWeek" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Outages" type="T_Outages" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+		<xs:attribute name="dtini" type="DateTimeUTCType" use="required"/>
+		<xs:attribute name="dtfin" type="DateTimeUTCType" use="required"/>
+		<xs:attribute name="description" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<!-- _______________T_DayOfWeeks _________________________-->
+	<xs:complexType name="T_DayOfWeek">
+		<xs:sequence>
+			<xs:element name="TimeInterval" type="T_TimeInterval" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="description" type="TDescriptionType" use="required"/>
+		<xs:attribute name="daynum" type="TDaynumType" use="required"/>
+	</xs:complexType>
+	<!--_____________________TDaynumType_____________________-->
+	<xs:simpleType name="TDaynumType">
+		<xs:annotation>
+			<xs:documentation>only some string allowed here, not a free text</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:byte">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--_____________________TDescriptionType__________________ -->
+	<xs:simpleType name="TDescriptionType">
+		<xs:annotation>
+			<xs:documentation>only some string allowed here, not a free text</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Everyday">
+				<xs:annotation>
+					<xs:documentation>Every day of the week (from Monday to Sunday)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Monday">
+				<xs:annotation>
+					<xs:documentation>Only Monday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Tuesday">
+				<xs:annotation>
+					<xs:documentation>Only Tuesday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Wednesday">
+				<xs:annotation>
+					<xs:documentation>Only Wednesday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Thursday">
+				<xs:annotation>
+					<xs:documentation>Only Thursday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Friday">
+				<xs:annotation>
+					<xs:documentation>Only Friday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Saturday">
+				<xs:annotation>
+					<xs:documentation>Only Saturday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Sunday">
+				<xs:annotation>
+					<xs:documentation>Only Sunday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Mon-Fri">
+				<xs:annotation>
+					<xs:documentation>Monday to Friday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Mon-Sat">
+				<xs:annotation>
+					<xs:documentation>From Monday to Saturday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Sat-Sun">
+				<xs:annotation>
+					<xs:documentation>From Monday to Saturday</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--_____________________THourMinuteUTCType______________ -->
+	<xs:simpleType name="THourMinuteUTCType">
+		<xs:annotation>
+			<xs:documentation>ISO 8601 format: [T]hh:mmZ</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:pattern value="T([0-1][0-9]|2[0-4]):[0-5][0-9]Z"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--________________________DateTimeUTCType__________________ -->
+	<xs:simpleType name="DateTimeUTCType">
+		<xs:annotation>
+			<xs:documentation>The time must be expressed in a form respecting ISO 8601 : YYYY-MM-DDTHH:MMZ. ISO 8601 rules for reduction may apply. The time must always be expressed in UTC.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:pattern value="[2][0][0-9][0-9][\-][0-1][0-9][\-][0-3][0-9][T][0-2][0-9][:][0-6][0-9][Z]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--________________________DateUTCType__________________ -->
+	<xs:simpleType name="DateUTCType">
+		<xs:annotation>
+			<xs:documentation>ISO 8601 format: YYYY-MM-DDZ</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:pattern value="[0-9]{4}-(((0[13578]-(0[1-9]|[12][0-9]|3[01]))|(1[02]-(0[1-9]|[12][0-9]|3[01])))|((0[469]-(0[1-9]|[12][0-9]|30))|(11-(0[1-9]|[12][0-9]|30)))|(02-(0[1-9]|1[0-9]|2[0-9])))Z"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
