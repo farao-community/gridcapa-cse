@@ -38,7 +38,8 @@ class FileImporterTest {
     void testTargetChImport() {
         LineFixedFlows lineFixedFlows = fileImporter.importLineFixedFlowFromTargetChFile(
             OffsetDateTime.parse("2021-01-01T00:00Z"),
-            Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
+            Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString(),
+                false);
         assertNotNull(lineFixedFlows);
     }
 }

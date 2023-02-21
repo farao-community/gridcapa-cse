@@ -107,9 +107,9 @@ public class FileImporter {
         }
     }
 
-    public LineFixedFlows importLineFixedFlowFromTargetChFile(OffsetDateTime targetProcessDateTime, String targetChUrl) {
+    public LineFixedFlows importLineFixedFlowFromTargetChFile(OffsetDateTime targetProcessDateTime, String targetChUrl, boolean isAdaptedProcess) {
         try (InputStream targetChStream = openUrlStream(targetChUrl)) {
-            return LineFixedFlows.create(targetProcessDateTime, targetChStream, false); // Temporarily we do not manage the adapted import
+            return LineFixedFlows.create(targetProcessDateTime, targetChStream, isAdaptedProcess);
         } catch (Exception e) {
             throw new CseInvalidDataException("Impossible to import LineFixedFlow from Target ch file", e);
         }
