@@ -77,7 +77,7 @@ public class FileExporter {
         }
         String cracPath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(processConfiguration.getZoneId()), isAdapted) + JSON_CRAC_FILE_NAME;
         try (InputStream is = memDataSource.newInputStream(JSON_CRAC_FILE_NAME)) {
-            minioAdapter.uploadArtifactForTimestamp(cracPath, is, adaptTargetProcessName(processType), "", processTargetDateTime);
+            minioAdapter.uploadArtifactForTimestamp(cracPath, is, adaptTargetProcessName(processType, isAdapted), "", processTargetDateTime);
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to upload converted CRAC file.", e);
         }
@@ -86,11 +86,11 @@ public class FileExporter {
 
     public String saveNetworkInArtifact(Network network, OffsetDateTime processTargetDateTime, String fileType, ProcessType processType, boolean isAdapted) {
         String networkPath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(processConfiguration.getZoneId()), isAdapted) + NETWORK_FILE_NAME;
-        return saveNetworkInArtifact(network, networkPath, fileType, processTargetDateTime, processType);
+        return saveNetworkInArtifact(network, networkPath, fileType, processTargetDateTime, processType, isAdapted);
     }
 
-    public String saveNetworkInArtifact(Network network, String networkFilePath, String fileType, OffsetDateTime processTargetDateTime, ProcessType processType) {
-        exportAndUploadNetwork(network, "XIIDM", GridcapaFileGroup.ARTIFACT, networkFilePath, fileType, processTargetDateTime, processType);
+    public String saveNetworkInArtifact(Network network, String networkFilePath, String fileType, OffsetDateTime processTargetDateTime, ProcessType processType, boolean isAdapted) {
+        exportAndUploadNetwork(network, "XIIDM", GridcapaFileGroup.ARTIFACT, networkFilePath, fileType, processTargetDateTime, processType, isAdapted);
         return minioAdapter.generatePreSignedUrl(networkFilePath);
     }
 
@@ -104,7 +104,7 @@ public class FileExporter {
         JsonRaoParameters.write(raoParameters, baos);
         String raoParametersDestinationPath = getRaoParametersDestinationPath(basePath, processType, offsetDateTime, isAdapted);
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        minioAdapter.uploadArtifactForTimestamp(raoParametersDestinationPath, bais, adaptTargetProcessName(processType), "", offsetDateTime);
+        minioAdapter.uploadArtifactForTimestamp(raoParametersDestinationPath, bais, adaptTargetProcessName(processType, isAdapted), "", offsetDateTime);
         return minioAdapter.generatePreSignedUrl(raoParametersDestinationPath);
     }
 
@@ -154,7 +154,7 @@ public class FileExporter {
         }
         InputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
         String outputFilePath = getFilePath(processTargetDate, processType, isAdapted);
-        minioAdapter.uploadOutputForTimestamp(outputFilePath, is, adaptTargetProcessName(processType), processConfiguration.getTtcRes(), processTargetDate);
+        minioAdapter.uploadOutputForTimestamp(outputFilePath, is, adaptTargetProcessName(processType, isAdapted), processConfiguration.getTtcRes(), processTargetDate);
         return minioAdapter.generatePreSignedUrl(outputFilePath);
     }
 
@@ -171,14 +171,14 @@ public class FileExporter {
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isAdapted) + filename;
     }
 
-    String exportAndUploadNetwork(Network network, String format, GridcapaFileGroup fileGroup, String filePath, String fileType, OffsetDateTime offsetDateTime, ProcessType processType) {
+    String exportAndUploadNetwork(Network network, String format, GridcapaFileGroup fileGroup, String filePath, String fileType, OffsetDateTime offsetDateTime, ProcessType processType, boolean isAdapted) {
         try (InputStream is = getNetworkInputStream(network, format)) {
             switch (fileGroup) {
                 case OUTPUT:
-                    minioAdapter.uploadOutputForTimestamp(filePath, is, adaptTargetProcessName(processType), fileType, offsetDateTime);
+                    minioAdapter.uploadOutputForTimestamp(filePath, is, adaptTargetProcessName(processType, isAdapted), fileType, offsetDateTime);
                     break;
                 case ARTIFACT:
-                    minioAdapter.uploadArtifactForTimestamp(filePath, is, adaptTargetProcessName(processType), fileType, offsetDateTime);
+                    minioAdapter.uploadArtifactForTimestamp(filePath, is, adaptTargetProcessName(processType, isAdapted), fileType, offsetDateTime);
                     break;
                 default:
                     throw new UnsupportedOperationException(String.format("File group %s not supported", fileGroup));
@@ -234,8 +234,8 @@ public class FileExporter {
         return processConfiguration.getZoneId();
     }
 
-    private String adaptTargetProcessName(ProcessType processType) {
-        return PROCESS_TYPE_PREFIX + processType;
+    private String adaptTargetProcessName(ProcessType processType, boolean isAdapted) {
+        return (isAdapted ? PROCESS_TYPE_ADAPTED_PREFIX : PROCESS_TYPE_PREFIX) + processType;
     }
 
 }
