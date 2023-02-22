@@ -38,6 +38,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -58,6 +59,7 @@ public class FileExporter {
     private final String combinedRasFilePath;
 
     private static final String PROCESS_TYPE_PREFIX = "CSE_IMPORT_";
+    private static final Map<String, Integer> MAX_CURATIVE_RA_PER_TSO = Map.of("IT", 1, "FR", 5, "CH", 0, "AT", 3, "SI", 3);
 
     public FileExporter(MinioAdapter minioAdapter, ProcessConfiguration processConfiguration, String combinedRasFilePath) {
         this.minioAdapter = minioAdapter;
@@ -120,6 +122,7 @@ public class FileExporter {
             SearchTreeRaoParameters searchTreeRaoParameters = raoParameters.getExtension(SearchTreeRaoParameters.class);
             if (searchTreeRaoParameters != null) {
                 searchTreeRaoParameters.setNetworkActionIdCombinations(combinedRas);
+                searchTreeRaoParameters.setMaxCurativeRaPerTso(MAX_CURATIVE_RA_PER_TSO);
             }
         } catch (IOException e) {
             throw new CseDataException(String.format("Impossible to read combined RAs file: %s", combinedRasFilePath));
