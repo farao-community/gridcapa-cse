@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_io_api.CracImporters;
 import com.farao_community.farao.search_tree_rao.result.api.FlowResult;
@@ -46,13 +47,14 @@ class ForcedPraHandlerTest {
     void checkCracAndForcedPrasAreConsistent() {
         Crac crac = CracImporters.importCrac("crac-for-forced-pras.json", Objects.requireNonNull(getClass().getResourceAsStream("crac-for-forced-pras.json")));
         Network network = Network.read("network-for-forced-pras.xiidm", getClass().getResourceAsStream("network-for-forced-pras.xiidm"));
+
         Set<String> manualForcedPrasIds = Set.of("Open line NL1-NL2", "Open line BE2-FR3", "PRA_PST_BE");
 
         assertNull(crac.getNetworkAction("PRA_PST_BE"));
         assertTrue(crac.getNetworkAction("Open line NL1-NL2").hasImpactOnNetwork(network));
         assertTrue(crac.getNetworkAction("Open line BE2-FR3").hasImpactOnNetwork(network));
 
-        Set<String> appliedForcedPras = forcedPrasHandler.forcePras(manualForcedPrasIds, network, crac, Mockito.mock(FlowResult.class));
+        Set<String> appliedForcedPras = forcedPrasHandler.forcePras(manualForcedPrasIds, network, crac, Mockito.mock(FlowResult.class), Unit.AMPERE);
 
         assertFalse(crac.getNetworkAction("Open line NL1-NL2").hasImpactOnNetwork(network));
         assertFalse(crac.getNetworkAction("Open line BE2-FR3").hasImpactOnNetwork(network));

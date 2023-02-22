@@ -110,7 +110,7 @@ public class FileExporter {
     }
 
     RaoParameters getRaoParameters(List<String> remedialActionsAppliedInPreviousStep) {
-        RaoParameters raoParameters = RaoParameters.load();
+        RaoParameters raoParameters = loadRaoParameters();
         try (InputStream is = new FileInputStream(combinedRasFilePath)) {
             ObjectMapper objectMapper = new ObjectMapper();
             List<List<String>> combinedRas = objectMapper.readValue(is.readAllBytes(), List.class);
@@ -125,6 +125,10 @@ public class FileExporter {
             throw new CseDataException(String.format("Impossible to read combined RAs file: %s", combinedRasFilePath));
         }
         return raoParameters;
+    }
+
+    public RaoParameters loadRaoParameters() {
+        return RaoParameters.load();
     }
 
     String saveTtcResult(Timestamp timestamp, OffsetDateTime processTargetDate, ProcessType processType) {

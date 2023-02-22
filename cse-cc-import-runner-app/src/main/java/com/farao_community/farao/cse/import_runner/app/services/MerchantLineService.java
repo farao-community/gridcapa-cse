@@ -90,7 +90,4 @@ public class MerchantLineService {
         return defaultFlow;
     }
 
-    void postProcessingMerchantLine(Network network) {
-        uctePstProcessor.invertRegulationValueForIdcc(network);
-    }
 }

@@ -12,10 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This utility class prevent an issue that comes from PowSyBl UCTE importer, because regulation in active power
- * is not correctly set.
  * In CSE computations this should only apply to mendridio PST, but it can theoretically be used on other PSTs.
- *
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public final class UctePstProcessor {
@@ -32,22 +29,21 @@ public final class UctePstProcessor {
     public void forcePhaseTapChangerInActivePowerRegulationForIdcc(Network network, double defaultRegulationValue) {
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
         PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
-        // PowSyBl transformer is inverted compared to UCTE transformer so we have to set opposite sign
-        double regulationValue = -phaseTapChanger.getRegulationValue();
+        double regulationValue = phaseTapChanger.getRegulationValue();
         if (Double.isNaN(regulationValue)) {
-            regulationValue = defaultRegulationValue;
+            phaseTapChanger.setRegulationValue(defaultRegulationValue); // Powsybl iidm model requirement: regulationValue must be not empty in order to activate regulation mode
         }
-        setTransformerInActivePowerRegulation(transformer, phaseTapChanger, regulationValue);
+        setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
     }
 
     public void forcePhaseTapChangerInActivePowerRegulationForD2cc(Network network, double regulationValue) {
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
         PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
-        setTransformerInActivePowerRegulation(transformer, phaseTapChanger, regulationValue);
+        phaseTapChanger.setRegulationValue(regulationValue);
+        setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
     }
 
-    private void setTransformerInActivePowerRegulation(TwoWindingsTransformer transformer, PhaseTapChanger phaseTapChanger, double regulationValue) {
-        phaseTapChanger.setRegulationValue(regulationValue); // Powsybl iidm model requirement: regulationValue must be not empty in order to activate regulation mode
+    private void setTransformerInActivePowerRegulation(TwoWindingsTransformer transformer, PhaseTapChanger phaseTapChanger) {
         phaseTapChanger.setRegulationTerminal(getRegulatedTerminal(transformer));
         phaseTapChanger.setRegulationMode(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL);
         phaseTapChanger.setTargetDeadband(5);
@@ -86,13 +82,4 @@ public final class UctePstProcessor {
         }
     }
 
-    /**
-     * Regulation value initially inverted in preprocessing for IDCC process to prevent an issue that comes from PowSyBl UCTE importer
-     * should be re-inverted when exporting UCTE network
-     */
-    public void invertRegulationValueForIdcc(Network network) {
-        TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
-        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
-        phaseTapChanger.setRegulationValue(-phaseTapChanger.getRegulationValue());
-    }
 }
