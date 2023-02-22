@@ -78,16 +78,18 @@ public class DichotomyRunner {
     }
 
     private NetworkValidator<DichotomyRaoResponse> getNetworkValidator(CseRequest request, CseData cseData, Set<String> forcedPrasIds) {
+        final boolean isAdaptedProcess = request.isImportAdaptedProcess();
         return new RaoRunnerValidator(
             request.getProcessType(),
             request.getId(),
             request.getTargetProcessDateTime(),
             cseData.getJsonCracUrl(),
-            fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType()),
+            fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType(), isAdaptedProcess),
             raoRunnerClient,
             fileExporter,
             fileImporter,
             forcedPrasHandler,
-            forcedPrasIds);
+            forcedPrasIds,
+            isAdaptedProcess);
     }
 }
