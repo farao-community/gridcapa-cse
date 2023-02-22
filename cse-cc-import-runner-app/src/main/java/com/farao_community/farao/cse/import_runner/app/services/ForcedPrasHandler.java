@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.search_tree_rao.commons.RaoUtil;
 import com.farao_community.farao.search_tree_rao.result.api.FlowResult;
@@ -40,9 +41,10 @@ public class ForcedPrasHandler {
      * @param network: Network on which to apply these PRAs.
      * @param crac: CRAC on which to check definition and applicability.
      * @param flowResult: Flow result gathering power flows on the lines to evaluate RAs availability (flow constraint or country constraint)
+     * @param unit: The unit retrieved from raoParameters
      * @return The set of PRAs IDs that have been actually applied on the network
      */
-    public Set<String> forcePras(Set<String> forcedPrasIds, Network network, Crac crac, FlowResult flowResult) {
+    public Set<String> forcePras(Set<String> forcedPrasIds, Network network, Crac crac, FlowResult flowResult, Unit unit) {
         // Filters out those that are not present in the CRAC or that are not available
         return forcedPrasIds.stream()
             .filter(naId -> {
@@ -54,7 +56,7 @@ public class ForcedPrasHandler {
             })
             .map(crac::getNetworkAction)
             .filter(na -> {
-                if (!RaoUtil.isRemedialActionAvailable(na, crac.getPreventiveState(), flowResult, crac.getFlowCnecs(crac.getPreventiveState()), network)) {
+                if (!RaoUtil.isRemedialActionAvailable(na, crac.getPreventiveState(), flowResult, crac.getFlowCnecs(crac.getPreventiveState()), network, unit)) {
                     logger.info("Forced PRA {} is not available. It won't be applied.", na);
                     return false;
                 }

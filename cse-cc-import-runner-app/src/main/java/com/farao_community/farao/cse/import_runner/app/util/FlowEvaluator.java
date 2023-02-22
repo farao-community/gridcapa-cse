@@ -28,9 +28,9 @@ public final class FlowEvaluator {
         // Should not be instantiated
     }
 
-    public static FlowResult evaluate(Crac crac, Network network) {
+    public static FlowResult evaluate(Crac crac, Network network, Unit unit) {
         SystematicSensitivityInterface systematicSensitivityInterface = SystematicSensitivityInterface.builder()
-            .withLoadflow(crac.getFlowCnecs(), Set.of(Unit.MEGAWATT))
+            .withLoadflow(crac.getFlowCnecs(), Set.of(unit))
             .withDefaultParameters(SensitivityAnalysisParameters.load())
             .withSensitivityProviderName(SensitivityAnalysis.find().getName())
             .build();

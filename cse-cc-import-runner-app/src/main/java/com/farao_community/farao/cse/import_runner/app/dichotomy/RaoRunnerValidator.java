@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
+import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
 import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -107,12 +108,13 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
 
     private Set<String> applyForcedPras(Crac crac, Network network) {
         if (!forcedPrasIds.isEmpty()) {
+            Unit unit = fileExporter.loadRaoParameters().getObjectiveFunction().getUnit();
             // It computes reference flows on the network to be able to evaluate PRAs availability
-            FlowResult flowResult = FlowEvaluator.evaluate(crac, network);
+            FlowResult flowResult = FlowEvaluator.evaluate(crac, network, unit);
 
             // We get only the RAs that have been actually applied
             // Even if the set is empty we still do the computation, in worst case scenario the computation is useless
-            return forcedPrasHandler.forcePras(forcedPrasIds, network, crac, flowResult);
+            return forcedPrasHandler.forcePras(forcedPrasIds, network, crac, flowResult, unit);
         } else {
             return Collections.emptySet();
         }
