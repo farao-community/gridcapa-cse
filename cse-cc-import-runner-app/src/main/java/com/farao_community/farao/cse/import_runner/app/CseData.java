@@ -81,7 +81,8 @@ public class CseData {
         ntc = fileImporter.importNtc(
             cseRequest.getTargetProcessDateTime(),
             cseRequest.getYearlyNtcUrl(),
-            cseRequest.getNtcReductionsUrl());
+            cseRequest.getNtcReductionsUrl(),
+            cseRequest.isImportAdaptedProcess());
         return ntc;
     }
 
