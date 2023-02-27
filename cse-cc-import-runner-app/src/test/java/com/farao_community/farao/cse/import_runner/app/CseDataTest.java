@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -66,7 +65,7 @@ class CseDataTest {
     @Test
     void testLineFixedFlowsGetterForD2CC() {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
-        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn( OffsetDateTime.parse("2021-01-01T00:00Z"));
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-01-01T00:00Z"));
         Mockito.when(cseRequest.getTargetChUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Mockito.when(cseRequest.isImportAdaptedProcess()).thenReturn(false);
         cseData = new CseData(cseRequest, fileImporter);
@@ -78,7 +77,7 @@ class CseDataTest {
     @Test
     void testLineFixedFlowsGetterForD2CCAdapted() {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
-        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn( OffsetDateTime.parse("2021-01-01T00:00Z"));
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-01-01T00:00Z"));
         Mockito.when(cseRequest.getTargetChUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Mockito.when(cseRequest.isImportAdaptedProcess()).thenReturn(true);
         cseData = new CseData(cseRequest, fileImporter);
@@ -90,7 +89,7 @@ class CseDataTest {
     @Test
     void testGetNtc() {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
-        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn( OffsetDateTime.parse("2021-01-01T00:00Z"));
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-01-01T00:00Z"));
         Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Mockito.when(cseRequest.isImportAdaptedProcess()).thenReturn(false);
@@ -105,7 +104,7 @@ class CseDataTest {
     @Test
     void testGetNtcAdapted() {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
-        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn( OffsetDateTime.parse("2021-01-01T00:00Z"));
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-01-01T00:00Z"));
         Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Mockito.when(cseRequest.isImportAdaptedProcess()).thenReturn(true);
