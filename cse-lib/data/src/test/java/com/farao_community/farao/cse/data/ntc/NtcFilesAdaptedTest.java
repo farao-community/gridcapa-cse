@@ -14,9 +14,9 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class NtcFilesTest {
+class NtcFilesAdaptedTest {
     private static final double DOUBLE_PRECISION = 0.001;
     private static final String MENDRISIO_CAGNO_ID = "ml_mendrisio-cagno";
 
@@ -25,9 +25,9 @@ class NtcFilesTest {
     @BeforeEach
     void setUp() throws JAXBException {
         OffsetDateTime targetDateTime = OffsetDateTime.parse("2021-06-24T16:30Z");
-        InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1.xml");
-        InputStream dailyData = getClass().getResourceAsStream("20210624_2D4_NTC_reductions_CSE1.xml");
-        ntc = Ntc.create(targetDateTime, yearlyData, dailyData, false);
+        InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml");
+        InputStream dailyData = getClass().getResourceAsStream("20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml");
+        ntc = Ntc.create(targetDateTime, yearlyData, dailyData, true);
     }
 
     @Test
@@ -56,9 +56,9 @@ class NtcFilesTest {
     @Test
     void checkDefaultFlowForMendrisioCagno() throws JAXBException {
         Map<String, Double> fixedFlowLines = Ntc.create(OffsetDateTime.parse("2021-09-13T12:30Z"),
-                                                        getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1.xml"),
-                                                        getClass().getResourceAsStream("20210913_2D1_NTC_reductions_CSE1.xml"),
-                                     false
+                                                        getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml"),
+                                                        getClass().getResourceAsStream("20210913_2D1_NTC_reductions_CSE1_Adapted_v8_8.xml"),
+                                     true
                                                         ).getFlowOnFixedFlowLines();
         assertEquals(75, fixedFlowLines.get(MENDRISIO_CAGNO_ID), DOUBLE_PRECISION);
     }

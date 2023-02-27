@@ -76,7 +76,7 @@ public class FileImporter {
     public Ntc importNtc(OffsetDateTime targetProcessDateTime, String yearlyNtcUrl, String dailyNtcUrl) {
         try (InputStream yearlyNtcStream = openUrlStream(yearlyNtcUrl);
              InputStream dailyNtcStream = openUrlStream(dailyNtcUrl)) {
-            return Ntc.create(targetProcessDateTime, yearlyNtcStream, dailyNtcStream);
+            return Ntc.create(targetProcessDateTime, yearlyNtcStream, dailyNtcStream, false); // Temporarily we do not manage the adapted import
         } catch (IOException | JAXBException e) {
             throw new CseInvalidDataException("Impossible to create NTC", e);
         }
