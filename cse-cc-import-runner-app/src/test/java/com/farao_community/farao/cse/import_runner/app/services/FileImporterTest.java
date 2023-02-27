@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import org.junit.jupiter.api.Test;
@@ -41,5 +42,27 @@ class FileImporterTest {
             Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString(),
                 false);
         assertNotNull(lineFixedFlows);
+    }
+
+    @Test
+    void testImportNtcAdapted() {
+        Ntc ntc = fileImporter.importNtc(
+                OffsetDateTime.parse("2021-01-01T00:00Z"),
+                Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString(),
+                Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString(),
+                true
+        );
+        assertNotNull(ntc);
+    }
+
+    @Test
+    void testImportNtc() {
+        Ntc ntc = fileImporter.importNtc(
+                OffsetDateTime.parse("2021-01-01T00:00Z"),
+                Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString(),
+                Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString(),
+                false
+        );
+        assertNotNull(ntc);
     }
 }
