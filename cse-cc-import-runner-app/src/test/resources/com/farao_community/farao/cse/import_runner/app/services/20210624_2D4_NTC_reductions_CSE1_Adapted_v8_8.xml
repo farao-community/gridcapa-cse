@@ -1,0 +1,497 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<NTC_reductions_document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ntc-document.xsd" DtdVersion="4" DtdRelease="0">
+	<DocumentIdentification v="20210624_2D4_NTC_reductions_CSE" />
+	<DocumentVersion v="01" />
+	<DocumentType v="A36" />
+	<ProcessType v="A15" />
+	<SenderIdentification v="10X1001A1001A345" codingScheme="A01" />
+	<SenderRole v="A04" />
+	<ReceiverIdentification v="22XCORESO------S" codingScheme="A01" />
+	<ReceiverRole v="A36" />
+	<CreationDateTime v="2021-06-22T15:14:59Z" />
+	<Domain v="10YDOM-1001A061T" codingScheme="A01" />
+	<NTCreductionsImport>
+		<Period description="NTC 2021-06-23T22:00Z/2021-06-23T23:00Z" dtini="2021-06-23T22:00Z" dtfin="2021-06-23T23:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T22:00Z" tfin="T23:00Z">
+					<NTC v="2470" country="FR" type="absolute" />
+					<NTC v="2200" country="CH" type="absolute" />
+					<NTC v="255" country="AT" type="absolute" />
+					<NTC v="475" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-23T23:00Z/2021-06-24T00:00Z" dtini="2021-06-23T23:00Z" dtfin="2021-06-24T00:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+					<NTC v="2470" country="FR" type="absolute" />
+					<NTC v="2200" country="CH" type="absolute" />
+					<NTC v="255" country="AT" type="absolute" />
+					<NTC v="475" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T00:00Z/2021-06-24T01:00Z" dtini="2021-06-24T00:00Z" dtfin="2021-06-24T01:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T00:00Z" tfin="T01:00Z">
+					<NTC v="2470" country="FR" type="absolute" />
+					<NTC v="2200" country="CH" type="absolute" />
+					<NTC v="255" country="AT" type="absolute" />
+					<NTC v="475" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T01:00Z/2021-06-24T02:00Z" dtini="2021-06-24T01:00Z" dtfin="2021-06-24T02:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T01:00Z" tfin="T02:00Z">
+					<NTC v="2470" country="FR" type="absolute" />
+					<NTC v="2200" country="CH" type="absolute" />
+					<NTC v="255" country="AT" type="absolute" />
+					<NTC v="475" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T02:00Z/2021-06-24T03:00Z" dtini="2021-06-24T02:00Z" dtfin="2021-06-24T03:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T02:00Z" tfin="T03:00Z">
+					<NTC v="2470" country="FR" type="absolute" />
+					<NTC v="2200" country="CH" type="absolute" />
+					<NTC v="255" country="AT" type="absolute" />
+					<NTC v="475" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T03:00Z/2021-06-24T04:00Z" dtini="2021-06-24T03:00Z" dtfin="2021-06-24T04:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T03:00Z" tfin="T04:00Z">
+					<NTC v="2470" country="FR" type="absolute" />
+					<NTC v="2200" country="CH" type="absolute" />
+					<NTC v="255" country="AT" type="absolute" />
+					<NTC v="475" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T04:00Z/2021-06-24T05:00Z" dtini="2021-06-24T04:00Z" dtfin="2021-06-24T05:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T04:00Z" tfin="T05:00Z">
+					<NTC v="2470" country="FR" type="absolute" />
+					<NTC v="2200" country="CH" type="absolute" />
+					<NTC v="255" country="AT" type="absolute" />
+					<NTC v="475" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T05:00Z/2021-06-24T06:00Z" dtini="2021-06-24T05:00Z" dtfin="2021-06-24T06:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T05:00Z" tfin="T06:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T06:00Z/2021-06-24T07:00Z" dtini="2021-06-24T06:00Z" dtfin="2021-06-24T07:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T06:00Z" tfin="T07:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T07:00Z/2021-06-24T08:00Z" dtini="2021-06-24T07:00Z" dtfin="2021-06-24T08:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T07:00Z" tfin="T08:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T08:00Z/2021-06-24T09:00Z" dtini="2021-06-24T08:00Z" dtfin="2021-06-24T09:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T08:00Z" tfin="T09:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T09:00Z/2021-06-24T10:00Z" dtini="2021-06-24T09:00Z" dtfin="2021-06-24T10:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T09:00Z" tfin="T10:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T10:00Z/2021-06-24T11:00Z" dtini="2021-06-24T10:00Z" dtfin="2021-06-24T11:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T10:00Z" tfin="T11:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T11:00Z/2021-06-24T12:00Z" dtini="2021-06-24T11:00Z" dtfin="2021-06-24T12:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T11:00Z" tfin="T12:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T12:00Z/2021-06-24T13:00Z" dtini="2021-06-24T12:00Z" dtfin="2021-06-24T13:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T12:00Z" tfin="T13:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T13:00Z/2021-06-24T14:00Z" dtini="2021-06-24T13:00Z" dtfin="2021-06-24T14:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T13:00Z" tfin="T14:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T14:00Z/2021-06-24T15:00Z" dtini="2021-06-24T14:00Z" dtfin="2021-06-24T15:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T14:00Z" tfin="T15:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T15:00Z/2021-06-24T16:00Z" dtini="2021-06-24T15:00Z" dtfin="2021-06-24T16:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T15:00Z" tfin="T16:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T16:00Z/2021-06-24T17:00Z" dtini="2021-06-24T16:00Z" dtfin="2021-06-24T17:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T16:00Z" tfin="T17:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T17:00Z/2021-06-24T18:00Z" dtini="2021-06-24T17:00Z" dtfin="2021-06-24T18:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T17:00Z" tfin="T18:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T18:00Z/2021-06-24T19:00Z" dtini="2021-06-24T18:00Z" dtfin="2021-06-24T19:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T18:00Z" tfin="T19:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T19:00Z/2021-06-24T20:00Z" dtini="2021-06-24T19:00Z" dtfin="2021-06-24T20:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T19:00Z" tfin="T20:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T20:00Z/2021-06-24T21:00Z" dtini="2021-06-24T20:00Z" dtfin="2021-06-24T21:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T20:00Z" tfin="T21:00Z">
+					<NTC v="2700" country="FR" type="absolute" />
+					<NTC v="2520" country="CH" type="absolute" />
+					<NTC v="270" country="AT" type="absolute" />
+					<NTC v="515" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="NTC 2021-06-24T21:00Z/2021-06-24T22:00Z" dtini="2021-06-24T21:00Z" dtfin="2021-06-24T22:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T21:00Z" tfin="T22:00Z">
+					<NTC v="2470" country="FR" type="absolute" />
+					<NTC v="2200" country="CH" type="absolute" />
+					<NTC v="255" country="AT" type="absolute" />
+					<NTC v="475" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+	</NTCreductionsImport>
+	<SplittingFactors>
+		<Period description="SplittingFactor 2021-06-23T22:00Z/2021-06-23T23:00Z" dtini="2021-06-23T22:00Z" dtfin="2021-06-23T23:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T22:00Z" tfin="T23:00Z">
+					<SplittingFactor v="0.480545" country="FR" type="absolute" />
+					<SplittingFactor v="0.389105" country="CH" type="absolute" />
+					<SplittingFactor v="0.037938" country="AT" type="absolute" />
+					<SplittingFactor v="0.092412" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-23T23:00Z/2021-06-24T00:00Z" dtini="2021-06-23T23:00Z" dtfin="2021-06-24T00:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+					<SplittingFactor v="0.480545" country="FR" type="absolute" />
+					<SplittingFactor v="0.389105" country="CH" type="absolute" />
+					<SplittingFactor v="0.037938" country="AT" type="absolute" />
+					<SplittingFactor v="0.092412" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T00:00Z/2021-06-24T01:00Z" dtini="2021-06-24T00:00Z" dtfin="2021-06-24T01:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T00:00Z" tfin="T01:00Z">
+					<SplittingFactor v="0.480545" country="FR" type="absolute" />
+					<SplittingFactor v="0.389105" country="CH" type="absolute" />
+					<SplittingFactor v="0.037938" country="AT" type="absolute" />
+					<SplittingFactor v="0.092412" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T01:00Z/2021-06-24T02:00Z" dtini="2021-06-24T01:00Z" dtfin="2021-06-24T02:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T01:00Z" tfin="T02:00Z">
+					<SplittingFactor v="0.480545" country="FR" type="absolute" />
+					<SplittingFactor v="0.389105" country="CH" type="absolute" />
+					<SplittingFactor v="0.037938" country="AT" type="absolute" />
+					<SplittingFactor v="0.092412" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T02:00Z/2021-06-24T03:00Z" dtini="2021-06-24T02:00Z" dtfin="2021-06-24T03:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T02:00Z" tfin="T03:00Z">
+					<SplittingFactor v="0.480545" country="FR" type="absolute" />
+					<SplittingFactor v="0.389105" country="CH" type="absolute" />
+					<SplittingFactor v="0.037938" country="AT" type="absolute" />
+					<SplittingFactor v="0.092412" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T03:00Z/2021-06-24T04:00Z" dtini="2021-06-24T03:00Z" dtfin="2021-06-24T04:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T03:00Z" tfin="T04:00Z">
+					<SplittingFactor v="0.480545" country="FR" type="absolute" />
+					<SplittingFactor v="0.389105" country="CH" type="absolute" />
+					<SplittingFactor v="0.037938" country="AT" type="absolute" />
+					<SplittingFactor v="0.092412" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T04:00Z/2021-06-24T05:00Z" dtini="2021-06-24T04:00Z" dtfin="2021-06-24T05:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T04:00Z" tfin="T05:00Z">
+					<SplittingFactor v="0.480545" country="FR" type="absolute" />
+					<SplittingFactor v="0.389105" country="CH" type="absolute" />
+					<SplittingFactor v="0.037938" country="AT" type="absolute" />
+					<SplittingFactor v="0.092412" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T05:00Z/2021-06-24T06:00Z" dtini="2021-06-24T05:00Z" dtfin="2021-06-24T06:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T05:00Z" tfin="T06:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T06:00Z/2021-06-24T07:00Z" dtini="2021-06-24T06:00Z" dtfin="2021-06-24T07:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T06:00Z" tfin="T07:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T07:00Z/2021-06-24T08:00Z" dtini="2021-06-24T07:00Z" dtfin="2021-06-24T08:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T07:00Z" tfin="T08:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T08:00Z/2021-06-24T09:00Z" dtini="2021-06-24T08:00Z" dtfin="2021-06-24T09:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T08:00Z" tfin="T09:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T09:00Z/2021-06-24T10:00Z" dtini="2021-06-24T09:00Z" dtfin="2021-06-24T10:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T09:00Z" tfin="T10:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T10:00Z/2021-06-24T11:00Z" dtini="2021-06-24T10:00Z" dtfin="2021-06-24T11:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T10:00Z" tfin="T11:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T11:00Z/2021-06-24T12:00Z" dtini="2021-06-24T11:00Z" dtfin="2021-06-24T12:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T11:00Z" tfin="T12:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T12:00Z/2021-06-24T13:00Z" dtini="2021-06-24T12:00Z" dtfin="2021-06-24T13:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T12:00Z" tfin="T13:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T13:00Z/2021-06-24T14:00Z" dtini="2021-06-24T13:00Z" dtfin="2021-06-24T14:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T13:00Z" tfin="T14:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T14:00Z/2021-06-24T15:00Z" dtini="2021-06-24T14:00Z" dtfin="2021-06-24T15:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T14:00Z" tfin="T15:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T15:00Z/2021-06-24T16:00Z" dtini="2021-06-24T15:00Z" dtfin="2021-06-24T16:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T15:00Z" tfin="T16:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T16:00Z/2021-06-24T17:00Z" dtini="2021-06-24T16:00Z" dtfin="2021-06-24T17:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T16:00Z" tfin="T17:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T17:00Z/2021-06-24T18:00Z" dtini="2021-06-24T17:00Z" dtfin="2021-06-24T18:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T17:00Z" tfin="T18:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T18:00Z/2021-06-24T19:00Z" dtini="2021-06-24T18:00Z" dtfin="2021-06-24T19:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T18:00Z" tfin="T19:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T19:00Z/2021-06-24T20:00Z" dtini="2021-06-24T19:00Z" dtfin="2021-06-24T20:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T19:00Z" tfin="T20:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T20:00Z/2021-06-24T21:00Z" dtini="2021-06-24T20:00Z" dtfin="2021-06-24T21:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T20:00Z" tfin="T21:00Z">
+					<SplittingFactor v="0.466321" country="FR" type="absolute" />
+					<SplittingFactor v="0.409326" country="CH" type="absolute" />
+					<SplittingFactor v="0.035406" country="AT" type="absolute" />
+					<SplittingFactor v="0.088946" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+		<Period description="SplittingFactor 2021-06-24T21:00Z/2021-06-24T22:00Z" dtini="2021-06-24T21:00Z" dtfin="2021-06-24T22:00Z">
+			<DayOfWeek description="Everyday" daynum="0">
+				<TimeInterval tini="T21:00Z" tfin="T22:00Z">
+					<SplittingFactor v="0.480545" country="FR" type="absolute" />
+					<SplittingFactor v="0.389105" country="CH" type="absolute" />
+					<SplittingFactor v="0.037938" country="AT" type="absolute" />
+					<SplittingFactor v="0.092412" country="SI" type="absolute" />
+				</TimeInterval>
+			</DayOfWeek>
+		</Period>
+	</SplittingFactors>
+</NTC_reductions_document>
