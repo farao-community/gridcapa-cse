@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
@@ -16,6 +17,7 @@ import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
+import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.iidm.network.Network;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -47,6 +49,9 @@ class CseRunnerTest {
 
     @MockBean
     private MultipleDichotomyRunner multipleDichotomyRunner;
+
+    @MockBean
+    private FileExporter fileExporter;
 
     @Test
     void testCracImportAndBusbarPreprocess() {
@@ -103,10 +108,8 @@ class CseRunnerTest {
                     null,
                     true
             );
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (MalformedURLException | URISyntaxException e) {
+            fail();
         }
         try {
             MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult = mock(MultipleDichotomyResult.class);
@@ -123,13 +126,17 @@ class CseRunnerTest {
 
             when(dichotomyResult.getBestDichotomyResult()).thenReturn(raoResponse);
             when(raoResponse.hasValidStep()).thenReturn(false);
+
+            when(fileExporter.getBaseCaseFilePath(any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("AnyString");
+            when(fileExporter.exportAndUploadNetwork(any(Network.class), anyString(), any(GridcapaFileGroup.class), anyString(), anyString(), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyString/IMPORT-ADAPTED/test");
+            when(fileExporter.saveTtcResult(any(Timestamp.class), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyTTCfilepath/IMPORT-ADAPTED/test");
             CseResponse response = cseRunner.run(cseRequest);
 
             assertNotNull(response);
             assertTrue(StringUtils.contains(response.getTtcFileUrl(), "IMPORT-ADAPTED"));
             assertTrue(StringUtils.contains(response.getFinalCgmFileUrl(), "IMPORT-ADAPTED"));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            fail();
         }
     }
 }
