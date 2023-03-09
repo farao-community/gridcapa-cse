@@ -7,23 +7,31 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.data.crac_impl.CracImpl;
+import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.farao_community.farao.rao_api.parameters.RaoParameters;
 import com.farao_community.farao.search_tree_rao.castor.parameters.SearchTreeRaoParameters;
+import com.powsybl.commons.datasource.DataSource;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.NetworkFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -40,6 +48,9 @@ class FileExporterTest {
             return getClass().getResource("/combinedRAs.json").getPath();
         }
     }
+
+    @MockBean
+    MinioAdapter minioAdapter;
 
     @Autowired
     FileExporter fileExporter;
@@ -171,5 +182,38 @@ class FileExporterTest {
         assertEquals(expectedFilePathWhenBasePathIsEmptyOrNull, fileExporter.getRaoParametersDestinationPath("", ProcessType.IDCC, OffsetDateTime.parse("2021-09-13T23:30Z"), true));
         assertEquals(expectedFilePathWhenBasePathIsEmptyOrNull, fileExporter.getRaoParametersDestinationPath(null, ProcessType.IDCC, OffsetDateTime.parse("2021-09-13T23:30Z"), true));
         assertEquals(expectedFilePathWhenBasePathIsNotEmpty, fileExporter.getRaoParametersDestinationPath("FAKE_PATH/", ProcessType.IDCC, OffsetDateTime.parse("2021-09-13T23:30Z"), true));
+    }
+
+    @Test
+    void saveCracInJsonFormatTest() {
+        String expectedCracFilePath = "CSE/IMPORT-ADAPTED/IDCC/1999/01/01/13_30/ARTIFACTS/crac.json";
+        Mockito.when(minioAdapter.generatePreSignedUrl(expectedCracFilePath)).thenReturn("SUCCESS");
+        String result = fileExporter.saveCracInJsonFormat(new CracImpl("testCrac"), OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.IDCC, true);
+        assertNotNull(result);
+    }
+
+    @Test
+    void saveCracInJsonFormatNotAdaptedTest() {
+        String expectedCracFilePath = "CSE/IMPORT/D2CC/1999/01/01/13_30/ARTIFACTS/crac.json";
+        Mockito.when(minioAdapter.generatePreSignedUrl(expectedCracFilePath)).thenReturn("SUCCESS");
+        String result = fileExporter.saveCracInJsonFormat(new CracImpl("testCrac"), OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.D2CC, false);
+        assertNotNull(result);
+    }
+
+    @Test
+    void saveNetworkInArtifactTest() {
+        Network network = NetworkFactory.findDefault().createNetwork("test", "TEST");
+        String expectedCracFilePath = "CSE/IMPORT-ADAPTED/D2CC/1999/01/01/13_30/ARTIFACTS/network_pre_processed.xiidm";
+        Mockito.when(minioAdapter.generatePreSignedUrl(expectedCracFilePath)).thenReturn("SUCCESS");
+        String result = fileExporter.saveNetworkInArtifact(network, OffsetDateTime.parse("1999-01-01T12:30Z"), "", ProcessType.D2CC, true);
+        assertNotNull(result);
+    }
+
+    @Test
+    void saveRaoParametersTest() {
+        String raoParametersDestinationPath = "CSE/IMPORT-ADAPTED/IDCC/1999/01/01/13_30/ARTIFACTS/raoParameters.json";
+        Mockito.when(minioAdapter.generatePreSignedUrl(raoParametersDestinationPath)).thenReturn("SUCCESS");
+        String result = fileExporter.saveRaoParameters(OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.IDCC, true);
+        assertNotNull(result);
     }
 }
