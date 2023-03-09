@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_impl.CracImpl;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
@@ -211,6 +212,22 @@ class FileExporterTest {
         String raoParametersDestinationPath = "CSE/IMPORT-ADAPTED/IDCC/1999/01/01/13_30/ARTIFACTS/raoParameters.json";
         Mockito.when(minioAdapter.generatePreSignedUrl(raoParametersDestinationPath)).thenReturn("SUCCESS");
         String result = fileExporter.saveRaoParameters(OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.IDCC, true);
+        assertNotNull(result);
+    }
+
+    @Test
+    void saveTtcResultD2ccTest() {
+        String ttcFilePath = "CSE/IMPORT-ADAPTED/D2CC/1999/01/01/13_30/OUTPUTS/TTC_Calculation_19990101_1330_2D0_CO_CSE1.xml";
+        Mockito.when(minioAdapter.generatePreSignedUrl(ttcFilePath)).thenReturn("SUCCESS");
+        String result = fileExporter.saveTtcResult(new Timestamp(), OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.D2CC, true);
+        assertNotNull(result);
+    }
+
+    @Test
+    void saveTtcResultIdccTest() {
+        String ttcFilePath = "CSE/IMPORT-ADAPTED/IDCC/1999/12/31/13_30/OUTPUTS/19991231_XBID2_TTCRes_CSE1.xml";
+        Mockito.when(minioAdapter.generatePreSignedUrl(ttcFilePath)).thenReturn("SUCCESS");
+        String result = fileExporter.saveTtcResult(new Timestamp(), OffsetDateTime.parse("1999-12-31T12:30Z"), ProcessType.IDCC, true);
         assertNotNull(result);
     }
 }
