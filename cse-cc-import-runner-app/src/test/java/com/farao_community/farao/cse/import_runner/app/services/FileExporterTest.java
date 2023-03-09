@@ -9,6 +9,7 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_impl.CracImpl;
+import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.farao_community.farao.rao_api.parameters.RaoParameters;
 import com.farao_community.farao.search_tree_rao.castor.parameters.SearchTreeRaoParameters;
@@ -24,6 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -205,6 +207,7 @@ class FileExporterTest {
         Mockito.when(minioAdapter.generatePreSignedUrl(expectedCracFilePath)).thenReturn("SUCCESS");
         String result = fileExporter.saveNetworkInArtifact(network, OffsetDateTime.parse("1999-01-01T12:30Z"), "", ProcessType.D2CC, true);
         assertNotNull(result);
+        Mockito.verify(minioAdapter, Mockito.times(1)).uploadArtifactForTimestamp(Mockito.anyString(), Mockito.any(InputStream.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(OffsetDateTime.class));
     }
 
     @Test
@@ -229,5 +232,15 @@ class FileExporterTest {
         Mockito.when(minioAdapter.generatePreSignedUrl(ttcFilePath)).thenReturn("SUCCESS");
         String result = fileExporter.saveTtcResult(new Timestamp(), OffsetDateTime.parse("1999-12-31T12:30Z"), ProcessType.IDCC, true);
         assertNotNull(result);
+    }
+
+    @Test
+    void exportAndUploadNetworkAsOutputTest() {
+        Network network = NetworkFactory.findDefault().createNetwork("test", "TEST");
+        String expectedCracFilePath = "CSE/IMPORT-ADAPTED/D2CC/1999/01/01/13_30/ARTIFACTS/network_pre_processed.xiidm";
+        Mockito.when(minioAdapter.generatePreSignedUrl(expectedCracFilePath)).thenReturn("SUCCESS");
+        String result = fileExporter.exportAndUploadNetwork(network, "XIIDM", GridcapaFileGroup.OUTPUT, expectedCracFilePath, "", OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.D2CC, true);
+        assertNotNull(result);
+        Mockito.verify(minioAdapter, Mockito.times(1)).uploadOutputForTimestamp(Mockito.anyString(), Mockito.any(InputStream.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(OffsetDateTime.class));
     }
 }
