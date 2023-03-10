@@ -22,8 +22,8 @@ import java.util.Optional;
 public final class LineFixedFlows {
     private final Map<String, List<OutageInformation>> outagesInformationPerLineId;
 
-    public static LineFixedFlows create(OffsetDateTime targetDateTime, InputStream targetChInputStream, boolean isImportAdaptedProcess) throws JAXBException {
-        if (!isImportAdaptedProcess) {
+    public static LineFixedFlows create(OffsetDateTime targetDateTime, InputStream targetChInputStream, boolean isImportEcProcess) throws JAXBException {
+        if (!isImportEcProcess) {
             return new LineFixedFlows(targetDateTime, TargetChDocument.create(targetChInputStream));
         } else {
             return new LineFixedFlows(targetDateTime, TargetChDocumentAdapted.create(targetChInputStream));

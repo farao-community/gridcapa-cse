@@ -44,7 +44,7 @@ public class CseRequest {
     private final double initialDichotomyStep;
     private final Double initialDichotomyIndex;
 
-    private final boolean importAdaptedProcess;
+    private final boolean importEcProcess;
 
     @JsonCreator
     public CseRequest(@JsonProperty("id") String id,
@@ -67,7 +67,7 @@ public class CseRequest {
                       @JsonProperty("dichotomyPrecision") double dichotomyPrecision,
                       @JsonProperty("initialDichotomyStep") double initialDichotomyStep,
                       @JsonProperty("initialDichotomyIndex") Double initialDichotomyIndex,
-                      @JsonProperty("importAdaptedProcess") boolean importAdaptedProcess) {
+                      @JsonProperty("importEcProcess") boolean importEcProcess) {
         this.id = id;
         this.processType = processType;
         this.targetProcessDateTime = targetProcessDateTime;
@@ -88,7 +88,7 @@ public class CseRequest {
         this.dichotomyPrecision = dichotomyPrecision;
         this.initialDichotomyStep = initialDichotomyStep;
         this.initialDichotomyIndex = initialDichotomyIndex;
-        this.importAdaptedProcess = importAdaptedProcess;
+        this.importEcProcess = importEcProcess;
     }
 
     public static CseRequest d2ccProcess(String id,
@@ -105,11 +105,11 @@ public class CseRequest {
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex,
-                                         boolean isAdapted) {
+                                         boolean isImportEc) {
         return new CseRequest(
             id, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
             null, null, null, targetChUrl, null, yearlyNtcUrl, manualFrcedPrasIds,
-            automatedForcedPras, maximumDichotomiesNumber, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex, isAdapted);
+            automatedForcedPras, maximumDichotomiesNumber, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex, isImportEc);
     }
 
     public static CseRequest idccProcess(String id,
@@ -130,10 +130,10 @@ public class CseRequest {
                                          double dichotomyPrecision,
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex,
-                                         boolean isAdapted) {
+                                         boolean isImportEc) {
         return new CseRequest(id, ProcessType.IDCC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl,
             ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl, manualForcedPrasIds,
-            automatedForcedPras, maximumDichotomiesNumber, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex, isAdapted);
+            automatedForcedPras, maximumDichotomiesNumber, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex, isImportEc);
     }
 
     public String getId() {
@@ -216,8 +216,8 @@ public class CseRequest {
         return initialDichotomyIndex;
     }
 
-    public boolean isImportAdaptedProcess() {
-        return importAdaptedProcess;
+    public boolean isImportEcProcess() {
+        return importEcProcess;
     }
 
     @Override

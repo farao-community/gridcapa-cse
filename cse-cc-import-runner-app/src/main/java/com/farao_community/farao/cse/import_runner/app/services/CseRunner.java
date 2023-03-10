@@ -74,7 +74,7 @@ public class CseRunner {
 
     @Threadable
     public CseResponse run(CseRequest cseRequest) throws IOException {
-        final boolean isAdaptedProcess = cseRequest.isImportAdaptedProcess();
+        final boolean importEcProcess = cseRequest.isImportEcProcess();
         CseData cseData = new CseData(cseRequest, fileImporter);
         // CRAC import and network pre-processing
         Network network = fileImporter.importNetwork(cseRequest.getCgmUrl());
@@ -91,8 +91,8 @@ public class CseRunner {
         Map<String, Integer> preprocessedPsts = PstInitializer.withLogger(businessLogger).initializePsts(network, crac);
 
         // Saving pre-processed network in IIDM and CRAC in JSON format
-        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetworkInArtifact(network, cseRequest.getTargetProcessDateTime(), "", cseRequest.getProcessType(), isAdaptedProcess));
-        cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), isAdaptedProcess));
+        cseData.setPreProcesedNetworkUrl(fileExporter.saveNetworkInArtifact(network, cseRequest.getTargetProcessDateTime(), "", cseRequest.getProcessType(), importEcProcess));
+        cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess));
 
         double initialIndexValueForProcess;
         if (cseRequest.getProcessType() == ProcessType.IDCC) {
@@ -127,17 +127,17 @@ public class CseRunner {
             NetworkShifterUtil.getReferenceExchanges(cseRequest.getProcessType(), cseData, network));
 
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
-        String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), isAdaptedProcess);
-        String baseCaseFileUrl = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, baseCaseFilePath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), isAdaptedProcess);
+        String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
+        String baseCaseFileUrl = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, baseCaseFilePath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
-            String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), isAdaptedProcess);
+            String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
             Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
                     .getRaoResponse().getNetworkWithPraFileUrl());
             BusBarChangePostProcessor.process(finalNetwork, cracImportData.busBarChangeSwitchesSet);
 
-            finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), isAdaptedProcess);
+            finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
             ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, cracImportData.cseCracCreationContext,
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
                 baseCaseFileUrl, finalCgmUrl, preprocessedPsts, preprocessedPisaLinks);

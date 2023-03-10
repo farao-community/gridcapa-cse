@@ -73,10 +73,10 @@ public class FileImporter {
         return new RaoResultImporter().importRaoResult(openUrlStream(raoResultUrl), crac);
     }
 
-    public Ntc importNtc(OffsetDateTime targetProcessDateTime, String yearlyNtcUrl, String dailyNtcUrl, boolean isAdaptedProcess) {
+    public Ntc importNtc(OffsetDateTime targetProcessDateTime, String yearlyNtcUrl, String dailyNtcUrl, boolean isImportEc) {
         try (InputStream yearlyNtcStream = openUrlStream(yearlyNtcUrl);
              InputStream dailyNtcStream = openUrlStream(dailyNtcUrl)) {
-            return Ntc.create(targetProcessDateTime, yearlyNtcStream, dailyNtcStream, isAdaptedProcess);
+            return Ntc.create(targetProcessDateTime, yearlyNtcStream, dailyNtcStream, isImportEc);
         } catch (IOException | JAXBException e) {
             throw new CseInvalidDataException("Impossible to create NTC", e);
         }
@@ -107,9 +107,9 @@ public class FileImporter {
         }
     }
 
-    public LineFixedFlows importLineFixedFlowFromTargetChFile(OffsetDateTime targetProcessDateTime, String targetChUrl, boolean isAdaptedProcess) {
+    public LineFixedFlows importLineFixedFlowFromTargetChFile(OffsetDateTime targetProcessDateTime, String targetChUrl, boolean isImportEc) {
         try (InputStream targetChStream = openUrlStream(targetChUrl)) {
-            return LineFixedFlows.create(targetProcessDateTime, targetChStream, isAdaptedProcess);
+            return LineFixedFlows.create(targetProcessDateTime, targetChStream, isImportEc);
         } catch (Exception e) {
             throw new CseInvalidDataException("Impossible to import LineFixedFlow from Target ch file", e);
         }

@@ -99,7 +99,7 @@ class CseRequestTest {
                 null,
                 true);
         assertNotNull(cseRequest);
-        assertTrue(cseRequest.isImportAdaptedProcess());
+        assertTrue(cseRequest.isImportEcProcess());
     }
 
     @Test
@@ -125,6 +125,6 @@ class CseRequestTest {
                 2500.,
                 true);
         assertNotNull(cseRequest);
-        assertTrue(cseRequest.isImportAdaptedProcess());
+        assertTrue(cseRequest.isImportEcProcess());
     }
 }

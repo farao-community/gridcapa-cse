@@ -23,13 +23,13 @@ public final class Ntc {
     private final DailyNtcDocument dailyNtcDocument;
     private final YearlyNtcDocumentAdapted yearlyNtcDocumentAdapted;
     private final DailyNtcDocumentAdapted dailyNtcDocumentAdapted;
-    private final boolean isImportAdaptedProcess;
+    private final boolean isImportEcProcess;
 
     public static Ntc create(OffsetDateTime targetDateTime,
                              InputStream ntcAnnualInputStream,
                              InputStream ntcReductionsInputStream,
-                             boolean isImportAdaptedProcess) throws JAXBException {
-        if (isImportAdaptedProcess) {
+                             boolean isImportEcProcess) throws JAXBException {
+        if (isImportEcProcess) {
             return new Ntc(
                     YearlyNtcDocumentAdapted.create(targetDateTime, ntcAnnualInputStream),
                     DailyNtcDocumentAdapted.create(targetDateTime, ntcReductionsInputStream),
@@ -44,31 +44,31 @@ public final class Ntc {
         }
     }
 
-    private Ntc(YearlyNtcDocument yearlyNtcDocument, DailyNtcDocument dailyNtcDocument, boolean isImportAdaptedProcess) {
+    private Ntc(YearlyNtcDocument yearlyNtcDocument, DailyNtcDocument dailyNtcDocument, boolean isImportEcProcess) {
         this.yearlyNtcDocument = yearlyNtcDocument;
         this.dailyNtcDocument = dailyNtcDocument;
         this.yearlyNtcDocumentAdapted = null;
         this.dailyNtcDocumentAdapted = null;
-        this.isImportAdaptedProcess = isImportAdaptedProcess;
+        this.isImportEcProcess = isImportEcProcess;
     }
 
-    private Ntc(YearlyNtcDocumentAdapted yearlyNtcDocumentAdapted, DailyNtcDocumentAdapted dailyNtcDocumentAdapted, boolean isImportAdaptedProcess) {
+    private Ntc(YearlyNtcDocumentAdapted yearlyNtcDocumentAdapted, DailyNtcDocumentAdapted dailyNtcDocumentAdapted, boolean isImportEcProcess) {
         this.yearlyNtcDocument = null;
         this.dailyNtcDocument = null;
         this.yearlyNtcDocumentAdapted = yearlyNtcDocumentAdapted;
         this.dailyNtcDocumentAdapted = dailyNtcDocumentAdapted;
-        this.isImportAdaptedProcess = isImportAdaptedProcess;
+        this.isImportEcProcess = isImportEcProcess;
     }
 
     public Double computeMniiOffset() {
-        Map<String, Double> flowOnNotModeledLinesPerCountry = isImportAdaptedProcess ?
+        Map<String, Double> flowOnNotModeledLinesPerCountry = isImportEcProcess ?
             getFlowPerCountryAdapted(Predicate.not(com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine::isModelized)) :
             getFlowPerCountry(Predicate.not(TLine::isModelized));
         return flowOnNotModeledLinesPerCountry.values().stream().reduce(0., Double::sum);
     }
 
     public Map<String, Double> computeReducedSplittingFactors() {
-        Map<String, Double> flowOnMerchantLinesPerCountry = isImportAdaptedProcess ?
+        Map<String, Double> flowOnMerchantLinesPerCountry = isImportEcProcess ?
                 getFlowPerCountryAdapted(com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine::isMerchantLine) :
                 getFlowPerCountry(TLine::isMerchantLine);
         Map<String, Double> ntcPerCountry = getNtcPerCountry();
@@ -78,7 +78,7 @@ public final class Ntc {
     }
 
     public Map<String, Double> getFlowOnFixedFlowLines() {
-        if (isImportAdaptedProcess) {
+        if (isImportEcProcess) {
             Predicate<com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine> fixedFlowLines = tLine -> tLine.isFixedFlow() && tLine.isModelized();
             Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocumentAdapted.getLineInformationPerLineId(fixedFlowLines);
             Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocumentAdapted.getLineInformationPerLineId(fixedFlowLines);
@@ -92,7 +92,7 @@ public final class Ntc {
     }
 
     public Map<String, Double> getFlowPerCountryOnMerchantLines() {
-        return isImportAdaptedProcess ?
+        return isImportEcProcess ?
                 getFlowPerCountryAdapted(com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine::isMerchantLine) :
                 getFlowPerCountry(TLine::isMerchantLine);
     }
@@ -130,7 +130,7 @@ public final class Ntc {
     }
 
     public Map<String, Double> getNtcPerCountry() {
-        return isImportAdaptedProcess ? getNtcPerCountryAdapted() : getNtcPerCountryNotAdapted();
+        return isImportEcProcess ? getNtcPerCountryAdapted() : getNtcPerCountryNotAdapted();
     }
 
     private Map<String, Double> getNtcPerCountryNotAdapted() {

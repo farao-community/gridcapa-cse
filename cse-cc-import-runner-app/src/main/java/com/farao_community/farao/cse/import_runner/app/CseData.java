@@ -53,7 +53,7 @@ public class CseData {
         }
         if (lineFixedFlows == null) {
             lineFixedFlows = fileImporter.importLineFixedFlowFromTargetChFile(
-                    cseRequest.getTargetProcessDateTime(), cseRequest.getTargetChUrl(), cseRequest.isImportAdaptedProcess());
+                    cseRequest.getTargetProcessDateTime(), cseRequest.getTargetChUrl(), cseRequest.isImportEcProcess());
         }
         return lineFixedFlows;
     }
@@ -82,7 +82,7 @@ public class CseData {
             cseRequest.getTargetProcessDateTime(),
             cseRequest.getYearlyNtcUrl(),
             cseRequest.getNtcReductionsUrl(),
-            cseRequest.isImportAdaptedProcess());
+            cseRequest.isImportEcProcess());
         return ntc;
     }
 

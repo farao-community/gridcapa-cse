@@ -67,7 +67,7 @@ class CseDataTest {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
         Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-01-01T00:00Z"));
         Mockito.when(cseRequest.getTargetChUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
-        Mockito.when(cseRequest.isImportAdaptedProcess()).thenReturn(false);
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
         cseData = new CseData(cseRequest, fileImporter);
         assertNotNull(cseData);
         LineFixedFlows lines = cseData.getLineFixedFlows();
@@ -79,7 +79,7 @@ class CseDataTest {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
         Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-01-01T00:00Z"));
         Mockito.when(cseRequest.getTargetChUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
-        Mockito.when(cseRequest.isImportAdaptedProcess()).thenReturn(true);
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(true);
         cseData = new CseData(cseRequest, fileImporter);
         assertNotNull(cseData);
         LineFixedFlows lines = cseData.getLineFixedFlows();
@@ -92,7 +92,7 @@ class CseDataTest {
         Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-01-01T00:00Z"));
         Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
-        Mockito.when(cseRequest.isImportAdaptedProcess()).thenReturn(false);
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
         cseData = new CseData(cseRequest, fileImporter);
         assertNotNull(cseData);
         Ntc ntc = cseData.getNtc();
@@ -107,7 +107,7 @@ class CseDataTest {
         Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-01-01T00:00Z"));
         Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
         Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
-        Mockito.when(cseRequest.isImportAdaptedProcess()).thenReturn(true);
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(true);
         cseData = new CseData(cseRequest, fileImporter);
         assertNotNull(cseData);
         Ntc ntc = cseData.getNtc();
