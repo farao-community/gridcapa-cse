@@ -44,7 +44,7 @@ public class CseRequest {
     private final double initialDichotomyStep;
     private final Double initialDichotomyIndex;
 
-    private final boolean importEcProcess;
+    private final boolean isImportEcProcess;
 
     @JsonCreator
     public CseRequest(@JsonProperty("id") String id,
@@ -67,7 +67,7 @@ public class CseRequest {
                       @JsonProperty("dichotomyPrecision") double dichotomyPrecision,
                       @JsonProperty("initialDichotomyStep") double initialDichotomyStep,
                       @JsonProperty("initialDichotomyIndex") Double initialDichotomyIndex,
-                      @JsonProperty("importEcProcess") boolean importEcProcess) {
+                      @JsonProperty("importEcProcess") boolean isImportEcProcess) {
         this.id = id;
         this.processType = processType;
         this.targetProcessDateTime = targetProcessDateTime;
@@ -88,7 +88,7 @@ public class CseRequest {
         this.dichotomyPrecision = dichotomyPrecision;
         this.initialDichotomyStep = initialDichotomyStep;
         this.initialDichotomyIndex = initialDichotomyIndex;
-        this.importEcProcess = importEcProcess;
+        this.isImportEcProcess = isImportEcProcess;
     }
 
     public static CseRequest d2ccProcess(String id,
@@ -217,7 +217,7 @@ public class CseRequest {
     }
 
     public boolean isImportEcProcess() {
-        return importEcProcess;
+        return isImportEcProcess;
     }
 
     @Override
