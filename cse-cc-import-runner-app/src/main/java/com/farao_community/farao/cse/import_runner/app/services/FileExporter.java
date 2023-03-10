@@ -123,7 +123,9 @@ public class FileExporter {
             }
             SearchTreeRaoParameters searchTreeRaoParameters = raoParameters.getExtension(SearchTreeRaoParameters.class);
             if (searchTreeRaoParameters != null) {
+                //rao-topological-actions-optimization	    predefined-combinations	e.g : ["{na1}+{na2}", "{na3}+{na4}+{na5}" ]
                 searchTreeRaoParameters.setNetworkActionIdCombinations(combinedRas);
+                //rao-ra-usage-limits-per-contingency	    max-curative-ra-per-tso	e.g :  ["{TSO_1}:1", "{TSO_2}:2"]
                 searchTreeRaoParameters.setMaxCurativeRaPerTso(MAX_CURATIVE_RA_PER_TSO);
             }
         } catch (IOException e) {
