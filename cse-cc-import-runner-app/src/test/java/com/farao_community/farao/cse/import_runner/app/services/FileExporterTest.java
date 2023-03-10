@@ -131,7 +131,6 @@ class FileExporterTest {
         assertEquals(expectedFilePathWhenBasePathIsNotEmpty, fileExporter.getRaoParametersDestinationPath("FAKE_PATH/", ProcessType.IDCC, OffsetDateTime.parse("2021-09-13T23:30Z"), false));
     }
 
-    //
     @Test
     void getTTcFilePathForD2ccAdaptedProcessTest() {
         String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, true);

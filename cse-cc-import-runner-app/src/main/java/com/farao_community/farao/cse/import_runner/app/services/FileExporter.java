@@ -52,7 +52,7 @@ public class FileExporter {
     private static final String JSON_CRAC_FILE_NAME = "crac.json";
     private static final String RAO_PARAMETERS_FILE_NAME = "raoParameters.json";
     private static final DateTimeFormatter OUTPUTS_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
-    public static final String XIIDM = "XIIDM";
+    private static final String XIIDM_FORMAT = "XIIDM";
 
     private final MinioAdapter minioAdapter;
     private final ProcessConfiguration processConfiguration;
@@ -91,7 +91,7 @@ public class FileExporter {
     }
 
     public String saveNetworkInArtifact(Network network, String networkFilePath, String fileType, OffsetDateTime processTargetDateTime, ProcessType processType, boolean isImportEc) {
-        exportAndUploadNetwork(network, XIIDM, GridcapaFileGroup.ARTIFACT, networkFilePath, fileType, processTargetDateTime, processType, isImportEc);
+        exportAndUploadNetwork(network, XIIDM_FORMAT, GridcapaFileGroup.ARTIFACT, networkFilePath, fileType, processTargetDateTime, processType, isImportEc);
         return minioAdapter.generatePreSignedUrl(networkFilePath);
     }
 
@@ -197,8 +197,8 @@ public class FileExporter {
             case "UCTE":
                 network.write("UCTE", new Properties(), memDataSource);
                 return memDataSource.newInputStream("", "uct");
-            case XIIDM:
-                network.write(XIIDM, new Properties(), memDataSource);
+            case XIIDM_FORMAT:
+                network.write(XIIDM_FORMAT, new Properties(), memDataSource);
                 return memDataSource.newInputStream("", "xiidm");
             default:
                 throw new UnsupportedOperationException(String.format("Network format %s not supported", format));
