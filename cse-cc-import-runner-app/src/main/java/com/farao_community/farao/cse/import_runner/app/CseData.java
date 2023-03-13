@@ -52,7 +52,8 @@ public class CseData {
             throw new CseInternalException("Impossible to retrieve line fixed flows for IDCC process. No target CH file available");
         }
         if (lineFixedFlows == null) {
-            lineFixedFlows = fileImporter.importLineFixedFlowFromTargetChFile(cseRequest.getTargetProcessDateTime(), cseRequest.getTargetChUrl());
+            lineFixedFlows = fileImporter.importLineFixedFlowFromTargetChFile(
+                    cseRequest.getTargetProcessDateTime(), cseRequest.getTargetChUrl(), cseRequest.isImportEcProcess());
         }
         return lineFixedFlows;
     }
@@ -80,7 +81,8 @@ public class CseData {
         ntc = fileImporter.importNtc(
             cseRequest.getTargetProcessDateTime(),
             cseRequest.getYearlyNtcUrl(),
-            cseRequest.getNtcReductionsUrl());
+            cseRequest.getNtcReductionsUrl(),
+            cseRequest.isImportEcProcess());
         return ntc;
     }
 

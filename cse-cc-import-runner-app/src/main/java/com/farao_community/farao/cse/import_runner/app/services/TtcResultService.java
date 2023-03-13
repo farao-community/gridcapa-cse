@@ -47,7 +47,7 @@ public class TtcResultService {
             cseRequest.getTargetProcessDateTime().toString(),
             failedProcessReason
         ));
-        return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+        return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
     }
 
     public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String baseCaseFileUrl, String finalCgmUrl, Map<String, Integer> preprocessedPsts, Map<String, Double> preprocessedPisaLinks) {
@@ -70,7 +70,7 @@ public class TtcResultService {
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
             cseCracCreationContext, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath()));
         Timestamp timestamp = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, preprocessedPisaLinks);
-        return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+        return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
     }
 
     private static TtcResult.TtcFiles createTtcFiles(CseRequest cseRequest, String baseCaseFileUrl, String finalCgmUrl) {

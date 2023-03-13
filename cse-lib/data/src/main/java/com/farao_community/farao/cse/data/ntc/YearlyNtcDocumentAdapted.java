@@ -42,8 +42,8 @@ final class YearlyNtcDocumentAdapted {
                         TLine::getCode,
                         tLine -> {
                             TNTC tNtc = NtcUtilAdapted.getTNtcFromLine(targetDateTime, tLine);
-                            if (tNtc.getType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
-                                return new LineInformation(tLine.getCNtc().value(), tNtc.getType(), tNtc.getV().doubleValue());
+                            if (tNtc.getType() == null || tNtc.getType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
+                                return new LineInformation(tLine.getCNtc().value(), NtcUtil.ABSOLUTE, tNtc.getV().doubleValue());
                             }
                             throw new CseDataException("Flow for yearly value must be absolute");
                         }

@@ -92,7 +92,8 @@ class MultipleDichotomyRunnerTest {
             dichotomyNumber,
             50,
             650,
-            1000.);
+            1000.,
+                false);
     }
 
     private void mockCrac() {

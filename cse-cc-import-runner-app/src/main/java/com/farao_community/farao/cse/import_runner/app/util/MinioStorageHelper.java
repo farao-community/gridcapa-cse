@@ -21,15 +21,16 @@ public final class MinioStorageHelper {
     private static final String MINIO_SEPARATOR = "/";
     private static final String REGION = "CSE";
     private static final String DIRECTION = "IMPORT";
+    private static final String DIRECTION_IMPORT_EC = "IMPORT_EC";
 
     private MinioStorageHelper() {
         // should not be constructed
     }
 
-    public static String makeDestinationMinioPath(OffsetDateTime offsetDateTime, ProcessType processType, FileKind filekind, ZoneId zoneId) {
+    public static String makeDestinationMinioPath(OffsetDateTime offsetDateTime, ProcessType processType, FileKind filekind, ZoneId zoneId, boolean isImportEc) {
         ZonedDateTime targetDateTime = offsetDateTime.atZoneSameInstant(zoneId);
         return REGION + MINIO_SEPARATOR
-            + DIRECTION + MINIO_SEPARATOR
+            + (isImportEc ? DIRECTION_IMPORT_EC : DIRECTION) + MINIO_SEPARATOR
             + processType + MINIO_SEPARATOR
             + targetDateTime.getYear() + MINIO_SEPARATOR
             + String.format("%02d", targetDateTime.getMonthValue()) + MINIO_SEPARATOR

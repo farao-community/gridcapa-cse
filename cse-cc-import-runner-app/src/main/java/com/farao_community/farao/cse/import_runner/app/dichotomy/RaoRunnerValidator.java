@@ -51,6 +51,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
     private final FileImporter fileImporter;
     private final ForcedPrasHandler forcedPrasHandler;
     private final Set<String> forcedPrasIds;
+    private final boolean isImportEcProcess;
     private int variantCounter = 0;
 
     public RaoRunnerValidator(ProcessType processType,
@@ -62,7 +63,8 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
                               FileExporter fileExporter,
                               FileImporter fileImporter,
                               ForcedPrasHandler forcedPrasHandler,
-                              Set<String> forcedPrasIds) {
+                              Set<String> forcedPrasIds,
+                              boolean isImportEcProcess) {
         this.processType = processType;
         this.requestId = requestId;
         this.processTargetDateTime = processTargetDateTime;
@@ -73,13 +75,14 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         this.fileImporter = fileImporter;
         this.forcedPrasHandler = forcedPrasHandler;
         this.forcedPrasIds = forcedPrasIds;
+        this.isImportEcProcess = isImportEcProcess;
     }
 
     @Override
     public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network, DichotomyStepResult lastDichotomyStepResult) throws ValidationException {
         String baseDirPathForCurrentStep = generateBaseDirPathFromScaledNetwork(network);
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
-        String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkName, "", processTargetDateTime, processType);
+        String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkName, "", processTargetDateTime, processType, isImportEcProcess);
 
         try {
             Crac crac = fileImporter.importCracFromJson(cracUrl);
@@ -124,13 +127,13 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         if (appliedRemedialActionInPreviousStep.isEmpty() || appliedRemedialActionInPreviousStep.size() == 1) {
             return new RaoRequest(requestId, networkPreSignedUrl, cracUrl, raoParametersUrl, baseDirPathForCurrentStep);
         } else {
-            String raoParametersWithAppliedRemedialActionInPreviousStepUrl = fileExporter.saveRaoParameters(baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep, processTargetDateTime, processType);
+            String raoParametersWithAppliedRemedialActionInPreviousStepUrl = fileExporter.saveRaoParameters(baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep, processTargetDateTime, processType, isImportEcProcess);
             return new RaoRequest(requestId, networkPreSignedUrl, cracUrl, raoParametersWithAppliedRemedialActionInPreviousStepUrl, baseDirPathForCurrentStep);
         }
     }
 
     private String generateBaseDirPathFromScaledNetwork(Network network) {
-        String basePath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(fileExporter.getZoneId()));
+        String basePath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(fileExporter.getZoneId()), isImportEcProcess);
         String variantName = network.getVariantManager().getWorkingVariantId();
         return String.format("%s/%s-%s/", basePath, ++variantCounter, variantName);
     }

@@ -34,7 +34,8 @@ class CseRequestTest {
             4,
             50,
             650,
-            null);
+            null,
+                false);
         assertNotNull(cseRequest);
         assertEquals("cgmUrl", cseRequest.getCgmUrl());
         assertEquals("ntcReductionsUrl", cseRequest.getNtcReductionsUrl());
@@ -66,7 +67,8 @@ class CseRequestTest {
             4,
             50,
             650,
-            2500.);
+            2500.,
+                false);
         assertNotNull(cseRequest);
         assertEquals("cgmUrl", cseRequest.getCgmUrl());
         assertEquals("mergedCracUrl", cseRequest.getMergedCracUrl());
@@ -76,5 +78,53 @@ class CseRequestTest {
         assertEquals(50, cseRequest.getDichotomyPrecision());
         assertEquals(650, cseRequest.getInitialDichotomyStep());
         assertEquals(2500, cseRequest.getInitialDichotomyIndex());
+    }
+
+    @Test
+    void checkCseRequestForD2ccAdaptedProcess() {
+        CseRequest cseRequest = CseRequest.d2ccProcess(
+                "id",
+                OffsetDateTime.parse("2017-07-18T08:18Z"),
+                "cgmUrl",
+                "mergedCracUrl",
+                "mergedGlskUrl",
+                "ntcReductionsUrl",
+                "targetChUrl",
+                "yearlyNtcUrl",
+                Collections.emptyList(),
+                Collections.emptyMap(),
+                4,
+                50,
+                650,
+                null,
+                true);
+        assertNotNull(cseRequest);
+        assertTrue(cseRequest.isImportEcProcess());
+    }
+
+    @Test
+    void checkCseRequestForIdccAdaptedProcess() {
+        CseRequest cseRequest = CseRequest.idccProcess(
+                "id",
+                OffsetDateTime.parse("2017-07-18T08:18Z"),
+                "cgmUrl",
+                "mergedCracUrl",
+                "mergedGlskUrl",
+                "ntcReductionsUrl",
+                "ntc2AtItUrl",
+                "ntc2ChItUrl",
+                "ntc2FrItUrl",
+                "ntc2SiItUrl",
+                "vulcanusUrl",
+                "yearlyNtcUrl",
+                Collections.emptyList(),
+                Collections.emptyMap(),
+                4,
+                50,
+                650,
+                2500.,
+                true);
+        assertNotNull(cseRequest);
+        assertTrue(cseRequest.isImportEcProcess());
     }
 }
