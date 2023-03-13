@@ -7,11 +7,11 @@
     <parent>
         <artifactId>gridcapa-cse-lib</artifactId>
         <groupId>com.farao-community.farao</groupId>
-        <version>1.13.0-SNAPSHOT</version>
+        <version>1.13.0</version>
     </parent>
 
     <artifactId>gridcapa-cse-data</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.0</version>
     <packaging>jar</packaging>
     <name>Common CSE data management</name>
     <description>Module that manages specific data format for CSE processes</description>
