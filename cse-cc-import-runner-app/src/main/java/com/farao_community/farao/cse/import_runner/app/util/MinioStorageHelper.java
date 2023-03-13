@@ -21,7 +21,7 @@ public final class MinioStorageHelper {
     private static final String MINIO_SEPARATOR = "/";
     private static final String REGION = "CSE";
     private static final String DIRECTION = "IMPORT";
-    private static final String DIRECTION_IMPORT_EC = "IMPORT-EC";
+    private static final String DIRECTION_IMPORT_EC = "IMPORT_EC";
 
     private MinioStorageHelper() {
         // should not be constructed

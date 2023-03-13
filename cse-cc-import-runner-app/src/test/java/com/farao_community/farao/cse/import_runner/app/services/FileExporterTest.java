@@ -134,7 +134,7 @@ class FileExporterTest {
     @Test
     void getTTcFilePathForD2ccAdaptedProcessTest() {
         String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, true);
-        String expectedFilePath = "CSE/IMPORT-EC/D2CC/2021/09/13/14_30/OUTPUTS/TTC_Calculation_20210913_1430_2D0_CO_CSE1.xml";
+        String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/09/13/14_30/OUTPUTS/TTC_Calculation_20210913_1430_2D0_CO_CSE1.xml";
         assertEquals(expectedFilePath, actualFilePath);
         FilenameUtils.getPathNoEndSeparator("CSE/D2CC/2021/");
     }
@@ -142,41 +142,41 @@ class FileExporterTest {
     @Test
     void getTTcFilePathForIdccAdaptedProcessTest() {
         String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T23:30Z"), ProcessType.IDCC, true);
-        String expectedFilePath = "CSE/IMPORT-EC/IDCC/2021/09/14/01_30/OUTPUTS/20210914_XBID2_TTCRes_CSE1.xml";
+        String expectedFilePath = "CSE/IMPORT_EC/IDCC/2021/09/14/01_30/OUTPUTS/20210914_XBID2_TTCRes_CSE1.xml";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getFinalNetworkFilePathForD2ccAdaptedProcesTest() {
         String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, true);
-        String expectedFilePath = "CSE/IMPORT-EC/D2CC/2021/09/13/14_30/OUTPUTS/20210913_1430_2D1_CO_Final_CSE1.uct";
+        String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/09/13/14_30/OUTPUTS/20210913_1430_2D1_CO_Final_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getFinalNetworkFilePathForIdccAdaptedProcesTest() {
         String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC, true);
-        String expectedFilePath = "CSE/IMPORT-EC/IDCC/2021/09/01/19_30/OUTPUTS/20210901_1930_173_CSE1.uct";
+        String expectedFilePath = "CSE/IMPORT_EC/IDCC/2021/09/01/19_30/OUTPUTS/20210901_1930_173_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForIdccAdaptedProcesTest() {
         String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T15:30Z"), ProcessType.IDCC, true);
-        String expectedFilePath = "CSE/IMPORT-EC/IDCC/2021/01/01/16_30/OUTPUTS/20210101_1630_155_Initial_CSE1.uct";
+        String expectedFilePath = "CSE/IMPORT_EC/IDCC/2021/01/01/16_30/OUTPUTS/20210101_1630_155_Initial_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForD2ccAdaptedProcesTest() {
         String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC, true);
-        String expectedFilePath = "CSE/IMPORT-EC/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_CO_CSE1.uct";
+        String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_CO_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getRaoParametersFileAdaptedPathTest() {
-        String expectedFilePathWhenBasePathIsEmptyOrNull = "CSE/IMPORT-EC/IDCC/2021/09/14/01_30/ARTIFACTS/raoParameters.json";
+        String expectedFilePathWhenBasePathIsEmptyOrNull = "CSE/IMPORT_EC/IDCC/2021/09/14/01_30/ARTIFACTS/raoParameters.json";
         String expectedFilePathWhenBasePathIsNotEmpty = "FAKE_PATH/raoParameters.json";
         assertEquals(expectedFilePathWhenBasePathIsEmptyOrNull, fileExporter.getRaoParametersDestinationPath("", ProcessType.IDCC, OffsetDateTime.parse("2021-09-13T23:30Z"), true));
         assertEquals(expectedFilePathWhenBasePathIsEmptyOrNull, fileExporter.getRaoParametersDestinationPath(null, ProcessType.IDCC, OffsetDateTime.parse("2021-09-13T23:30Z"), true));
@@ -185,7 +185,7 @@ class FileExporterTest {
 
     @Test
     void saveCracInJsonFormatTest() {
-        String expectedCracFilePath = "CSE/IMPORT-EC/IDCC/1999/01/01/13_30/ARTIFACTS/crac.json";
+        String expectedCracFilePath = "CSE/IMPORT_EC/IDCC/1999/01/01/13_30/ARTIFACTS/crac.json";
         Mockito.when(minioAdapter.generatePreSignedUrl(expectedCracFilePath)).thenReturn("SUCCESS");
         String result = fileExporter.saveCracInJsonFormat(new CracImpl("testCrac"), OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.IDCC, true);
         assertNotNull(result);
@@ -202,7 +202,7 @@ class FileExporterTest {
     @Test
     void saveNetworkInArtifactTest() {
         Network network = NetworkFactory.findDefault().createNetwork("test", "TEST");
-        String expectedCracFilePath = "CSE/IMPORT-EC/D2CC/1999/01/01/13_30/ARTIFACTS/network_pre_processed.xiidm";
+        String expectedCracFilePath = "CSE/IMPORT_EC/D2CC/1999/01/01/13_30/ARTIFACTS/network_pre_processed.xiidm";
         Mockito.when(minioAdapter.generatePreSignedUrl(expectedCracFilePath)).thenReturn("SUCCESS");
         String result = fileExporter.saveNetworkInArtifact(network, OffsetDateTime.parse("1999-01-01T12:30Z"), "", ProcessType.D2CC, true);
         assertNotNull(result);
@@ -211,7 +211,7 @@ class FileExporterTest {
 
     @Test
     void saveRaoParametersTest() {
-        String raoParametersDestinationPath = "CSE/IMPORT-EC/IDCC/1999/01/01/13_30/ARTIFACTS/raoParameters.json";
+        String raoParametersDestinationPath = "CSE/IMPORT_EC/IDCC/1999/01/01/13_30/ARTIFACTS/raoParameters.json";
         Mockito.when(minioAdapter.generatePreSignedUrl(raoParametersDestinationPath)).thenReturn("SUCCESS");
         String result = fileExporter.saveRaoParameters(OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.IDCC, true);
         assertNotNull(result);
@@ -219,7 +219,7 @@ class FileExporterTest {
 
     @Test
     void saveTtcResultD2ccTest() {
-        String ttcFilePath = "CSE/IMPORT-EC/D2CC/1999/01/01/13_30/OUTPUTS/TTC_Calculation_19990101_1330_2D0_CO_CSE1.xml";
+        String ttcFilePath = "CSE/IMPORT_EC/D2CC/1999/01/01/13_30/OUTPUTS/TTC_Calculation_19990101_1330_2D0_CO_CSE1.xml";
         Mockito.when(minioAdapter.generatePreSignedUrl(ttcFilePath)).thenReturn("SUCCESS");
         String result = fileExporter.saveTtcResult(new Timestamp(), OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.D2CC, true);
         assertNotNull(result);
@@ -227,7 +227,7 @@ class FileExporterTest {
 
     @Test
     void saveTtcResultIdccTest() {
-        String ttcFilePath = "CSE/IMPORT-EC/IDCC/1999/12/31/13_30/OUTPUTS/19991231_XBID2_TTCRes_CSE1.xml";
+        String ttcFilePath = "CSE/IMPORT_EC/IDCC/1999/12/31/13_30/OUTPUTS/19991231_XBID2_TTCRes_CSE1.xml";
         Mockito.when(minioAdapter.generatePreSignedUrl(ttcFilePath)).thenReturn("SUCCESS");
         String result = fileExporter.saveTtcResult(new Timestamp(), OffsetDateTime.parse("1999-12-31T12:30Z"), ProcessType.IDCC, true);
         assertNotNull(result);
@@ -236,7 +236,7 @@ class FileExporterTest {
     @Test
     void exportAndUploadNetworkAsOutputTest() {
         Network network = NetworkFactory.findDefault().createNetwork("test", "TEST");
-        String expectedCracFilePath = "CSE/IMPORT-EC/D2CC/1999/01/01/13_30/ARTIFACTS/network_pre_processed.xiidm";
+        String expectedCracFilePath = "CSE/IMPORT_EC/D2CC/1999/01/01/13_30/ARTIFACTS/network_pre_processed.xiidm";
         Mockito.when(minioAdapter.generatePreSignedUrl(expectedCracFilePath)).thenReturn("SUCCESS");
         String result = fileExporter.exportAndUploadNetwork(network, "XIIDM", GridcapaFileGroup.OUTPUT, expectedCracFilePath, "", OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.D2CC, true);
         assertNotNull(result);

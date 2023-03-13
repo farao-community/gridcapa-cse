@@ -36,16 +36,16 @@ class MinioStorageHelperTest {
 
     @Test
     void makeArtifactsMinioDestinationAdaptedPathTest() {
-        assertEquals("CSE/IMPORT-EC/D2CC/2022/01/28/11_30/ARTIFACTS/", MinioStorageHelper.makeDestinationMinioPath(OffsetDateTime.parse("2022-01-28T10:30Z"), ProcessType.D2CC, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of("Europe/Paris"), true));
+        assertEquals("CSE/IMPORT_EC/D2CC/2022/01/28/11_30/ARTIFACTS/", MinioStorageHelper.makeDestinationMinioPath(OffsetDateTime.parse("2022-01-28T10:30Z"), ProcessType.D2CC, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of("Europe/Paris"), true));
     }
 
     @Test
     void makeOutputsMinioDestinationAdaptedPathTest() {
-        assertEquals("CSE/IMPORT-EC/IDCC/2022/01/28/16_30/OUTPUTS/", MinioStorageHelper.makeDestinationMinioPath(OffsetDateTime.parse("2022-01-28T15:30Z"), ProcessType.IDCC, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of("Europe/Paris"), true));
+        assertEquals("CSE/IMPORT_EC/IDCC/2022/01/28/16_30/OUTPUTS/", MinioStorageHelper.makeDestinationMinioPath(OffsetDateTime.parse("2022-01-28T15:30Z"), ProcessType.IDCC, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of("Europe/Paris"), true));
     }
 
     @Test
     void makeAConfigurationsMinioDestinationAdaptedPathTest() {
-        assertEquals("CSE/IMPORT-EC/D2CC/2022/01/28/20_30/ARTIFACTS/", MinioStorageHelper.makeDestinationMinioPath(OffsetDateTime.parse("2022-01-28T19:30Z"), ProcessType.D2CC, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of("Europe/Paris"), true));
+        assertEquals("CSE/IMPORT_EC/D2CC/2022/01/28/20_30/ARTIFACTS/", MinioStorageHelper.makeDestinationMinioPath(OffsetDateTime.parse("2022-01-28T19:30Z"), ProcessType.D2CC, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of("Europe/Paris"), true));
     }
 }
