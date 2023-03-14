@@ -7,7 +7,6 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
@@ -19,8 +18,6 @@ import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.farao_community.farao.rao_api.json.JsonRaoParameters;
 import com.farao_community.farao.rao_api.parameters.RaoParameters;
-import com.farao_community.farao.search_tree_rao.castor.parameters.SearchTreeRaoParameters;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.network.Network;
 import org.apache.commons.lang3.StringUtils;
@@ -57,16 +54,13 @@ public class FileExporter {
     private final MinioAdapter minioAdapter;
     private final ProcessConfiguration processConfiguration;
 
-    private final String combinedRasFilePath;
-
     private static final String PROCESS_TYPE_PREFIX = "CSE_IMPORT_";
     private static final String PROCESS_TYPE_IMPORT_EC_PREFIX = "CSE_IMPORT_EC_";
     private static final Map<String, Integer> MAX_CURATIVE_RA_PER_TSO = Map.of("IT", 1, "FR", 5, "CH", 0, "AT", 3, "SI", 3);
 
-    public FileExporter(MinioAdapter minioAdapter, ProcessConfiguration processConfiguration, String combinedRasFilePath) {
+    public FileExporter(MinioAdapter minioAdapter, ProcessConfiguration processConfiguration) {
         this.minioAdapter = minioAdapter;
         this.processConfiguration = processConfiguration;
-        this.combinedRasFilePath = combinedRasFilePath;
     }
 
     public String saveCracInJsonFormat(Crac crac, OffsetDateTime processTargetDateTime, ProcessType processType, boolean isImportEc) {
@@ -115,21 +109,9 @@ public class FileExporter {
 
     RaoParameters getRaoParameters(List<String> remedialActionsAppliedInPreviousStep) {
         RaoParameters raoParameters = loadRaoParameters();
-        try (InputStream is = new FileInputStream(combinedRasFilePath)) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<List<String>> combinedRas = objectMapper.readValue(is.readAllBytes(), List.class);
-            if (!remedialActionsAppliedInPreviousStep.isEmpty()) {
-                combinedRas.add(remedialActionsAppliedInPreviousStep);
-            }
-            SearchTreeRaoParameters searchTreeRaoParameters = raoParameters.getExtension(SearchTreeRaoParameters.class);
-            if (searchTreeRaoParameters != null) {
-                //rao-topological-actions-optimization	    predefined-combinations	e.g : ["{na1}+{na2}", "{na3}+{na4}+{na5}" ]
-                searchTreeRaoParameters.setNetworkActionIdCombinations(combinedRas);
-                //rao-ra-usage-limits-per-contingency	    max-curative-ra-per-tso	e.g :  ["{TSO_1}:1", "{TSO_2}:2"]
-                searchTreeRaoParameters.setMaxCurativeRaPerTso(MAX_CURATIVE_RA_PER_TSO);
-            }
-        } catch (IOException e) {
-            throw new CseDataException(String.format("Impossible to read combined RAs file: %s", combinedRasFilePath));
+        List<List<String>> combinedRas = raoParameters.getTopoOptimizationParameters().getPredefinedCombinations();
+        if (!remedialActionsAppliedInPreviousStep.isEmpty()) {
+            combinedRas.add(remedialActionsAppliedInPreviousStep);
         }
         return raoParameters;
     }

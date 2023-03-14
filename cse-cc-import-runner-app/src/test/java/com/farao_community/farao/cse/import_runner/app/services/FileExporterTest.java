@@ -12,7 +12,6 @@ import com.farao_community.farao.data.crac_impl.CracImpl;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.farao_community.farao.rao_api.parameters.RaoParameters;
-import com.farao_community.farao.search_tree_rao.castor.parameters.SearchTreeRaoParameters;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.NetworkFactory;
 import org.apache.commons.io.FilenameUtils;
@@ -20,10 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 
 import java.io.InputStream;
 import java.time.OffsetDateTime;
@@ -38,16 +34,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @SpringBootTest
 class FileExporterTest {
-
-    @TestConfiguration
-    public static class MockCombinedRasConfiguration {
-
-        @Bean("combinedRasFilePath")
-        @Primary
-        public String getMockCombinedRasFilePath() {
-            return getClass().getResource("/combinedRAs.json").getPath();
-        }
-    }
 
     @MockBean
     MinioAdapter minioAdapter;
@@ -101,9 +87,9 @@ class FileExporterTest {
     @Test
     void getRaoParametersTest() {
         RaoParameters raoParameters = fileExporter.getRaoParameters(Collections.emptyList());
-        assertEquals(1, raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().size());
-        List<String> raCombination = raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().get(0);
-        Map<String, Integer> maxCurativeRaPerTso = raoParameters.getExtension(SearchTreeRaoParameters.class).getMaxCurativeRaPerTso();
+        assertEquals(1, raoParameters.getTopoOptimizationParameters().getPredefinedCombinations().size());
+        List<String> raCombination = raoParameters.getTopoOptimizationParameters().getPredefinedCombinations().get(0);
+        Map<String, Integer> maxCurativeRaPerTso = raoParameters.getRaUsageLimitsPerContingencyParameters().getMaxCurativeRaPerTso();
         assertEquals(2, raCombination.size());
         assertTrue(raCombination.contains("PRA_2N_VALPELLINE"));
         assertTrue(raCombination.contains("PRA_2N_AVISE"));
@@ -119,7 +105,7 @@ class FileExporterTest {
     void getRaoParametersTestWhenRemedialActionsAppliedInPreviousStepIsNotEmpty() {
         List<String> networkActionIds = List.of("PRA_XX", "PRA_YY");
         RaoParameters raoParameters = fileExporter.getRaoParameters(networkActionIds);
-        assertEquals(2, raoParameters.getExtension(SearchTreeRaoParameters.class).getNetworkActionIdCombinations().size());
+        assertEquals(2, raoParameters.getTopoOptimizationParameters().getPredefinedCombinations().size());
     }
 
     @Test

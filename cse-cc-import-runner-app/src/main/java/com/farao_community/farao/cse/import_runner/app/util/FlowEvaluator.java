@@ -31,7 +31,7 @@ public final class FlowEvaluator {
     public static FlowResult evaluate(Crac crac, Network network, Unit unit) {
         SystematicSensitivityInterface systematicSensitivityInterface = SystematicSensitivityInterface.builder()
             .withLoadflow(crac.getFlowCnecs(), Set.of(unit))
-            .withDefaultParameters(SensitivityAnalysisParameters.load())
+            .withParameters(SensitivityAnalysisParameters.load())
             .withSensitivityProviderName(SensitivityAnalysis.find().getName())
             .build();
         SystematicSensitivityResult sensitivityResult = systematicSensitivityInterface.run(network);

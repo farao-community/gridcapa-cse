@@ -6,3 +6,49 @@ load-flow-default-parameters:
   balanceType: PROPORTIONAL_TO_GENERATION_P
   phaseShifterRegulationOn: true
   countriesToBalance: AL,AT,BA,BE,BG,CH,CZ,DE,ES,FR,GR,HR,HU,IT,ME,MK,NL,PL,PT,RO,RS,SI,SK,UA
+
+open-loadflow-default-parameters:
+  minPlausibleTargetVoltage: 0.5
+  maxPlausibleTargetVoltage: 1.5
+  plausibleActivePowerLimit: 10000
+  newtonRaphsonConvEpsPerEq: 1.0E-2
+
+rao-objective-function:
+  type: MAX_MIN_MARGIN_IN_AMPERE
+  preventive-stop-criterion: SECURE
+  curative-stop-criterion: SECURE
+
+rao-range-actions-optimization:
+  max-mip-iterations: 5
+  pst-penalty-cost: 0.01
+  pst-sensitivity-threshold: 0.01
+  pst-model: CONTINUOUS
+
+rao-linear-optimization-solver:
+  solver: CBC
+
+rao-multi-threading:
+  contingency-scenarios-in-parallel: 4
+  preventive-leaves-in-parallel: 4
+  curative-leaves-in-parallel: 1
+
+rao-load-flow-and-sensitivity-computation:
+  load-flow-provider: OpenLoadFlow
+  sensitivity-provider: OpenLoadFlow
+
+rao-topological-actions-optimization:
+  max-search-tree-depth: 3
+  predefined-combinations: [ "{PRA_2N_VALPELLINE}+{PRA_2N_AVISE}" ]
+  relative-minimum-impact-threshold: 0.0
+  absolute-minimum-impact-threshold: 2.0
+
+rao-second-preventive-rao:
+  execution-condition: POSSIBLE_CURATIVE_IMPROVEMENT
+  re-optimize-curative-range-actions: true
+  hint-from-first-preventive-rao: true
+
+rao-not-optimized-cnecs:
+  do-not-optimize-curative-cnecs-for-tsos-without-cras: false
+
+rao-ra-usage-limits-per-contingency:
+  max-curative-ra-per-tso: [ "{IT}:1", "{FR}:5", "{CH}:0", "{AT}:3", "{SI}:3" ]
