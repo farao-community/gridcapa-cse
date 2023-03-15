@@ -35,7 +35,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -56,7 +55,6 @@ public class FileExporter {
 
     private static final String PROCESS_TYPE_PREFIX = "CSE_IMPORT_";
     private static final String PROCESS_TYPE_IMPORT_EC_PREFIX = "CSE_IMPORT_EC_";
-    private static final Map<String, Integer> MAX_CURATIVE_RA_PER_TSO = Map.of("IT", 1, "FR", 5, "CH", 0, "AT", 3, "SI", 3);
 
     public FileExporter(MinioAdapter minioAdapter, ProcessConfiguration processConfiguration) {
         this.minioAdapter = minioAdapter;
