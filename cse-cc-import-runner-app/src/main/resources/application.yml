@@ -53,8 +53,6 @@ cse-cc-runner:
     ttc-res: TTC_RES
   xnodes:
     file-path: /home/farao/xnodes.xml
-  combined-ras:
-    file-path: /home/farao/combinedRAs.json
   mendrisio:
     mendrisio-cagno-line:
       target-ch-id: ml_0001

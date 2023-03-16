@@ -111,7 +111,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
 
     private Set<String> applyForcedPras(Crac crac, Network network) {
         if (!forcedPrasIds.isEmpty()) {
-            Unit unit = fileExporter.loadRaoParameters().getObjectiveFunction().getUnit();
+            Unit unit = fileExporter.loadRaoParameters().getObjectiveFunctionParameters().getType().getUnit();
             // It computes reference flows on the network to be able to evaluate PRAs availability
             FlowResult flowResult = FlowEvaluator.evaluate(crac, network, unit);
 
