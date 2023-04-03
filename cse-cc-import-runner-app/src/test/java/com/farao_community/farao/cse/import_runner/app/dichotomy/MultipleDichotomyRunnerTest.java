@@ -87,6 +87,7 @@ class MultipleDichotomyRunnerTest {
             null,
             null,
             null,
+            null,
             Collections.emptyList(),
             automatedForcedPras,
             dichotomyNumber,

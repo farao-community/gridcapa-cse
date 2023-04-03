@@ -99,6 +99,7 @@ public class CseRequest {
                                          String ntcReductionsUrl,
                                          String targetChUrl,
                                          String yearlyNtcUrl,
+                                         String vulcanusUrl,
                                          List<String> manualFrcedPrasIds,
                                          Map<String, List<Set<String>>> automatedForcedPras,
                                          Integer maximumDichotomiesNumber,
@@ -108,7 +109,7 @@ public class CseRequest {
                                          boolean isImportEc) {
         return new CseRequest(
             id, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
-            null, null, null, targetChUrl, null, yearlyNtcUrl, manualFrcedPrasIds,
+            null, null, null, targetChUrl, vulcanusUrl, yearlyNtcUrl, manualFrcedPrasIds,
             automatedForcedPras, maximumDichotomiesNumber, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex, isImportEc);
     }
 

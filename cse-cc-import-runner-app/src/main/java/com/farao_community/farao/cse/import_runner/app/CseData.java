@@ -103,15 +103,13 @@ public class CseData {
     }
 
     public CseReferenceExchanges getCseReferenceExchanges() {
-        if (cseRequest.getProcessType() == ProcessType.D2CC) {
-            throw new CseInternalException("Impossible to retrieve reference exchanges for D2CC process. No vulcanus file available");
-        }
         if (cseReferenceExchanges != null) {
             return cseReferenceExchanges;
         }
         cseReferenceExchanges = fileImporter.importCseReferenceExchanges(
             cseRequest.getTargetProcessDateTime(),
-            cseRequest.getVulcanusUrl());
+            cseRequest.getVulcanusUrl(),
+            cseRequest.getProcessType());
         return  cseReferenceExchanges;
     }
 

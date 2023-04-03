@@ -14,6 +14,7 @@ import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.import_runner.app.configurations.UrlWhitelistConfiguration;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
@@ -99,9 +100,9 @@ public class FileImporter {
         }
     }
 
-    public CseReferenceExchanges importCseReferenceExchanges(OffsetDateTime targetProcessDateTime, String vulcanusUrl) {
+    public CseReferenceExchanges importCseReferenceExchanges(OffsetDateTime targetProcessDateTime, String vulcanusUrl, ProcessType processType) {
         try (InputStream vulcanusStream = openUrlStream(vulcanusUrl)) {
-            return CseReferenceExchanges.fromVulcanusFile(targetProcessDateTime, vulcanusStream, FileUtil.getFilenameFromUrl(vulcanusUrl));
+            return CseReferenceExchanges.fromVulcanusFile(targetProcessDateTime, vulcanusStream, FileUtil.getFilenameFromUrl(vulcanusUrl), processType);
         } catch (IOException e) {
             throw new CseInvalidDataException("Impossible to create CseReferenceExchanges", e);
         }

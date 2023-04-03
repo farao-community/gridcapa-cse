@@ -49,13 +49,6 @@ class CseDataTest {
     }
 
     @Test
-    void testReferenceExchangesGetterFailsForD2CC() {
-        CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
-        cseData = new CseData(cseRequest, fileImporter);
-        assertThrows(CseInternalException.class, () -> cseData.getCseReferenceExchanges());
-    }
-
-    @Test
     void testLineFixedFlowsGetterFailsForIDCC() {
         CseRequest cseRequest = mockCseRequest(ProcessType.IDCC);
         cseData = new CseData(cseRequest, fileImporter);

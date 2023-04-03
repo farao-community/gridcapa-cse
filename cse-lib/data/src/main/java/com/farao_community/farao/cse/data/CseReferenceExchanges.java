@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.data;
 
 import com.farao_community.farao.commons.EICode;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.iidm.network.Country;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -26,7 +27,8 @@ import static com.farao_community.farao.cse.data.DateTimeUtil.*;
  * @author Belgacem Najjari {@literal <belgacem.najjari at rte-france.com>}
  */
 public final class CseReferenceExchanges {
-    private static final String REFERENCE_SHEET = "Sheet 31";
+    private static final String IDCC_REFERENCE_SHEET = "Sheet 31";
+    private static final String D2CC_REFERENCE_SHEET = "Sheet 7";
     private static final String POSTFIX_VULCANUS_FILE_NAME_WITH_MINUTES_STEP = "_96.xls";
     private static final int DATE_ROW = 3;
     private static final int DATE_COL = 1;
@@ -39,13 +41,21 @@ public final class CseReferenceExchanges {
         this.exchanges = exchanges;
     }
 
-    public static CseReferenceExchanges fromVulcanusFile(OffsetDateTime targetDateTime, InputStream vulcanusFile, String vulcanusName) throws IOException {
+    public static CseReferenceExchanges fromVulcanusFile(OffsetDateTime targetDateTime, InputStream vulcanusFile, String vulcanusName, ProcessType processType) throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook(vulcanusFile);
-        HSSFSheet worksheet = workbook.getSheet(REFERENCE_SHEET);
+
+        HSSFSheet worksheet;
+        if (processType.equals(ProcessType.IDCC)) {
+            worksheet = workbook.getSheet(IDCC_REFERENCE_SHEET);
+        } else if (processType.equals(ProcessType.D2CC)) {
+            worksheet = workbook.getSheet(D2CC_REFERENCE_SHEET);
+        } else {
+            throw new CseDataException("Cannot read reference exchanges from vulcanus file, unknown process type: " + processType);
+        }
         String vulcanusTime = vulcanusName.toLowerCase().contains(POSTFIX_VULCANUS_FILE_NAME_WITH_MINUTES_STEP) ? getVulcanusTimeFromVulcanusFileWithMinutesStep(targetDateTime) : getVulcanusTimeFromVulcanusFileWithHourStep(targetDateTime);
         LocalDate vulcanusDate = LocalDate.parse(
-                worksheet.getRow(DATE_ROW).getCell(DATE_COL).getStringCellValue(),
-                DateTimeFormatter.ofPattern("dd.MM.yyyy")
+            worksheet.getRow(DATE_ROW).getCell(DATE_COL).getStringCellValue(),
+            DateTimeFormatter.ofPattern("dd.MM.yyyy")
         );
         checkDate(vulcanusDate, targetDateTime);
         HSSFRow targetRow = getRow(worksheet, vulcanusTime);

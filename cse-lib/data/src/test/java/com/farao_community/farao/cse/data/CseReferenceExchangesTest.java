@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.data;
 
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.iidm.network.Country;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +34,8 @@ class CseReferenceExchangesTest {
             () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
                 OffsetDateTime.parse("2019-12-28T14:05Z"),
                 getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
-                    "vulcanus_28122019_96.xls"
+                    "vulcanus_28122019_96.xls",
+                ProcessType.IDCC
             )
         );
     }
@@ -45,7 +47,8 @@ class CseReferenceExchangesTest {
             () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
                 OffsetDateTime.parse("2019-12-29T14:30Z"),
                 getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
-                    "vulcanus_28122019_96.xls"
+                    "vulcanus_28122019_96.xls",
+                ProcessType.IDCC
             )
         );
     }
@@ -55,7 +58,8 @@ class CseReferenceExchangesTest {
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.parse("2019-12-28T14:30Z"),
             getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
-                "vulcanus_28122019_96.xls"
+                "vulcanus_28122019_96.xls",
+            ProcessType.IDCC
         );
         assertEquals(4, cseReferenceExchanges.getExchanges().size());
         assertEquals(633, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
@@ -69,7 +73,8 @@ class CseReferenceExchangesTest {
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.parse("2019-12-28T07:00Z"),
             getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
-                "vulcanus_28122019_96.xls"
+                "vulcanus_28122019_96.xls",
+            ProcessType.IDCC
         );
         assertEquals(4, cseReferenceExchanges.getExchanges().size());
         assertEquals(2129, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
@@ -85,7 +90,8 @@ class CseReferenceExchangesTest {
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.of(localDateTime, zoneOffset),
             getClass().getResourceAsStream("vulcanus_01012021_96.xls"),
-                "vulcanus_01012021_96.xls"
+                "vulcanus_01012021_96.xls",
+            ProcessType.IDCC
         );
         assertEquals(880, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
         assertEquals(-502, cseReferenceExchanges.getExchange(Country.FR), DOUBLE_TOLERANCE);
@@ -100,7 +106,8 @@ class CseReferenceExchangesTest {
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.of(localDateTime, zoneOffset),
             getClass().getResourceAsStream("vulcanus_01012021_96.xls"),
-                "vulcanus_01012021_96.xls"
+                "vulcanus_01012021_96.xls",
+            ProcessType.IDCC
         );
         assertEquals(756, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
         assertEquals(-611, cseReferenceExchanges.getExchange(Country.FR), DOUBLE_TOLERANCE);
@@ -115,7 +122,8 @@ class CseReferenceExchangesTest {
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.of(localDateTime, zoneOffset),
             getClass().getResourceAsStream("vulcanus_01032021_96.xls"),
-                "vulcanus_01032021_96.xls"
+                "vulcanus_01032021_96.xls",
+            ProcessType.IDCC
         );
         assertEquals(-1000, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
         assertEquals(-50, cseReferenceExchanges.getExchange(Country.FR), DOUBLE_TOLERANCE);
@@ -130,7 +138,8 @@ class CseReferenceExchangesTest {
         cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
             OffsetDateTime.of(localDateTime, zoneOffset),
             getClass().getResourceAsStream("vulcanus_01032021_96.xls"),
-                "vulcanus_01032021_96.xls"
+                "vulcanus_01032021_96.xls",
+            ProcessType.IDCC
         );
         assertEquals(-500, cseReferenceExchanges.getExchange(Country.CH), DOUBLE_TOLERANCE);
         assertEquals(-2000, cseReferenceExchanges.getExchange(Country.FR), DOUBLE_TOLERANCE);
