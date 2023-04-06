@@ -9,9 +9,7 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Network;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,12 +67,8 @@ public final class NetworkShifterUtil {
         return new EICode(Country.valueOf(country)).getAreaCode();
     }
 
-    public static Map<String, Double> getReferenceExchanges(ProcessType processType, CseData cseData, Network network) {
-        if (processType.equals(ProcessType.D2CC)) {
-            return convertBorderExchanges(BorderExchanges.computeCseBordersExchanges(network, true));
-        } else {
-            return cseData.getCseReferenceExchanges().getExchanges();
-        }
+    public static Map<String, Double> getReferenceExchanges(CseData cseData) {
+        return cseData.getCseReferenceExchanges().getExchanges();
     }
 
     public static double getReferenceItalianImport(Map<String, Double> referenceExchanges) {

@@ -15,8 +15,6 @@ import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
 import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstInitializer;
-import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
@@ -95,25 +93,20 @@ public class CseRunner {
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess));
 
         double initialIndexValueForProcess;
-        if (cseRequest.getProcessType() == ProcessType.IDCC) {
-            try {
-                // We compute real Italian import on network just to compare with Vulcanus reference and log an event
-                // if the difference is too high (> 5%)
-                double initialItalianImportOnNetwork = BorderExchanges.computeItalianImport(network);
-                // Then we set initial index from Vulcanus reference value
-                initialIndexValueForProcess = getInitialIndexValueForIdccProcess(cseData);
-                checkNetworkAndReferenceExchangesDifference(initialIndexValueForProcess, initialItalianImportOnNetwork);
-            } catch (CseComputationException e) {
-                String ttcResultUrl = ttcResultService.saveFailedTtcResult(
-                    cseRequest,
-                    cseRequest.getCgmUrl(),
-                    TtcResult.FailedProcessData.FailedProcessReason.LOAD_FLOW_FAILURE);
-                return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
-            }
-        } else if (cseRequest.getProcessType() == ProcessType.D2CC) {
-            initialIndexValueForProcess = getInitialIndexValueForD2ccProcess(cseData);
-        } else {
-            throw new CseInternalException(String.format("Process type %s is not handled", cseRequest.getProcessType()));
+
+        try {
+            // We compute real Italian import on network just to compare with Vulcanus reference and log an event
+            // if the difference is too high (> 5%)
+            double initialItalianImportOnNetwork = BorderExchanges.computeItalianImport(network);
+            // Then we set initial index from Vulcanus reference value
+            initialIndexValueForProcess = getInitialIndexValue(cseData);
+            checkNetworkAndReferenceExchangesDifference(initialIndexValueForProcess, initialItalianImportOnNetwork);
+        } catch (CseComputationException e) {
+            String ttcResultUrl = ttcResultService.saveFailedTtcResult(
+                cseRequest,
+                cseRequest.getCgmUrl(),
+                TtcResult.FailedProcessData.FailedProcessReason.LOAD_FLOW_FAILURE);
+            return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
         }
 
         double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialIndexValueForProcess);
@@ -124,7 +117,7 @@ public class CseRunner {
             network,
             crac,
             initialIndexValue,
-            NetworkShifterUtil.getReferenceExchanges(cseRequest.getProcessType(), cseData, network));
+            NetworkShifterUtil.getReferenceExchanges(cseData));
 
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
         String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
@@ -134,7 +127,7 @@ public class CseRunner {
         if (dichotomyResult.hasValidStep()) {
             String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
             Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
-                    .getRaoResponse().getNetworkWithPraFileUrl());
+                .getRaoResponse().getNetworkWithPraFileUrl());
             BusBarChangePostProcessor.process(finalNetwork, cracImportData.busBarChangeSwitchesSet);
 
             finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
@@ -152,14 +145,7 @@ public class CseRunner {
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
-    double getInitialIndexValueForD2ccProcess(CseData cseData) {
-        double initialIndexValue = cseData.getNtcPerCountry().values().stream().reduce(0., Double::sum) + processConfiguration.getTrm();
-        // starting point = min(7500, current starting point - 15%) only in D2
-        // CORESO requirement and that is expected to improve performances
-        return Math.min(7500., initialIndexValue - (initialIndexValue * 0.15));
-    }
-
-    double getInitialIndexValueForIdccProcess(CseData cseData) {
+    double getInitialIndexValue(CseData cseData) {
         return cseData.getCseReferenceExchanges().getExchanges().values().stream().reduce(0., Double::sum);
     }
 
