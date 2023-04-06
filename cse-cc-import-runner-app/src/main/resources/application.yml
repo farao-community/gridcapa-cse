@@ -1,6 +1,6 @@
 spring:
   application:
-    name: cse-import-idcc-runner
+    name: cse-cc-runner
   rabbitmq:
     host: localhost
     port: 5672
@@ -16,32 +16,32 @@ spring:
         binder: rabbit
       bindings:
         interrupt-in-0:
-          destination: cse-import-idcc-stop-task
+          destination: cse-interrupt
         request-in-0:
           destination: cse-import-idcc-request
-          group: cse-import-idcc-runner
         request-out-0:
-          destination: cse-import-idcc-response
+          destination: cse-response
         task-status-update:
           destination: cse-import-idcc-task-status-updated
         stop-rao:
-          destination: stop-rao-runner
+          destination: cse-import-stop-rao
 
 logback:
   amqp:
-    exchange: cse-import-idcc-task-manager-logs-exchange
+    exchange: task-manager-events
+    routing-key: "#"
 
 rao-runner-server:
   amqp:
-    client-app-id: cse-import-idcc-runner
+    client-app-id: cse-cc-runner  # should be overridden with value of app name
     queue-name: rao-request-queue
 
 minio-adapter:
   bucket: gridcapa
   base-path:
-  url: http://minio:9000
   access-key: gridcapa
   secret-key: gridcapa
+  url: http://minio:9000
 
 cse-cc-runner:
   zone-id: "Europe/Paris"
@@ -52,9 +52,7 @@ cse-cc-runner:
     final-cgm: FINAL_CGM
     ttc-res: TTC_RES
   xnodes:
-    file-path: /home/benrejebmoh/Documents/5-grid-capa/0-use-cases/CSE/cse-process-configs/xnodes.xml
-  combined-ras:
-    file-path: /home/benrejebmoh/Documents/5-grid-capa/0-use-cases/CSE/cse-process-configs/combinedRAs.json
+    file-path: /home/farao/xnodes.xml
   mendrisio:
     mendrisio-cagno-line:
       target-ch-id: ml_0001
@@ -68,7 +66,6 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL12 FFG.IL11 1
         - FFG.IL12 FFG.IL11 2
-        - FFG.IL12 FFG.IL11 3
       pra-name: PRA_HVDC_GILE_PIOSSASCO_1
     link2:
       node-fr: FFG.IL14
@@ -76,8 +73,6 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL14 FFG.IL13 1
         - FFG.IL14 FFG.IL13 2
-        - FFG.IL14 FFG.IL13 3
       pra-name: PRA_HVDC_GILE_PIOSSASCO_2
   whitelist:
     - http://minio:9000/
-    - http://localhost:9000/
