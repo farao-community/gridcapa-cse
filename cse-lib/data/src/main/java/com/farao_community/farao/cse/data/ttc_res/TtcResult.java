@@ -631,13 +631,12 @@ public final class TtcResult {
 
     public static String limitingCauseToString(LimitingCause limitingCause) {
         switch (limitingCause) {
+            case COMPUTATION_FAILURE:
+            case INDEX_EVALUATION_OR_MAX_ITERATION:
             case CRITICAL_BRANCH:
                 return "Critical Branch";
             case GLSK_LIMITATION:
                 return "GSK Limitation";
-            case COMPUTATION_FAILURE:
-            case INDEX_EVALUATION_OR_MAX_ITERATION:
-                return "Failure";
             default:
                 throw new NotImplementedException(String.format("Limiting cause %s has no description", limitingCause));
         }
