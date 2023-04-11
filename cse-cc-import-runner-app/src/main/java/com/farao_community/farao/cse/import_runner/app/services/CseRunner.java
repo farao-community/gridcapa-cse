@@ -11,6 +11,7 @@ import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.*;
+import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
@@ -94,6 +95,7 @@ public class CseRunner {
 
         double initialIndexValueForProcess;
 
+        String baseCaseCgmVersion = fileExporter.retrieveVersionFromBaseCaseNetwork(cseRequest.getCgmUrl());
         try {
             // We compute real Italian import on network just to compare with Vulcanus reference and log an event
             // if the difference is too high (> 5%)
@@ -102,9 +104,10 @@ public class CseRunner {
             initialIndexValueForProcess = getInitialIndexValue(cseData);
             checkNetworkAndReferenceExchangesDifference(initialIndexValueForProcess, initialItalianImportOnNetwork);
         } catch (CseComputationException e) {
+            LOGGER.warn("A problem occurred while calculating initial italian import from reference exchanges. First shift operation is not performed yet, base case cgm will be added to outputs. Nested message: {}", e.getMessage());
             String ttcResultUrl = ttcResultService.saveFailedTtcResult(
                 cseRequest,
-                cseRequest.getCgmUrl(),
+                FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
                 TtcResult.FailedProcessData.FailedProcessReason.LOAD_FLOW_FAILURE);
             return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
         }
@@ -120,12 +123,11 @@ public class CseRunner {
             NetworkShifterUtil.getReferenceExchanges(cseData));
 
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
-        String baseCaseFilePath = fileExporter.getBaseCaseFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
-        String baseCaseFileUrl = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, baseCaseFilePath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
+        String firstShiftNetworkName = fileExporter.getNetworkNameByState(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), "Initial", baseCaseCgmVersion);
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
-            String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
+            String finalCgmPath = fileExporter.getNetworkFilePathByState(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess, "Final", baseCaseCgmVersion);
             Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
                 .getRaoResponse().getNetworkWithPraFileUrl());
             BusBarChangePostProcessor.process(finalNetwork, cracImportData.busBarChangeSwitchesSet);
@@ -133,13 +135,13 @@ public class CseRunner {
             finalCgmUrl = fileExporter.exportAndUploadNetwork(finalNetwork, "UCTE", GridcapaFileGroup.OUTPUT, finalCgmPath, processConfiguration.getFinalCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
             ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, cracImportData.cseCracCreationContext,
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
-                baseCaseFileUrl, finalCgmUrl, preprocessedPsts, preprocessedPisaLinks);
+                firstShiftNetworkName, FileUtil.getFilenameFromUrl(finalCgmUrl), preprocessedPsts, preprocessedPisaLinks);
         } else {
             ttcResultUrl = ttcResultService.saveFailedTtcResult(
                 cseRequest,
-                baseCaseFileUrl,
+                firstShiftNetworkName,
                 TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC);
-            finalCgmUrl = baseCaseFileUrl;
+            finalCgmUrl = firstShiftNetworkName;
         }
 
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
