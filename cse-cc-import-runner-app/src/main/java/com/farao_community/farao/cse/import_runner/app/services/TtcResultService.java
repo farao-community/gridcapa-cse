@@ -41,8 +41,8 @@ public class TtcResultService {
         this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveFailedTtcResult(CseRequest cseRequest, String baseCaseFileUrl, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason) {
-        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, baseCaseFileUrl);
+    public String saveFailedTtcResult(CseRequest cseRequest, String firstShiftNetworkName, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason) {
+        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, firstShiftNetworkName, firstShiftNetworkName);
         Timestamp timestamp = TtcResult.generate(ttcFiles, new TtcResult.FailedProcessData(
             cseRequest.getTargetProcessDateTime().toString(),
             failedProcessReason
@@ -50,8 +50,8 @@ public class TtcResultService {
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
     }
 
-    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String baseCaseFileUrl, String finalCgmUrl, Map<String, Integer> preprocessedPsts, Map<String, Double> preprocessedPisaLinks) {
-        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, baseCaseFileUrl, finalCgmUrl);
+    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String firstShiftNetworkName, String finalNetworkName, Map<String, Integer> preprocessedPsts, Map<String, Double> preprocessedPisaLinks) {
+        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, firstShiftNetworkName, finalNetworkName);
         String networkWithPraUrl = highestSecureStepRaoResponse.getRaoResponse().getNetworkWithPraFileUrl();
         Network networkWithPra = fileImporter.importNetwork(networkWithPraUrl);
         double finalItalianImport = BorderExchanges.computeItalianImport(networkWithPra);
@@ -73,15 +73,15 @@ public class TtcResultService {
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
     }
 
-    private static TtcResult.TtcFiles createTtcFiles(CseRequest cseRequest, String baseCaseFileUrl, String finalCgmUrl) {
+    private static TtcResult.TtcFiles createTtcFiles(CseRequest cseRequest, String firstShiftNetworkName, String finalNetworkName) {
         return new TtcResult.TtcFiles(
-            FileUtil.getFilenameFromUrl(baseCaseFileUrl),
+            firstShiftNetworkName,
             FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
             FileUtil.getFilenameFromUrl(cseRequest.getMergedCracUrl()),
             FileUtil.getFilenameFromUrl(cseRequest.getMergedGlskUrl()),
             FileUtil.getFilenameFromUrl(cseRequest.getNtcReductionsUrl()),
             "ntcReductionCreationDatetime",
-            FileUtil.getFilenameFromUrl(finalCgmUrl)
+            finalNetworkName
         );
     }
 }

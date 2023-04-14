@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.commons.Unit;
+import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
 import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -19,6 +20,7 @@ import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
@@ -49,9 +51,11 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
     private final RaoRunnerClient raoRunnerClient;
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
+    private final ProcessConfiguration processConfiguration;
     private final ForcedPrasHandler forcedPrasHandler;
     private final Set<String> forcedPrasIds;
     private final boolean isImportEcProcess;
+    private final String baseCaseCgmVersion;
     private int variantCounter = 0;
 
     public RaoRunnerValidator(ProcessType processType,
@@ -62,9 +66,11 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
                               RaoRunnerClient raoRunnerClient,
                               FileExporter fileExporter,
                               FileImporter fileImporter,
+                              ProcessConfiguration processConfiguration,
                               ForcedPrasHandler forcedPrasHandler,
                               Set<String> forcedPrasIds,
-                              boolean isImportEcProcess) {
+                              boolean isImportEcProcess,
+                              String baseCaseCgmVersion) {
         this.processType = processType;
         this.requestId = requestId;
         this.processTargetDateTime = processTargetDateTime;
@@ -73,9 +79,11 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         this.raoRunnerClient = raoRunnerClient;
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
+        this.processConfiguration = processConfiguration;
         this.forcedPrasHandler = forcedPrasHandler;
         this.forcedPrasIds = forcedPrasIds;
         this.isImportEcProcess = isImportEcProcess;
+        this.baseCaseCgmVersion = baseCaseCgmVersion;
     }
 
     @Override
@@ -83,11 +91,14 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         String baseDirPathForCurrentStep = generateBaseDirPathFromScaledNetwork(network);
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
         String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkName, "", processTargetDateTime, processType, isImportEcProcess);
-
+        if (variantCounter == 1) {
+            String firstShiftNetworkPath = fileExporter.getNetworkFilePathByState(processTargetDateTime, processType, isImportEcProcess, "Initial", baseCaseCgmVersion);
+            fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, firstShiftNetworkPath, processConfiguration.getInitialCgm(), processTargetDateTime, processType, isImportEcProcess);
+        }
         try {
             Crac crac = fileImporter.importCracFromJson(cracUrl);
             List<String> appliedRemedialActionInPreviousStep = lastDichotomyStepResult != null && lastDichotomyStepResult.getRaoResult() != null ? lastDichotomyStepResult.getRaoResult().getActivatedNetworkActionsDuringState(crac.getPreventiveState())
-                     .stream().map(NetworkAction::getId).collect(Collectors.toList()) : Collections.emptyList();
+                .stream().map(NetworkAction::getId).collect(Collectors.toList()) : Collections.emptyList();
             RaoRequest raoRequest = buildRaoRequest(networkPresignedUrl, baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep);
             // We don't stop computation even if there are no applied RAs, because we cannot be sure in the case where
             // the RAs are applicable on constraint, that it won't be applicable later on in the dichotomy (higher index)
