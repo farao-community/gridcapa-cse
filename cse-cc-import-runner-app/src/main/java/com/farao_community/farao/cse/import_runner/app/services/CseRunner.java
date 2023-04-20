@@ -71,7 +71,6 @@ public class CseRunner {
         this.businessLogger = businessLogger;
     }
 
-    @Threadable
     public CseResponse run(CseRequest cseRequest) throws IOException {
         final boolean importEcProcess = cseRequest.isImportEcProcess();
         CseData cseData = new CseData(cseRequest, fileImporter);

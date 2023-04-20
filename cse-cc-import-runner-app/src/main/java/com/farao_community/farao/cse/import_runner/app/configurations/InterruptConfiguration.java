@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.configurations;
 
 import com.farao_community.farao.cse.import_runner.app.services.InterruptionService;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,8 +17,34 @@ import java.util.function.Consumer;
 @Configuration
 public class InterruptConfiguration {
 
+    private final StreamBridge streamBridge;
+
+    private boolean softInterruptFlag = false;
+
+    public boolean isSoftInterruptFlag() {
+        boolean flag = softInterruptFlag;
+        softInterruptFlag = false;
+        return flag;
+    }
+
+    public InterruptConfiguration(StreamBridge streamBridge) {
+        this.streamBridge = streamBridge;
+    }
+
     @Bean
     public Consumer<String> interrupt(InterruptionService interruptionService) {
         return interruptionService::interruption;
+    }
+
+    @Bean
+    public Consumer<String> softinterrupt() {
+        return this::activateFlagIfInterruptionOrderReceived;
+    }
+
+    private void activateFlagIfInterruptionOrderReceived(String s) {
+        if (!s.isEmpty()) {
+            streamBridge.send("stop-rao", s);
+            softInterruptFlag = true;
+        }
     }
 }

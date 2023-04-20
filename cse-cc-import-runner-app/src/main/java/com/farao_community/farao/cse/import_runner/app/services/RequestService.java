@@ -7,13 +7,11 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncher;
 import com.farao_community.farao.cse.runner.api.JsonApiConverter;
 import com.farao_community.farao.cse.runner.api.exception.AbstractCseException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
-import com.farao_community.farao.cse.runner.api.resource.ThreadLauncherResult;
 import com.farao_community.farao.gridcapa.task_manager.api.TaskStatus;
 import com.farao_community.farao.gridcapa.task_manager.api.TaskStatusUpdate;
 import org.slf4j.Logger;
@@ -22,7 +20,6 @@ import org.slf4j.MDC;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -50,22 +47,10 @@ public class RequestService {
         try {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
-            GenericThreadLauncher<CseRunner, CseResponse> launcher = new GenericThreadLauncher<>(cseServer, cseRequest.getId(), cseRequest);
-            launcher.start();
-            ThreadLauncherResult<CseResponse> cseResponse = launcher.getResult();
-            if (cseResponse.hasError() && cseResponse.getException() != null) {
-                throw cseResponse.getException();
-            }
-            Optional<CseResponse> resp = cseResponse.getResult();
-            if (resp.isPresent() && !cseResponse.hasError()) {
-                result = sendCseResponse(resp.get());
-                LOGGER.info("Cse response sent: {}", resp.get());
-            } else {
-                businessLogger.info("CSE run has been interrupted");
-                streamBridge.send(STOP_RAO_BINDING, cseRequest.getId());
-                result = sendCseResponse(new CseResponse(cseRequest.getId(), null, null));
 
-            }
+            CseResponse cseResponse = cseServer.run(cseRequest);
+            result = sendCseResponse(cseResponse);
+            LOGGER.info("Cse response sent: {}", cseResponse);
         } catch (Exception e) {
             result = handleError(e, cseRequest.getId());
         }
