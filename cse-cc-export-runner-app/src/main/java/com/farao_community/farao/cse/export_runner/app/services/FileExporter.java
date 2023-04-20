@@ -158,7 +158,7 @@ public class FileExporter {
         }
     }
 
-    private String getDestinationPath(OffsetDateTime offsetDateTime, ProcessType processType, GridcapaFileGroup gridcapaFileGroup) {
+    protected String getDestinationPath(OffsetDateTime offsetDateTime, ProcessType processType, GridcapaFileGroup gridcapaFileGroup) {
         ZonedDateTime targetDateTime = offsetDateTime.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         return REGION + MINIO_SEPARATOR
             + DIRECTION + MINIO_SEPARATOR
