@@ -23,11 +23,11 @@ public final class NetworkShifterUtil {
     private NetworkShifterUtil() {
     }
 
-    static Map<String, Double> convertSplittingFactors(Map<String, Double> tSplittingFactors) {
-        Map<String, Double> splittingFactors = new TreeMap<>();
-        tSplittingFactors.forEach((key, value) -> splittingFactors.put(toEic(key), value));
-        splittingFactors.put(toEic("IT"), -splittingFactors.values().stream().reduce(0., Double::sum));
-        return splittingFactors;
+    static Map<String, Double> convertMapByCountryToMapByEic(Map<String, Double> ntcsByCountry) {
+        Map<String, Double> ntcsByEic = new TreeMap<>();
+        ntcsByCountry.forEach((key, value) -> ntcsByEic.put(toEic(key), value));
+        ntcsByEic.put(toEic("IT"), -ntcsByEic.values().stream().reduce(0., Double::sum));
+        return ntcsByEic;
     }
 
     static Map<String, Double> convertBorderExchanges(Map<String, Double> borderExchanges) {
@@ -54,13 +54,13 @@ public final class NetworkShifterUtil {
         return convertedBorderExchanges;
     }
 
-    static Map<String, Double> convertFlowsOnMerchantLines(Map<String, Double> flowOnMerchantLinesPerCountry) {
-        Map<String, Double> convertedFlowOnMerchantLinesPerCountry = new HashMap<>();
+    static Map<String, Double> convertFlowsOnNotModelledLines(Map<String, Double> flowOnNotModelledLinesPerCountry) {
+        Map<String, Double> convertedFlowOnNotModelledLinesPerCountry = new HashMap<>();
         Set.of(CseCountry.FR, CseCountry.CH, CseCountry.AT, CseCountry.SI).forEach(country -> {
-            double exchange = flowOnMerchantLinesPerCountry.getOrDefault(country.getName(), 0.);
-            convertedFlowOnMerchantLinesPerCountry.put(country.getEiCode(), exchange);
+            double exchange = flowOnNotModelledLinesPerCountry.getOrDefault(country.getName(), 0.);
+            convertedFlowOnNotModelledLinesPerCountry.put(country.getEiCode(), exchange);
         });
-        return convertedFlowOnMerchantLinesPerCountry;
+        return convertedFlowOnNotModelledLinesPerCountry;
     }
 
     private static String toEic(String country) {

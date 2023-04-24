@@ -22,14 +22,14 @@ public class CseD2ccShiftDispatcher implements ShiftDispatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(CseD2ccShiftDispatcher.class);
     private static final Set<String> BORDER_COUNTRIES = Set.of(CseCountry.FR.getEiCode(), CseCountry.CH.getEiCode(), CseCountry.AT.getEiCode(), CseCountry.SI.getEiCode());
 
-    private final Map<String, Double> reducedSplittingFactors;
+    private final Map<String, Double> ntcsByEic;
     private final Map<String, Double> referenceExchanges;
-    private final Map<String, Double> flowOnMerchantLinesPerCountry;
+    private final Map<String, Double> flowOnNotModelledLinesPerCountry;
 
-    public CseD2ccShiftDispatcher(Map<String, Double> reducedSplittingFactors, Map<String, Double> referenceExchanges, Map<String, Double> flowOnMerchantLinesPerCountry) {
-        this.reducedSplittingFactors = reducedSplittingFactors;
+    public CseD2ccShiftDispatcher(Map<String, Double> ntcsByEic, Map<String, Double> referenceExchanges, Map<String, Double> flowOnNotModelledLinesPerCountry) {
+        this.ntcsByEic = ntcsByEic;
         this.referenceExchanges = referenceExchanges;
-        this.flowOnMerchantLinesPerCountry = flowOnMerchantLinesPerCountry;
+        this.flowOnNotModelledLinesPerCountry = flowOnNotModelledLinesPerCountry;
     }
 
     @Override
@@ -39,13 +39,12 @@ public class CseD2ccShiftDispatcher implements ShiftDispatcher {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("Italian import reference: %.2f", referenceItalianImport));
         }
-        shifts.put(CseCountry.IT.getEiCode(), referenceItalianImport - value);
-        Double reducedTarget = value - flowOnMerchantLinesPerCountry.values().stream().reduce(0., Double::sum);
         BORDER_COUNTRIES.forEach(borderCountry ->
-            shifts.put(borderCountry, reducedSplittingFactors.get(borderCountry) * reducedTarget
-                + flowOnMerchantLinesPerCountry.get(borderCountry)
-                - referenceExchanges.get(borderCountry))
+            shifts.put(borderCountry, ntcsByEic.get(borderCountry)
+                - referenceExchanges.get(borderCountry)
+                - flowOnNotModelledLinesPerCountry.get(borderCountry))
         );
+        shifts.put(CseCountry.IT.getEiCode(), -shifts.values().stream().mapToDouble(Double::doubleValue).sum());
         return shifts;
     }
 }
