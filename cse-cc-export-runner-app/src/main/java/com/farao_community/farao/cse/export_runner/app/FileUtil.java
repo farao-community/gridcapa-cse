@@ -33,7 +33,7 @@ public final class FileUtil {
         }
     }
 
-    public static String getFileVersion(String cgmFilename,  ProcessType processType) {
+    public static String getFileVersion(String cgmFilename, ProcessType processType) {
 
         if (processType == ProcessType.IDCC) {
             // The naming rule of the initial cgm for Idcc process is YYYYMMDD_hhmm_NNp_Transit_CSEq.uct
@@ -48,15 +48,15 @@ public final class FileUtil {
         }
     }
 
-    public static void checkCgmFileName(String cgmFileUrl,  ProcessType processType) {
+    public static void checkCgmFileName(String cgmFileUrl, ProcessType processType) {
         String cgmFilename = getFilenameFromUrl(cgmFileUrl);
         if (processType == ProcessType.IDCC) {
             if (!Pattern.matches("[0-9]{8}_[0-9]{4}_[0-9]3_Transit_CSE[0-9].(uct|UCT)", cgmFilename)) {
-                throw new CseDataException("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name());
+                throw new CseDataException(String.format("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name()));
             }
         } else if (processType == ProcessType.D2CC) {
             if (!Pattern.matches("[0-9]{8}_[0-9]{4}_[0-9]3_CO_Transit_CSE[0-9].(uct|UCT)", cgmFilename)) {
-                throw new CseDataException("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name());
+                throw new CseDataException(String.format("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name()));
             }
         } else {
             throw new CseInternalException(String.format("Process type %s is not handled", processType));
