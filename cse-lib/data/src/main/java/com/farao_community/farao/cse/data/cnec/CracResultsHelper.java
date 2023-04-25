@@ -143,7 +143,7 @@ public class CracResultsHelper {
                     cnecPrev.setiBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
                     cnecPreventives.add(cnecPrev);
                 } else {
-                    throw new CseDataException(String.format("No preventive cnec from the cnec creation context id %s",branchCnecCreationContext.getNativeId()));
+                    throw new CseDataException(String.format("No preventive cnec from the cnec creation context id %s", branchCnecCreationContext.getNativeId()));
                 }
             });
         return cnecPreventives;
