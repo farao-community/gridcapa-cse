@@ -13,8 +13,6 @@ import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.validation.constraints.AssertFalse;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
