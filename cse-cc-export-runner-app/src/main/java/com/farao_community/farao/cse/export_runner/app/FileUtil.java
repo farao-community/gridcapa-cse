@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -33,6 +34,7 @@ public final class FileUtil {
     }
 
     public static String getFileVersion(String cgmFilename,  ProcessType processType) {
+
         if (processType == ProcessType.IDCC) {
             // The naming rule of the initial cgm for Idcc process is YYYYMMDD_hhmm_NNp_Transit_CSEq.uct
             // with q is the version number
@@ -41,6 +43,21 @@ public final class FileUtil {
             // The naming rule of the initial cgm for D2cc process is YYYYMMDD_hhmm_2Dp_CO_Transit_CSEq.uct
             // with q is the version number
             return cgmFilename.substring(32, cgmFilename.indexOf('.'));
+        } else {
+            throw new CseInternalException(String.format("Process type %s is not handled", processType));
+        }
+    }
+
+    public static void checkCgmFileName(String cgmFileUrl,  ProcessType processType) {
+        String cgmFilename = getFilenameFromUrl(cgmFileUrl);
+        if (processType == ProcessType.IDCC) {
+            if(!Pattern.matches("[0-9]{8}_[0-9]{4}_[0-9]3_Transit_CSE[0-9].(uct|UCT)", cgmFilename)) {
+                throw new CseDataException("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name());
+            }
+        } else if (processType == ProcessType.D2CC) {
+            if(!Pattern.matches("[0-9]{8}_[0-9]{4}_[0-9]3_CO_Transit_CSE[0-9].(uct|UCT)", cgmFilename)) {
+                throw new CseDataException("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name());
+            }
         } else {
             throw new CseInternalException(String.format("Process type %s is not handled", processType));
         }

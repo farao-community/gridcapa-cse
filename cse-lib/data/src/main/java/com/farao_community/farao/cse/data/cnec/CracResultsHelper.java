@@ -131,16 +131,20 @@ public class CracResultsHelper {
                 // Native ID is actually modified at import to be unique, the only way we can find back original
                 // CNEC name is in the FlowCnec name
                 FlowCnec flowCnecPrev = crac.getFlowCnec(branchCnecCreationContext.getCreatedCnecsIds().get(Instant.PREVENTIVE));
-                CnecCommon cnecCommon = makeCnecCommon(flowCnecPrev.getName(), branchCnecCreationContext.getNativeBranch(),
-                    ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected());
-                CnecPreventive cnecPrev = new CnecPreventive();
-                cnecPrev.setCnecCommon(cnecCommon);
-                FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.AFTER_PRA);
-                cnecPrev.setI(flowCnecResult.getFlow());
-                cnecPrev.setiMax(flowCnecResult.getiMax());
-                FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.INITIAL);
-                cnecPrev.setiBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
-                cnecPreventives.add(cnecPrev);
+                if (flowCnecPrev != null) {
+                    CnecCommon cnecCommon = makeCnecCommon(flowCnecPrev.getName(), branchCnecCreationContext.getNativeBranch(),
+                            ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected());
+                    CnecPreventive cnecPrev = new CnecPreventive();
+                    cnecPrev.setCnecCommon(cnecCommon);
+                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.AFTER_PRA);
+                    cnecPrev.setI(flowCnecResult.getFlow());
+                    cnecPrev.setiMax(flowCnecResult.getiMax());
+                    FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.INITIAL);
+                    cnecPrev.setiBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
+                    cnecPreventives.add(cnecPrev);
+                } else {
+                    throw new CseDataException(String.format("No preventive cnec from the cnec creation context id %s",branchCnecCreationContext.getNativeId()));
+                }
             });
         return cnecPreventives;
     }

@@ -63,6 +63,9 @@ public class CseExportRunner {
     public CseExportResponse run(CseExportRequest cseExportRequest) {
         String logsFileUrl = ""; //TODO
 
+        // Check on cgm file name
+        FileUtil.checkCgmFileName(cseExportRequest.getCgmUrl(), cseExportRequest.getProcessType());
+
         // Import and pre-treatment on Network
         Network network = fileImporter.importNetwork(cseExportRequest.getCgmUrl());
         pisaService.alignGenerators(network);
@@ -123,4 +126,6 @@ public class CseExportRunner {
         String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
         return dateAndTime + "_2D" + dayOfWeek + "_ce_Transit_RAO_CSE" + FileUtil.getFileVersion(initialCgmFilename, processType);
     }
+
+
 }
