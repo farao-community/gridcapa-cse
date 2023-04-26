@@ -43,7 +43,7 @@ public final class FileUtil {
         if (checkFileNameMatches.matches()) {
             return checkFileNameMatches.group(2);
         }
-        throw new CseDataException(String.format("CGM file [%s] of process type [%s] is badly named", cgmFilename, processType));
+        throw new CseDataException(String.format("CGM file %s of process type %s is badly named", cgmFilename, processType));
     }
 
     public static void checkCgmFileName(String cgmFileUrl, ProcessType processType) {
