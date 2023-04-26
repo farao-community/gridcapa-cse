@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -26,6 +27,9 @@ class FileUtilTest {
         assertEquals("3", FileUtil.getFileVersion("20221020_1530_2D4_CO_Transit_CSE3.uct", ProcessType.D2CC));
         assertEquals("12", FileUtil.getFileVersion("20220131_1530_155_Transit_CSE12.uct", ProcessType.IDCC));
         assertEquals("11", FileUtil.getFileVersion("20220530_1130_2D4_CO_Transit_CSE11.uct", ProcessType.D2CC));
+        assertThrows(CseDataException.class, () -> FileUtil.getFileVersion("20220530_1130_2D4_Transit_CSE11.uct", ProcessType.D2CC));
+        assertThrows(CseDataException.class, () -> FileUtil.getFileVersion("20220530_1130_114_CO_Transit_CSE11.uct", ProcessType.IDCC));
+        assertThrows(CseInternalException.class, () -> FileUtil.getFileVersion("20220530_1130_114_CO_Transit_CSE11.uct", null));
     }
 
     @Test

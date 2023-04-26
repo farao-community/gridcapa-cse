@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -33,19 +34,16 @@ public final class FileUtil {
         }
     }
 
-    public static String getFileVersion(String cgmFilename, ProcessType processType) {
-
-        if (processType == ProcessType.IDCC) {
-            // The naming rule of the initial cgm for Idcc process is YYYYMMDD_hhmm_NNp_Transit_CSEq.uct
-            // with q is the version number
-            return cgmFilename.substring(29, cgmFilename.indexOf('.'));
-        } else if (processType == ProcessType.D2CC) {
-            // The naming rule of the initial cgm for D2cc process is YYYYMMDD_hhmm_2Dp_CO_Transit_CSEq.uct
-            // with q is the version number
-            return cgmFilename.substring(32, cgmFilename.indexOf('.'));
-        } else {
+    public static String getFileVersion(String cgmFilename,  ProcessType processType) {
+        if (processType != ProcessType.D2CC && processType != ProcessType.IDCC) {
             throw new CseInternalException(String.format("Process type %s is not handled", processType));
         }
+        Pattern fileNamePattern = Pattern.compile("^\\d{8}_\\d{4}_(\\d{3}_Transit_CSE|2D\\d_CO_Transit_CSE)(\\d+)\\.(uct|UCT)");
+        Matcher checkFileNameMatches = fileNamePattern.matcher(cgmFilename);
+        if (checkFileNameMatches.matches()) {
+            return checkFileNameMatches.group(2);
+        }
+        throw new CseDataException(String.format("CGM file %s of process type %s is badly named", cgmFilename, processType));
     }
 
     public static void checkCgmFileName(String cgmFileUrl, ProcessType processType) {
