@@ -63,6 +63,9 @@ public class CseExportRunner {
     public CseExportResponse run(CseExportRequest cseExportRequest) {
         String logsFileUrl = ""; //TODO
 
+        // Check on cgm file name
+        FileUtil.checkCgmFileName(cseExportRequest.getCgmUrl(), cseExportRequest.getProcessType());
+
         // Import and pre-treatment on Network
         Network network = fileImporter.importNetwork(cseExportRequest.getCgmUrl());
         pisaService.alignGenerators(network);
