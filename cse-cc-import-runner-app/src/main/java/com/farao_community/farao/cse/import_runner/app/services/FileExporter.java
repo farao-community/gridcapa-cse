@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
+import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
@@ -154,7 +155,7 @@ public class FileExporter {
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
     }
 
-    String exportAndUploadNetwork(Network network, String format, GridcapaFileGroup fileGroup, String filePath, String fileType, OffsetDateTime offsetDateTime, ProcessType processType, boolean isImportEc) {
+    public String exportAndUploadNetwork(Network network, String format, GridcapaFileGroup fileGroup, String filePath, String fileType, OffsetDateTime offsetDateTime, ProcessType processType, boolean isImportEc) {
         try (InputStream is = getNetworkInputStream(network, format)) {
             switch (fileGroup) {
                 case OUTPUT:
@@ -187,30 +188,27 @@ public class FileExporter {
         }
     }
 
-    String getFinalNetworkFilePath(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
-        String filename;
-        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
-        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
-        String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
-        if (processType == ProcessType.D2CC) {
-            filename = dateAndTime + "_2D" + dayOfWeek + "_CO_Final_CSE1.uct";
-        } else {
-            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_CSE1.uct";
-        }
+    public String getNetworkFilePathByState(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc, String state, String baseCaseCgmVersion) {
+        String filename = getNetworkNameByState(processTargetDate, processType, state, baseCaseCgmVersion);
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
     }
 
-    String getBaseCaseFilePath(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
-        String filename;
+    public String getNetworkNameByState(OffsetDateTime processTargetDate, ProcessType processType, String state, String version) {
         ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
-        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
         String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
+        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
+        String filename;
         if (processType == ProcessType.D2CC) {
-            filename = dateAndTime + "_2D" + dayOfWeek + "_CO_CSE1.uct";
+            filename = dateAndTime + "_2D" + dayOfWeek + "_ce_" + state + "_CSE" + version + ".uct";
         } else {
-            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_Initial_CSE1.uct";
+            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_" + state + "_CSE" + version + ".uct";
         }
-        return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
+        return filename;
+    }
+
+    public String retrieveVersionFromBaseCaseNetwork(String cgmUrl) {
+        String baseCaseFileName = FileUtil.getFilenameFromUrl(cgmUrl);
+        return baseCaseFileName.substring(baseCaseFileName.lastIndexOf("_UX") + 3, baseCaseFileName.lastIndexOf("_UX") + 4);
     }
 
     public String getZoneId() {

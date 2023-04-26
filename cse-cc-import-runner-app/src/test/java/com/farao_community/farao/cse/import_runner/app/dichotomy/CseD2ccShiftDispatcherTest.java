@@ -45,10 +45,10 @@ class CseD2ccShiftDispatcherTest {
         CseD2ccShiftDispatcher dispatcher = new CseD2ccShiftDispatcher(splittingFactors, referenceExchanges, flowOnMerchantLinesPerCountry);
         Map<String, Double> shifts = dispatcher.dispatch(3000);
 
-        assertEquals(-857, shifts.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
-        assertEquals(1023, shifts.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
-        assertEquals(-839, shifts.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
-        assertEquals(-2326, shifts.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
-        assertEquals(3000, shifts.get(CseCountry.IT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-2000, shifts.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-750, shifts.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-1080, shifts.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-2500, shifts.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(6330, shifts.get(CseCountry.IT.getEiCode()), DOUBLE_TOLERANCE);
     }
 }

@@ -28,8 +28,8 @@ public class RaoRunnerService {
         this.raoRunnerClient = raoRunnerClient;
     }
 
-    public RaoResponse run(String id, String networkPresignedUrl, String cracInJsonFormatUrl, String raoParametersUrl) throws CseInternalException {
-        RaoRequest raoRequest = buildRaoRequest(id, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl);
+    public RaoResponse run(String id, String networkPresignedUrl, String cracInJsonFormatUrl, String raoParametersUrl, String artifactDestinationPath) throws CseInternalException {
+        RaoRequest raoRequest = buildRaoRequest(id, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
         try {
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
@@ -40,8 +40,9 @@ public class RaoRunnerService {
         }
     }
 
-    private RaoRequest buildRaoRequest(String id, String networkPresignedUrl, String cracUrl, String raoParametersUrl) {
-        return new RaoRequest(id, networkPresignedUrl, cracUrl, raoParametersUrl);
+    private RaoRequest buildRaoRequest(String id, String networkPresignedUrl, String cracUrl, String raoParametersUrl, String artifactDestinationPath) {
+
+        return new RaoRequest(id, networkPresignedUrl, cracUrl, raoParametersUrl, artifactDestinationPath);
     }
 
 }

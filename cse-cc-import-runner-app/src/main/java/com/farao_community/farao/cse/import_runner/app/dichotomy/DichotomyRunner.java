@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.cse.import_runner.app.CseData;
+import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
@@ -38,14 +39,16 @@ public class DichotomyRunner {
     private final NetworkShifterProvider networkShifterProvider;
     private final ForcedPrasHandler forcedPrasHandler;
     private final RaoRunnerClient raoRunnerClient;
+    private final ProcessConfiguration processConfiguration;
     private final Logger logger;
 
-    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, Logger logger) {
+    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, ProcessConfiguration processConfiguration, Logger logger) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
         this.networkShifterProvider = networkShifterProvider;
         this.forcedPrasHandler = forcedPrasHandler;
         this.raoRunnerClient = raoRunnerClient;
+        this.processConfiguration = processConfiguration;
         this.logger = logger;
     }
 
@@ -88,8 +91,10 @@ public class DichotomyRunner {
             raoRunnerClient,
             fileExporter,
             fileImporter,
+            processConfiguration,
             forcedPrasHandler,
             forcedPrasIds,
-            isImportEcProcess);
+            isImportEcProcess,
+            fileExporter.retrieveVersionFromBaseCaseNetwork(request.getCgmUrl()));
     }
 }
