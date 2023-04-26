@@ -91,10 +91,16 @@ public final class Ntc {
         }
     }
 
+    public Map<String, Double> getFlowPerCountryOnNotModelizedLines() {
+        return isImportEcProcess ?
+                getFlowPerCountryAdapted(t -> !t.isModelized()) :
+                getFlowPerCountry(t -> !t.isModelized());
+    }
+
     public Map<String, Double> getFlowPerCountryOnMerchantLines() {
         return isImportEcProcess ?
-                getFlowPerCountryAdapted(com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine::isMerchantLine) :
-                getFlowPerCountry(TLine::isMerchantLine);
+            getFlowPerCountryAdapted(com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine::isMerchantLine) :
+            getFlowPerCountry(TLine::isMerchantLine);
     }
 
     Map<String, Double> getFlowPerCountry(Predicate<TLine> lineSelector) {

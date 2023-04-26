@@ -27,7 +27,7 @@ class NetworkShifterUtilTest {
             "FR", 0.3,
             "SI", 0.4
         );
-        Map<String, Double> convertedSplittingFactors = NetworkShifterUtil.convertSplittingFactors(splittingFactors);
+        Map<String, Double> convertedSplittingFactors = NetworkShifterUtil.convertMapByCountryToMapByEic(splittingFactors);
         assertEquals(0.1, convertedSplittingFactors.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0.2, convertedSplittingFactors.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0.3, convertedSplittingFactors.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
@@ -57,7 +57,7 @@ class NetworkShifterUtilTest {
             "FR", 300.,
             "SI", 400.
         );
-        Map<String, Double> convertedFlowOnMerchantLinesPerCountry = NetworkShifterUtil.convertFlowsOnMerchantLines(flowOnMerchantLinesPerCountry);
+        Map<String, Double> convertedFlowOnMerchantLinesPerCountry = NetworkShifterUtil.convertFlowsOnNotModelledLines(flowOnMerchantLinesPerCountry);
         assertEquals(100, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(300, convertedFlowOnMerchantLinesPerCountry.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);

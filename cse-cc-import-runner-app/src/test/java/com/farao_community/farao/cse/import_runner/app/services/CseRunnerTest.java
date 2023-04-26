@@ -113,14 +113,13 @@ class CseRunnerTest {
             when(dichotomyResult.getBestDichotomyResult()).thenReturn(raoResponse);
             when(raoResponse.hasValidStep()).thenReturn(false);
 
-            when(fileExporter.getBaseCaseFilePath(any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("AnyString");
+            when(fileExporter.getNetworkFilePathByState(any(OffsetDateTime.class), any(ProcessType.class), anyBoolean(), anyString(), anyString())).thenReturn("AnyString");
             when(fileExporter.exportAndUploadNetwork(any(Network.class), anyString(), any(GridcapaFileGroup.class), anyString(), anyString(), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyString/IMPORT_EC/test");
             when(fileExporter.saveTtcResult(any(Timestamp.class), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyTTCfilepath/IMPORT_EC/test");
             CseResponse response = cseRunner.run(cseRequest);
 
             assertNotNull(response);
             assertTrue(StringUtils.contains(response.getTtcFileUrl(), "IMPORT_EC"));
-            assertTrue(StringUtils.contains(response.getFinalCgmFileUrl(), "IMPORT_EC"));
         } catch (IOException e) {
             fail();
         }

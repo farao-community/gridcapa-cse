@@ -85,9 +85,9 @@ public class CseExportRunner {
             cseExportRequest.getProcessType(), cseExportRequest.getTargetProcessDateTime());
         String raoParametersUrl = fileExporter.saveRaoParameters(cseExportRequest.getProcessType(),
             cseExportRequest.getTargetProcessDateTime());
-
+        String artefactDestinationPath = fileExporter.getDestinationPath(cseExportRequest.getTargetProcessDateTime(), cseExportRequest.getProcessType(), GridcapaFileGroup.ARTIFACT);
         try {
-            RaoResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), initialNetworkUrl, cracInJsonFormatUrl, raoParametersUrl);
+            RaoResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), initialNetworkUrl, cracInJsonFormatUrl, raoParametersUrl, artefactDestinationPath);
 
             Network networkWithPra = fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl());
             BusBarChangePostProcessor.process(networkWithPra, busBarChangeSwitchesSet);

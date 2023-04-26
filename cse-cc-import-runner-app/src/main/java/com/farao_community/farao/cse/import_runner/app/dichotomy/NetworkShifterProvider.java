@@ -45,12 +45,12 @@ public class NetworkShifterProvider {
     private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Map<String, Double> referenceExchanges) {
         if (processType == ProcessType.D2CC) {
             return new CseD2ccShiftDispatcher(
-                NetworkShifterUtil.convertSplittingFactors(cseData.getReducedSplittingFactors()),
+                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtc().getNtcPerCountry()),
                 referenceExchanges,
-                NetworkShifterUtil.convertFlowsOnMerchantLines(cseData.getNtc().getFlowPerCountryOnMerchantLines()));
+                NetworkShifterUtil.convertFlowsOnNotModelledLines(cseData.getNtc().getFlowPerCountryOnNotModelizedLines()));
         } else {
             return new CseIdccShiftDispatcher(
-                NetworkShifterUtil.convertSplittingFactors(cseData.getReducedSplittingFactors()),
+                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors()),
                 referenceExchanges,
                 cseData.getNtc2().getExchanges());
         }
