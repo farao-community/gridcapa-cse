@@ -31,7 +31,9 @@ class FileUtilTest {
     @Test
     void checkCgmFileNameTest() {
         Assertions.assertDoesNotThrow(() -> FileUtil.checkCgmFileName("http://test-url/20220131_1530_876_Transit_CSE2.uct", ProcessType.IDCC));
+        Assertions.assertDoesNotThrow(() -> FileUtil.checkCgmFileName("http://test-url/20220131_1530_876_Transit_CSE11.uct", ProcessType.IDCC));
         Assertions.assertDoesNotThrow(() -> FileUtil.checkCgmFileName("http://test-url/20220131_1530_2D3_CO_Transit_CSE1.UCT", ProcessType.D2CC));
+        Assertions.assertDoesNotThrow(() -> FileUtil.checkCgmFileName("http://test-url/20220131_1530_2D3_CO_Transit_CSE10.UCT", ProcessType.D2CC));
         Assertions.assertThrows(CseDataException.class, () -> FileUtil.checkCgmFileName("http://test-url/20220131_1530_87_Transit_CSE2.uct", ProcessType.IDCC));
         Assertions.assertThrows(CseDataException.class, () -> FileUtil.checkCgmFileName("http://test-url/20220131_1530_123_Transit_CSE3.uct", ProcessType.D2CC));
         Assertions.assertThrows(CseInternalException.class, () -> FileUtil.checkCgmFileName("http://test-url/20220131_1530_876_Transit_CSE2.uct", null));

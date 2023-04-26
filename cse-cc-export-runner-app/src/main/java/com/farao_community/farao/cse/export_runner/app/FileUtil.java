@@ -51,11 +51,11 @@ public final class FileUtil {
     public static void checkCgmFileName(String cgmFileUrl, ProcessType processType) {
         String cgmFilename = getFilenameFromUrl(cgmFileUrl);
         if (processType == ProcessType.IDCC) {
-            if (!Pattern.matches("[0-9]{8}_[0-9]{4}_[0-9]{3}_Transit_CSE[0-9].(uct|UCT)", cgmFilename)) {
+            if (!Pattern.matches("[0-9]{8}_[0-9]{4}_[0-9]{3}_Transit_CSE[0-9]+.(uct|UCT)", cgmFilename)) {
                 throw new CseDataException(String.format("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name()));
             }
         } else if (processType == ProcessType.D2CC) {
-            if (!Pattern.matches("[0-9]{8}_[0-9]{4}_2D[0-9]_CO_Transit_CSE[0-9].(uct|UCT)", cgmFilename)) {
+            if (!Pattern.matches("[0-9]{8}_[0-9]{4}_2D[0-9]_CO_Transit_CSE[0-9]+.(uct|UCT)", cgmFilename)) {
                 throw new CseDataException(String.format("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name()));
             }
         } else {
