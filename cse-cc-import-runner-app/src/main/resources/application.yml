@@ -11,11 +11,11 @@ spring:
   cloud:
     stream:
       function:
-        definition: softinterrupt;request
+        definition: softInterrupt;request
       default:
         binder: rabbit
       bindings:
-        softinterrupt-in-0:
+        softInterrupt-in-0:
           destination: cse-import-d2cc-stop-task
         request-in-0:
           destination: cse-import-d2cc-request

@@ -25,15 +25,14 @@ import java.util.UUID;
 @Service
 public class RequestService {
     private static final String TASK_STATUS_UPDATE = "task-status-update";
-    private static final String STOP_RAO_BINDING = "stop-rao";
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
-    private final CseRunner cseServer;
+    private final CseRunner cseRunner;
     private final Logger businessLogger;
     private final JsonApiConverter jsonApiConverter = new JsonApiConverter();
     private final StreamBridge streamBridge;
 
-    public RequestService(CseRunner cseServer, Logger businessLogger, StreamBridge streamBridge) {
-        this.cseServer = cseServer;
+    public RequestService(CseRunner cseRunner, Logger businessLogger, StreamBridge streamBridge) {
+        this.cseRunner = cseRunner;
         this.businessLogger = businessLogger;
         this.streamBridge = streamBridge;
     }
@@ -48,7 +47,7 @@ public class RequestService {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
 
-            CseResponse cseResponse = cseServer.run(cseRequest);
+            CseResponse cseResponse = cseRunner.run(cseRequest);
             result = sendCseResponse(cseResponse);
             LOGGER.info("Cse response sent: {}", cseResponse);
         } catch (Exception e) {
@@ -58,7 +57,8 @@ public class RequestService {
     }
 
     private byte[] sendCseResponse(CseResponse cseResponse) {
-        if (cseResponse.getFinalCgmFileUrl() == null && cseResponse.getTtcFileUrl() == null) {
+        if ((cseResponse.getFinalCgmFileUrl() == null && cseResponse.getTtcFileUrl() == null)
+            || cseResponse.isInterrupted()) {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.INTERRUPTED));
         } else {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));

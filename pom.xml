@@ -50,7 +50,7 @@
         <!-- BUSINESS DEPENDENCIES -->
         <farao.dependencies.version>1.13.0</farao.dependencies.version>
         <farao.dichotomy.version>4.11.0-SNAPSHOT</farao.dichotomy.version>
-        <gridcapa.rao.runner.version>1.13.0</gridcapa.rao.runner.version>
+        <gridcapa.rao.runner.version>1.14.0-SNAPSHOT</gridcapa.rao.runner.version>
         <gridcapa.task-manager.version>1.6.0</gridcapa.task-manager.version>
         <gridcapa.starter.minio.adapter.version>0.2.0</gridcapa.starter.minio.adapter.version>
     </properties>

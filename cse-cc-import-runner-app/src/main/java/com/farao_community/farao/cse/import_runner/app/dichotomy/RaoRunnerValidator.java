@@ -18,6 +18,7 @@ import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
@@ -84,7 +85,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
     }
 
     @Override
-    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network, DichotomyStepResult lastDichotomyStepResult) throws ValidationException {
+    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network, DichotomyStepResult lastDichotomyStepResult) throws ValidationException, RaoInterruptionException {
         String baseDirPathForCurrentStep = generateBaseDirPathFromScaledNetwork(network);
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
         String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkName, "", processTargetDateTime, processType, isImportEcProcess);
@@ -107,6 +108,9 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
             LOGGER.info("RAO response received: {}", raoResponse);
+            if (raoResponse.isInterrupted()) {
+                throw new RaoInterruptionException("RAO has been interrupted");
+            }
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), crac);
 
             DichotomyRaoResponse dichotomyRaoResponse = new DichotomyRaoResponse(raoResponse, appliedForcedPras);
