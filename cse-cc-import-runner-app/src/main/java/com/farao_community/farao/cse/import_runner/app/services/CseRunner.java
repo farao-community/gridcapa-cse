@@ -121,6 +121,14 @@ public class CseRunner {
             initialIndexValue,
             NetworkShifterUtil.getReferenceExchanges(cseData));
 
+        if (multipleDichotomyResult.isInterrupted()) {
+            String ttcResultUrl = ttcResultService.saveFailedTtcResult(
+                cseRequest,
+                FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
+                TtcResult.FailedProcessData.FailedProcessReason.OTHER);
+            return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl(), true);
+        }
+
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
         String firstShiftNetworkName = fileExporter.getBaseCaseName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String ttcResultUrl;
