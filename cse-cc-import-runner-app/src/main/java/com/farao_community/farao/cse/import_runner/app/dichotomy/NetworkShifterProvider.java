@@ -14,6 +14,7 @@ import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.shift.LinearScaler;
 import com.farao_community.farao.dichotomy.shift.ShiftDispatcher;
 import com.powsybl.iidm.network.Network;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,9 +28,11 @@ public class NetworkShifterProvider {
     private static final double SHIFT_TOLERANCE = 1;
 
     private final ZonalScalableProvider zonalScalableProvider;
+    private final Logger businessLogger;
 
-    public NetworkShifterProvider(ZonalScalableProvider zonalScalableProvider) {
+    public NetworkShifterProvider(ZonalScalableProvider zonalScalableProvider, Logger businessLogger) {
         this.zonalScalableProvider = zonalScalableProvider;
+        this.businessLogger = businessLogger;
     }
 
     public NetworkShifter get(CseRequest request,
@@ -45,9 +48,11 @@ public class NetworkShifterProvider {
     private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Map<String, Double> referenceExchanges) {
         if (processType == ProcessType.D2CC) {
             return new CseD2ccShiftDispatcher(
+                businessLogger,
                 NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtc().getNtcPerCountry()),
+                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors()),
                 referenceExchanges,
-                NetworkShifterUtil.convertFlowsOnNotModelledLines(cseData.getNtc().getFlowPerCountryOnNotModelizedLines()));
+                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtc().getFlowPerCountryOnNotModelizedLines()));
         } else {
             return new CseIdccShiftDispatcher(
                 NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors()),
