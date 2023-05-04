@@ -82,7 +82,7 @@ public class CseD2ccShiftDispatcher implements ShiftDispatcher {
     }
 
     private void logShifts(double value, Map<String, Double> shifts) {
-        businessLogger.info("Shift iteration number: {}, step value is {}", shiftCounter, value);
+        businessLogger.info("Shift iteration number: {}, step value is {}", shiftCounter + 1, value);
         for (Map.Entry<String, Double> entry : shifts.entrySet()) {
             businessLogger.info("Shift for {} is {}.", entry.getKey(), entry.getValue());
         }
