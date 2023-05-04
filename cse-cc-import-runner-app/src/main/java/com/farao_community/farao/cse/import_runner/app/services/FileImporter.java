@@ -59,6 +59,7 @@ public class FileImporter {
     private static final String SWISS_TAG = "CH";
     private static final String FRENCH_TAG = "FR";
     private static final String SLOVENIAN_TAG = "SI";
+    public static final String IMPOSSIBLE_TO_CREATE_NTC = "Impossible to create NTC";
 
     private final UrlWhitelistConfiguration urlWhitelistConfiguration;
     private final Logger businessLogger;
@@ -104,15 +105,19 @@ public class FileImporter {
             YearlyNtcDocument yearlyNtc = new YearlyNtcDocument(targetProcessDateTime, DataUtil.unmarshalFromInputStream(yearlyNtcStream, NTCAnnualDocument.class));
             DailyNtcDocument dailyNtc = null;
             if (StringUtils.isNotBlank(dailyNtcUrl)) {
-                try (InputStream dailyNtcStream = openUrlStream(dailyNtcUrl)) {
-                    dailyNtc = new DailyNtcDocument(targetProcessDateTime, DataUtil.unmarshalFromInputStream(dailyNtcStream, NTCReductionsDocument.class));
-                } catch (IOException | JAXBException e) {
-                    throw new CseInvalidDataException("Impossible to create NTC", e);
-                }
+                dailyNtc = getDailyNtcDocument(targetProcessDateTime, dailyNtcUrl);
             }
             return new Ntc(yearlyNtc, dailyNtc, isImportEc);
         } catch (IOException | JAXBException e) {
-            throw new CseInvalidDataException("Impossible to create NTC", e);
+            throw new CseInvalidDataException(IMPOSSIBLE_TO_CREATE_NTC, e);
+        }
+    }
+
+    private DailyNtcDocument getDailyNtcDocument(OffsetDateTime targetProcessDateTime, String dailyNtcUrl) {
+        try (InputStream dailyNtcStream = openUrlStream(dailyNtcUrl)) {
+            return new DailyNtcDocument(targetProcessDateTime, DataUtil.unmarshalFromInputStream(dailyNtcStream, NTCReductionsDocument.class));
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException(IMPOSSIBLE_TO_CREATE_NTC, e);
         }
     }
 
@@ -122,15 +127,19 @@ public class FileImporter {
             DailyNtcDocumentAdapted dailyNtc = null;
 
             if (StringUtils.isNotBlank(dailyNtcUrl)) {
-                try (InputStream dailyNtcStream = openUrlStream(dailyNtcUrl)) {
-                    dailyNtc = new DailyNtcDocumentAdapted(targetProcessDateTime, DataUtil.unmarshalFromInputStream(dailyNtcStream, com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCReductionsDocument.class));
-                } catch (IOException | JAXBException e) {
-                    throw new CseInvalidDataException("Impossible to create NTC", e);
-                }
+                dailyNtc = getDailyNtcDocumentAdapted(targetProcessDateTime, dailyNtcUrl);
             }
             return new Ntc(yearlyNtc, dailyNtc, isImportEc);
         } catch (IOException | JAXBException e) {
-            throw new CseInvalidDataException("Impossible to create NTC", e);
+            throw new CseInvalidDataException(IMPOSSIBLE_TO_CREATE_NTC, e);
+        }
+    }
+
+    private DailyNtcDocumentAdapted getDailyNtcDocumentAdapted(OffsetDateTime targetProcessDateTime, String dailyNtcUrl) {
+        try (InputStream dailyNtcStream = openUrlStream(dailyNtcUrl)) {
+            return new DailyNtcDocumentAdapted(targetProcessDateTime, DataUtil.unmarshalFromInputStream(dailyNtcStream, com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCReductionsDocument.class));
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException(IMPOSSIBLE_TO_CREATE_NTC, e);
         }
     }
 
