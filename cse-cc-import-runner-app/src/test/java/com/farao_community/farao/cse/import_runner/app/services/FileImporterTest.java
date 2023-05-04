@@ -184,7 +184,7 @@ class FileImporterTest {
 
     @Test
     void testImportNtcWithMissingNtcRed() {
-        OffsetDateTime dateTime = OffsetDateTime.parse("2021-01-01T00:00Z")
+        OffsetDateTime dateTime = OffsetDateTime.parse("2021-01-01T00:00Z");
         assertThrows(NullPointerException.class, () -> fileImporter.importNtc(
                 dateTime,
                 null,
