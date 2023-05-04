@@ -42,13 +42,13 @@ public class CseD2ccShiftDispatcher implements ShiftDispatcher {
     @Override
     public Map<String, Double> dispatch(double value) {
         if (shiftCounter == 0) {
-            return initializeAndGetInitialShifts(value);
+            return initializeToNtcsAndGetInitialShifts(value);
         } else {
             return getShifts(value);
         }
     }
 
-    private Map<String, Double> initializeAndGetInitialShifts(double value) {
+    private Map<String, Double> initializeToNtcsAndGetInitialShifts(double value) {
         BORDER_COUNTRIES.forEach(country -> {
             double initialShift = ntcsByEic.get(country)
                 - referenceExchanges.get(country)
