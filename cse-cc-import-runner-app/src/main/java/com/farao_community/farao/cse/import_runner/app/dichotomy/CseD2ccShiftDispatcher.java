@@ -26,8 +26,8 @@ public class CseD2ccShiftDispatcher implements ShiftDispatcher {
     private final Map<String, Double> referenceExchanges;
     private final Map<String, Double> flowOnNotModelledLinesPerCountry;
 
+    private final Map<String, Double> initialShifts = new HashMap<>();
     private int shiftCounter = 0;
-    Map<String, Double> initialShifts = new HashMap<>();
     private double previousTarget = 0.;
     private double sumOfPreviousSteps = 0.;
 
@@ -42,47 +42,50 @@ public class CseD2ccShiftDispatcher implements ShiftDispatcher {
     @Override
     public Map<String, Double> dispatch(double value) {
         if (shiftCounter == 0) {
-            // Calculate initial shifts for IT borders
-            BORDER_COUNTRIES.forEach(country -> {
-                double initialShift = ntcsByEic.get(country)
-                    - referenceExchanges.get(country)
-                    - flowOnNotModelledLinesPerCountry.get(country);
-                initialShifts.put(country, initialShift);
-            });
-
-            // Calculate initial shift for IT
-            double itShift = -initialShifts.values().stream().mapToDouble(Double::doubleValue).sum();
-            initialShifts.put(CseCountry.IT.getEiCode(), itShift);
-            shiftCounter++;
-            businessLogger.info("Initial shift: Step value is {}", value);
-            for (Map.Entry<String, Double> entry : initialShifts.entrySet()) {
-                businessLogger.info("Initial shift for {} is {}.", entry.getKey(), entry.getValue());
-            }
-
-            previousTarget = value;
-            return initialShifts;
+            return initializeAndGetInitialShifts(value);
+        } else {
+            return getShifts(value);
         }
+    }
 
+    private Map<String, Double> initializeAndGetInitialShifts(double value) {
+        BORDER_COUNTRIES.forEach(country -> {
+            double initialShift = ntcsByEic.get(country)
+                - referenceExchanges.get(country)
+                - flowOnNotModelledLinesPerCountry.get(country);
+            initialShifts.put(country, initialShift);
+        });
+
+        initialShifts.put(CseCountry.IT.getEiCode(),
+            -initialShifts.values().stream().mapToDouble(Double::doubleValue).sum());
+
+        logShifts(value, initialShifts);
+        previousTarget = value;
+        shiftCounter++;
+        return initialShifts;
+    }
+
+    private Map<String, Double> getShifts(double value) {
         sumOfPreviousSteps = sumOfPreviousSteps + value - previousTarget;
-        // Calculate shifts for IT borders
         Map<String, Double> shifts = new HashMap<>();
         BORDER_COUNTRIES.forEach(country -> {
             double newShift = initialShifts.get(country)
                 + reducedSplittingFactors.get(country) * sumOfPreviousSteps;
             shifts.put(country, newShift);
         });
-        // Calculate shift for IT
-        double itShift = -shifts.values().stream().mapToDouble(Double::doubleValue).sum();
-        shifts.put(CseCountry.IT.getEiCode(), itShift);
+        shifts.put(CseCountry.IT.getEiCode(),
+            -shifts.values().stream().mapToDouble(Double::doubleValue).sum());
+        logShifts(value, shifts);
+        previousTarget = value;
+        shiftCounter++;
+        return shifts;
+    }
 
+    private void logShifts(double value, Map<String, Double> shifts) {
         businessLogger.info("Shift iteration number: {}, step value is {}", shiftCounter, value);
         for (Map.Entry<String, Double> entry : shifts.entrySet()) {
             businessLogger.info("Shift for {} is {}.", entry.getKey(), entry.getValue());
         }
-
-        shiftCounter++;
-        previousTarget = value;
-        return shifts;
     }
 
 }
