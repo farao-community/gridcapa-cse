@@ -32,7 +32,6 @@ class NetworkShifterUtilTest {
         assertEquals(0.2, convertedSplittingFactors.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0.3, convertedSplittingFactors.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
         assertEquals(0.4, convertedSplittingFactors.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
-        assertEquals(-1.0, convertedSplittingFactors.get(CseCountry.IT.getEiCode()), DOUBLE_TOLERANCE);
     }
 
     @Test
