@@ -23,6 +23,7 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationC
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import com.powsybl.iidm.network.Network;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -84,12 +85,13 @@ public class TtcResultService {
     }
 
     private static TtcResult.TtcFiles createTtcFiles(CseRequest cseRequest, String firstShiftNetworkName, String finalNetworkName) {
+        String ntcRedFileName = StringUtils.isNotBlank(cseRequest.getNtcReductionsUrl()) ? FileUtil.getFilenameFromUrl(cseRequest.getNtcReductionsUrl()) : "";
         return new TtcResult.TtcFiles(
             firstShiftNetworkName,
             FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
             FileUtil.getFilenameFromUrl(cseRequest.getMergedCracUrl()),
             FileUtil.getFilenameFromUrl(cseRequest.getMergedGlskUrl()),
-            FileUtil.getFilenameFromUrl(cseRequest.getNtcReductionsUrl()),
+            ntcRedFileName,
             "ntcReductionCreationDatetime",
             finalNetworkName
         );
