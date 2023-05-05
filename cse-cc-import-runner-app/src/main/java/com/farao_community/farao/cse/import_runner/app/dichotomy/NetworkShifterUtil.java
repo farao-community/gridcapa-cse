@@ -23,11 +23,15 @@ public final class NetworkShifterUtil {
     private NetworkShifterUtil() {
     }
 
-    static Map<String, Double> convertMapByCountryToMapByEic(Map<String, Double> ntcsByCountry) {
-        Map<String, Double> ntcsByEic = new TreeMap<>();
-        ntcsByCountry.forEach((key, value) -> ntcsByEic.put(toEic(key), value));
-        ntcsByEic.put(toEic("IT"), -ntcsByEic.values().stream().reduce(0., Double::sum));
-        return ntcsByEic;
+    static Map<String, Double> convertMapByCountryToMapByEic(Map<String, Double> mapByCountry) {
+        Map<String, Double> mapByEic = new TreeMap<>();
+        // initialize map to cse borders
+        mapByEic.put(toEic("FR"), 0.);
+        mapByEic.put(toEic("CH"), 0.);
+        mapByEic.put(toEic("SI"), 0.);
+        mapByEic.put(toEic("AT"), 0.);
+        mapByCountry.forEach((key, value) -> mapByEic.put(toEic(key), value));
+        return mapByEic;
     }
 
     static Map<String, Double> convertBorderExchanges(Map<String, Double> borderExchanges) {
