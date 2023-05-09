@@ -58,29 +58,29 @@ class FileExporterTest {
 
     @Test
     void getFinalNetworkFilePathForD2ccProcesTest() {
-        String actualFilePath = fileExporter.getNetworkFilePathByState(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, false, "Final", "1");
-        String expectedFilePath = "CSE/IMPORT/D2CC/2021/09/13/14_30/OUTPUTS/20210913_1430_2D1_ce_Final_CSE1.uct";
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, false);
+        String expectedFilePath = "CSE/IMPORT/D2CC/2021/09/13/14_30/OUTPUTS/20210913_1430_2D1_CO_Final_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getFinalNetworkFilePathForIdccProcesTest() {
-        String actualFilePath = fileExporter.getNetworkFilePathByState(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC, false, "Final", "1");
-        String expectedFilePath = "CSE/IMPORT/IDCC/2021/09/01/19_30/OUTPUTS/20210901_1930_173_Final_CSE1.uct";
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC, false);
+        String expectedFilePath = "CSE/IMPORT/IDCC/2021/09/01/19_30/OUTPUTS/20210901_1930_173_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForIdccProcesTest() {
-        String actualFilePath = fileExporter.getNetworkFilePathByState(OffsetDateTime.parse("2021-01-01T15:30Z"), ProcessType.IDCC, false, "Initial", "0");
-        String expectedFilePath = "CSE/IMPORT/IDCC/2021/01/01/16_30/OUTPUTS/20210101_1630_155_Initial_CSE0.uct";
+        String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T15:30Z"), ProcessType.IDCC, false);
+        String expectedFilePath = "CSE/IMPORT/IDCC/2021/01/01/16_30/OUTPUTS/20210101_1630_155_Initial_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForD2ccProcesTest() {
-        String actualFilePath = fileExporter.getNetworkFilePathByState(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC, false, "Initial", "0");
-        String expectedFilePath = "CSE/IMPORT/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_ce_Initial_CSE0.uct";
+        String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC, false);
+        String expectedFilePath = "CSE/IMPORT/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_CO_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
@@ -134,29 +134,29 @@ class FileExporterTest {
 
     @Test
     void getFinalNetworkFilePathForD2ccAdaptedProcesTest() {
-        String actualFilePath = fileExporter.getNetworkFilePathByState(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, true, "Final", "2");
-        String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/09/13/14_30/OUTPUTS/20210913_1430_2D1_ce_Final_CSE2.uct";
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, true);
+        String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/09/13/14_30/OUTPUTS/20210913_1430_2D1_CO_Final_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getFinalNetworkFilePathForIdccAdaptedProcesTest() {
-        String actualFilePath = fileExporter.getNetworkFilePathByState(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC, true, "Final", "3");
-        String expectedFilePath = "CSE/IMPORT_EC/IDCC/2021/09/01/19_30/OUTPUTS/20210901_1930_173_Final_CSE3.uct";
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC, true);
+        String expectedFilePath = "CSE/IMPORT_EC/IDCC/2021/09/01/19_30/OUTPUTS/20210901_1930_173_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForIdccAdaptedProcesTest() {
-        String actualFilePath = fileExporter.getNetworkFilePathByState(OffsetDateTime.parse("2021-01-01T15:30Z"), ProcessType.IDCC, true, "Initial", "0");
-        String expectedFilePath = "CSE/IMPORT_EC/IDCC/2021/01/01/16_30/OUTPUTS/20210101_1630_155_Initial_CSE0.uct";
+        String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T15:30Z"), ProcessType.IDCC, true);
+        String expectedFilePath = "CSE/IMPORT_EC/IDCC/2021/01/01/16_30/OUTPUTS/20210101_1630_155_Initial_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForD2ccAdaptedProcesTest() {
-        String actualFilePath = fileExporter.getNetworkFilePathByState(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC, true, "Initial", "0");
-        String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_ce_Initial_CSE0.uct";
+        String actualFilePath = fileExporter.getBaseCaseFilePath(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC, true);
+        String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_CO_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
@@ -227,10 +227,5 @@ class FileExporterTest {
         String result = fileExporter.exportAndUploadNetwork(network, "XIIDM", GridcapaFileGroup.OUTPUT, expectedCracFilePath, "", OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.D2CC, true);
         assertNotNull(result);
         Mockito.verify(minioAdapter, Mockito.times(1)).uploadOutputForTimestamp(Mockito.anyString(), Mockito.any(InputStream.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(OffsetDateTime.class));
-    }
-
-    @Test
-    void retrieveVersionFromBaseCaseNetworkTest() {
-        assertEquals("0", fileExporter.retrieveVersionFromBaseCaseNetwork("http://minio:9000/gridcapa/CSE/D2CC/20230305_0330_2D7_UX0.uct?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=gridcapa%2F20211223%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20211223T092947Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=4d24c286f490fcb18eb078cf21c1503d5e4eb557337469dda3c86d7b9998bf09"));
     }
 }

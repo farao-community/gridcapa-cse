@@ -94,8 +94,6 @@ public class CseRunner {
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess));
 
         double initialIndexValueForProcess;
-
-        String baseCaseCgmVersion = fileExporter.retrieveVersionFromBaseCaseNetwork(cseRequest.getCgmUrl());
         try {
             // We compute real Italian import on network just to compare with Vulcanus reference and log an event
             // if the difference is too high (> 5%)
@@ -123,11 +121,11 @@ public class CseRunner {
             NetworkShifterUtil.getReferenceExchanges(cseData));
 
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
-        String firstShiftNetworkName = fileExporter.getNetworkNameByState(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), "Initial", baseCaseCgmVersion);
+        String firstShiftNetworkName = fileExporter.getBaseCaseName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
-            String finalCgmPath = fileExporter.getNetworkFilePathByState(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess, "Final", baseCaseCgmVersion);
+            String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
             Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
                 .getRaoResponse().getNetworkWithPraFileUrl());
             BusBarChangePostProcessor.process(finalNetwork, cracImportData.busBarChangeSwitchesSet);

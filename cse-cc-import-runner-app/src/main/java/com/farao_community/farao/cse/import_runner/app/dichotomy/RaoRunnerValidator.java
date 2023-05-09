@@ -55,7 +55,6 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
     private final ForcedPrasHandler forcedPrasHandler;
     private final Set<String> forcedPrasIds;
     private final boolean isImportEcProcess;
-    private final String baseCaseCgmVersion;
     private int variantCounter = 0;
 
     public RaoRunnerValidator(ProcessType processType,
@@ -69,8 +68,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
                               ProcessConfiguration processConfiguration,
                               ForcedPrasHandler forcedPrasHandler,
                               Set<String> forcedPrasIds,
-                              boolean isImportEcProcess,
-                              String baseCaseCgmVersion) {
+                              boolean isImportEcProcess) {
         this.processType = processType;
         this.requestId = requestId;
         this.processTargetDateTime = processTargetDateTime;
@@ -83,7 +81,6 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         this.forcedPrasHandler = forcedPrasHandler;
         this.forcedPrasIds = forcedPrasIds;
         this.isImportEcProcess = isImportEcProcess;
-        this.baseCaseCgmVersion = baseCaseCgmVersion;
     }
 
     @Override
@@ -92,7 +89,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
         String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkName, "", processTargetDateTime, processType, isImportEcProcess);
         if (variantCounter == 1) {
-            String firstShiftNetworkPath = fileExporter.getNetworkFilePathByState(processTargetDateTime, processType, isImportEcProcess, "Initial", baseCaseCgmVersion);
+            String firstShiftNetworkPath = fileExporter.getBaseCaseFilePath(processTargetDateTime, processType, isImportEcProcess);
             fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, firstShiftNetworkPath, processConfiguration.getInitialCgm(), processTargetDateTime, processType, isImportEcProcess);
         }
         try {
