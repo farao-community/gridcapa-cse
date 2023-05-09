@@ -8,7 +8,6 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
-import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
@@ -188,27 +187,35 @@ public class FileExporter {
         }
     }
 
-    public String getNetworkFilePathByState(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc, String state, String baseCaseCgmVersion) {
-        String filename = getNetworkNameByState(processTargetDate, processType, state, baseCaseCgmVersion);
+    String getFinalNetworkFilePath(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
+        String filename;
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
+        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
+        String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
+        if (processType == ProcessType.D2CC) {
+            filename = dateAndTime + "_2D" + dayOfWeek + "_CO_Final_CSE1.uct";
+        } else {
+            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_CSE1.uct";
+        }
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
     }
 
-    public String getNetworkNameByState(OffsetDateTime processTargetDate, ProcessType processType, String state, String version) {
-        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
-        String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
-        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
-        String filename;
-        if (processType == ProcessType.D2CC) {
-            filename = dateAndTime + "_2D" + dayOfWeek + "_ce_" + state + "_CSE" + version + ".uct";
-        } else {
-            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_" + state + "_CSE" + version + ".uct";
-        }
-        return filename;
+    public String getBaseCaseFilePath(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
+        String filename = getBaseCaseName(processTargetDate, processType);
+        return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
     }
 
-    public String retrieveVersionFromBaseCaseNetwork(String cgmUrl) {
-        String baseCaseFileName = FileUtil.getFilenameFromUrl(cgmUrl);
-        return baseCaseFileName.substring(baseCaseFileName.lastIndexOf("_UX") + 3, baseCaseFileName.lastIndexOf("_UX") + 4);
+    String getBaseCaseName(OffsetDateTime processTargetDate, ProcessType processType) {
+        String filename;
+        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
+        int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
+        String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
+        if (processType == ProcessType.D2CC) {
+            filename = dateAndTime + "_2D" + dayOfWeek + "_CO_CSE1.uct";
+        } else {
+            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_Initial_CSE1.uct";
+        }
+        return filename;
     }
 
     public String getZoneId() {

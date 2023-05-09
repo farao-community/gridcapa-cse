@@ -94,7 +94,6 @@ public class DichotomyRunner {
             processConfiguration,
             forcedPrasHandler,
             forcedPrasIds,
-            isImportEcProcess,
-            fileExporter.retrieveVersionFromBaseCaseNetwork(request.getCgmUrl()));
+            isImportEcProcess);
     }
 }
