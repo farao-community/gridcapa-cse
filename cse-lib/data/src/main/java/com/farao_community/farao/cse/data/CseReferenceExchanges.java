@@ -72,7 +72,7 @@ public final class CseReferenceExchanges {
 
     private static HSSFRow getRow(HSSFSheet worksheet, String vulcanusTime) {
         for (int rowIndex = 0; rowIndex < worksheet.getPhysicalNumberOfRows(); rowIndex++) {
-            if (worksheet.getRow(rowIndex) != null && worksheet.getRow(rowIndex).getCell(TIME_COL).getStringCellValue().equals(vulcanusTime)) {
+            if (worksheet.getRow(rowIndex) != null && worksheet.getRow(rowIndex).getCell(TIME_COL) != null && worksheet.getRow(rowIndex).getCell(TIME_COL).getStringCellValue().equals(vulcanusTime)) {
                 return worksheet.getRow(rowIndex);
             }
         }
@@ -82,7 +82,7 @@ public final class CseReferenceExchanges {
     private static Map<String, Double> getExchangesFromRow(HSSFSheet worksheet, HSSFRow row) {
         Map<String, Double> exchanges = new HashMap<>();
         for (int colIndex = 0; colIndex < row.getPhysicalNumberOfCells(); colIndex++) {
-            String exchangeStr = worksheet.getRow(LABEL_ROW).getCell(colIndex).getStringCellValue();
+            String exchangeStr = worksheet.getRow(LABEL_ROW).getCell(colIndex) != null ? worksheet.getRow(LABEL_ROW).getCell(colIndex).getStringCellValue() : "";
             switch (exchangeStr) {
                 case "CH > IT":
                     exchanges.put(new EICode(Country.CH).getAreaCode(), row.getCell(colIndex).getNumericCellValue());
