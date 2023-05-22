@@ -73,7 +73,6 @@ class DichotomyRunnerTest {
         when(variantManager.getWorkingVariantId()).thenReturn("variantId");
 
         when(fileExporter.saveRaoParameters(time, ProcessType.IDCC, false)).thenReturn("raoParametersUrl");
-        when(fileExporter.retrieveVersionFromBaseCaseNetwork("cgmUrl")).thenReturn("version");
         when(networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges)).thenReturn(networkShifter);
         when(interruptionService.shouldTaskBeInterruptedSoftly(Mockito.any())).thenReturn(true);
 

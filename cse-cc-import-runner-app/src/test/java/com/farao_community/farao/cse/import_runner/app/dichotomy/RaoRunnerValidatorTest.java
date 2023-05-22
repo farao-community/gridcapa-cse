@@ -56,7 +56,6 @@ class RaoRunnerValidatorTest {
         ForcedPrasHandler forcedPrasHandler = mock(ForcedPrasHandler.class);
         Set<String> forcedPrasIds = Set.of();
         boolean isImportEcProcess = false;
-        String baseCaseCgmVersion = "cgmVersion";
         Network network = mock(Network.class);
 
         RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(processType,
@@ -70,15 +69,14 @@ class RaoRunnerValidatorTest {
             processConfiguration,
             forcedPrasHandler,
             forcedPrasIds,
-            isImportEcProcess,
-            baseCaseCgmVersion);
+            isImportEcProcess);
 
         when(fileExporter.getZoneId()).thenReturn("UTC");
         VariantManager variantManager = mock(VariantManager.class);
         when(network.getVariantManager()).thenReturn(variantManager);
         when(variantManager.getWorkingVariantId()).thenReturn("variantId");
         when(network.getNameOrId()).thenReturn("networkName");
-        when(fileExporter.getNetworkFilePathByState(any(), any(), anyBoolean(), any(), any())).thenReturn("networkFilePath");
+        when(fileExporter.getBaseCaseFilePath(any(), any(), anyBoolean())).thenReturn("networkFilePath");
         when(fileExporter.saveNetworkInArtifact(any(), any(), any(), any(), any(), anyBoolean())).thenReturn("networkUrl");
         Crac crac = mock(Crac.class);
         when(fileImporter.importCracFromJson(cracUrl)).thenReturn(crac);
@@ -110,7 +108,6 @@ class RaoRunnerValidatorTest {
         ForcedPrasHandler forcedPrasHandler = mock(ForcedPrasHandler.class);
         Set<String> forcedPrasIds = Set.of();
         boolean isImportEcProcess = false;
-        String baseCaseCgmVersion = "cgmVersion";
         Network network = mock(Network.class);
 
         RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(processType,
@@ -124,15 +121,14 @@ class RaoRunnerValidatorTest {
             processConfiguration,
             forcedPrasHandler,
             forcedPrasIds,
-            isImportEcProcess,
-            baseCaseCgmVersion);
+            isImportEcProcess);
 
         when(fileExporter.getZoneId()).thenReturn("UTC");
         VariantManager variantManager = mock(VariantManager.class);
         when(network.getVariantManager()).thenReturn(variantManager);
         when(variantManager.getWorkingVariantId()).thenReturn("variantId");
         when(network.getNameOrId()).thenReturn("networkName");
-        when(fileExporter.getNetworkFilePathByState(any(), any(), anyBoolean(), any(), any())).thenReturn("networkFilePath");
+        when(fileExporter.getBaseCaseFilePath(any(), any(), anyBoolean())).thenReturn("networkFilePath");
         when(fileExporter.saveNetworkInArtifact(any(), any(), any(), any(), any(), anyBoolean())).thenReturn("networkUrl");
         Crac crac = mock(Crac.class);
         when(fileImporter.importCracFromJson(cracUrl)).thenReturn(crac);
@@ -157,7 +153,6 @@ class RaoRunnerValidatorTest {
         ForcedPrasHandler forcedPrasHandler = mock(ForcedPrasHandler.class);
         Set<String> forcedPrasIds = Set.of();
         boolean isImportEcProcess = false;
-        String baseCaseCgmVersion = "cgmVersion";
         Network network = mock(Network.class);
 
         RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(processType,
@@ -171,15 +166,14 @@ class RaoRunnerValidatorTest {
             processConfiguration,
             forcedPrasHandler,
             forcedPrasIds,
-            isImportEcProcess,
-            baseCaseCgmVersion);
+            isImportEcProcess);
 
         when(fileExporter.getZoneId()).thenReturn("UTC");
         VariantManager variantManager = mock(VariantManager.class);
         when(network.getVariantManager()).thenReturn(variantManager);
         when(variantManager.getWorkingVariantId()).thenReturn("variantId");
         when(network.getNameOrId()).thenReturn("networkName");
-        when(fileExporter.getNetworkFilePathByState(any(), any(), anyBoolean(), any(), any())).thenReturn("networkFilePath");
+        when(fileExporter.getBaseCaseFilePath(any(), any(), anyBoolean())).thenReturn("networkFilePath");
         when(fileExporter.saveNetworkInArtifact(any(), any(), any(), any(), any(), anyBoolean())).thenReturn("networkUrl");
         when(fileImporter.importCracFromJson(cracUrl)).thenThrow(RuntimeException.class);
 
