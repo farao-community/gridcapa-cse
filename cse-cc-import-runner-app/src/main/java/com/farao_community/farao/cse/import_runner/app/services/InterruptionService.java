@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -38,44 +37,24 @@ public class InterruptionService implements InterruptionStrategy {
     }
 
     @Bean
-    public Consumer<String> interrupt() {
-        return this::interruption;
-    }
-
-    @Bean
     public Consumer<String> softInterrupt() {
-        return this::activateFlagIfInterruptionOrderReceived;
+        return this::activateSoftInterruptionFlag;
     }
 
-    private void interruption(String taskId) {
-        Optional<Thread> thread = isRunning(taskId);
-        while (thread.isPresent()) {
-            thread.get().interrupt();
-            thread = isRunning(taskId);
-        }
-    }
-
-    private Optional<Thread> isRunning(String id) {
-        return Thread.getAllStackTraces()
-                .keySet()
-                .stream()
-                .filter(t -> t.getName().equals(id))
-                .findFirst();
-    }
-
-    private void activateFlagIfInterruptionOrderReceived(String taskId) {
+    private void activateSoftInterruptionFlag(String taskId) {
         LOGGER.info("Soft interruption requested for task {}", taskId);
-        if (!taskId.isEmpty()) {
-            streamBridge.send(STOP_RAO_BINDING, taskId);
-            tasksToInterruptSoftly.add(taskId);
-        }
+        streamBridge.send(STOP_RAO_BINDING, taskId);
+        tasksToInterruptSoftly.add(taskId);
     }
 
     @Override
     public boolean shouldTaskBeInterruptedSoftly(String taskId) {
         boolean taskShouldBeInterrupted = tasksToInterruptSoftly.remove(taskId);
+
         if (taskShouldBeInterrupted) {
-            LOGGER.debug("Task {} should be interrupted softly", taskId);
+            LOGGER.info("Task {} should be interrupted softly", taskId);
+        } else {
+            LOGGER.info("Task {} doesn't need to be interrupted softly", taskId);
         }
         return taskShouldBeInterrupted;
     }

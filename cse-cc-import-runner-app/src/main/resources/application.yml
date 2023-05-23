@@ -1,6 +1,6 @@
 spring:
   application:
-    name: cse-d2cc-runner
+    name: cse-x-runner # replace 'x' with the process: import-d2cc, import-idcc...
   rabbitmq:
     host: localhost
     port: 5672
@@ -16,25 +16,25 @@ spring:
         binder: rabbit
       bindings:
         softInterrupt-in-0:
-          destination: cse-import-d2cc-stop-task
+          destination: cse-x-stop-task # replace 'x' with the process: import-d2cc, import-idcc...
         request-in-0:
-          destination: cse-import-d2cc-request
-          group: cse-import-d2cc-runner
+          destination: cse-x-request # replace 'x' with the process: import-d2cc, import-idcc...
+          group: cse-x-runner # replace 'x' with the process: import-d2cc, import-idcc...
         request-out-0:
-          destination: cse-import-d2cc-response
+          destination: cse-x-response # replace 'x' with the process: import-d2cc, import-idcc...
         task-status-update:
-          destination: cse-import-d2cc-task-status-updated
+          destination: cse-x-task-status-updated # replace 'x' with the process: import-d2cc, import-idcc...
         stop-rao:
           destination: stop-rao-runner
 
 logback:
   amqp:
-    exchange: cse-import-d2cc-task-manager-logs-exchange
+    exchange: cse-x-task-manager-logs-exchange # replace 'x' with the process: import-d2cc, import-idcc...
     routing-key: "#"
 
 rao-runner-server:
   amqp:
-    client-app-id: cse-import-d2cc-runner
+    client-app-id: cse-x-runner # replace 'x' with the process: import-d2cc, import-idcc...
     queue-name: rao-request-queue
 
 minio-adapter:
@@ -53,9 +53,7 @@ cse-cc-runner:
     final-cgm: FINAL_CGM
     ttc-res: TTC_RES
   xnodes:
-    file-path: /home/benrejebmoh/Documents/5-grid-capa/0-use-cases/CSE/cse-process-configs/xnodes.xml
-  combined-ras:
-    file-path: /home/benrejebmoh/Documents/5-grid-capa/0-use-cases/CSE/cse-process-configs/combinedRAs.json
+    file-path: /home/farao/xnodes.xml
   mendrisio:
     mendrisio-cagno-line:
       target-ch-id: ml_0001
@@ -69,7 +67,6 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL12 FFG.IL11 1
         - FFG.IL12 FFG.IL11 2
-        - FFG.IL12 FFG.IL11 3
       pra-name: PRA_HVDC_GILE_PIOSSASCO_1
     link2:
       node-fr: FFG.IL14
@@ -77,7 +74,6 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL14 FFG.IL13 1
         - FFG.IL14 FFG.IL13 2
-        - FFG.IL14 FFG.IL13 3
       pra-name: PRA_HVDC_GILE_PIOSSASCO_2
   whitelist:
     - http://minio:9000/

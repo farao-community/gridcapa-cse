@@ -121,16 +121,39 @@ public class CseRunner {
             initialIndexValue,
             NetworkShifterUtil.getReferenceExchanges(cseData));
 
+        String firstShiftNetworkName = fileExporter.getBaseCaseName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+
         if (multipleDichotomyResult.isInterrupted()) {
-            String ttcResultUrl = ttcResultService.saveFailedTtcResult(
-                cseRequest,
-                FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
-                TtcResult.FailedProcessData.FailedProcessReason.OTHER);
+            DichotomyResult<DichotomyRaoResponse> dichotomyResult;
+            try {
+                dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
+            } catch (IndexOutOfBoundsException ioobe) {
+                dichotomyResult = null;
+            }
+
+            String ttcResultUrl;
+            if (dichotomyResult == null || !dichotomyResult.hasValidStep() || dichotomyResult.getHighestValidStep() == null || dichotomyResult.getHighestValidStep().getValidationData() == null) {
+                ttcResultUrl = ttcResultService.saveFailedTtcResult(
+                    cseRequest,
+                    FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
+                    TtcResult.FailedProcessData.FailedProcessReason.OTHER);
+            } else {
+                ttcResultUrl = ttcResultService.saveTtcResult(
+                    cseRequest,
+                    cseData,
+                    cracImportData.cseCracCreationContext,
+                    dichotomyResult.getHighestValidStep().getValidationData(),
+                    dichotomyResult.getLimitingCause(),
+                    firstShiftNetworkName,
+                    FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
+                    preprocessedPsts,
+                    preprocessedPisaLinks);
+            }
+
             return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl(), true);
         }
 
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
-        String firstShiftNetworkName = fileExporter.getBaseCaseName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {

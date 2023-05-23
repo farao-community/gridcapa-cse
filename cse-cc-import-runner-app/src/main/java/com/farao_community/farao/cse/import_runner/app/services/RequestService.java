@@ -18,9 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.util.UUID;
+import java.util.function.Function;
 
 @Service
 public class RequestService {
@@ -35,6 +38,13 @@ public class RequestService {
         this.cseRunner = cseRunner;
         this.businessLogger = businessLogger;
         this.streamBridge = streamBridge;
+    }
+
+    @Bean
+    public Function<Flux<byte[]>, Flux<byte[]>> request(RequestService requestService) {
+        return cseRequestFlux -> cseRequestFlux
+            .map(this::launchCseRequest)
+            .log();
     }
 
     public byte[] launchCseRequest(byte[] req) {
@@ -57,8 +67,8 @@ public class RequestService {
     }
 
     private byte[] sendCseResponse(CseResponse cseResponse) {
-        if ((cseResponse.getFinalCgmFileUrl() == null && cseResponse.getTtcFileUrl() == null)
-            || cseResponse.isInterrupted()) {
+        if (cseResponse.isInterrupted()) {
+            businessLogger.info("CSE run has been interrupted");
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.INTERRUPTED));
         } else {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));

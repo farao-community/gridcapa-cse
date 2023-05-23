@@ -368,7 +368,7 @@ class MultipleDichotomyRunnerTest {
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
             multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges);
 
-        assertEquals(secondDichotomyResult, dichotomyResult.getBestDichotomyResult());
+        assertEquals(thirdDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertTrue(dichotomyResult.isInterrupted());
     }
 
