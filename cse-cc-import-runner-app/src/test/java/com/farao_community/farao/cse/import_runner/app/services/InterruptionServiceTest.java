@@ -17,6 +17,9 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * @author Vincent Bochet {@literal <vincent.bochet at rte-france.com>}
+ */
 @SpringBootTest
 class InterruptionServiceTest {
 
