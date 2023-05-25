@@ -302,6 +302,15 @@ public class CracResultsHelper {
         }
     }
 
+    public static Set<NetworkElement> getOutageElements(FlowCnec flowCnec) {
+        Optional<Contingency> contingencyOpt = flowCnec.getState().getContingency();
+        if (contingencyOpt.isPresent()) {
+            return contingencyOpt.get().getNetworkElements();
+        } else {
+            return Collections.EMPTY_SET;
+        }
+    }
+
     public List<CseOutageCreationContext> getOutageCreationContext() {
         return cseCracCreationContext.getOutageCreationContexts().stream()
             .filter(ElementaryCreationContext::isImported).collect(Collectors.toList());

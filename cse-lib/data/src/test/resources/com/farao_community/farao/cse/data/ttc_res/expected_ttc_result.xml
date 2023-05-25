@@ -105,6 +105,11 @@
         <CriticalBranch>
             <Outage>
                 <Name v="outage_1"/>
+                <Element>
+                    <Code v="BBE2AA1  FFR3AA1  1"/>
+                    <areafrom v="BE"/>
+                    <areato v="FR"/>
+                </Element>
             </Outage>
             <MonitoredElement>
                 <Element>
