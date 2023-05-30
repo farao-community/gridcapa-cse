@@ -16,6 +16,7 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 @Service
@@ -79,7 +80,8 @@ public class InitialShiftService {
     private void shiftNetwork(Map<String, Double> scalingValuesByCountry, CseRequest cseRequest, Network network) {
         ZonalData<Scalable> zonalScalable = GlskDocumentImporters.importGlsk(fileImporter.openUrlStream(cseRequest.getMergedGlskUrl())).getZonalScalable(network);
         String initialVariantId = network.getVariantManager().getWorkingVariantId();
-        String newVariant = "temporary-working-variant" + Math.random() + initialVariantId;
+         // SecureRandom used to be compliant with sonar
+        String newVariant = "temporary-working-variant" + new SecureRandom().nextInt(100) + initialVariantId;
         network.getVariantManager().cloneVariant(initialVariantId, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
