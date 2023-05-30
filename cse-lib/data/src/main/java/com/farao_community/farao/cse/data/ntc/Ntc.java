@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.xsd.TLine;
+import com.powsybl.glsk.commons.CountryEICode;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -67,14 +68,23 @@ public final class Ntc {
         return flowOnNotModeledLinesPerCountry.values().stream().reduce(0., Double::sum);
     }
 
-    public Map<String, Double> computeReducedSplittingFactors() {
-        Map<String, Double> flowOnMerchantLinesPerCountry = isImportEcProcess ?
-                getFlowPerCountryAdapted(com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine::isMerchantLine) :
-                getFlowPerCountry(TLine::isMerchantLine);
-        Map<String, Double> ntcPerCountry = getNtcPerCountry();
-        Double totalNtc = ntcPerCountry.values().stream().reduce(0., Double::sum);
+    public Map<String, Double> getFlowPerCountryOnMerchantLines() {
+        return isImportEcProcess ?
+            getFlowPerCountryAdapted(com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine::isMerchantLine) :
+            getFlowPerCountry(TLine::isMerchantLine);
+    }
+
+    public Map<String, Double> computeReducedSplittingFactors(Map<String, Double> ntcsByEic) {
+        Map<String, Double> ntcsByCountry = new HashMap<>();
+        ntcsByEic.forEach((k, v) -> ntcsByCountry.put(toCountry(k), v));
+        Map<String, Double> flowOnMerchantLinesPerCountry = getFlowPerCountryOnMerchantLines();
+        Double totalNtc = ntcsByCountry.values().stream().reduce(0., Double::sum);
         Double totalFlowOnMerchantLines = flowOnMerchantLinesPerCountry.values().stream().reduce(0., Double::sum);
-        return getReducedSplittingFactors(ntcPerCountry, flowOnMerchantLinesPerCountry, totalNtc, totalFlowOnMerchantLines);
+        return getReducedSplittingFactors(ntcsByCountry, flowOnMerchantLinesPerCountry, totalNtc, totalFlowOnMerchantLines);
+    }
+
+    private String toCountry(String eic) {
+        return new CountryEICode(eic).getCountry().toString();
     }
 
     public Map<String, Double> getFlowOnFixedFlowLines() {
@@ -95,12 +105,6 @@ public final class Ntc {
         return isImportEcProcess ?
                 getFlowPerCountryAdapted(t -> !t.isModelized()) :
                 getFlowPerCountry(t -> !t.isModelized());
-    }
-
-    public Map<String, Double> getFlowPerCountryOnMerchantLines() {
-        return isImportEcProcess ?
-            getFlowPerCountryAdapted(com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine::isMerchantLine) :
-            getFlowPerCountry(TLine::isMerchantLine);
     }
 
     Map<String, Double> getFlowPerCountry(Predicate<TLine> lineSelector) {
@@ -188,7 +192,7 @@ public final class Ntc {
         return flowPerLine;
     }
 
-    private static Map<String, Double> getReducedSplittingFactors(Map<String, Double> ntcPerCountry,
+    private static Map<String, Double>  getReducedSplittingFactors(Map<String, Double> ntcPerCountry,
                                                                   Map<String, Double> flowOnMerchantLinesPerCountry,
                                                                   Double totalNtc,
                                                                   Double totalFlowOnMerchantLines) {

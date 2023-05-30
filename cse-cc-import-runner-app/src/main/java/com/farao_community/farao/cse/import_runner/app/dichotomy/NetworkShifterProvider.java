@@ -14,6 +14,7 @@ import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.shift.LinearScaler;
 import com.farao_community.farao.dichotomy.shift.ShiftDispatcher;
 import com.powsybl.iidm.network.Network;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,32 +28,36 @@ public class NetworkShifterProvider {
     private static final double SHIFT_TOLERANCE = 1;
 
     private final ZonalScalableProvider zonalScalableProvider;
+    private final Logger businessLogger;
 
-    public NetworkShifterProvider(ZonalScalableProvider zonalScalableProvider) {
+    public NetworkShifterProvider(ZonalScalableProvider zonalScalableProvider, Logger businessLogger) {
         this.zonalScalableProvider = zonalScalableProvider;
+        this.businessLogger = businessLogger;
     }
 
     public NetworkShifter get(CseRequest request,
                               CseData cseData,
                               Network network,
-                              Map<String, Double> referenceExchanges) throws IOException {
+                              Map<String, Double> referenceExchanges,
+                              Map<String, Double> ntcsByEic) throws IOException {
         return new LinearScaler(
             zonalScalableProvider.get(request.getMergedGlskUrl(), network, request.getProcessType()),
-            getShiftDispatcher(request.getProcessType(), cseData, referenceExchanges),
+            getShiftDispatcher(request.getProcessType(), cseData, referenceExchanges, ntcsByEic),
             SHIFT_TOLERANCE);
     }
 
-    private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Map<String, Double> referenceExchanges) {
-        if (processType == ProcessType.D2CC) {
+    private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) {
+        if (processType.equals(ProcessType.D2CC)) {
             return new CseD2ccShiftDispatcher(
-                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtc().getNtcPerCountry()),
-                referenceExchanges,
-                NetworkShifterUtil.convertFlowsOnNotModelledLines(cseData.getNtc().getFlowPerCountryOnNotModelizedLines()));
+                businessLogger,
+                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors(ntcsByEic)),
+                ntcsByEic);
         } else {
             return new CseIdccShiftDispatcher(
-                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors()),
-                referenceExchanges,
-                cseData.getNtc2().getExchanges());
+                businessLogger,
+                ntcsByEic,
+                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors(ntcsByEic)),
+                referenceExchanges);
         }
     }
 }

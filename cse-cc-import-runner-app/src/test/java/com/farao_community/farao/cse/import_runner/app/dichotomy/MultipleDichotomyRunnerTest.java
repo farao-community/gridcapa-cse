@@ -69,6 +69,11 @@ class MultipleDichotomyRunnerTest {
         Map.entry("CH", 250.),
         Map.entry("AT", 250.));
 
+    private Map<String, Double> ntcs = Map.ofEntries(Map.entry("FR", 100.),
+        Map.entry("SI", 100.),
+        Map.entry("CH", 100.),
+        Map.entry("AT", 100.));
+
     @BeforeEach
     void setUp() {
         network = Mockito.mock(Network.class);
@@ -94,7 +99,7 @@ class MultipleDichotomyRunnerTest {
             50,
             650,
             1000.,
-                false);
+            false);
     }
 
     private void mockCrac() {
@@ -151,12 +156,12 @@ class MultipleDichotomyRunnerTest {
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
         DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
 
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(),   any(), any())).thenReturn(initialDichotomyResult);
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(),  any(), any())).thenReturn(secondDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any(), any(), any())).thenReturn(initialDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any(), any(), any())).thenReturn(secondDichotomyResult);
         Mockito.when(initialDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
 
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
-            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges);
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges, ntcs);
 
         assertEquals(initialDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertTrue(dichotomyResult.getBestForcedPrasIds().isEmpty());
@@ -172,12 +177,12 @@ class MultipleDichotomyRunnerTest {
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
         DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
 
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(),  any(), any())).thenReturn(initialDichotomyResult);
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(),  any(), any())).thenReturn(secondDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any(), any(), any())).thenReturn(initialDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any(), any(), any())).thenReturn(secondDichotomyResult);
         Mockito.when(initialDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
 
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
-            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges);
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges, ntcs);
 
         assertEquals(initialDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertTrue(dichotomyResult.getBestForcedPrasIds().isEmpty());
@@ -193,12 +198,12 @@ class MultipleDichotomyRunnerTest {
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
         DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
 
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(),  any(), any())).thenReturn(initialDichotomyResult);
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(),  any(), any())).thenReturn(secondDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any(), any(), any())).thenReturn(initialDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any(), any(), any())).thenReturn(secondDichotomyResult);
         Mockito.when(initialDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
         Mockito.when(secondDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
-            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges);
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges, ntcs);
 
         assertEquals(secondDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertEquals(1, dichotomyResult.getBestForcedPrasIds().size());
@@ -213,15 +218,15 @@ class MultipleDichotomyRunnerTest {
         );
 
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
-        DichotomyResult<DichotomyRaoResponse>  secondDichotomyResult = mockDichotomyResult("element2", 2000);
+        DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 2000);
 
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(),  any(), any())).thenReturn(initialDichotomyResult);
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(),  any(), any())).thenReturn(secondDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any(), any(), any())).thenReturn(initialDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any(), any(), any())).thenReturn(secondDichotomyResult);
         Mockito.when(initialDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
         Mockito.when(secondDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
 
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
-            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges);
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges, ntcs);
 
         assertEquals(secondDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertEquals(1, dichotomyResult.getBestForcedPrasIds().size());
@@ -238,13 +243,13 @@ class MultipleDichotomyRunnerTest {
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult = mockDichotomyResult("element1", 1000);
         DichotomyResult<DichotomyRaoResponse> secondDichotomyResult = mockDichotomyResult("element2", 500);
 
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(),  any(), any())).thenReturn(initialDichotomyResult);
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(),  any(), any())).thenReturn(secondDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any(), any(), any())).thenReturn(initialDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any(), any(), any())).thenReturn(secondDichotomyResult);
         Mockito.when(initialDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
         Mockito.when(secondDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
 
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
-            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges);
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges, ntcs);
 
         assertEquals(initialDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertTrue(dichotomyResult.getBestForcedPrasIds().isEmpty());
@@ -264,11 +269,11 @@ class MultipleDichotomyRunnerTest {
         Mockito.when(secondDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
         Mockito.when(thirdDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
 
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(),  any(), any())).thenReturn(initialDichotomyResult);
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(),  any(), any())).thenReturn(secondDichotomyResult, thirdDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any(), any(), any())).thenReturn(initialDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any(), any(), any())).thenReturn(secondDichotomyResult, thirdDichotomyResult);
 
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
-            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges);
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges, ntcs);
 
         assertEquals(thirdDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertEquals(1, dichotomyResult.getBestForcedPrasIds().size());
@@ -288,11 +293,11 @@ class MultipleDichotomyRunnerTest {
         Mockito.when(initialDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
         Mockito.when(secondDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
         Mockito.when(thirdDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(),  any(), any())).thenReturn(initialDichotomyResult);
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(),  any(), any())).thenReturn(secondDichotomyResult, thirdDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any(), any(), any())).thenReturn(initialDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any(), any(), any())).thenReturn(secondDichotomyResult, thirdDichotomyResult);
 
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
-            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges);
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges, ntcs);
 
         assertEquals(thirdDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertEquals(1, dichotomyResult.getBestForcedPrasIds().size());
@@ -313,12 +318,12 @@ class MultipleDichotomyRunnerTest {
         Mockito.when(secondDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
         Mockito.when(thirdDichotomyResult.getLimitingCause()).thenReturn(LimitingCause.GLSK_LIMITATION);
 
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(),  any(), any())).thenReturn(initialDichotomyResult);
-        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(),  any(), any()))
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), any(), any(), any())).thenReturn(initialDichotomyResult);
+        Mockito.when(dichotomyRunner.runDichotomy(eq(cseRequest), eq(cseData), eq(network), anyDouble(), anyDouble(), any(), any(), any()))
             .thenReturn(secondDichotomyResult, thirdDichotomyResult);
 
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult =
-            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges);
+            multipleDichotomyRunner.runMultipleDichotomy(cseRequest, cseData, network, crac, 1000., referenceExchanges, ntcs);
 
         assertEquals(initialDichotomyResult, dichotomyResult.getBestDichotomyResult());
         assertTrue(dichotomyResult.getBestForcedPrasIds().isEmpty());

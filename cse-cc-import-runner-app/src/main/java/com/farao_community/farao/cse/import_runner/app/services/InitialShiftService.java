@@ -1,0 +1,106 @@
+package com.farao_community.farao.cse.import_runner.app.services;
+
+import com.farao_community.farao.commons.EICode;
+import com.farao_community.farao.cse.computation.BorderExchanges;
+import com.farao_community.farao.cse.import_runner.app.CseData;
+import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.CseCountry;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.NetworkShifterUtil;
+import com.farao_community.farao.cse.runner.api.resource.CseRequest;
+import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
+import com.powsybl.glsk.api.io.GlskDocumentImporters;
+import com.powsybl.glsk.commons.ZonalData;
+import com.powsybl.iidm.modification.scalable.Scalable;
+import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.Network;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+@Service
+public class InitialShiftService {
+
+    private final Logger businessLogger;
+    private final FileExporter fileExporter;
+    private final FileImporter fileImporter;
+    private final ProcessConfiguration processConfiguration;
+    private static final Set<String> BORDER_COUNTRIES = Set.of(CseCountry.FR.getEiCode(), CseCountry.CH.getEiCode(), CseCountry.AT.getEiCode(), CseCountry.SI.getEiCode());
+
+    public InitialShiftService(Logger businessLogger, FileExporter fileExporter, FileImporter fileImporter, ProcessConfiguration processConfiguration) {
+        this.businessLogger = businessLogger;
+        this.fileExporter = fileExporter;
+        this.fileImporter = fileImporter;
+        this.processConfiguration = processConfiguration;
+    }
+
+    void performInitialShiftFromVulcanusLevelToNtcLevel(Network network, CseData cseData, CseRequest cseRequest, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) {
+        Map<String, Double> preprocessedNetworkNps = BorderExchanges.computeCseCountriesBalances(network);
+        for (Map.Entry<String, Double> entry : preprocessedNetworkNps.entrySet()) {
+            businessLogger.info("Summary : Net positions on preprocessed network : for area {} : net position is {}.", entry.getKey(), entry.getValue());
+        }
+
+        Map<String, Double> flowOnNotModelledLinesPerCountryEic =
+            NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtc().getFlowPerCountryOnNotModelizedLines());
+        Map<String, Double> initialShifts = new HashMap<>();
+
+        BORDER_COUNTRIES.forEach(country -> {
+            double initialShift = ntcsByEic.get(country)
+                - referenceExchanges.get(country)
+                - flowOnNotModelledLinesPerCountryEic.get(country);
+            initialShifts.put(country, initialShift);
+        });
+
+        initialShifts.put(CseCountry.IT.getEiCode(), -initialShifts.values().stream().mapToDouble(Double::doubleValue).sum());
+
+        for (Map.Entry<String, Double> entry : initialShifts.entrySet()) {
+            businessLogger.info("Summary : Initial shift for area {} : {}.", entry.getKey(), entry.getValue());
+        }
+
+        shiftNetwork(initialShifts, cseRequest, network);
+        Map<String, Double> netPositionsAfterInitialShift = BorderExchanges.computeCseCountriesBalances(network);
+        for (Map.Entry<String, Double> entry : netPositionsAfterInitialShift.entrySet()) {
+            businessLogger.info("Summary : Net positions after initial shift : for area {} : net position is {}.", entry.getKey(), entry.getValue());
+        }
+
+        String networkAfterInitialShiftPath = fileExporter.getFirstShiftNetworkPath(cseRequest.getTargetProcessDateTime(),
+            cseRequest.getProcessType(), cseRequest.isImportEcProcess());
+
+        fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, networkAfterInitialShiftPath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
+        businessLogger.info("Summary : Initial shift is finished, network is updated and initial model is exported to outputs.");
+    }
+
+    Map<String, Double> mergeNtcsForIdcc(Map<String, Double> ntc2Exchanges, Map<String, Double> ntcExchanges) {
+        Map<String, Double> result = new HashMap<>(ntc2Exchanges);
+        ntcExchanges.forEach((key, value) -> result.computeIfAbsent(key, k -> value));
+        return result;
+    }
+
+    private void shiftNetwork(Map<String, Double> scalingValuesByCountry, CseRequest cseRequest, Network network) {
+        ZonalData<Scalable> zonalScalable = GlskDocumentImporters.importGlsk(fileImporter.openUrlStream(cseRequest.getMergedGlskUrl())).getZonalScalable(network);
+        String initialVariantId = network.getVariantManager().getWorkingVariantId();
+        String newVariant = "temporary-working-variant" + Math.random() + initialVariantId;
+        network.getVariantManager().cloneVariant(initialVariantId, newVariant);
+        network.getVariantManager().setWorkingVariant(newVariant);
+        for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
+            String zoneId = entry.getKey();
+            double asked = entry.getValue();
+            double done = zonalScalable.getData(zoneId).scale(network, asked);
+            businessLogger.info(String.format("Applying variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done));
+
+            if (Math.abs(done - asked) > 1e-3) {
+                businessLogger.warn(String.format("Glsk limitation : Incomplete variation on zone %s (target: %.2f, done: %.2f)",
+                    zoneId, asked, done));
+                if (zoneId.equals(new EICode(Country.IT).getAreaCode())) {
+                    double italyGlskLimitationSplittingFactor = done / asked;
+                    businessLogger.warn("Glsk limitation is reached for italy, shifts will be updated proportionally to coefficient: {}", italyGlskLimitationSplittingFactor);
+                    scalingValuesByCountry.forEach((key, value) -> scalingValuesByCountry.put(key, value * italyGlskLimitationSplittingFactor));
+                    network.getVariantManager().setWorkingVariant(initialVariantId);
+                    shiftNetwork(scalingValuesByCountry, cseRequest, network);
+                    break;
+                }
+            }
+        }
+
+    }
+}

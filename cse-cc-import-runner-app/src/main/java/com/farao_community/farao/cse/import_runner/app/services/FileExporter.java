@@ -200,12 +200,12 @@ public class FileExporter {
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
     }
 
-    public String getBaseCaseFilePath(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
-        String filename = getBaseCaseName(processTargetDate, processType);
+    public String getFirstShiftNetworkPath(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
+        String filename = getFirstShiftNetworkName(processTargetDate, processType);
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
     }
 
-    String getBaseCaseName(OffsetDateTime processTargetDate, ProcessType processType) {
+    String getFirstShiftNetworkName(OffsetDateTime processTargetDate, ProcessType processType) {
         String filename;
         ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();

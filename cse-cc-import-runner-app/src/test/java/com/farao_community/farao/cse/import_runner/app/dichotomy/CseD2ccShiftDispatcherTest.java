@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -28,27 +29,20 @@ class CseD2ccShiftDispatcherTest {
             CseCountry.SI.getEiCode(), 0.065
         );
 
-        Map<String, Double> referenceExchanges = Map.of(
+        Map<String, Double> ntcs = Map.of(
             CseCountry.FR.getEiCode(), 2000.,
-            CseCountry.CH.getEiCode(), 500.,
-            CseCountry.AT.getEiCode(), 1000.,
-            CseCountry.SI.getEiCode(), 2500.
+            CseCountry.CH.getEiCode(), 1500.,
+            CseCountry.AT.getEiCode(), 100.,
+            CseCountry.SI.getEiCode(), 300.
         );
 
-        Map<String, Double> flowOnMerchantLinesPerCountry = Map.of(
-            CseCountry.FR.getEiCode(), 0.,
-            CseCountry.CH.getEiCode(), 250.,
-            CseCountry.AT.getEiCode(), 80.,
-            CseCountry.SI.getEiCode(), 0.
-        );
-
-        CseD2ccShiftDispatcher dispatcher = new CseD2ccShiftDispatcher(splittingFactors, referenceExchanges, flowOnMerchantLinesPerCountry);
+        CseD2ccShiftDispatcher dispatcher = new CseD2ccShiftDispatcher(LoggerFactory.getLogger(""), splittingFactors, ntcs);
         Map<String, Double> shifts = dispatcher.dispatch(3000);
 
-        assertEquals(-2000, shifts.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
-        assertEquals(-750, shifts.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
-        assertEquals(-1080, shifts.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
-        assertEquals(-2500, shifts.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
-        assertEquals(6330, shifts.get(CseCountry.IT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-385.2, shifts.get(CseCountry.FR.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-429.29, shifts.get(CseCountry.CH.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-27.0, shifts.get(CseCountry.AT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-58.5, shifts.get(CseCountry.SI.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(900.0, shifts.get(CseCountry.IT.getEiCode()), DOUBLE_TOLERANCE);
     }
 }
