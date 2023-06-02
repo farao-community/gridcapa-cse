@@ -24,39 +24,39 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
     private final Logger businessLogger;
     private final Map<String, Double> splittingFactors;
     private final Map<String, Double> referenceExchanges;
-    private final Map<String, Double> ntcs2;
+    private final Map<String, Double> ntcs;
 
     private final double referenceItalianImport;
-    private final double ntc2ItalianImport;
+    private final double ntcSum;
     private int shiftCounter = 0;
 
     public CseIdccShiftDispatcher(Logger businessLogger,
-                                  Map<String, Double> ntcs2,
+                                  Map<String, Double> ntcs,
                                   Map<String, Double> splittingFactors,
                                   Map<String, Double> referenceExchanges) {
         this.businessLogger = businessLogger;
-        this.ntcs2 = ntcs2;
+        this.ntcs = ntcs;
         this.splittingFactors = splittingFactors;
         this.referenceExchanges = referenceExchanges;
 
         referenceItalianImport = NetworkShifterUtil.getReferenceItalianImport(referenceExchanges);
-        ntc2ItalianImport = ntcs2.values().stream().reduce(0., Double::sum);
+        ntcSum = ntcs.values().stream().reduce(0., Double::sum);
 
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("Italian import reference: %.2f", referenceItalianImport));
-            LOGGER.info(String.format("Italian import in D2: %.2f", ntc2ItalianImport));
+            LOGGER.info(String.format("Italian import in D2: %.2f", ntcSum));
         }
     }
 
     @Override
     public Map<String, Double> dispatch(double value) {
         Map<String, Double> shifts;
-        if (value <= ntc2ItalianImport && value > referenceItalianImport) {
+        if (value <= ntcSum && value > referenceItalianImport) {
             LOGGER.debug("Computing a shift proportional to D2 ATC.");
             shifts = getShiftsProportionallyToAtcCapacity(value);
-        } else if (value <= referenceItalianImport) {   // stepvalue 4951;  ntc2 = 5601; vulcanus = 5488
+        } else if (value <= referenceItalianImport) {
             LOGGER.debug("Computing a shift proportional to D2 capacity.");
-            shifts = getShiftsProportionallyToNtc2Capacity(value);
+            shifts = getShiftsProportionallyToNtcCapacity(value);
         } else {
             LOGGER.debug("Computing a shift proportional to splitting factors above D2 capacity.");
             shifts = getShiftsAboveAtcProportionallyToSplittingFactors(value);
@@ -66,15 +66,15 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
         return shifts;
     }
 
-    private Map<String, Double> getShiftsProportionallyToNtc2Capacity(double targetValue) {
+    private Map<String, Double> getShiftsProportionallyToNtcCapacity(double targetValue) {
         Map<String, Double> shifts = new HashMap<>();
-        double exportingCountriesNtc2 = ntcs2.values().stream().filter(ntc2 -> ntc2 > 0).reduce(0., Double::sum);
+        double exportingCountriesNtcs = ntcs.values().stream().filter(ntc2 -> ntc2 > 0).reduce(0., Double::sum);
         BORDER_COUNTRIES.forEach(country -> {
-            if (ntcs2.get(country) <= 0) {
-                shifts.put(country, -(ntcs2.get(country) - referenceExchanges.get(country)));
+            if (ntcs.get(country) <= 0) {
+                shifts.put(country, -(ntcs.get(country) - referenceExchanges.get(country)));
             } else {
                 shifts.put(country,
-                    (((targetValue - referenceItalianImport) / exportingCountriesNtc2) * ntcs2.get(country)) - (ntcs2.get(country) - referenceExchanges.get(country))
+                    (((targetValue - referenceItalianImport) / exportingCountriesNtcs) * ntcs.get(country)) - (ntcs.get(country) - referenceExchanges.get(country))
                 );
             }
         });
@@ -89,9 +89,9 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
         Map<String, Double> shifts = new HashMap<>();
         BORDER_COUNTRIES.forEach(country ->
             shifts.put(country,
-                (targetValue - ntc2ItalianImport) *
-                    ((ntcs2.get(country) - referenceExchanges.get(country)) / (ntc2ItalianImport - referenceItalianImport))
-                //
+                (targetValue - ntcSum) *
+                    ((ntcs.get(country) - referenceExchanges.get(country)) / (ntcSum - referenceItalianImport))
+
             ));
 
         shifts.put(CseCountry.IT.getEiCode(),
@@ -103,7 +103,7 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
         Map<String, Double> shifts = new HashMap<>();
         // Each country shifts to NTC2 value from reference and then completes proportionally to splitting factors
         BORDER_COUNTRIES.forEach(country ->
-            shifts.put(country, splittingFactors.get(country) * (targetValue - ntcs2.values().stream().mapToDouble(Double::doubleValue).sum())));
+            shifts.put(country, splittingFactors.get(country) * (targetValue - ntcs.values().stream().mapToDouble(Double::doubleValue).sum())));
         shifts.put(CseCountry.IT.getEiCode(),
             -shifts.values().stream().mapToDouble(Double::doubleValue).sum());
         return shifts;
