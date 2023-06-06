@@ -7,8 +7,6 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.cse.computation.BorderExchanges;
-import com.farao_community.farao.cse.computation.CseComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.*;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
@@ -20,6 +18,7 @@ import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.api.CracCreators;
 import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
@@ -31,7 +30,6 @@ import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -46,9 +44,6 @@ import java.util.Set;
  */
 @Service
 public class CseRunner {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CseRunner.class);
-    private static final double NETWORK_AND_REFERENCE_EXCHANGES_DIFFERENCE_THRESHOLD = 0.05;
-
     private final FileImporter fileImporter;
     private final FileExporter fileExporter;
     private final MultipleDichotomyRunner multipleDichotomyRunner;
@@ -57,10 +52,11 @@ public class CseRunner {
     private final MerchantLineService merchantLineService;
     private final ProcessConfiguration processConfiguration;
     private final Logger businessLogger;
+    private final InitialShiftService initialShiftService;
 
     public CseRunner(FileImporter fileImporter, FileExporter fileExporter, MultipleDichotomyRunner multipleDichotomyRunner,
                      TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
-                     ProcessConfiguration processConfiguration, Logger businessLogger) {
+                     ProcessConfiguration processConfiguration, Logger businessLogger, InitialShiftService initialShiftService) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.multipleDichotomyRunner = multipleDichotomyRunner;
@@ -69,6 +65,7 @@ public class CseRunner {
         this.merchantLineService = merchantLineService;
         this.processConfiguration = processConfiguration;
         this.businessLogger = businessLogger;
+        this.initialShiftService = initialShiftService;
     }
 
     @Threadable
@@ -93,24 +90,14 @@ public class CseRunner {
         cseData.setPreProcesedNetworkUrl(fileExporter.saveNetworkInArtifact(network, cseRequest.getTargetProcessDateTime(), "", cseRequest.getProcessType(), importEcProcess));
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess));
 
-        double initialIndexValueForProcess;
-        try {
-            // We compute real Italian import on network just to compare with Vulcanus reference and log an event
-            // if the difference is too high (> 5%)
-            double initialItalianImportOnNetwork = BorderExchanges.computeItalianImport(network);
-            // Then we set initial index from Vulcanus reference value
-            initialIndexValueForProcess = getInitialIndexValue(cseData);
-            checkNetworkAndReferenceExchangesDifference(initialIndexValueForProcess, initialItalianImportOnNetwork);
-        } catch (CseComputationException e) {
-            LOGGER.warn("A problem occurred while calculating initial italian import from reference exchanges. First shift operation is not performed yet, base case cgm will be added to outputs. Nested message: {}", e.getMessage());
-            String ttcResultUrl = ttcResultService.saveFailedTtcResult(
-                cseRequest,
-                FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
-                TtcResult.FailedProcessData.FailedProcessReason.LOAD_FLOW_FAILURE);
-            return new CseResponse(cseRequest.getId(), ttcResultUrl, cseRequest.getCgmUrl());
-        }
+        Map<String, Double> ntcsByEic = cseRequest.getProcessType().equals(ProcessType.IDCC) ?
+            initialShiftService.mergeNtcsForIdcc(cseData.getNtc2().getExchanges(),
+                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry())) :
+            NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry());
 
-        double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(initialIndexValueForProcess);
+        double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(ntcsByEic.values().stream().mapToDouble(Double::doubleValue).sum());
+        // input cgm corresponds to vulcanus file but we want to start calculation from ntc values
+        initialShiftService.performInitialShiftFromVulcanusLevelToNtcLevel(network, cseData, cseRequest, cseData.getCseReferenceExchanges().getExchanges(), ntcsByEic);
 
         MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
             cseRequest,
@@ -118,10 +105,11 @@ public class CseRunner {
             network,
             crac,
             initialIndexValue,
-            NetworkShifterUtil.getReferenceExchanges(cseData));
+            NetworkShifterUtil.getReferenceExchanges(cseData),
+            ntcsByEic);
 
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
-        String firstShiftNetworkName = fileExporter.getBaseCaseName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+        String firstShiftNetworkName = fileExporter.getFirstShiftNetworkName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String ttcResultUrl;
         String finalCgmUrl;
         if (dichotomyResult.hasValidStep()) {
@@ -145,10 +133,6 @@ public class CseRunner {
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
     }
 
-    double getInitialIndexValue(CseData cseData) {
-        return cseData.getCseReferenceExchanges().getExchanges().values().stream().reduce(0., Double::sum);
-    }
-
     CracImportData importCracAndModifyNetworkForBusBars(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) {
         // Create CRAC creation context
         CseCrac nativeCseCrac = fileImporter.importCseCrac(cracUrl);
@@ -166,14 +150,6 @@ public class CseRunner {
         CracCreationParameters cracCreationParameters = CracCreationParameters.load();
         cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
         return cracCreationParameters;
-    }
-
-    private void checkNetworkAndReferenceExchangesDifference(double initialItalianImportFromReference, double initialItalianImportFromNetwork) {
-        double relativeDifference = Math.abs(initialItalianImportFromReference - initialItalianImportFromNetwork)
-            / Math.abs(initialItalianImportFromReference);
-        if (relativeDifference > NETWORK_AND_REFERENCE_EXCHANGES_DIFFERENCE_THRESHOLD) {
-            LOGGER.warn("Difference between vulcanus exchanges and network exchanges too high.");
-        }
     }
 
     static final class CracImportData {

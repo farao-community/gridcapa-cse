@@ -50,6 +50,9 @@ class CseRunnerTest {
     private MultipleDichotomyRunner multipleDichotomyRunner;
 
     @MockBean
+    private InitialShiftService initialShiftService;
+
+    @MockBean
     private FileExporter fileExporter;
 
     @Test
@@ -72,27 +75,27 @@ class CseRunnerTest {
         CseRequest cseRequest = null;
         try {
             cseRequest = new CseRequest(
-                    "ID1",
-                    ProcessType.IDCC,
-                    OffsetDateTime.parse("2021-09-01T20:30Z"),
-                    getClass().getResource("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct").toURI().toURL().toString(),
-                    getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml").toURI().toURL().toString(),
-                    getClass().getResource("crac.xml").toURI().toURL().toString(),
-                    getClass().getResource("20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    getClass().getResource("vulcanus_01032021_96.xls").toURI().toURL().toString(),
-                    getClass().getResource("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
-                    null,
-                    null,
-                    null,
-                    50.0,
-                    0.0,
-                    null,
-                    true
+                "ID1",
+                ProcessType.IDCC,
+                OffsetDateTime.parse("2021-09-01T20:30Z"),
+                getClass().getResource("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct").toURI().toURL().toString(),
+                getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml").toURI().toURL().toString(),
+                getClass().getResource("crac.xml").toURI().toURL().toString(),
+                getClass().getResource("20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
+                getClass().getResource("NTC2_20210901_2D1_AT-IT1.xml").toURI().toURL().toString(),
+                getClass().getResource("NTC2_20210901_2D1_CH-IT1.xml").toURI().toURL().toString(),
+                getClass().getResource("NTC2_20210901_2D1_FR-IT1.xml").toURI().toURL().toString(),
+                getClass().getResource("NTC2_20210901_2D1_SI-IT1.xml").toURI().toURL().toString(),
+                null,
+                getClass().getResource("vulcanus_01032021_96.xls").toURI().toURL().toString(),
+                getClass().getResource("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
+                null,
+                null,
+                null,
+                50.0,
+                0.0,
+                null,
+                true
             );
         } catch (MalformedURLException | URISyntaxException e) {
             fail();
@@ -101,12 +104,13 @@ class CseRunnerTest {
             MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult = mock(MultipleDichotomyResult.class);
 
             when(multipleDichotomyRunner.runMultipleDichotomy(
-                    any(CseRequest.class),
-                    any(CseData.class),
-                    any(Network.class),
-                    any(Crac.class),
-                    anyDouble(),
-                    any(Map.class)
+                any(CseRequest.class),
+                any(CseData.class),
+                any(Network.class),
+                any(Crac.class),
+                anyDouble(),
+                any(Map.class),
+                any(Map.class)
             )).thenReturn(dichotomyResult);
             DichotomyResult<DichotomyRaoResponse> raoResponse = mock(DichotomyResult.class);
 
@@ -116,6 +120,9 @@ class CseRunnerTest {
             when(fileExporter.getFinalNetworkFilePath(any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("AnyString");
             when(fileExporter.exportAndUploadNetwork(any(Network.class), anyString(), any(GridcapaFileGroup.class), anyString(), anyString(), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyString/IMPORT_EC/test");
             when(fileExporter.saveTtcResult(any(Timestamp.class), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyTTCfilepath/IMPORT_EC/test");
+
+            doNothing().when(initialShiftService).performInitialShiftFromVulcanusLevelToNtcLevel(any(), any(), any(), anyMap(), anyMap());
+
             CseResponse response = cseRunner.run(cseRequest);
 
             assertNotNull(response);

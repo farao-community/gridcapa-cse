@@ -44,16 +44,6 @@ class NtcFilesAdaptedTest {
     }
 
     @Test
-    void computeReducedSplittingFactors() {
-        Map<String, Double> splittingFactors = ntc.computeReducedSplittingFactors();
-        assertEquals(4, splittingFactors.size());
-        assertEquals(0.466, splittingFactors.get("FR"), DOUBLE_PRECISION);
-        assertEquals(0.409, splittingFactors.get("CH"), DOUBLE_PRECISION);
-        assertEquals(0.035, splittingFactors.get("AT"), DOUBLE_PRECISION);
-        assertEquals(0.089, splittingFactors.get("SI"), DOUBLE_PRECISION);
-    }
-
-    @Test
     void checkDefaultFlowForMendrisioCagno() throws JAXBException {
         Map<String, Double> fixedFlowLines = Ntc.create(OffsetDateTime.parse("2021-09-13T12:30Z"),
                                                         getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml"),

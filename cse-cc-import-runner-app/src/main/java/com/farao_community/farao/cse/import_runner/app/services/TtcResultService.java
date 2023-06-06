@@ -13,10 +13,12 @@ import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.data.xnode.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.NetworkShifterUtil;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.XNodesConfiguration;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
@@ -34,11 +36,13 @@ public class TtcResultService {
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
     private final XNodesConfiguration xNodesConfiguration;
+    private final InitialShiftService initialShiftService;
 
-    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter, XNodesConfiguration xNodesConfiguration) {
+    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter, XNodesConfiguration xNodesConfiguration, InitialShiftService initialShiftService) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
         this.xNodesConfiguration = xNodesConfiguration;
+        this.initialShiftService = initialShiftService;
     }
 
     public String saveFailedTtcResult(CseRequest cseRequest, String firstShiftNetworkName, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason) {
@@ -55,10 +59,16 @@ public class TtcResultService {
         String networkWithPraUrl = highestSecureStepRaoResponse.getRaoResponse().getNetworkWithPraFileUrl();
         Network networkWithPra = fileImporter.importNetwork(networkWithPraUrl);
         double finalItalianImport = BorderExchanges.computeItalianImport(networkWithPra);
+
+        Map<String, Double> ntcsByEic = cseRequest.getProcessType().equals(ProcessType.IDCC) ?
+            initialShiftService.mergeNtcsForIdcc(cseData.getNtc2().getExchanges(),
+                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry())) :
+            NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry());
+
         TtcResult.ProcessData processData = new TtcResult.ProcessData(
             highestSecureStepRaoResponse.getForcedPrasIds(),
             BorderExchanges.computeCseBordersExchanges(networkWithPra),
-            cseData.getReducedSplittingFactors(),
+            cseData.getReducedSplittingFactors(ntcsByEic),
             BorderExchanges.computeCseCountriesBalances(networkWithPra),
             limitingCause,
             finalItalianImport,

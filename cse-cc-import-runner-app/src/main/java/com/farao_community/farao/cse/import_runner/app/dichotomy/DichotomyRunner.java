@@ -7,7 +7,6 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
@@ -39,16 +38,14 @@ public class DichotomyRunner {
     private final NetworkShifterProvider networkShifterProvider;
     private final ForcedPrasHandler forcedPrasHandler;
     private final RaoRunnerClient raoRunnerClient;
-    private final ProcessConfiguration processConfiguration;
     private final Logger logger;
 
-    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, ProcessConfiguration processConfiguration, Logger logger) {
+    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, Logger logger) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
         this.networkShifterProvider = networkShifterProvider;
         this.forcedPrasHandler = forcedPrasHandler;
         this.raoRunnerClient = raoRunnerClient;
-        this.processConfiguration = processConfiguration;
         this.logger = logger;
     }
 
@@ -57,8 +54,9 @@ public class DichotomyRunner {
                                                               Network network,
                                                               double initialIndexValue,
                                                               Map<String, Double> referenceExchanges,
+                                                              Map<String, Double> ntcsByEic,
                                                               Set<String> forcedPrasIds) throws IOException {
-        return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, referenceExchanges, forcedPrasIds);
+        return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, referenceExchanges, ntcsByEic, forcedPrasIds);
     }
 
     public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
@@ -67,6 +65,7 @@ public class DichotomyRunner {
                                                               double initialIndexValue,
                                                               double minImportValue,
                                                               Map<String, Double> referenceExchanges,
+                                                              Map<String, Double> ntcsByEic,
                                                               Set<String> forcedPrasIds) throws IOException {
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
@@ -75,7 +74,7 @@ public class DichotomyRunner {
         DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,
             new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, NetworkShifterUtil.getReferenceItalianImport(referenceExchanges)),
-            networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges),
+            networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges, ntcsByEic),
             getNetworkValidator(cseRequest, cseData, forcedPrasIds));
         return engine.run(network);
     }
@@ -91,7 +90,6 @@ public class DichotomyRunner {
             raoRunnerClient,
             fileExporter,
             fileImporter,
-            processConfiguration,
             forcedPrasHandler,
             forcedPrasIds,
             isImportEcProcess);
