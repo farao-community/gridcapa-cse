@@ -67,7 +67,12 @@ public class MultipleDichotomyRunner {
         // Launch initial dichotomy and store result
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult =
             dichotomyRunner.runDichotomy(request, cseData, network, initialIndexValue, referenceExchanges, flattenPrasIds(forcedPrasIds));
+
         multipleDichotomyResult.addResult(initialDichotomyResult, flattenPrasIds(forcedPrasIds));
+        if (initialDichotomyResult.isInterrupted()) {
+            multipleDichotomyResult.setInterrupted(true);
+            return multipleDichotomyResult;
+        }
 
         String limitingElement = "NONE";
         String ttcString = "NONE";
@@ -122,6 +127,12 @@ public class MultipleDichotomyRunner {
                     lastUnsecureItalianImport,
                     referenceExchanges,
                     flattenPrasIds(forcedPrasIds));
+
+                if (nextDichotomyResult.isInterrupted()) {
+                    multipleDichotomyResult.addResult(nextDichotomyResult, flattenPrasIds(forcedPrasIds));
+                    multipleDichotomyResult.setInterrupted(true);
+                    return multipleDichotomyResult;
+                }
 
                 if (nextDichotomyResult.hasValidStep()) {
                     String newLimitingElement = dichotomyResultHelper.getLimitingElement(nextDichotomyResult);

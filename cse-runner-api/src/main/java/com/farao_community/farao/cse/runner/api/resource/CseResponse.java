@@ -21,12 +21,14 @@ public class CseResponse {
     private final String id;
     private final String ttcFileUrl;
     private final String finalCgmFileUrl;
+    private final boolean interrupted;
 
     @JsonCreator
-    public CseResponse(@JsonProperty("id") String id, @JsonProperty("ttcFileUrl") String ttcFileUrl, @JsonProperty("finalCgmFileUrl") String finalCgmFileUrl) {
+    public CseResponse(@JsonProperty("id") String id, @JsonProperty("ttcFileUrl") String ttcFileUrl, @JsonProperty("finalCgmFileUrl") String finalCgmFileUrl, @JsonProperty("interrupted") boolean interrupted) {
         this.id = id;
         this.ttcFileUrl = ttcFileUrl;
         this.finalCgmFileUrl = finalCgmFileUrl;
+        this.interrupted = interrupted;
     }
 
     public String getId() {
@@ -39,6 +41,10 @@ public class CseResponse {
 
     public String getFinalCgmFileUrl() {
         return finalCgmFileUrl;
+    }
+
+    public boolean isInterrupted() {
+        return interrupted;
     }
 
     @Override

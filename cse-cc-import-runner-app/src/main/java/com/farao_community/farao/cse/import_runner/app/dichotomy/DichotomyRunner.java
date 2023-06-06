@@ -11,8 +11,10 @@ import com.farao_community.farao.cse.import_runner.app.configurations.ProcessCon
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
+import com.farao_community.farao.cse.import_runner.app.services.InterruptionService;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.dichotomy.api.DichotomyEngine;
+import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.index.BiDirectionalStepsWithReferenceIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.Index;
@@ -23,7 +25,8 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -41,8 +44,9 @@ public class DichotomyRunner {
     private final RaoRunnerClient raoRunnerClient;
     private final ProcessConfiguration processConfiguration;
     private final Logger logger;
+    private final InterruptionService interruptionService;
 
-    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, ProcessConfiguration processConfiguration, Logger logger) {
+    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, ProcessConfiguration processConfiguration, Logger logger, InterruptionService interruptionService) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
         this.networkShifterProvider = networkShifterProvider;
@@ -50,6 +54,7 @@ public class DichotomyRunner {
         this.raoRunnerClient = raoRunnerClient;
         this.processConfiguration = processConfiguration;
         this.logger = logger;
+        this.interruptionService = interruptionService;
     }
 
     public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
@@ -72,11 +77,15 @@ public class DichotomyRunner {
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
         logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) minImportValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
         Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
+        NetworkValidator<DichotomyRaoResponse> raoResponseNetworkValidator = getNetworkValidator(cseRequest, cseData, forcedPrasIds);
+        NetworkShifter networkShifter = networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges);
         DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,
             new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, NetworkShifterUtil.getReferenceItalianImport(referenceExchanges)),
-            networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges),
-            getNetworkValidator(cseRequest, cseData, forcedPrasIds));
+            interruptionService,
+            networkShifter,
+            raoResponseNetworkValidator,
+            cseRequest.getId());
         return engine.run(network);
     }
 

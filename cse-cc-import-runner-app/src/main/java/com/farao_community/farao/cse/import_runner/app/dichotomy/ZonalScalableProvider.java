@@ -83,7 +83,7 @@ public class ZonalScalableProvider {
                 scalableList.add(Scalable.onLoad(load.getId()));
             });
 
-        return Scalable.stack(scalable, Scalable.proportional(percentageList, scalableList, true));
+        return Scalable.stack(scalable, Scalable.proportional(percentageList, scalableList));
     }
 
     private static void checkCseCountryInGlsk(ZonalData<Scalable> zonalScalable, CseCountry country) {

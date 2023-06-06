@@ -4,13 +4,13 @@
     <DocumentVersion v="1"/>
     <DocumentType v="Z02"/>
     <ProcessType v="Z02"/>
-    <SenderIdentification v="XXXXXXXXXXXXXXXXX" codingScheme="A01"/>
+    <SenderIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
     <SenderRole v="A36"/>
-    <ReceiverIdentification v="XXXXXXXXXXXXXXXXX" codingScheme="A01"/>
+    <ReceiverIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
     <ReceiverRole v="A04"/>
     <CreationDateTime v="2020-09-15T17:59:09Z"/>
     <GSKTimeInterval v="2020-09-16T22:00Z/2020-09-16T23:00Z"/>
-    <Domain v="XXXXXXXXXXXXXXXXX" codingScheme="A01"/>
+    <Domain v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
     <TimeSeries>
         <TimeSeriesIdentification v="1"/>
         <BusinessType v="Z02"/>

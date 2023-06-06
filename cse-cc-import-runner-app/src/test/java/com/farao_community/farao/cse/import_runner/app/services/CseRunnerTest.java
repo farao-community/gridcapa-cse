@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
+import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
@@ -16,10 +16,14 @@ import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
+import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
+import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.iidm.network.Network;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,6 +43,8 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
+ * @author Marc Schwitzguebel {@literal <marc.schwitzguebel at rte-france.com>}
+ * @author Vincent Bochet {@literal <vincent.bochet at rte-france.com>}
  */
 @SpringBootTest
 class CseRunnerTest {
@@ -51,6 +57,9 @@ class CseRunnerTest {
 
     @MockBean
     private FileExporter fileExporter;
+
+    @MockBean
+    private TtcResultService ttcResultService;
 
     @Test
     void testCracImportAndBusbarPreprocess() {
@@ -71,29 +80,7 @@ class CseRunnerTest {
     void testRun() {
         CseRequest cseRequest = null;
         try {
-            cseRequest = new CseRequest(
-                    "ID1",
-                    ProcessType.IDCC,
-                    OffsetDateTime.parse("2021-09-01T20:30Z"),
-                    getClass().getResource("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct").toURI().toURL().toString(),
-                    getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml").toURI().toURL().toString(),
-                    getClass().getResource("crac.xml").toURI().toURL().toString(),
-                    getClass().getResource("20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    getClass().getResource("vulcanus_01032021_96.xls").toURI().toURL().toString(),
-                    getClass().getResource("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
-                    null,
-                    null,
-                    null,
-                    50.0,
-                    0.0,
-                    null,
-                    true
-            );
+            cseRequest = buildTestCseRequest();
         } catch (MalformedURLException | URISyntaxException e) {
             fail();
         }
@@ -115,7 +102,7 @@ class CseRunnerTest {
 
             when(fileExporter.getFinalNetworkFilePath(any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("AnyString");
             when(fileExporter.exportAndUploadNetwork(any(Network.class), anyString(), any(GridcapaFileGroup.class), anyString(), anyString(), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyString/IMPORT_EC/test");
-            when(fileExporter.saveTtcResult(any(Timestamp.class), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyTTCfilepath/IMPORT_EC/test");
+            when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("file:/AnyTTCfilepath/IMPORT_EC/test");
             CseResponse response = cseRunner.run(cseRequest);
 
             assertNotNull(response);
@@ -123,5 +110,113 @@ class CseRunnerTest {
         } catch (IOException e) {
             fail();
         }
+    }
+
+    @Test
+    void testRunInterruptedBeforeFirstDichotomy() throws IOException, URISyntaxException {
+        // GIVEN
+        CseRequest cseRequest = buildTestCseRequest();
+
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult = mock(MultipleDichotomyResult.class);
+
+        when(multipleDichotomyRunner.runMultipleDichotomy(
+                any(CseRequest.class),
+                any(CseData.class),
+                any(Network.class),
+                any(Crac.class),
+                anyDouble(),
+                any(Map.class)
+        )).thenReturn(dichotomyResult);
+
+        when(dichotomyResult.isInterrupted()).thenReturn(true);
+        when(dichotomyResult.getBestDichotomyResult()).thenThrow(new IndexOutOfBoundsException());
+
+        when(ttcResultService.saveFailedTtcResult(any(), anyString(), any())).thenReturn("interruptedTTCFilePath");
+
+        // WHEN
+        CseResponse response = cseRunner.run(cseRequest);
+
+        // THEN
+        verify(ttcResultService, times(1)).saveFailedTtcResult(eq(cseRequest), anyString(), eq(TtcResult.FailedProcessData.FailedProcessReason.OTHER));
+        assertNotNull(response);
+        assertEquals("interruptedTTCFilePath", response.getTtcFileUrl());
+        assertTrue(response.isInterrupted());
+    }
+
+    @Test
+    void testRunInterruptedDuringFirstDichotomy() throws IOException, URISyntaxException {
+        // GIVEN
+        CseRequest cseRequest = buildTestCseRequest();
+
+        MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = mock(MultipleDichotomyResult.class);
+        DichotomyResult<DichotomyRaoResponse> bestDichotomyResult = mock(DichotomyResult.class);
+        DichotomyStepResult<DichotomyRaoResponse> highestValidStep = mock(DichotomyStepResult.class);
+        DichotomyRaoResponse validationData = mock(DichotomyRaoResponse.class);
+        LimitingCause limitingCause = mock(LimitingCause.class);
+
+        when(multipleDichotomyRunner.runMultipleDichotomy(
+                any(CseRequest.class),
+                any(CseData.class),
+                any(Network.class),
+                any(Crac.class),
+                anyDouble(),
+                any(Map.class)
+        )).thenReturn(multipleDichotomyResult);
+
+        when(multipleDichotomyResult.getBestDichotomyResult()).thenReturn(bestDichotomyResult);
+        when(bestDichotomyResult.getHighestValidStep()).thenReturn(highestValidStep);
+        when(highestValidStep.getValidationData()).thenReturn(validationData);
+
+        when(multipleDichotomyResult.isInterrupted()).thenReturn(true);
+        when(bestDichotomyResult.hasValidStep()).thenReturn(true);
+        when(bestDichotomyResult.getLimitingCause()).thenReturn(limitingCause);
+
+        when(ttcResultService.saveTtcResult(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+            .thenReturn("interruptedTTCFilePath");
+
+        // WHEN
+        CseResponse response = cseRunner.run(cseRequest);
+
+        // THEN
+        verify(ttcResultService, times(1)).saveTtcResult(
+            eq(cseRequest),
+            any(CseData.class),
+            any(CseCracCreationContext.class),
+            eq(validationData),
+            eq(limitingCause),
+            any(),
+            any(),
+            any(),
+            any()
+        );
+        assertNotNull(response);
+        assertEquals("interruptedTTCFilePath", response.getTtcFileUrl());
+    }
+
+    @NotNull
+    private CseRequest buildTestCseRequest() throws MalformedURLException, URISyntaxException {
+        return new CseRequest(
+            "ID1",
+            ProcessType.IDCC,
+            OffsetDateTime.parse("2021-09-01T20:30Z"),
+            getClass().getResource("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct").toURI().toURL().toString(),
+            getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml").toURI().toURL().toString(),
+            getClass().getResource("crac.xml").toURI().toURL().toString(),
+            getClass().getResource("20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            getClass().getResource("vulcanus_01032021_96.xls").toURI().toURL().toString(),
+            getClass().getResource("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
+            null,
+            null,
+            null,
+            50.0,
+            0.0,
+            null,
+            true
+        );
     }
 }

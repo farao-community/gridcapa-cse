@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -8,55 +8,37 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.stream.function.StreamBridge;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * @author Vincent Bochet {@literal <vincent.bochet at rte-france.com>}
+ */
 @SpringBootTest
 class InterruptionServiceTest {
 
     @Autowired
     InterruptionService interruptionService;
 
-    private class MyThread extends Thread {
-
-        public MyThread(String id) {
-            super(id);
-        }
-
-        @Override
-        public void run() {
-            int count = 0;
-            for (int i = 0; i < 10; i++) {
-                count += i;
-                await().atMost(i, SECONDS);
-            }
-        }
-    }
+    @MockBean
+    StreamBridge streamBridge;
 
     @Test
-    void threadInterruption() {
-        MyThread th = new MyThread("myThread");
-        assertEquals(false,  isRunning("myThread").isPresent());
+    void softInterruption() {
+        final String taskId = "testTask";
 
-        th.start();
-        assertEquals(true,  isRunning("myThread").isPresent());
+        assertFalse(interruptionService.shouldTaskBeInterruptedSoftly(taskId));
 
-        interruptionService.interruption("myThread");
-        assertEquals(false,  isRunning("myThread").isPresent());
+        interruptionService.softInterrupt().accept(taskId);
+        Mockito.verify(streamBridge, Mockito.times(1)).send("stop-rao", taskId);
+        assertTrue(interruptionService.shouldTaskBeInterruptedSoftly(taskId));
 
+        assertFalse(interruptionService.shouldTaskBeInterruptedSoftly(taskId));
     }
-
-    private Optional<Thread> isRunning(String id) {
-        return Thread.getAllStackTraces()
-                .keySet()
-                .stream()
-                .filter(t -> t.getName().equals(id))
-                .findFirst();
-    }
-
 }
