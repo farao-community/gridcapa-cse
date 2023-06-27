@@ -8,7 +8,6 @@
 package com.farao_community.farao.cse.network_processing.ucte_pst_change;
 
 import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_api.range.TapRange;
 import com.farao_community.farao.data.crac_api.range_action.PstRangeAction;
 import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
 import com.powsybl.iidm.network.Network;
@@ -48,7 +47,7 @@ public final class PstInitializer {
                 PhaseTapChanger ptc = network.getTwoWindingsTransformer(pstRangeAction.getNetworkElement().getId()).getPhaseTapChanger();
                 if (!pstRangeAction.getRanges().stream().allMatch(r -> ptc.getTapPosition() >= r.getMinTap() && ptc.getTapPosition() <= r.getMaxTap())) {
                     int newTapPosition = pstRangeAction.getRanges().stream()
-                        .map(TapRange::getMinTap)
+                        .map(tr -> Integer.max(tr.getMinTap(), ptc.getLowTapPosition()))
                         .max(Integer::compareTo)
                         .orElse(pstRangeAction.getInitialTap());
                     preprocessedPsts.put(pstRangeAction.getId(), newTapPosition);
