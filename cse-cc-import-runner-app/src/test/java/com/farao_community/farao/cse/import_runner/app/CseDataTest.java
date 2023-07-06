@@ -295,7 +295,6 @@ class CseDataTest {
         assertEquals(8192, exchanges.get("10YSI-ELES-----O"));
     }
 
-
     @Test
     void testImportGetNtcNtcRedFileMissing() {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
@@ -314,8 +313,7 @@ class CseDataTest {
         assertEquals(3690, exchanges.get("FR"));
         assertEquals(455, exchanges.get("SI"));
     }
-
-
+    
     @Test
     void testImportAllFilesPresent() {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
