@@ -294,4 +294,45 @@ class CseDataTest {
         assertEquals(4096, exchanges.get("10YFR-RTE------C"));
         assertEquals(8192, exchanges.get("10YSI-ELES-----O"));
     }
+
+
+    @Test
+    void testImportGetNtcNtcRedFileMissing() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Map<String, Double> exchanges = ntc.getNtcPerCountry();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(315, exchanges.get("AT"));
+        assertEquals(3300, exchanges.get("CH"));
+        assertEquals(3690, exchanges.get("FR"));
+        assertEquals(455, exchanges.get("SI"));
+    }
+
+
+    @Test
+    void testImportAllFilesPresent() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
+        Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210624_2D4_NTC_reductions_CSE1.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Map<String, Double> exchanges = ntc.getNtcPerCountry();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(255, exchanges.get("AT"));
+        assertEquals(2200, exchanges.get("CH"));
+        assertEquals(2470, exchanges.get("FR"));
+        assertEquals(475, exchanges.get("SI"));
+    }
 }
