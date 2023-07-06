@@ -296,7 +296,7 @@ class CseDataTest {
     }
 
     @Test
-    void testImportGetNtcNtcRedFileMissing() {
+    void testImportGetNtcNtcRedFileMissingD2cc() {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
         Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
         Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
@@ -313,9 +313,9 @@ class CseDataTest {
         assertEquals(3690, exchanges.get("FR"));
         assertEquals(455, exchanges.get("SI"));
     }
-    
+
     @Test
-    void testImportAllFilesPresent() {
+    void testImportAllFilesPresentD2cc() {
         CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
         Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
         Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
