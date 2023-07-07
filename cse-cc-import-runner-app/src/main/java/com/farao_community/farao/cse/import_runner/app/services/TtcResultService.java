@@ -37,13 +37,11 @@ public class TtcResultService {
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
     private final XNodesConfiguration xNodesConfiguration;
-    private final InitialShiftService initialShiftService;
 
-    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter, XNodesConfiguration xNodesConfiguration, InitialShiftService initialShiftService) {
+    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter, XNodesConfiguration xNodesConfiguration) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
         this.xNodesConfiguration = xNodesConfiguration;
-        this.initialShiftService = initialShiftService;
     }
 
     public String saveFailedTtcResult(CseRequest cseRequest, String firstShiftNetworkName, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason) {
