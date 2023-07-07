@@ -59,4 +59,42 @@ class PstInitializerTest {
         PstInitializer.withDefaultLogger().initializePsts(network, crac);
         assertEquals(5, ptc.getTapPosition());
     }
+
+    @Test
+    void testInitializePstWithMaxOfMinCracMinCgm() {
+        String networkFilename = "pst_initially_out_of_range_2.uct";
+        String cracFilename = "pst_with_range_2.xml";
+
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Crac crac = CracCreators.importAndCreateCrac(
+                cracFilename,
+                Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
+                network,
+                null).getCrac();
+
+        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
+        assertEquals(4, ptc.getTapPosition());
+
+        PstInitializer.withDefaultLogger().initializePsts(network, crac);
+        assertEquals(-22, ptc.getTapPosition());
+    }
+
+    @Test
+    void testInitializePstWithMaxOfMinCracMinCgm2() {
+        String networkFilename = "pst_initially_out_of_range_3.uct";
+        String cracFilename = "pst_with_range_3.xml";
+
+        Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
+        Crac crac = CracCreators.importAndCreateCrac(
+                cracFilename,
+                Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
+                network,
+                null).getCrac();
+
+        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
+        assertEquals(-4, ptc.getTapPosition());
+
+        PstInitializer.withDefaultLogger().initializePsts(network, crac);
+        assertEquals(0, ptc.getTapPosition());
+    }
 }
