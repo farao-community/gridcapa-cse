@@ -32,6 +32,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 class CseDataTest {
 
+    public static final String AT_EIC_CODE = "10YAT-APG------L";
+    public static final String CH_EIC_CODE = "10YCH-SWISSGRIDZ";
+    public static final String FR_EIC_CODE = "10YFR-RTE------C";
+    public static final String SI_EIC_CODE = "10YSI-ELES-----O";
+    public static final String AT = "AT";
+    public static final String CH = "CH";
+    public static final String FR = "FR";
+    public static final String SI = "SI";
     private CseData cseData;
 
     @Autowired
@@ -127,10 +135,10 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(255, exchanges.get("10YAT-APG------L"));
-        assertEquals(2200, exchanges.get("10YCH-SWISSGRIDZ"));
-        assertEquals(2470, exchanges.get("10YFR-RTE------C"));
-        assertEquals(475, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(255, exchanges.get(AT_EIC_CODE));
+        assertEquals(2200, exchanges.get(CH_EIC_CODE));
+        assertEquals(2470, exchanges.get(FR_EIC_CODE));
+        assertEquals(475, exchanges.get(SI_EIC_CODE));
     }
 
     @Test
@@ -148,10 +156,10 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(315, exchanges.get("10YAT-APG------L"));
-        assertEquals(3300, exchanges.get("10YCH-SWISSGRIDZ"));
-        assertEquals(3690, exchanges.get("10YFR-RTE------C"));
-        assertEquals(455, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(315, exchanges.get(AT_EIC_CODE));
+        assertEquals(3300, exchanges.get(CH_EIC_CODE));
+        assertEquals(3690, exchanges.get(FR_EIC_CODE));
+        assertEquals(455, exchanges.get(SI_EIC_CODE));
     }
 
     @Test
@@ -173,10 +181,10 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(1024, exchanges.get("10YAT-APG------L"));
-        assertEquals(2048, exchanges.get("10YCH-SWISSGRIDZ"));
-        assertEquals(4096, exchanges.get("10YFR-RTE------C"));
-        assertEquals(475, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(1024, exchanges.get(AT_EIC_CODE));
+        assertEquals(2048, exchanges.get(CH_EIC_CODE));
+        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(475, exchanges.get(SI_EIC_CODE));
     }
 
     @Test
@@ -197,10 +205,10 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(315, exchanges.get("10YAT-APG------L"));
-        assertEquals(2048, exchanges.get("10YCH-SWISSGRIDZ"));
-        assertEquals(4096, exchanges.get("10YFR-RTE------C"));
-        assertEquals(8192, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(315, exchanges.get(AT_EIC_CODE));
+        assertEquals(2048, exchanges.get(CH_EIC_CODE));
+        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(8192, exchanges.get(SI_EIC_CODE));
     }
 
     @Test
@@ -219,10 +227,10 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(255, exchanges.get("10YAT-APG------L"));
-        assertEquals(2200, exchanges.get("10YCH-SWISSGRIDZ"));
-        assertEquals(2470, exchanges.get("10YFR-RTE------C"));
-        assertEquals(475, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(255, exchanges.get(AT_EIC_CODE));
+        assertEquals(2200, exchanges.get(CH_EIC_CODE));
+        assertEquals(2470, exchanges.get(FR_EIC_CODE));
+        assertEquals(475, exchanges.get(SI_EIC_CODE));
     }
 
     @Test
@@ -240,10 +248,10 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(315, exchanges.get("10YAT-APG------L"));
-        assertEquals(3300, exchanges.get("10YCH-SWISSGRIDZ"));
-        assertEquals(3690, exchanges.get("10YFR-RTE------C"));
-        assertEquals(455, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(315, exchanges.get(AT_EIC_CODE));
+        assertEquals(3300, exchanges.get(CH_EIC_CODE));
+        assertEquals(3690, exchanges.get(FR_EIC_CODE));
+        assertEquals(455, exchanges.get(SI_EIC_CODE));
     }
 
     @Test
@@ -265,10 +273,10 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(1024, exchanges.get("10YAT-APG------L"));
-        assertEquals(2048, exchanges.get("10YCH-SWISSGRIDZ"));
-        assertEquals(4096, exchanges.get("10YFR-RTE------C"));
-        assertEquals(475, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(1024, exchanges.get(AT_EIC_CODE));
+        assertEquals(2048, exchanges.get(CH_EIC_CODE));
+        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(475, exchanges.get(SI_EIC_CODE));
     }
 
     @Test
@@ -289,10 +297,10 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(315, exchanges.get("10YAT-APG------L"));
-        assertEquals(2048, exchanges.get("10YCH-SWISSGRIDZ"));
-        assertEquals(4096, exchanges.get("10YFR-RTE------C"));
-        assertEquals(8192, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(315, exchanges.get(AT_EIC_CODE));
+        assertEquals(2048, exchanges.get(CH_EIC_CODE));
+        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(8192, exchanges.get(SI_EIC_CODE));
     }
 
     @Test
@@ -308,10 +316,10 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc.getNtcPerCountry();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(315, exchanges.get("AT"));
-        assertEquals(3300, exchanges.get("CH"));
-        assertEquals(3690, exchanges.get("FR"));
-        assertEquals(455, exchanges.get("SI"));
+        assertEquals(315, exchanges.get(AT));
+        assertEquals(3300, exchanges.get(CH));
+        assertEquals(3690, exchanges.get(FR));
+        assertEquals(455, exchanges.get(SI));
     }
 
     @Test
@@ -328,9 +336,9 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc.getNtcPerCountry();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(255, exchanges.get("AT"));
-        assertEquals(2200, exchanges.get("CH"));
-        assertEquals(2470, exchanges.get("FR"));
-        assertEquals(475, exchanges.get("SI"));
+        assertEquals(255, exchanges.get(AT));
+        assertEquals(2200, exchanges.get(CH));
+        assertEquals(2470, exchanges.get(FR));
+        assertEquals(475, exchanges.get(SI));
     }
 }
