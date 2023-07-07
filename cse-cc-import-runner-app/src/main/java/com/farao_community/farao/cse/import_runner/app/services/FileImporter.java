@@ -7,7 +7,6 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.DataUtil;
@@ -16,9 +15,9 @@ import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.data.xsd.NTCAnnualDocument;
 import com.farao_community.farao.cse.data.xsd.NTCReductionsDocument;
-import com.farao_community.farao.cse.data.xsd.ntc2.CapacityDocument;
 import com.farao_community.farao.cse.import_runner.app.configurations.UrlWhitelistConfiguration;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
+import com.farao_community.farao.cse.import_runner.app.util.Ntc2Util;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
@@ -30,7 +29,6 @@ import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataExceptio
 import com.powsybl.glsk.api.io.GlskDocumentImporters;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
-import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,23 +40,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @Service
 public class FileImporter {
-    private static final String AUSTRIAN_TAG = "AT";
-    private static final String SWISS_TAG = "CH";
-    private static final String FRENCH_TAG = "FR";
-    private static final String SLOVENIAN_TAG = "SI";
     public static final String IMPOSSIBLE_TO_CREATE_NTC = "Impossible to create NTC";
 
     private final UrlWhitelistConfiguration urlWhitelistConfiguration;
@@ -193,10 +183,10 @@ public class FileImporter {
     private void extractNtc2FromUrl(OffsetDateTime targetDateTime, String ntcFileUrl, Map<String, Double> ntc2Result) {
         if (StringUtils.isNotBlank(ntcFileUrl)) {
             try (InputStream inputStream = openUrlStream(ntcFileUrl)) {
-                Optional<String> optAreaCode = getAreaCodeFromFilename(FileUtil.getFilenameFromUrl(ntcFileUrl));
+                Optional<String> optAreaCode = Ntc2Util.getAreaCodeFromFilename(FileUtil.getFilenameFromUrl(ntcFileUrl));
                 optAreaCode.ifPresent(areaCode -> {
                     try {
-                        double d2Exchange = getD2ExchangeByOffsetDateTime(inputStream, targetDateTime);
+                        double d2Exchange = Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDateTime);
                         ntc2Result.put(areaCode, d2Exchange);
                     } catch (Exception e) {
                         throw new CseDataException(String.format("Impossible to import NTC2 file for area: %s", areaCode), e);
@@ -207,42 +197,4 @@ public class FileImporter {
             }
         }
     }
-
-    private static Double getD2ExchangeByOffsetDateTime(InputStream ntc2InputStream, OffsetDateTime targetDateTime) throws JAXBException {
-        Map<Integer, Double> qtyByPositionMap = new HashMap<>();
-        CapacityDocument capacityDocument = DataUtil.unmarshalFromInputStream(ntc2InputStream, CapacityDocument.class);
-        checkTimeInterval(capacityDocument, targetDateTime);
-        int position = targetDateTime.atZoneSameInstant(ZoneId.of("CET")).getHour() + 1;
-        capacityDocument.getCapacityTimeSeries().getPeriod().getInterval().forEach(interval -> {
-            int index = interval.getPos().getV().intValue();
-            qtyByPositionMap.put(index, interval.getQty().getV().doubleValue());
-        });
-        return Optional.ofNullable(qtyByPositionMap.get(position))
-                .orElseThrow(() -> new CseDataException(
-                        String.format("Impossible to retrieve NTC2 position %d. It does not exist", position)));
-    }
-
-    private static void checkTimeInterval(CapacityDocument capacityDocument, OffsetDateTime targetDateTime) {
-        List<OffsetDateTime> interval = Stream.of(capacityDocument.getCapacityTimeInterval().getV().split("/"))
-                .map(OffsetDateTime::parse)
-                .collect(Collectors.toList());
-        if (targetDateTime.isBefore(interval.get(0)) || targetDateTime.isAfter(interval.get(1)) || targetDateTime.equals(interval.get(1))) {
-            throw new CseDataException("Target date time is out of bound for NTC2 archive");
-        }
-    }
-
-    private static Optional<String> getAreaCodeFromFilename(String fileName) {
-        if (fileName.contains(AUSTRIAN_TAG)) {
-            return Optional.of(new EICode(Country.AT).getAreaCode());
-        } else if (fileName.contains(SLOVENIAN_TAG)) {
-            return Optional.of(new EICode(Country.SI).getAreaCode());
-        } else if (fileName.contains(SWISS_TAG)) {
-            return Optional.of(new EICode(Country.CH).getAreaCode());
-        } else if (fileName.contains(FRENCH_TAG)) {
-            return Optional.of(new EICode(Country.FR).getAreaCode());
-        } else {
-            return Optional.empty();
-        }
-    }
-
 }
