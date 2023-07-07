@@ -62,8 +62,7 @@ public class TtcResultService {
         double finalItalianImport = BorderExchanges.computeItalianImport(networkWithPra);
 
         Map<String, Double> ntcsByEic = cseRequest.getProcessType().equals(ProcessType.IDCC) ?
-            initialShiftService.mergeNtcsForIdcc(cseData.getNtc2().getExchanges(),
-                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry())) :
+            cseData.getNtc2().getExchanges():
             NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry());
 
         TtcResult.ProcessData processData = new TtcResult.ProcessData(
