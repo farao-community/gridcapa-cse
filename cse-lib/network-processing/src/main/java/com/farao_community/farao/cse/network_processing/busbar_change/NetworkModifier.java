@@ -13,10 +13,7 @@ import com.powsybl.ucte.converter.util.UcteConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class exposes useful methods to modify a network
@@ -27,12 +24,11 @@ public class NetworkModifier {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkModifier.class);
 
     private final Network network;
-    private Map<Branch<?>, Branch<?>> movedBranches;
     private Set<Bus> busesToRemove;
+    private Map<String, List<String>> identifiableAliases = new HashMap<>();
 
     public NetworkModifier(Network network) {
         this.network = network;
-        this.movedBranches = new HashMap<>();
         this.busesToRemove = new HashSet<>();
     }
 
@@ -136,19 +132,18 @@ public class NetworkModifier {
         // RA1 moves side 1 : then the line is replaced with "FBUS1 NODE2" (FBUS = fictitious bus)
         // RA2 moves side 2 : then the line "FBUS1 NODE2" should be replaced with "FBUS1 FBUS2"
         // (instead of replacing "NODE1 NODE2" with "NODE1 FBUS2")
-        Branch<?> branchToMove = movedBranches.getOrDefault(branch, branch);
         try {
-            if (branchToMove instanceof TwoWindingsTransformer) {
-                moveTwoWindingsTransformer((TwoWindingsTransformer) branchToMove, side, bus);
-            } else if (branchToMove instanceof TieLine) {
-                moveTieLine((TieLine) branchToMove, side, bus);
-            } else if (branchToMove instanceof Line) {
-                moveLine((Line) branchToMove, side, bus);
+            if (branch instanceof TwoWindingsTransformer) {
+                moveTwoWindingsTransformer((TwoWindingsTransformer) branch, side, bus);
+            } else if (branch instanceof TieLine) {
+                moveTieLine((TieLine) branch, side, bus);
+            } else if (branch instanceof Line) {
+                moveLine((Line) branch, side, bus);
             } else {
-                throw new FaraoException(String.format("Cannot move %s of type %s", branchToMove.getId(), branchToMove.getClass()));
+                throw new FaraoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
             }
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not move line %s: %s", branchToMove.getId(), e.getMessage()));
+            throw new FaraoException(String.format("Could not move line %s: %s", branch.getId(), e.getMessage()));
         }
     }
 
@@ -177,34 +172,55 @@ public class NetworkModifier {
         String newLineId = replaceSimpleBranchNode(line, side, bus.getId());
         LineAdder adder = initializeLineAdderToMove(line, newLineId);
         setBranchAdderProperties(adder, line, side, bus);
+        line.remove();
+        identifiableAliases.remove(line.getId());
         Line newLine = adder.add();
         copyCurrentLimits(line, newLine);
         copyProperties(line, newLine);
-        LOGGER.debug("Line '{}' has been removed, new TieLine '{}' has been created", line.getId(), newLine.getId());
-        movedBranches.put(line, newLine);
+        LOGGER.debug("Line '{}' has been removed, new Line '{}' has been created", line.getId(), newLine.getId());
+        addAlias(newLine, line.getId());
+        for (String alias : line.getAliases()) {
+            addAlias(newLine, alias);
+        }
     }
 
     private void moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
         String newLineId = replaceTieLineNode(tieLine, side, bus.getId());
         TieLineAdder adder = initializeTieLineAdderToMove(tieLine, newLineId, side, bus);
         setBranchAdderProperties(adder, tieLine, side, bus);
+        tieLine.remove();
+        identifiableAliases.remove(tieLine.getId());
         TieLine newTieLine = adder.add();
         copyCurrentLimits(tieLine, newTieLine);
         copyProperties(tieLine, newTieLine);
         LOGGER.debug("TieLine '{}' has been removed, new TieLine '{}' has been created", tieLine.getId(), newTieLine.getId());
-        movedBranches.put(tieLine, newTieLine);
+        addAlias(newTieLine, tieLine.getId());
+        for (String alias : tieLine.getAliases()) {
+            addAlias(newTieLine, alias);
+        }
     }
 
     private void moveTwoWindingsTransformer(TwoWindingsTransformer transformer, Branch.Side side, Bus bus) {
         String newId = replaceSimpleBranchNode(transformer, side, bus.getId());
         TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(transformer, newId);
         setBranchAdderProperties(adder, transformer, side, bus);
+        transformer.remove();
+        identifiableAliases.remove(transformer.getId());
         TwoWindingsTransformer newTransformer = adder.add();
         copyCurrentLimits(transformer, newTransformer);
         copyProperties(transformer, newTransformer);
         copyTapChanger(transformer, newTransformer);
         LOGGER.debug("TwoWindingsTransformer '{}' has been removed, new transformer '{}' has been created", transformer.getId(), newTransformer.getId());
-        movedBranches.put(transformer, newTransformer);
+        addAlias(newTransformer, transformer.getId());
+        for (String alias : transformer.getAliases()) {
+            addAlias(newTransformer, alias);
+        }
+    }
+
+    private void addAlias(Identifiable<?> identifiable, String alias) {
+        identifiable.addAlias(alias);
+        identifiableAliases.putIfAbsent(identifiable.getId(), new ArrayList<>());
+        identifiableAliases.get(identifiable.getId()).add(alias);
     }
 
     private static void copyTapChanger(TwoWindingsTransformer transformerFrom, TwoWindingsTransformer transformerTo) {
@@ -375,7 +391,6 @@ public class NetworkModifier {
     public Map<Branch<?>, Branch.Side> getBranchesStillConnectedToBus(Bus bus) {
         Map<Branch<?>, Branch.Side> connectedBranches = new HashMap<>();
         network.getBranchStream()
-            .map(branch -> movedBranches.getOrDefault(branch, branch))
             .forEach(branch -> {
                 if (branch.getTerminal1().getBusBreakerView().getConnectableBus().equals(bus)) {
                     connectedBranches.put(branch, Branch.Side.ONE);
@@ -392,12 +407,19 @@ public class NetworkModifier {
      */
     public void commitAllChanges() {
         try {
-            movedBranches.keySet().forEach(branch -> branch.remove());
-            movedBranches = new HashMap<>();
             busesToRemove.forEach(this::effectivelyRemoveBus);
             busesToRemove = new HashSet<>();
+            cleanAliases();
         } catch (PowsyblException e) {
             throw new FaraoException(String.format("Could not apply all changes to network: %s", e.getMessage()));
+        }
+    }
+
+    private void cleanAliases() {
+        for (var identifiableAliasesEntry : identifiableAliases.entrySet()) {
+            for (String alias : identifiableAliasesEntry.getValue()) {
+                network.getIdentifiable(identifiableAliasesEntry.getKey()).removeAlias(alias);
+            }
         }
     }
 }

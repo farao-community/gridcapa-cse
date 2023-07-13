@@ -143,7 +143,7 @@ public final class BusBarChangePreProcessor {
                 fictitiousBusId = fictitiousBusIdPerBranchAndSide.get(switchPairToCreate.branchAndSide());
             } else {
                 // If not, create a new fictitious bus and store the info
-                fictitiousBusId = NetworkHelper.moveBranchToNewFictitiousBus(switchPairToCreate.getBranchId(), switchPairToCreate.getBranchSideToModify(), networkModifier);
+                fictitiousBusId = NetworkHelper.moveBranchToNewFictitiousBus(switchPairToCreate.getBranchId(), switchPairToCreate.getBranchSideToModify(), switchPairToCreate.getVoltageLevelSideToModify(), networkModifier);
                 fictitiousBusIdPerBranchAndSide.put(switchPairToCreate.branchAndSide(), fictitiousBusId);
             }
             // Then create the switch pair
