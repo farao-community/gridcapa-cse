@@ -9,11 +9,15 @@ package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
-import com.farao_community.farao.cse.data.ntc.Ntc;
+import com.farao_community.farao.cse.data.DataUtil;
+import com.farao_community.farao.cse.data.ntc.*;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
+import com.farao_community.farao.cse.data.xsd.NTCAnnualDocument;
+import com.farao_community.farao.cse.data.xsd.NTCReductionsDocument;
 import com.farao_community.farao.cse.import_runner.app.configurations.UrlWhitelistConfiguration;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
+import com.farao_community.farao.cse.import_runner.app.util.Ntc2Util;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
@@ -27,6 +31,7 @@ import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.network.Network;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +40,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @Service
 public class FileImporter {
+    public static final String IMPOSSIBLE_TO_CREATE_NTC = "Impossible to create NTC";
 
     private final UrlWhitelistConfiguration urlWhitelistConfiguration;
     private final Logger businessLogger;
@@ -75,29 +83,63 @@ public class FileImporter {
     }
 
     public Ntc importNtc(OffsetDateTime targetProcessDateTime, String yearlyNtcUrl, String dailyNtcUrl, boolean isImportEc) {
-        try (InputStream yearlyNtcStream = openUrlStream(yearlyNtcUrl);
-             InputStream dailyNtcStream = openUrlStream(dailyNtcUrl)) {
-            return Ntc.create(targetProcessDateTime, yearlyNtcStream, dailyNtcStream, isImportEc);
+        if (isImportEc) {
+            return getNtcFromAdapted(targetProcessDateTime, yearlyNtcUrl, dailyNtcUrl, isImportEc);
+        } else {
+            return getNtc(targetProcessDateTime, yearlyNtcUrl, dailyNtcUrl, isImportEc);
+        }
+    }
+
+    private Ntc getNtc(OffsetDateTime targetProcessDateTime, String yearlyNtcUrl, String dailyNtcUrl, boolean isImportEc) {
+        try (InputStream yearlyNtcStream = openUrlStream(yearlyNtcUrl)) {
+            YearlyNtcDocument yearlyNtc = new YearlyNtcDocument(targetProcessDateTime, DataUtil.unmarshalFromInputStream(yearlyNtcStream, NTCAnnualDocument.class));
+            DailyNtcDocument dailyNtc = null;
+            if (StringUtils.isNotBlank(dailyNtcUrl)) {
+                dailyNtc = getDailyNtcDocument(targetProcessDateTime, dailyNtcUrl);
+            }
+            return new Ntc(yearlyNtc, dailyNtc, isImportEc);
         } catch (IOException | JAXBException e) {
-            throw new CseInvalidDataException("Impossible to create NTC", e);
+            throw new CseInvalidDataException(IMPOSSIBLE_TO_CREATE_NTC, e);
+        }
+    }
+
+    private DailyNtcDocument getDailyNtcDocument(OffsetDateTime targetProcessDateTime, String dailyNtcUrl) {
+        try (InputStream dailyNtcStream = openUrlStream(dailyNtcUrl)) {
+            return new DailyNtcDocument(targetProcessDateTime, DataUtil.unmarshalFromInputStream(dailyNtcStream, NTCReductionsDocument.class));
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException(IMPOSSIBLE_TO_CREATE_NTC, e);
+        }
+    }
+
+    private Ntc getNtcFromAdapted(OffsetDateTime targetProcessDateTime, String yearlyNtcUrl, String dailyNtcUrl, boolean isImportEc) {
+        try (InputStream yearlyNtcStream = openUrlStream(yearlyNtcUrl)) {
+            YearlyNtcDocumentAdapted yearlyNtc = new YearlyNtcDocumentAdapted(targetProcessDateTime, DataUtil.unmarshalFromInputStream(yearlyNtcStream, com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCAnnualDocument.class));
+            DailyNtcDocumentAdapted dailyNtc = null;
+
+            if (StringUtils.isNotBlank(dailyNtcUrl)) {
+                dailyNtc = getDailyNtcDocumentAdapted(targetProcessDateTime, dailyNtcUrl);
+            }
+            return new Ntc(yearlyNtc, dailyNtc, isImportEc);
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException(IMPOSSIBLE_TO_CREATE_NTC, e);
+        }
+    }
+
+    private DailyNtcDocumentAdapted getDailyNtcDocumentAdapted(OffsetDateTime targetProcessDateTime, String dailyNtcUrl) {
+        try (InputStream dailyNtcStream = openUrlStream(dailyNtcUrl)) {
+            return new DailyNtcDocumentAdapted(targetProcessDateTime, DataUtil.unmarshalFromInputStream(dailyNtcStream, com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCReductionsDocument.class));
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException(IMPOSSIBLE_TO_CREATE_NTC, e);
         }
     }
 
     public Ntc2 importNtc2(OffsetDateTime targetProcessDateTime, String ntc2AtItUrl, String ntc2ChItUrl, String ntc2FrItUrl, String ntc2SiItUrl) {
-        try (InputStream ntc2AtItStream = openUrlStream(ntc2AtItUrl);
-             InputStream ntc2ChItStream = openUrlStream(ntc2ChItUrl);
-             InputStream ntc2FrItStream = openUrlStream(ntc2FrItUrl);
-             InputStream ntc2SiItStream = openUrlStream(ntc2SiItUrl)) {
-            Map<String, InputStream> ntc2Streams = Map.of(
-                FileUtil.getFilenameFromUrl(ntc2AtItUrl), ntc2AtItStream,
-                FileUtil.getFilenameFromUrl(ntc2ChItUrl), ntc2ChItStream,
-                FileUtil.getFilenameFromUrl(ntc2FrItUrl), ntc2FrItStream,
-                FileUtil.getFilenameFromUrl(ntc2SiItUrl), ntc2SiItStream
-            );
-            return Ntc2.create(targetProcessDateTime, ntc2Streams);
-        } catch (IOException e) {
-            throw new CseInvalidDataException("Impossible to create NTC2", e);
-        }
+        Map<String, Double> ntc2Result = new HashMap<>();
+        extractNtc2FromUrl(targetProcessDateTime, ntc2AtItUrl, ntc2Result);
+        extractNtc2FromUrl(targetProcessDateTime, ntc2ChItUrl, ntc2Result);
+        extractNtc2FromUrl(targetProcessDateTime, ntc2FrItUrl, ntc2Result);
+        extractNtc2FromUrl(targetProcessDateTime, ntc2SiItUrl, ntc2Result);
+        return new Ntc2(ntc2Result);
     }
 
     public CseReferenceExchanges importCseReferenceExchanges(OffsetDateTime targetProcessDateTime, String vulcanusUrl, ProcessType processType) {
@@ -135,6 +177,24 @@ public class FileImporter {
             return FilenameUtils.getName(url.getPath());
         } catch (IOException e) {
             throw new CseDataException(String.format("Exception occurred while retrieving file name from : %s Cause: %s ", stringUrl, e.getMessage()));
+        }
+    }
+
+    private void extractNtc2FromUrl(OffsetDateTime targetDateTime, String ntcFileUrl, Map<String, Double> ntc2Result) {
+        if (StringUtils.isNotBlank(ntcFileUrl)) {
+            try (InputStream inputStream = openUrlStream(ntcFileUrl)) {
+                Optional<String> optAreaCode = Ntc2Util.getAreaCodeFromFilename(FileUtil.getFilenameFromUrl(ntcFileUrl));
+                optAreaCode.ifPresent(areaCode -> {
+                    try {
+                        double d2Exchange = Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDateTime);
+                        ntc2Result.put(areaCode, d2Exchange);
+                    } catch (Exception e) {
+                        throw new CseDataException(String.format("Impossible to import NTC2 file for area: %s", areaCode), e);
+                    }
+                });
+            } catch (IOException e) {
+                throw new CseInvalidDataException("Impossible to create NTC2", e);
+            }
         }
     }
 }

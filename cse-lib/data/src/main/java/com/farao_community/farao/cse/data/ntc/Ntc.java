@@ -10,9 +10,6 @@ package com.farao_community.farao.cse.data.ntc;
 import com.farao_community.farao.cse.data.xsd.TLine;
 import com.powsybl.glsk.commons.CountryEICode;
 
-import javax.xml.bind.JAXBException;
-import java.io.InputStream;
-import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,26 +23,7 @@ public final class Ntc {
     private final DailyNtcDocumentAdapted dailyNtcDocumentAdapted;
     private final boolean isImportEcProcess;
 
-    public static Ntc create(OffsetDateTime targetDateTime,
-                             InputStream ntcAnnualInputStream,
-                             InputStream ntcReductionsInputStream,
-                             boolean isImportEcProcess) throws JAXBException {
-        if (isImportEcProcess) {
-            return new Ntc(
-                    YearlyNtcDocumentAdapted.create(targetDateTime, ntcAnnualInputStream),
-                    DailyNtcDocumentAdapted.create(targetDateTime, ntcReductionsInputStream),
-                    true
-            );
-        } else {
-            return new Ntc(
-                    YearlyNtcDocument.create(targetDateTime, ntcAnnualInputStream),
-                    DailyNtcDocument.create(targetDateTime, ntcReductionsInputStream),
-                    false
-            );
-        }
-    }
-
-    private Ntc(YearlyNtcDocument yearlyNtcDocument, DailyNtcDocument dailyNtcDocument, boolean isImportEcProcess) {
+    public Ntc(YearlyNtcDocument yearlyNtcDocument, DailyNtcDocument dailyNtcDocument, boolean isImportEcProcess) {
         this.yearlyNtcDocument = yearlyNtcDocument;
         this.dailyNtcDocument = dailyNtcDocument;
         this.yearlyNtcDocumentAdapted = null;
@@ -53,7 +31,7 @@ public final class Ntc {
         this.isImportEcProcess = isImportEcProcess;
     }
 
-    private Ntc(YearlyNtcDocumentAdapted yearlyNtcDocumentAdapted, DailyNtcDocumentAdapted dailyNtcDocumentAdapted, boolean isImportEcProcess) {
+    public Ntc(YearlyNtcDocumentAdapted yearlyNtcDocumentAdapted, DailyNtcDocumentAdapted dailyNtcDocumentAdapted, boolean isImportEcProcess) {
         this.yearlyNtcDocument = null;
         this.dailyNtcDocument = null;
         this.yearlyNtcDocumentAdapted = yearlyNtcDocumentAdapted;
@@ -91,12 +69,12 @@ public final class Ntc {
         if (isImportEcProcess) {
             Predicate<com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine> fixedFlowLines = tLine -> tLine.isFixedFlow() && tLine.isModelized();
             Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocumentAdapted.getLineInformationPerLineId(fixedFlowLines);
-            Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocumentAdapted.getLineInformationPerLineId(fixedFlowLines);
+            Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocumentAdapted != null ? dailyNtcDocumentAdapted.getLineInformationPerLineId(fixedFlowLines) : Map.of();
             return getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
         } else {
             Predicate<TLine> fixedFlowLines = tLine -> tLine.isFixedFlow() && tLine.isModelized();
             Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocument.getLineInformationPerLineId(fixedFlowLines);
-            Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocument.getLineInformationPerLineId(fixedFlowLines);
+            Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocument != null ? dailyNtcDocument.getLineInformationPerLineId(fixedFlowLines) : Map.of();
             return getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
         }
     }
@@ -109,7 +87,7 @@ public final class Ntc {
 
     Map<String, Double> getFlowPerCountry(Predicate<TLine> lineSelector) {
         Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocument.getLineInformationPerLineId(lineSelector);
-        Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocument.getLineInformationPerLineId(lineSelector);
+        Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocument != null ? dailyNtcDocument.getLineInformationPerLineId(lineSelector) : Map.of();
         Map<String, Double> flowPerLineId = getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
 
         Map<String, Double> flowPerCountry = new HashMap<>();
@@ -125,7 +103,7 @@ public final class Ntc {
 
     Map<String, Double> getFlowPerCountryAdapted(Predicate<com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine> lineSelector) {
         Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocumentAdapted.getLineInformationPerLineId(lineSelector);
-        Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocumentAdapted.getLineInformationPerLineId(lineSelector);
+        Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocumentAdapted != null ? dailyNtcDocumentAdapted.getLineInformationPerLineId(lineSelector) : Map.of();
         Map<String, Double> flowPerLineId = getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
 
         Map<String, Double> flowPerCountry = new HashMap<>();
@@ -149,13 +127,15 @@ public final class Ntc {
                     Map.Entry::getKey,
                     entry -> entry.getValue().getFlow()
                 ));
-        dailyNtcDocument.getNtcInformationPerCountry().forEach((country, ntcInformation) -> {
-            if (ntcInformation.getVariationType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
-                ntcPerCountry.put(country, ntcInformation.getFlow());
-            } else {
-                ntcPerCountry.put(country, ntcPerCountry.get(country) + ntcInformation.getFlow());
-            }
-        });
+        if (dailyNtcDocument != null) {
+            dailyNtcDocument.getNtcInformationPerCountry().forEach((country, ntcInformation) -> {
+                if (ntcInformation.getVariationType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
+                    ntcPerCountry.put(country, ntcInformation.getFlow());
+                } else {
+                    ntcPerCountry.put(country, ntcPerCountry.get(country) + ntcInformation.getFlow());
+                }
+            });
+        }
         return ntcPerCountry;
     }
 
@@ -165,13 +145,15 @@ public final class Ntc {
                     Map.Entry::getKey,
                     entry -> entry.getValue().getFlow()
                 ));
-        dailyNtcDocumentAdapted.getNtcInformationPerCountry().forEach((country, ntcInformation) -> {
-            if (ntcInformation.getVariationType().equalsIgnoreCase(NtcUtilAdapted.ABSOLUTE)) {
-                ntcPerCountry.put(country, ntcInformation.getFlow());
-            } else {
-                ntcPerCountry.put(country, ntcPerCountry.get(country) + ntcInformation.getFlow());
-            }
-        });
+        if (dailyNtcDocumentAdapted != null) {
+            dailyNtcDocumentAdapted.getNtcInformationPerCountry().forEach((country, ntcInformation) -> {
+                if (ntcInformation.getVariationType().equalsIgnoreCase(NtcUtilAdapted.ABSOLUTE)) {
+                    ntcPerCountry.put(country, ntcInformation.getFlow());
+                } else {
+                    ntcPerCountry.put(country, ntcPerCountry.get(country) + ntcInformation.getFlow());
+                }
+            });
+        }
         return ntcPerCountry;
     }
 
