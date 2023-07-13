@@ -59,8 +59,12 @@ public final class NetworkHelper {
         }
         if (!branchHelper.isValid()) {
             throw new FaraoException(String.format("One of the branches in the remedial action was not found in the network (%s)", triedIds));
-        } else if (!(network.getIdentifiable(branchHelper.getIdInNetwork()) instanceof Line) && !(network.getIdentifiable(branchHelper.getIdInNetwork()) instanceof TwoWindingsTransformer)) {
-            throw new FaraoException(String.format("One of the branches (%s) in the remedial action is neither a line nor a two-windings-transformer: %s", branchHelper.getIdInNetwork(), network.getIdentifiable(branchHelper.getIdInNetwork()).getClass()));
+        }
+        Identifiable<?> identifiable = network.getIdentifiable(branchHelper.getIdInNetwork());
+        if (!(identifiable instanceof Line) &&
+                !(identifiable instanceof TwoWindingsTransformer) &&
+                !(identifiable instanceof TieLine)) {
+            throw new FaraoException(String.format("One of the branches (%s) in the remedial action is neither a line nor a two-windings-transformer: %s", branchHelper.getIdInNetwork(), identifiable.getClass()));
         }
         if (!isBranchConnected(branchHelper.getIdInNetwork(), initialNodeId, network) && !isBranchConnected(branchHelper.getIdInNetwork(), finalNodeId, network)) {
             throw new FaraoException(String.format("Branch %s is neither connected to initial node (%s) nor to final node (%s)", branchHelper.getIdInNetwork(), initialNodeId, finalNodeId));
