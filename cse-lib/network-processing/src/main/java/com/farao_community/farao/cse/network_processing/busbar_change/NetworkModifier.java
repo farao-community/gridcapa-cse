@@ -25,7 +25,7 @@ public class NetworkModifier {
 
     private final Network network;
     private Set<Bus> busesToRemove;
-    private Map<String, List<String>> identifiableAliases = new HashMap<>();
+    private final Map<String, List<String>> identifiableAliases = new HashMap<>();
 
     public NetworkModifier(Network network) {
         this.network = network;
@@ -205,7 +205,7 @@ public class NetworkModifier {
 
     private void addAliasesFromOldToNew(Identifiable<?> oldIdentifiable, Identifiable<?> newIdentifiable) {
         addAlias(newIdentifiable, oldIdentifiable.getId());
-        oldIdentifiable.getAliases().forEach( alias -> addAlias(newIdentifiable, alias));
+        oldIdentifiable.getAliases().forEach(alias -> addAlias(newIdentifiable, alias));
     }
 
     private void addAlias(Identifiable<?> identifiable, String alias) {
@@ -263,7 +263,7 @@ public class NetworkModifier {
      * Sets LineAdder's attributes identical to a given side of a branch
      * WARNING: This only works for bus breaker topology. UCTE import in PowSyBl is always done in bus breaker view.
      */
-    private static BranchAdder<?,?> setIdenticalToSide(Branch<?> branch, Branch.Side side, BranchAdder<?,?> adder) {
+    private static BranchAdder<?, ?> setIdenticalToSide(Branch<?> branch, Branch.Side side, BranchAdder<?, ?> adder) {
         if (side == Branch.Side.ONE) {
             return adder.setVoltageLevel1(branch.getTerminal1().getVoltageLevel().getId())
                 .setConnectableBus1(branch.getTerminal1().getBusBreakerView().getConnectableBus().getId())
@@ -275,7 +275,7 @@ public class NetworkModifier {
         }
     }
 
-    private void setBranchAdderProperties(BranchAdder<?,?> adder, Branch<?> branchToCopy, Branch.Side sideToUpdate, Bus busToUpdate) {
+    private void setBranchAdderProperties(BranchAdder<?, ?> adder, Branch<?> branchToCopy, Branch.Side sideToUpdate, Bus busToUpdate) {
         if (sideToUpdate == Branch.Side.ONE) {
             setIdenticalToSide(branchToCopy, Branch.Side.TWO, adder)
                 .setConnectableBus1(busToUpdate.getId())
