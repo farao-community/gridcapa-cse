@@ -10,8 +10,6 @@ package com.farao_community.farao.cse.data.ntc;
 import com.farao_community.farao.cse.data.*;
 import com.farao_community.farao.cse.data.xsd.*;
 
-import javax.xml.bind.JAXBException;
-import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,15 +18,11 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-final class DailyNtcDocument {
+public final class DailyNtcDocument {
     private final OffsetDateTime targetDateTime;
     private final NTCReductionsDocument ntcReductionsDocument;
 
-    static DailyNtcDocument create(OffsetDateTime targetDateTime, InputStream ntcReductionsInputStream) throws JAXBException {
-        return new DailyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(ntcReductionsInputStream, NTCReductionsDocument.class));
-    }
-
-    private DailyNtcDocument(OffsetDateTime targetDateTime, NTCReductionsDocument ntcReductionsDocument) {
+    public DailyNtcDocument(OffsetDateTime targetDateTime, NTCReductionsDocument ntcReductionsDocument) {
         this.targetDateTime = targetDateTime;
         this.ntcReductionsDocument = ntcReductionsDocument;
     }

@@ -7,11 +7,8 @@
 package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.CseDataException;
-import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.ntc_adapted.*;
 
-import javax.xml.bind.JAXBException;
-import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,15 +17,11 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-final class YearlyNtcDocumentAdapted {
+public final class YearlyNtcDocumentAdapted {
     private final OffsetDateTime targetDateTime;
     private final NTCAnnualDocument ntcAnnualDocument;
 
-    static YearlyNtcDocumentAdapted create(OffsetDateTime targetDateTime, InputStream ntcAnnualInputStream) throws JAXBException {
-        return new YearlyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(ntcAnnualInputStream, NTCAnnualDocument.class));
-    }
-
-    private YearlyNtcDocumentAdapted(OffsetDateTime targetDateTime, NTCAnnualDocument ntcAnnualDocument) {
+    public YearlyNtcDocumentAdapted(OffsetDateTime targetDateTime, NTCAnnualDocument ntcAnnualDocument) {
         this.targetDateTime = targetDateTime;
         this.ntcAnnualDocument = ntcAnnualDocument;
     }

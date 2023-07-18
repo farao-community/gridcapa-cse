@@ -8,11 +8,8 @@
 package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.CseDataException;
-import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.ntc_adapted.*;
 
-import javax.xml.bind.JAXBException;
-import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,15 +18,11 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-final class DailyNtcDocumentAdapted {
+public final class DailyNtcDocumentAdapted {
     private final OffsetDateTime targetDateTime;
     private final NTCReductionsDocument ntcReductionsDocument;
 
-    static DailyNtcDocumentAdapted create(OffsetDateTime targetDateTime, InputStream ntcReductionsInputStream) throws JAXBException {
-        return new DailyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(ntcReductionsInputStream, NTCReductionsDocument.class));
-    }
-
-    private DailyNtcDocumentAdapted(OffsetDateTime targetDateTime, NTCReductionsDocument ntcReductionsDocument) {
+    public DailyNtcDocumentAdapted(OffsetDateTime targetDateTime, NTCReductionsDocument ntcReductionsDocument) {
         this.targetDateTime = targetDateTime;
         this.ntcReductionsDocument = ntcReductionsDocument;
     }

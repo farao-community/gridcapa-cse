@@ -9,22 +9,16 @@ package com.farao_community.farao.cse.data.ntc;
 import com.farao_community.farao.cse.data.*;
 import com.farao_community.farao.cse.data.xsd.*;
 
-import javax.xml.bind.JAXBException;
-import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-final class YearlyNtcDocument {
+public final class YearlyNtcDocument {
     private final OffsetDateTime targetDateTime;
     private final NTCAnnualDocument ntcAnnualDocument;
 
-    static YearlyNtcDocument create(OffsetDateTime targetDateTime, InputStream ntcAnnualInputStream) throws JAXBException {
-        return new YearlyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(ntcAnnualInputStream, NTCAnnualDocument.class));
-    }
-
-    private YearlyNtcDocument(OffsetDateTime targetDateTime, NTCAnnualDocument ntcAnnualDocument) {
+    public YearlyNtcDocument(OffsetDateTime targetDateTime, NTCAnnualDocument ntcAnnualDocument) {
         this.targetDateTime = targetDateTime;
         this.ntcAnnualDocument = ntcAnnualDocument;
     }

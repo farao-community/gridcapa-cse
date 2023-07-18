@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app;
 
+import com.farao_community.farao.commons.EICode;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
@@ -15,6 +16,7 @@ import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.powsybl.iidm.network.Country;
 
 import java.util.Map;
 
@@ -99,6 +101,8 @@ public class CseData {
             cseRequest.getNtc2ChItUrl(),
             cseRequest.getNtc2FrItUrl(),
             cseRequest.getNtc2SiItUrl());
+
+        checkNtc2OrFallback(ntc2);
         return ntc2;
     }
 
@@ -129,4 +133,19 @@ public class CseData {
         this.preProcesedNetworkUrl = preProcesedNetworkUrl;
     }
 
+    private void checkNtc2OrFallback(Ntc2 ntc2) {
+        Map<String, Double> ntc2Exchanges = ntc2.getExchanges();
+        if (ntc2Exchanges != null && ntc2Exchanges.size() < 4) {
+            ntc2FallbackToNtc(ntc2Exchanges);
+        }
+    }
+
+    private void ntc2FallbackToNtc(Map<String, Double> ntc2Exchanges) {
+        getNtcPerCountry().forEach((country, value) -> {
+            String eicCode = new EICode(Country.valueOf(country)).getAreaCode();
+            if (!ntc2Exchanges.containsKey(eicCode)) {
+                ntc2Exchanges.put(eicCode, value);
+            }
+        });
+    }
 }

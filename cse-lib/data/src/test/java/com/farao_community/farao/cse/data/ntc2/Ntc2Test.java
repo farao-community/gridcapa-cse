@@ -6,27 +6,18 @@
  */
 package com.farao_community.farao.cse.data.ntc2;
 
-import com.farao_community.farao.cse.data.CseDataException;
 import com.powsybl.iidm.network.Country;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -34,77 +25,73 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class Ntc2Test {
     private static final Logger LOGGER = LoggerFactory.getLogger(Ntc2Test.class);
 
-    private Map<String, InputStream> test1Nt2Files;
-    private Map<String, InputStream> test2Nt2Files;
+    private Map<String, Double> test1Nt2Files;
+    private Map<String, Double> test2Nt2Files;
+    private Map<String, Double> test3Nt2Files;
 
     @BeforeEach
     void setUp() throws IOException, URISyntaxException {
-        test1Nt2Files = getNtc2Files("test1");
-        test2Nt2Files = getNtc2Files("test2");
-    }
+        test1Nt2Files = new HashMap<>();
+        test1Nt2Files.put("10YSI-ELES-----O", 111.);
+        test1Nt2Files.put("10YFR-RTE------C", 222.);
+        test1Nt2Files.put("10YCH-SWISSGRIDZ", 333.);
+        test1Nt2Files.put("10YAT-APG------L", 444.);
 
-    private Map<String, InputStream> getNtc2Files(String directory) throws IOException, URISyntaxException {
-        return Files.list(Paths.get(Paths.get(Objects.requireNonNull(getClass().getResource(directory)).toURI()).toString()))
-            .collect(Collectors.toMap(
-                path -> path.getFileName().toString(),
-                path -> {
-                    try {
-                        return new FileInputStream(path.toFile());
-                    } catch (FileNotFoundException e) {
-                        LOGGER.warn(() -> path + " not found.");
-                        return null;
-                    }
-                }
-            ));
-    }
+        test2Nt2Files = new HashMap<>();
+        test2Nt2Files.put("10YAT-APG------L", 88.);
+        test2Nt2Files.put("10YCH-SWISSGRIDZ", 77.);
+        test2Nt2Files.put("10YFR-RTE------C", 66.);
+        test2Nt2Files.put("10YSI-ELES-----O", 55.);
 
-    @Test
-    void functionalTest1() {
-        Ntc2 ntc2 = Ntc2.create(OffsetDateTime.parse("2017-05-31T22:00Z"), test1Nt2Files);
-        assertEquals(238, ntc2.getExchange(Country.AT));
-        assertEquals(2260, ntc2.getExchange(Country.FR));
-        assertEquals(435, ntc2.getExchange(Country.SI));
-        assertEquals(2767, ntc2.getExchange(Country.CH));
+        test3Nt2Files = new HashMap<>();
+        test3Nt2Files.put("10YCH-SWISSGRIDZ", 99.);
+        test3Nt2Files.put("10YFR-RTE------C", 121.);
     }
 
     @Test
-    void functionalTest2() {
-        Ntc2 ntc2 = Ntc2.create(OffsetDateTime.parse("2017-06-01T10:00Z"), test1Nt2Files);
-        assertEquals(239, ntc2.getExchange(Country.AT));
-        assertEquals(2295, ntc2.getExchange(Country.FR));
-        assertEquals(438, ntc2.getExchange(Country.SI));
-        assertEquals(1683, ntc2.getExchange(Country.CH));
+    void testConstrutor() {
+        Ntc2 ntc2 = new Ntc2(test1Nt2Files);
+        assertEquals(444, ntc2.getExchange(Country.AT));
+        assertEquals(222, ntc2.getExchange(Country.FR));
+        assertEquals(111, ntc2.getExchange(Country.SI));
+        assertEquals(333, ntc2.getExchange(Country.CH));
+
+        ntc2 = new Ntc2(test3Nt2Files);
+        assertEquals(121, ntc2.getExchange(Country.FR));
+        assertEquals(99, ntc2.getExchange(Country.CH));
+        assertNull(ntc2.getExchange(Country.SI));
+        assertNull(ntc2.getExchange(Country.AT));
+
     }
 
     @Test
-    void functionalTest3() {
-        Ntc2 ntc2 = Ntc2.create(OffsetDateTime.parse("2017-06-01T21:00Z"), test1Nt2Files);
-        assertEquals(227, ntc2.getExchange(Country.AT));
-        assertEquals(2165, ntc2.getExchange(Country.FR));
-        assertEquals(424, ntc2.getExchange(Country.SI));
-        assertEquals(1633, ntc2.getExchange(Country.CH));
-    }
+    void testGetEchanges() {
 
-    @Test
-    void assertThrowsWhenDataIsMissing() {
-        OffsetDateTime timestamp = OffsetDateTime.parse("2021-02-07T23:00Z");
-        assertThrows(CseDataException.class, () -> Ntc2.create(timestamp, test2Nt2Files));
-    }
+        Ntc2 ntc2 = new Ntc2(test1Nt2Files);
+        Map<String, Double> exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
 
-    @Test
-    void assertThrowsWhenTargetDateTimeOutOfBound() {
-        OffsetDateTime timestamp = OffsetDateTime.parse("2021-06-01T22:00Z");
-        assertThrows(CseDataException.class, () -> Ntc2.create(timestamp, test1Nt2Files));
-    }
+        assertEquals(111, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(222, exchanges.get("10YFR-RTE------C"));
+        assertEquals(333, exchanges.get("10YCH-SWISSGRIDZ"));
+        assertEquals(444, exchanges.get("10YAT-APG------L"));
 
-    @Test
-    void testImportFailsWithMissingPositions() {
-        String filename = "NTC2_20170601_2D4_AT-IT1.xml";
-        Map<String, InputStream> isMap = Map.of(filename, Objects.requireNonNull(getClass().getResourceAsStream(filename)));
-        OffsetDateTime timestamp = OffsetDateTime.parse("2017-06-01T16:30Z");
-        Throwable e = assertThrows(CseDataException.class, () -> Ntc2.create(timestamp, isMap));
-        assertEquals("Impossible to import NTC2 file for area: 10YAT-APG------L", e.getMessage());
-        Throwable nestedE = e.getCause();
-        assertEquals("Impossible to retrieve NTC2 position 19. It does not exist", nestedE.getMessage());
+        ntc2 = new Ntc2(test2Nt2Files);
+        exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(55, exchanges.get("10YSI-ELES-----O"));
+        assertEquals(66, exchanges.get("10YFR-RTE------C"));
+        assertEquals(77, exchanges.get("10YCH-SWISSGRIDZ"));
+        assertEquals(88, exchanges.get("10YAT-APG------L"));
+
+        ntc2 = new Ntc2(test3Nt2Files);
+        exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(2, exchanges.size());
+        assertEquals(99, exchanges.get("10YCH-SWISSGRIDZ"));
+        assertEquals(121, exchanges.get("10YFR-RTE------C"));
+
     }
 }

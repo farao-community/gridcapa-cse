@@ -71,12 +71,6 @@ public class InitialShiftService {
         businessLogger.info("Summary : Initial shift is finished, network is updated and initial model is exported to outputs.");
     }
 
-    Map<String, Double> mergeNtcsForIdcc(Map<String, Double> ntc2Exchanges, Map<String, Double> ntcExchanges) {
-        Map<String, Double> result = new HashMap<>(ntc2Exchanges);
-        ntcExchanges.forEach((key, value) -> result.computeIfAbsent(key, k -> value));
-        return result;
-    }
-
     private void shiftNetwork(Map<String, Double> scalingValuesByCountry, CseRequest cseRequest, Network network) {
         ZonalData<Scalable> zonalScalable = GlskDocumentImporters.importGlsk(fileImporter.openUrlStream(cseRequest.getMergedGlskUrl())).getZonalScalable(network);
         String initialVariantId = network.getVariantManager().getWorkingVariantId();

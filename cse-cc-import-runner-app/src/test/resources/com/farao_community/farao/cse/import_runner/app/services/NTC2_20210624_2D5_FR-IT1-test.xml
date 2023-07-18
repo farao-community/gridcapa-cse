@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CapacityDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="capacity-document.xsd" DtdVersion="4" DtdRelease="0">
+	<DocumentIdentification v="NTC2_20221202_2D5_AT-IT-test" />
+	<DocumentVersion v="1" />
+	<DocumentType v="A31" />
+	<ProcessType v="A01" />
+	<SenderIdentification v="testsender" codingScheme="A01" />
+	<SenderRole v="A04" />
+	<ReceiverIdentification v="testrecceiver" codingScheme="A01" />
+	<ReceiverRole v="A04" />
+	<CreationDateTime v="2022-12-01T06:07:03Z" />
+	<CapacityTimeInterval v="2021-06-23T23:00Z/2021-06-24T23:00Z" />
+	<Domain v="testdomain" codingScheme="A01" />
+	<CapacityTimeSeries>
+		<TimeSeriesIdentification v="20221202-0001" />
+		<BusinessType v="A27" />
+		<Product v="8716867000016"/>
+		<InArea v="10YIT-GRTN-----B" codingScheme="A01"/>
+		<OutArea v="10YFR-RTE------C" codingScheme="A01"/>
+		<MeasureUnit v="MAW" />
+		<Period>
+			<TimeInterval v="2021-06-23T23:00Z/2021-06-24T01:00Z" />
+			<Resolution v="PT60M" />
+			<Interval>
+				<Pos v="1" />
+				<Qty v="111" />
+			</Interval>
+			<Interval>
+				<Pos v="2" />
+				<Qty v="557" />
+			</Interval>
+			<Interval>
+				<Pos v="3" />
+				<Qty v="4096" />
+			</Interval>
+
+		</Period>
+	</CapacityTimeSeries>
+</CapacityDocument>

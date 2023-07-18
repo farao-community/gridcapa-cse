@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app;
 
 import com.farao_community.farao.cse.data.ntc.Ntc;
+import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +32,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 class CseDataTest {
 
+    public static final String AT_EIC_CODE = "10YAT-APG------L";
+    public static final String CH_EIC_CODE = "10YCH-SWISSGRIDZ";
+    public static final String FR_EIC_CODE = "10YFR-RTE------C";
+    public static final String SI_EIC_CODE = "10YSI-ELES-----O";
+    public static final String AT = "AT";
+    public static final String CH = "CH";
+    public static final String FR = "FR";
+    public static final String SI = "SI";
     private CseData cseData;
 
     @Autowired
@@ -107,5 +117,228 @@ class CseDataTest {
         assertNotNull(ntc);
         ntc = cseData.getNtc();
         assertNotNull(ntc);
+    }
+
+    @Test
+    void testImportAdaptedGetNtc2AllNtc2FilesMissing() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.IDCC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml")).toString());
+        Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(true);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Ntc2 ntc2 = cseData.getNtc2();
+        assertNotNull(ntc2);
+        Map<String, Double> exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(255, exchanges.get(AT_EIC_CODE));
+        assertEquals(2200, exchanges.get(CH_EIC_CODE));
+        assertEquals(2470, exchanges.get(FR_EIC_CODE));
+        assertEquals(475, exchanges.get(SI_EIC_CODE));
+    }
+
+    @Test
+    void testImportAdaptedGetNtc2AllNtc2FilesAndNtcRedFileMissing() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.IDCC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(true);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Ntc2 ntc2 = cseData.getNtc2();
+        assertNotNull(ntc2);
+        Map<String, Double> exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(315, exchanges.get(AT_EIC_CODE));
+        assertEquals(3300, exchanges.get(CH_EIC_CODE));
+        assertEquals(3690, exchanges.get(FR_EIC_CODE));
+        assertEquals(455, exchanges.get(SI_EIC_CODE));
+    }
+
+    @Test
+    void testImportAdaptedGetNtc2OneNtc2FileMissing() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.IDCC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml")).toString());
+        Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml")).toString());
+        Mockito.when(cseRequest.getNtc2AtItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_AT-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.getNtc2ChItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_CH-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.getNtc2FrItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_FR-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(true);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Ntc2 ntc2 = cseData.getNtc2();
+        assertNotNull(ntc2);
+        Map<String, Double> exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(1024, exchanges.get(AT_EIC_CODE));
+        assertEquals(2048, exchanges.get(CH_EIC_CODE));
+        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(475, exchanges.get(SI_EIC_CODE));
+    }
+
+    @Test
+    void testImportAdaptedGetNtc2OneNtc2FilesAndNtcRedFileMissing() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.IDCC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml")).toString());
+        Mockito.when(cseRequest.getNtc2SiItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_SI-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.getNtc2ChItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_CH-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.getNtc2FrItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_FR-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(true);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Ntc2 ntc2 = cseData.getNtc2();
+        assertNotNull(ntc2);
+        Map<String, Double> exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(315, exchanges.get(AT_EIC_CODE));
+        assertEquals(2048, exchanges.get(CH_EIC_CODE));
+        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(8192, exchanges.get(SI_EIC_CODE));
+    }
+
+    @Test
+    void testImportGetNtc2AllNtc2FilesMissing() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.IDCC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
+        Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210624_2D4_NTC_reductions_CSE1.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Ntc2 ntc2 = cseData.getNtc2();
+        assertNotNull(ntc2);
+        Map<String, Double> exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(255, exchanges.get(AT_EIC_CODE));
+        assertEquals(2200, exchanges.get(CH_EIC_CODE));
+        assertEquals(2470, exchanges.get(FR_EIC_CODE));
+        assertEquals(475, exchanges.get(SI_EIC_CODE));
+    }
+
+    @Test
+    void testImportGetNtc2AllNtc2FilesAndNtcRedFileMissing() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.IDCC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Ntc2 ntc2 = cseData.getNtc2();
+        assertNotNull(ntc2);
+        Map<String, Double> exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(315, exchanges.get(AT_EIC_CODE));
+        assertEquals(3300, exchanges.get(CH_EIC_CODE));
+        assertEquals(3690, exchanges.get(FR_EIC_CODE));
+        assertEquals(455, exchanges.get(SI_EIC_CODE));
+    }
+
+    @Test
+    void testImportGetNtc2OneNtc2FileMissing() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.IDCC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
+        Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210624_2D4_NTC_reductions_CSE1.xml")).toString());
+        Mockito.when(cseRequest.getNtc2AtItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_AT-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.getNtc2ChItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_CH-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.getNtc2FrItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_FR-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Ntc2 ntc2 = cseData.getNtc2();
+        assertNotNull(ntc2);
+        Map<String, Double> exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(1024, exchanges.get(AT_EIC_CODE));
+        assertEquals(2048, exchanges.get(CH_EIC_CODE));
+        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(475, exchanges.get(SI_EIC_CODE));
+    }
+
+    @Test
+    void testImportGetNtc2OneNtc2FileAndNtcRedFileMissing() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.IDCC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
+        Mockito.when(cseRequest.getNtc2SiItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_SI-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.getNtc2ChItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_CH-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.getNtc2FrItUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/NTC2_20210624_2D5_FR-IT1-test.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Ntc2 ntc2 = cseData.getNtc2();
+        assertNotNull(ntc2);
+        Map<String, Double> exchanges = ntc2.getExchanges();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(315, exchanges.get(AT_EIC_CODE));
+        assertEquals(2048, exchanges.get(CH_EIC_CODE));
+        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(8192, exchanges.get(SI_EIC_CODE));
+    }
+
+    @Test
+    void testImportGetNtcNtcRedFileMissingD2cc() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Map<String, Double> exchanges = ntc.getNtcPerCountry();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(315, exchanges.get(AT));
+        assertEquals(3300, exchanges.get(CH));
+        assertEquals(3690, exchanges.get(FR));
+        assertEquals(455, exchanges.get(SI));
+    }
+
+    @Test
+    void testImportAllFilesPresentD2cc() {
+        CseRequest cseRequest = mockCseRequest(ProcessType.D2CC);
+        Mockito.when(cseRequest.getTargetProcessDateTime()).thenReturn(OffsetDateTime.parse("2021-06-24T00:00Z"));
+        Mockito.when(cseRequest.getYearlyNtcUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/2021_2Dp_NTC_annual_CSE1.xml")).toString());
+        Mockito.when(cseRequest.getNtcReductionsUrl()).thenReturn(Objects.requireNonNull(getClass().getResource("services/20210624_2D4_NTC_reductions_CSE1.xml")).toString());
+        Mockito.when(cseRequest.isImportEcProcess()).thenReturn(false);
+        cseData = new CseData(cseRequest, fileImporter);
+        assertNotNull(cseData);
+        Ntc ntc = cseData.getNtc();
+        assertNotNull(ntc);
+        Map<String, Double> exchanges = ntc.getNtcPerCountry();
+        assertNotNull(exchanges);
+        assertEquals(4, exchanges.size());
+        assertEquals(255, exchanges.get(AT));
+        assertEquals(2200, exchanges.get(CH));
+        assertEquals(2470, exchanges.get(FR));
+        assertEquals(475, exchanges.get(SI));
     }
 }

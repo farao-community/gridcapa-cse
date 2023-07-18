@@ -91,8 +91,7 @@ public class CseRunner {
         cseData.setJsonCracUrl(fileExporter.saveCracInJsonFormat(crac, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess));
 
         Map<String, Double> ntcsByEic = cseRequest.getProcessType().equals(ProcessType.IDCC) ?
-            initialShiftService.mergeNtcsForIdcc(cseData.getNtc2().getExchanges(),
-                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry())) :
+            cseData.getNtc2().getExchanges() :
             NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry());
 
         double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(ntcsByEic.values().stream().mapToDouble(Double::doubleValue).sum());

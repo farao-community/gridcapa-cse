@@ -6,10 +6,15 @@
  */
 package com.farao_community.farao.cse.data.ntc;
 
+import com.farao_community.farao.cse.data.DataUtil;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCAnnualDocument;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCReductionsDocument;
+import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -25,9 +30,14 @@ class NtcFilesAdaptedTest {
     @BeforeEach
     void setUp() throws JAXBException {
         OffsetDateTime targetDateTime = OffsetDateTime.parse("2021-06-24T16:30Z");
-        InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml");
-        InputStream dailyData = getClass().getResourceAsStream("20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml");
-        ntc = Ntc.create(targetDateTime, yearlyData, dailyData, true);
+        try (InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml");
+            InputStream dailyData = getClass().getResourceAsStream("20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml")
+        ) {
+            ntc = new Ntc(new YearlyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
+                    new DailyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)), true);
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException("Impossible to create NTC", e);
+        }
     }
 
     @Test
@@ -45,11 +55,17 @@ class NtcFilesAdaptedTest {
 
     @Test
     void checkDefaultFlowForMendrisioCagno() throws JAXBException {
-        Map<String, Double> fixedFlowLines = Ntc.create(OffsetDateTime.parse("2021-09-13T12:30Z"),
-                                                        getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml"),
-                                                        getClass().getResourceAsStream("20210913_2D1_NTC_reductions_CSE1_Adapted_v8_8.xml"),
-                                     true
-                                                        ).getFlowOnFixedFlowLines();
-        assertEquals(75, fixedFlowLines.get(MENDRISIO_CAGNO_ID), DOUBLE_PRECISION);
+
+        OffsetDateTime targetDateTime = OffsetDateTime.parse("2021-09-13T12:30Z");
+        try (InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml");
+             InputStream dailyData = getClass().getResourceAsStream("20210913_2D1_NTC_reductions_CSE1_Adapted_v8_8.xml")
+        ) {
+            Map<String, Double> fixedFlowLines =  new Ntc(new YearlyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
+                    new DailyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)), true)
+                    .getFlowOnFixedFlowLines();
+            assertEquals(75, fixedFlowLines.get(MENDRISIO_CAGNO_ID), DOUBLE_PRECISION);
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException("Impossible to create NTC", e);
+        }
     }
 }
