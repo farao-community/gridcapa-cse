@@ -56,7 +56,10 @@ public class ForcedPrasHandler {
             })
             .map(crac::getNetworkAction)
             .filter(na -> {
-                if (!RaoUtil.isRemedialActionAvailable(na, crac.getPreventiveState(), flowResult, crac.getFlowCnecs(crac.getPreventiveState()), network, unit)) {
+                if (!na.isRemedialActionAvailable(crac.getPreventiveState(),
+                        RaoUtil.isAnyMarginNegative(flowResult,
+                                na.getFlowCnecsConstrainingUsageRules(crac.getFlowCnecs(crac.getPreventiveState()), network, crac.getPreventiveState()),
+                                unit))) {
                     logger.info("Forced PRA {} is not available. It won't be applied.", na);
                     return false;
                 }
