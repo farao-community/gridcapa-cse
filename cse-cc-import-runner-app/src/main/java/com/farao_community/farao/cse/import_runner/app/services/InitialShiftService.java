@@ -11,6 +11,7 @@ import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.glsk.api.io.GlskDocumentImporters;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
+import com.powsybl.iidm.modification.scalable.ScalingParameters;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
@@ -78,10 +79,13 @@ public class InitialShiftService {
         String newVariant = "temporary-working-variant" + new SecureRandom().nextInt(100) + initialVariantId;
         network.getVariantManager().cloneVariant(initialVariantId, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
+        ScalingParameters scalingParameters = new ScalingParameters();
+        scalingParameters.setIterative(true);
+        scalingParameters.setReconnect(true);
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
-            double done = zonalScalable.getData(zoneId).scale(network, asked);
+            double done = zonalScalable.getData(zoneId).scale(network, asked, scalingParameters);
             businessLogger.info(String.format("Applying variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done));
 
             if (Math.abs(done - asked) > 1e-3) {
