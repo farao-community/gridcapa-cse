@@ -109,7 +109,7 @@ class BusBarChangePreProcessorTest {
         assertEquals("RA_OK", busBarChangeSwitches.getRemedialActionId());
         assertEquals(Set.of(new SwitchPairId("DDE3AA1Z DDE3AA1  1", "DDE3AA1Z DDE3AA12 1")), busBarChangeSwitches.getSwitchPairs());
         // Check that the tie line still exists
-        Line tieLine = network.getLine("DDE3AA1Z X_DEFR1  1 + FFR2AA1  X_DEFR1  1");
+        TieLine tieLine = network.getTieLine("DDE3AA1Z X_DEFR1  1 + FFR2AA1  X_DEFR1  1");
         assertNotNull(tieLine);
         assertTrue(tieLine instanceof TieLine);
     }

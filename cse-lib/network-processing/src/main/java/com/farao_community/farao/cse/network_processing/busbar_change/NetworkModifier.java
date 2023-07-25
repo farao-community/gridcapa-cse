@@ -13,10 +13,7 @@ import com.powsybl.ucte.converter.util.UcteConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class exposes useful methods to modify a network
@@ -27,12 +24,11 @@ public class NetworkModifier {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkModifier.class);
 
     private final Network network;
-    private Map<Branch<?>, Branch<?>> movedBranches;
     private Set<Bus> busesToRemove;
+    private final Map<String, List<String>> identifiableAliases = new HashMap<>();
 
     public NetworkModifier(Network network) {
         this.network = network;
-        this.movedBranches = new HashMap<>();
         this.busesToRemove = new HashSet<>();
     }
 
@@ -136,19 +132,18 @@ public class NetworkModifier {
         // RA1 moves side 1 : then the line is replaced with "FBUS1 NODE2" (FBUS = fictitious bus)
         // RA2 moves side 2 : then the line "FBUS1 NODE2" should be replaced with "FBUS1 FBUS2"
         // (instead of replacing "NODE1 NODE2" with "NODE1 FBUS2")
-        Branch<?> branchToMove = movedBranches.getOrDefault(branch, branch);
         try {
-            if (branchToMove instanceof TwoWindingsTransformer) {
-                moveTwoWindingsTransformer((TwoWindingsTransformer) branchToMove, side, bus);
-            } else if (branchToMove instanceof TieLine) {
-                moveTieLine((TieLine) branchToMove, side, bus);
-            } else if (branchToMove instanceof Line) {
-                moveLine((Line) branchToMove, side, bus);
+            if (branch instanceof TwoWindingsTransformer) {
+                moveTwoWindingsTransformer((TwoWindingsTransformer) branch, side, bus);
+            } else if (branch instanceof TieLine) {
+                moveTieLine((TieLine) branch, side, bus);
+            } else if (branch instanceof Line) {
+                moveLine((Line) branch, side, bus);
             } else {
-                throw new FaraoException(String.format("Cannot move %s of type %s", branchToMove.getId(), branchToMove.getClass()));
+                throw new FaraoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
             }
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not move line %s: %s", branchToMove.getId(), e.getMessage()));
+            throw new FaraoException(String.format("Could not move line %s: %s", branch.getId(), e.getMessage()));
         }
     }
 
@@ -177,34 +172,46 @@ public class NetworkModifier {
         String newLineId = replaceSimpleBranchNode(line, side, bus.getId());
         LineAdder adder = initializeLineAdderToMove(line, newLineId);
         setBranchAdderProperties(adder, line, side, bus);
+        removeFromNetworkAndAliasesMap(line);
         Line newLine = adder.add();
         copyCurrentLimits(line, newLine);
         copyProperties(line, newLine);
-        LOGGER.debug("Line '{}' has been removed, new TieLine '{}' has been created", line.getId(), newLine.getId());
-        movedBranches.put(line, newLine);
-    }
-
-    private void moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
-        String newLineId = replaceTieLineNode(tieLine, side, bus.getId());
-        TieLineAdder adder = initializeTieLineAdderToMove(tieLine, newLineId, side, bus);
-        setBranchAdderProperties(adder, tieLine, side, bus);
-        TieLine newTieLine = adder.add();
-        copyCurrentLimits(tieLine, newTieLine);
-        copyProperties(tieLine, newTieLine);
-        LOGGER.debug("TieLine '{}' has been removed, new TieLine '{}' has been created", tieLine.getId(), newTieLine.getId());
-        movedBranches.put(tieLine, newTieLine);
+        LOGGER.debug("Line '{}' has been removed, new Line '{}' has been created", line.getId(), newLine.getId());
+        addAliasesFromOldToNew(line, newLine);
     }
 
     private void moveTwoWindingsTransformer(TwoWindingsTransformer transformer, Branch.Side side, Bus bus) {
         String newId = replaceSimpleBranchNode(transformer, side, bus.getId());
         TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(transformer, newId);
         setBranchAdderProperties(adder, transformer, side, bus);
+        removeFromNetworkAndAliasesMap(transformer);
         TwoWindingsTransformer newTransformer = adder.add();
         copyCurrentLimits(transformer, newTransformer);
         copyProperties(transformer, newTransformer);
         copyTapChanger(transformer, newTransformer);
         LOGGER.debug("TwoWindingsTransformer '{}' has been removed, new transformer '{}' has been created", transformer.getId(), newTransformer.getId());
-        movedBranches.put(transformer, newTransformer);
+        addAliasesFromOldToNew(transformer, newTransformer);
+    }
+
+    private void moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
+        DanglingLine danglingLineToReplace = (side == Branch.Side.ONE) ? tieLine.getDanglingLine1() : tieLine.getDanglingLine2();
+        String newTieLineId = replaceTieLineNodeInTieLineId(tieLine, danglingLineToReplace, bus.getId());
+        TieLine newTieLine = replaceTieLine(tieLine, newTieLineId, danglingLineToReplace, bus);
+        copyCurrentLimits(tieLine, newTieLine);
+        copyProperties(tieLine, newTieLine);
+        LOGGER.debug("TieLine '{}' has been removed, new TieLine '{}' has been created", tieLine.getId(), newTieLine.getId());
+        addAliasesFromOldToNew(tieLine, newTieLine);
+    }
+
+    private void addAliasesFromOldToNew(Identifiable<?> oldIdentifiable, Identifiable<?> newIdentifiable) {
+        addAlias(newIdentifiable, oldIdentifiable.getId());
+        oldIdentifiable.getAliases().forEach(alias -> addAlias(newIdentifiable, alias));
+    }
+
+    private void addAlias(Identifiable<?> identifiable, String alias) {
+        identifiable.addAlias(alias);
+        identifiableAliases.putIfAbsent(identifiable.getId(), new ArrayList<>());
+        identifiableAliases.get(identifiable.getId()).add(alias);
     }
 
     private static void copyTapChanger(TwoWindingsTransformer transformerFrom, TwoWindingsTransformer transformerTo) {
@@ -256,7 +263,7 @@ public class NetworkModifier {
      * Sets LineAdder's attributes identical to a given side of a branch
      * WARNING: This only works for bus breaker topology. UCTE import in PowSyBl is always done in bus breaker view.
      */
-    private static BranchAdder<?> setIdenticalToSide(Branch<?> branch, Branch.Side side, BranchAdder<?> adder) {
+    private static BranchAdder<?, ?> setIdenticalToSide(Branch<?> branch, Branch.Side side, BranchAdder<?, ?> adder) {
         if (side == Branch.Side.ONE) {
             return adder.setVoltageLevel1(branch.getTerminal1().getVoltageLevel().getId())
                 .setConnectableBus1(branch.getTerminal1().getBusBreakerView().getConnectableBus().getId())
@@ -268,7 +275,7 @@ public class NetworkModifier {
         }
     }
 
-    private void setBranchAdderProperties(BranchAdder<?> adder, Branch<?> branchToCopy, Branch.Side sideToUpdate, Bus busToUpdate) {
+    private void setBranchAdderProperties(BranchAdder<?, ?> adder, Branch<?> branchToCopy, Branch.Side sideToUpdate, Bus busToUpdate) {
         if (sideToUpdate == Branch.Side.ONE) {
             setIdenticalToSide(branchToCopy, Branch.Side.TWO, adder)
                 .setConnectableBus1(busToUpdate.getId())
@@ -293,53 +300,60 @@ public class NetworkModifier {
         }
     }
 
-    private static String replaceTieLineNode(TieLine tieLine, Branch.Side side, String newNodeId) {
-        String nodeToReplace = getTieLineNodeToReplace(tieLine, side);
+    private static String replaceTieLineNodeInTieLineId(TieLine tieLine, DanglingLine danglingLineToReplace, String newNodeId) {
+        String nodeToReplace = getTieLineNodeToReplace(tieLine, danglingLineToReplace);
         return tieLine.getId().replace(nodeToReplace, newNodeId);
     }
 
-    private static String replaceHalfLineNode(TieLine tieLine, Branch.Side side, String newNodeId) {
-        TieLine.HalfLine halfLine = (side == Branch.Side.ONE) ? tieLine.getHalf1() : tieLine.getHalf2();
-        String nodeToReplace = getTieLineNodeToReplace(tieLine, side);
-        return halfLine.getId().replace(nodeToReplace, newNodeId);
+    private static DanglingLine replaceDanglingLineAtSide(TieLine tieLine, DanglingLine danglingLineToReplace, String newNodeId) {
+        VoltageLevel voltageLevel = danglingLineToReplace.getTerminal().getVoltageLevel();
+        danglingLineToReplace.remove();
+        String nodeToReplace = getTieLineNodeToReplace(tieLine, danglingLineToReplace);
+        return voltageLevel.newDanglingLine()
+                .setId(danglingLineToReplace.getId().replace(nodeToReplace, newNodeId))
+                .setFictitious(danglingLineToReplace.isFictitious())
+                .setUcteXnodeCode(danglingLineToReplace.getUcteXnodeCode())
+                .setR(danglingLineToReplace.getR())
+                .setX(danglingLineToReplace.getX())
+                .setG(danglingLineToReplace.getG())
+                .setB(danglingLineToReplace.getB())
+                .setConnectableBus(newNodeId)
+                .setBus(newNodeId)
+                .setP0(danglingLineToReplace.getP0())
+                .setQ0(danglingLineToReplace.getQ0())
+                .add();
     }
 
-    private static String getTieLineNodeToReplace(TieLine tieLine, Branch.Side side) {
-        TieLine.HalfLine halfLine = (side == Branch.Side.ONE) ? tieLine.getHalf1() : tieLine.getHalf2();
-        String node1 = halfLine.getId().substring(0, 8);
-        String node2 = halfLine.getId().substring(9, 17);
+    private static String getTieLineNodeToReplace(TieLine tieLine, DanglingLine danglingLineToReplace) {
+        String node1 = danglingLineToReplace.getId().substring(0, 8);
+        String node2 = danglingLineToReplace.getId().substring(9, 17);
         return node1.equals(tieLine.getUcteXnodeCode()) ? node2 : node1;
     }
 
-    private TieLineAdder initializeTieLineAdderToMove(TieLine tieLine, String newId, Branch.Side sideToUpdate, Bus bus) {
-        TieLine.HalfLine half1 = tieLine.getHalf1();
-        TieLine.HalfLine half2 = tieLine.getHalf2();
-        String xnodeCode = tieLine.getUcteXnodeCode();
-        String newHalf1Id = (sideToUpdate == Branch.Side.ONE) ? replaceHalfLineNode(tieLine, Branch.Side.ONE, bus.getId()) : half1.getId();
-        String newHalf2Id = (sideToUpdate == Branch.Side.TWO) ? replaceHalfLineNode(tieLine, Branch.Side.TWO, bus.getId()) : half2.getId();
+    private TieLine replaceTieLine(TieLine tieLine, String newId, DanglingLine danglingLineToReplace, Bus bus) {
+        DanglingLine half1 = tieLine.getDanglingLine1();
+        DanglingLine half2 = tieLine.getDanglingLine2();
+        removeFromNetworkAndAliasesMap(tieLine);
+        DanglingLine newHalf1 = (half1 == danglingLineToReplace) ? replaceDanglingLineAtSide(tieLine, danglingLineToReplace, bus.getId()) : half1;
+        DanglingLine newHalf2 = (half2 == danglingLineToReplace) ? replaceDanglingLineAtSide(tieLine, danglingLineToReplace, bus.getId()) : half2;
         return network.newTieLine()
             .setId(newId)
-            .newHalfLine1()
-            .setId(newHalf1Id)
-            .setR(half1.getR())
-            .setX(half1.getX())
-            .setB1(half1.getB1())
-            .setB2(half1.getB2())
-            .setG1(half1.getG1())
-            .setG2(half1.getG2())
-            .setFictitious(half1.isFictitious())
-            .add()
-            .newHalfLine2()
-            .setId(newHalf2Id)
-            .setR(half2.getR())
-            .setX(half2.getX())
-            .setB1(half2.getB1())
-            .setB2(half2.getB2())
-            .setG1(half2.getG1())
-            .setG2(half2.getG2())
-            .setFictitious(half2.isFictitious())
-            .add()
-            .setUcteXnodeCode(xnodeCode);
+            .setDanglingLine1(newHalf1.getId())
+            .setDanglingLine2(newHalf2.getId())
+            .add();
+    }
+
+    private void removeFromNetworkAndAliasesMap(Connectable<?> connectable) {
+        connectable.remove();
+        identifiableAliases.remove(connectable.getId());
+    }
+
+    /**
+     * TieLine do not implement Connectable interface anymore. But it still have a *remove* method
+     */
+    private void removeFromNetworkAndAliasesMap(TieLine tieLine) {
+        tieLine.remove();
+        identifiableAliases.remove(tieLine.getId());
     }
 
     private TwoWindingsTransformerAdder initializeTwoWindingsTransformerAdderToMove(TwoWindingsTransformer twoWindingsTransformer, String newId) {
@@ -375,7 +389,6 @@ public class NetworkModifier {
     public Map<Branch<?>, Branch.Side> getBranchesStillConnectedToBus(Bus bus) {
         Map<Branch<?>, Branch.Side> connectedBranches = new HashMap<>();
         network.getBranchStream()
-            .map(branch -> movedBranches.getOrDefault(branch, branch))
             .forEach(branch -> {
                 if (branch.getTerminal1().getBusBreakerView().getConnectableBus().equals(bus)) {
                     connectedBranches.put(branch, Branch.Side.ONE);
@@ -392,12 +405,19 @@ public class NetworkModifier {
      */
     public void commitAllChanges() {
         try {
-            movedBranches.keySet().forEach(branch -> branch.remove());
-            movedBranches = new HashMap<>();
             busesToRemove.forEach(this::effectivelyRemoveBus);
             busesToRemove = new HashSet<>();
+            cleanAliases();
         } catch (PowsyblException e) {
             throw new FaraoException(String.format("Could not apply all changes to network: %s", e.getMessage()));
+        }
+    }
+
+    private void cleanAliases() {
+        for (var identifiableAliasesEntry : identifiableAliases.entrySet()) {
+            for (String alias : identifiableAliasesEntry.getValue()) {
+                network.getIdentifiable(identifiableAliasesEntry.getKey()).removeAlias(alias);
+            }
         }
     }
 }

@@ -59,8 +59,12 @@ public final class NetworkHelper {
         }
         if (!branchHelper.isValid()) {
             throw new FaraoException(String.format("One of the branches in the remedial action was not found in the network (%s)", triedIds));
-        } else if (!(network.getIdentifiable(branchHelper.getIdInNetwork()) instanceof Line) && !(network.getIdentifiable(branchHelper.getIdInNetwork()) instanceof TwoWindingsTransformer)) {
-            throw new FaraoException(String.format("One of the branches (%s) in the remedial action is neither a line nor a two-windings-transformer: %s", branchHelper.getIdInNetwork(), network.getIdentifiable(branchHelper.getIdInNetwork()).getClass()));
+        }
+        Identifiable<?> identifiable = network.getIdentifiable(branchHelper.getIdInNetwork());
+        if (!(identifiable instanceof Line) &&
+                !(identifiable instanceof TwoWindingsTransformer) &&
+                !(identifiable instanceof TieLine)) {
+            throw new FaraoException(String.format("One of the branches (%s) in the remedial action is neither a line nor a two-windings-transformer: %s", branchHelper.getIdInNetwork(), identifiable.getClass()));
         }
         if (!isBranchConnected(branchHelper.getIdInNetwork(), initialNodeId, network) && !isBranchConnected(branchHelper.getIdInNetwork(), finalNodeId, network)) {
             throw new FaraoException(String.format("Branch %s is neither connected to initial node (%s) nor to final node (%s)", branchHelper.getIdInNetwork(), initialNodeId, finalNodeId));
@@ -82,15 +86,13 @@ public final class NetworkHelper {
         return bus1.equals(nodeId) || bus2.equals(nodeId);
     }
 
-    public static String moveBranchToNewFictitiousBus(String branchId, Branch.Side branchSideToModify, NetworkModifier networkModifier) {
+    public static String moveBranchToNewFictitiousBus(String branchId, Branch.Side branchSideToModify, VoltageLevel voltageLevelSideToModify, NetworkModifier networkModifier) {
         Network network = networkModifier.getNetwork();
         Branch<?> branch = network.getBranch(branchId);
 
-        VoltageLevel voltageLevel = branch.getTerminal(branchSideToModify).getVoltageLevel();
-
         // Create fictitious bus
-        String fictitiousBusId = generateFictitiousBusId(voltageLevel, network);
-        Bus fictitiousBus = networkModifier.createBus(fictitiousBusId, voltageLevel.getId());
+        String fictitiousBusId = generateFictitiousBusId(voltageLevelSideToModify, network);
+        Bus fictitiousBus = networkModifier.createBus(fictitiousBusId, voltageLevelSideToModify.getId());
 
         // Move one branch end to the fictitious bus
         networkModifier.moveBranch(branch, branchSideToModify, fictitiousBus);
@@ -113,9 +115,8 @@ public final class NetworkHelper {
         String node1 = switchPairToCreate.initialNodeId;
         String node2 = switchPairToCreate.finalNodeId;
         Network network = networkModifier.getNetwork();
-        Branch<?> branch = network.getBranch(switchPairToCreate.branchId);
-        String bus1 = branch.getTerminal1().getBusBreakerView().getConnectableBus().getId();
-        String bus2 = branch.getTerminal2().getBusBreakerView().getConnectableBus().getId();
+        String bus1 = switchPairToCreate.initialNodeSide1;
+        String bus2 = switchPairToCreate.initialNodeSide2;
 
         VoltageLevel voltageLevel = ((Bus) network.getIdentifiable(node1)).getVoltageLevel();
 
@@ -125,7 +126,7 @@ public final class NetworkHelper {
 
         // Create switches
         // Set OPEN/CLOSED status depending on the branch's initially connected node
-        Double currentLimit = getMinimumCurrentLimit(branch);
+        Double currentLimit = switchPairToCreate.minimumCurrentLimit;
         String switch1 = networkModifier.createSwitch(voltageLevel, node1, fictitiousBusId, currentLimit, !branchIsOnNode1).getId();
         String switch2 = networkModifier.createSwitch(voltageLevel, node2, fictitiousBusId, currentLimit, branchIsOnNode1).getId();
 
@@ -175,11 +176,18 @@ public final class NetworkHelper {
         private final String finalNodeId; // ID of the final node to connect the switch to
         private final String uniqueId;
         private final Branch.Side branchSideToModify;
+        private final String initialNodeSide1;
+        private final String initialNodeSide2;
+        private final Double minimumCurrentLimit;
+        private VoltageLevel voltageLevelSideToModify;
 
         SwitchPairToCreate(String branchId, String initialNodeId, String finalNodeId, Network network) {
+            Branch<?> originalBranch = network.getBranch(branchId);
             this.branchId = branchId;
             this.initialNodeId = initialNodeId;
             this.finalNodeId = finalNodeId;
+            this.initialNodeSide1 = originalBranch.getTerminal1().getBusBreakerView().getConnectableBus().getId();
+            this.initialNodeSide2 = originalBranch.getTerminal2().getBusBreakerView().getConnectableBus().getId();
             // Unique ID guarantees that at most 1 pair of switches is asked to be created,
             // for a given branch and given initial & final nodes (even if they are inverted)
             // This allows two busbar RAs, that are opposite to one another, to use the same pair of switches
@@ -189,6 +197,8 @@ public final class NetworkHelper {
                 this.uniqueId = String.format("%s {%s, %s}", branchId, finalNodeId, initialNodeId);
             }
             this.branchSideToModify = computeBranchSideToModify(network);
+            this.voltageLevelSideToModify = originalBranch.getTerminal(branchSideToModify).getVoltageLevel();
+            this.minimumCurrentLimit = NetworkHelper.getMinimumCurrentLimit(originalBranch);
         }
 
         /**
@@ -259,6 +269,22 @@ public final class NetworkHelper {
         @Override
         public int compareTo(SwitchPairToCreate other) {
             return uniqueId.compareTo(other.uniqueId);
+        }
+
+        public String getInitialNodeSide1() {
+            return initialNodeSide1;
+        }
+
+        public String getInitialNodeSide2() {
+            return initialNodeSide2;
+        }
+
+        public double getMinimumCurrentLimit() {
+            return minimumCurrentLimit;
+        }
+
+        public VoltageLevel getVoltageLevelSideToModify() {
+            return voltageLevelSideToModify;
         }
     }
 

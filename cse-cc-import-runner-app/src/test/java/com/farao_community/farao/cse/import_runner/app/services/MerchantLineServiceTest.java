@@ -12,10 +12,7 @@ import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.import_runner.app.configurations.MendrisioConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.PhaseTapChanger;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,7 +95,7 @@ class MerchantLineServiceTest {
         merchantLineService.activateMerchantLine(ProcessType.D2CC, networkWithMendrisioCagnoLine, cseData);
         LoadFlow.run(networkWithMendrisioCagnoLine, LoadFlowParameters.load());
         assertEquals(175, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
-        Line mendrisioCagnoLine = networkWithMendrisioCagnoLine.getLine("SMENDR11 XME_CA11 1 + XME_CA11 NNL1AA1  1");
+        TieLine mendrisioCagnoLine = networkWithMendrisioCagnoLine.getTieLine("SMENDR11 XME_CA11 1 + XME_CA11 NNL1AA1  1");
         assertEquals(75, mendrisioCagnoLine.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
     }
 
