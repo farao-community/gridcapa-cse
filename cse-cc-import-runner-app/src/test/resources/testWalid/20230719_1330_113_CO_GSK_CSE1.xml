@@ -1,0 +1,4447 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GSKDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" DtdVersion="1" DtdRelease="0" xsi:noNamespaceSchemaLocation="gsk-document.xsd">
+    <DocumentIdentification v="20230719_1330_113_ce_GSK_CSE"/>
+    <DocumentVersion v="1"/>
+    <DocumentType v="B22"/>
+    <ProcessType v="A40"/>
+    <SenderIdentification v="10VCSEEH4MMD-NDO" codingScheme="A01"/>
+    <SenderRole v="A36"/>
+    <ReceiverIdentification v="10X1001A1001A345" codingScheme="A01"/>
+    <ReceiverRole v="A04"/>
+    <CreationDateTime v="2023-07-19T00:47:48Z"/>
+    <GSKTimeInterval v="2023-07-19T11:00Z/2023-07-19T12:00Z"/>
+    <Domain v="10YDOM-1001A061T" codingScheme="A01"/>
+    <TimeSeries>
+        <TimeSeriesIdentification v="1"/>
+        <BusinessType v="Z02"/>
+        <Area v="10YFR-RTE------C" codingScheme="A01"/>
+        <Name v="FR"/>
+        <TimeInterval v="2023-07-19T11:00Z/2023-07-19T12:00Z"/>
+        <PropGSKBlock>
+            <Node>
+                <Name v="FFESSH74"/>
+            </Node>
+            <Node>
+                <Name v="FFESSH74"/>
+            </Node>
+            <Node>
+                <Name v="FFESSH74"/>
+            </Node>
+            <Node>
+                <Name v="FFESSH74"/>
+            </Node>
+            <Node>
+                <Name v="FFLAMA13"/>
+            </Node>
+            <Node>
+                <Name v="FFLAMA13"/>
+            </Node>
+            <Node>
+                <Name v="FFLAMA13"/>
+            </Node>
+            <Node>
+                <Name v="FFLAMA13"/>
+            </Node>
+            <Node>
+                <Name v="FFREJU21"/>
+            </Node>
+            <Node>
+                <Name v="FFREJU21"/>
+            </Node>
+            <Node>
+                <Name v="FFREJU21"/>
+            </Node>
+            <Node>
+                <Name v="FFREJU21"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI24"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI24"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI24"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI24"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI22"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI22"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI22"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI22"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI23"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI23"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI23"/>
+            </Node>
+            <Node>
+                <Name v="FG.CAI23"/>
+            </Node>
+            <Node>
+                <Name v="FGALER21"/>
+            </Node>
+            <Node>
+                <Name v="FGALER21"/>
+            </Node>
+            <Node>
+                <Name v="FGALER21"/>
+            </Node>
+            <Node>
+                <Name v="FGALER21"/>
+            </Node>
+            <Node>
+                <Name v="FGALER22"/>
+            </Node>
+            <Node>
+                <Name v="FGALER22"/>
+            </Node>
+            <Node>
+                <Name v="FGALER22"/>
+            </Node>
+            <Node>
+                <Name v="FGALER22"/>
+            </Node>
+            <Node>
+                <Name v="FGARD721"/>
+            </Node>
+            <Node>
+                <Name v="FGARD721"/>
+            </Node>
+            <Node>
+                <Name v="FGARD721"/>
+            </Node>
+            <Node>
+                <Name v="FGARD721"/>
+            </Node>
+            <Node>
+                <Name v="FGARIE21"/>
+            </Node>
+            <Node>
+                <Name v="FGARIE21"/>
+            </Node>
+            <Node>
+                <Name v="FGARIE21"/>
+            </Node>
+            <Node>
+                <Name v="FGARIE21"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS24"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS24"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS24"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS24"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS25"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS25"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS25"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS25"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS23"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS23"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS23"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS23"/>
+            </Node>
+            <Node>
+                <Name v="FGENIT22"/>
+            </Node>
+            <Node>
+                <Name v="FGENIT22"/>
+            </Node>
+            <Node>
+                <Name v="FGENIT22"/>
+            </Node>
+            <Node>
+                <Name v="FGENIT22"/>
+            </Node>
+            <Node>
+                <Name v="FGINES21"/>
+            </Node>
+            <Node>
+                <Name v="FGINES21"/>
+            </Node>
+            <Node>
+                <Name v="FGINES21"/>
+            </Node>
+            <Node>
+                <Name v="FGINES21"/>
+            </Node>
+            <Node>
+                <Name v="FGRACI21"/>
+            </Node>
+            <Node>
+                <Name v="FGRACI21"/>
+            </Node>
+            <Node>
+                <Name v="FGRACI21"/>
+            </Node>
+            <Node>
+                <Name v="FGRACI21"/>
+            </Node>
+            <Node>
+                <Name v="FGRAFF21"/>
+            </Node>
+            <Node>
+                <Name v="FGRAFF21"/>
+            </Node>
+            <Node>
+                <Name v="FGRAFF21"/>
+            </Node>
+            <Node>
+                <Name v="FGRAFF21"/>
+            </Node>
+            <Node>
+                <Name v="FGRAFF22"/>
+            </Node>
+            <Node>
+                <Name v="FGRAFF22"/>
+            </Node>
+            <Node>
+                <Name v="FGRAFF22"/>
+            </Node>
+            <Node>
+                <Name v="FGRAFF22"/>
+            </Node>
+            <Node>
+                <Name v="FGRAMO21"/>
+            </Node>
+            <Node>
+                <Name v="FGRAMO21"/>
+            </Node>
+            <Node>
+                <Name v="FGRAMO21"/>
+            </Node>
+            <Node>
+                <Name v="FGRAMO21"/>
+            </Node>
+            <Node>
+                <Name v="FGRAV515"/>
+            </Node>
+            <Node>
+                <Name v="FGRAV515"/>
+            </Node>
+            <Node>
+                <Name v="FGRAV515"/>
+            </Node>
+            <Node>
+                <Name v="FGRAV515"/>
+            </Node>
+            <Node>
+                <Name v="FGRAV514"/>
+            </Node>
+            <Node>
+                <Name v="FGRAV514"/>
+            </Node>
+            <Node>
+                <Name v="FGRAV514"/>
+            </Node>
+            <Node>
+                <Name v="FGRAV514"/>
+            </Node>
+            <Node>
+                <Name v="FGRIM521"/>
+            </Node>
+            <Node>
+                <Name v="FGRIM521"/>
+            </Node>
+            <Node>
+                <Name v="FGRIM521"/>
+            </Node>
+            <Node>
+                <Name v="FGRIM521"/>
+            </Node>
+            <Node>
+                <Name v="FH.VIE21"/>
+            </Node>
+            <Node>
+                <Name v="FH.VIE21"/>
+            </Node>
+            <Node>
+                <Name v="FH.VIE21"/>
+            </Node>
+            <Node>
+                <Name v="FH.VIE21"/>
+            </Node>
+            <Node>
+                <Name v="FHARDT21"/>
+            </Node>
+            <Node>
+                <Name v="FHARDT21"/>
+            </Node>
+            <Node>
+                <Name v="FHARDT21"/>
+            </Node>
+            <Node>
+                <Name v="FHARDT21"/>
+            </Node>
+            <Node>
+                <Name v="FHELLE24"/>
+            </Node>
+            <Node>
+                <Name v="FHELLE24"/>
+            </Node>
+            <Node>
+                <Name v="FHELLE24"/>
+            </Node>
+            <Node>
+                <Name v="FHELLE24"/>
+            </Node>
+            <Node>
+                <Name v="FHELLE21"/>
+            </Node>
+            <Node>
+                <Name v="FHELLE21"/>
+            </Node>
+            <Node>
+                <Name v="FHELLE21"/>
+            </Node>
+            <Node>
+                <Name v="FHELLE21"/>
+            </Node>
+            <Node>
+                <Name v="FHERMI21"/>
+            </Node>
+            <Node>
+                <Name v="FHERMI21"/>
+            </Node>
+            <Node>
+                <Name v="FHERMI21"/>
+            </Node>
+            <Node>
+                <Name v="FHERMI21"/>
+            </Node>
+            <Node>
+                <Name v="FJUSTI21"/>
+            </Node>
+            <Node>
+                <Name v="FJUSTI21"/>
+            </Node>
+            <Node>
+                <Name v="FJUSTI21"/>
+            </Node>
+            <Node>
+                <Name v="FJUSTI21"/>
+            </Node>
+            <Node>
+                <Name v="FLIERS21"/>
+            </Node>
+            <Node>
+                <Name v="FLIERS21"/>
+            </Node>
+            <Node>
+                <Name v="FLIERS21"/>
+            </Node>
+            <Node>
+                <Name v="FLIERS21"/>
+            </Node>
+            <Node>
+                <Name v="FLINGO21"/>
+            </Node>
+            <Node>
+                <Name v="FLINGO21"/>
+            </Node>
+            <Node>
+                <Name v="FLINGO21"/>
+            </Node>
+            <Node>
+                <Name v="FLINGO21"/>
+            </Node>
+            <Node>
+                <Name v="FLIVIE21"/>
+            </Node>
+            <Node>
+                <Name v="FLIVIE21"/>
+            </Node>
+            <Node>
+                <Name v="FLIVIE21"/>
+            </Node>
+            <Node>
+                <Name v="FLIVIE21"/>
+            </Node>
+            <Node>
+                <Name v="FLOGES21"/>
+            </Node>
+            <Node>
+                <Name v="FLOGES21"/>
+            </Node>
+            <Node>
+                <Name v="FLOGES21"/>
+            </Node>
+            <Node>
+                <Name v="FLOGES21"/>
+            </Node>
+            <Node>
+                <Name v="FLONG421"/>
+            </Node>
+            <Node>
+                <Name v="FLONG421"/>
+            </Node>
+            <Node>
+                <Name v="FLONG421"/>
+            </Node>
+            <Node>
+                <Name v="FLONG421"/>
+            </Node>
+            <Node>
+                <Name v="FM.BRU21"/>
+            </Node>
+            <Node>
+                <Name v="FM.BRU21"/>
+            </Node>
+            <Node>
+                <Name v="FM.BRU21"/>
+            </Node>
+            <Node>
+                <Name v="FM.BRU21"/>
+            </Node>
+            <Node>
+                <Name v="FNANTE21"/>
+            </Node>
+            <Node>
+                <Name v="FNANTE21"/>
+            </Node>
+            <Node>
+                <Name v="FNANTE21"/>
+            </Node>
+            <Node>
+                <Name v="FNANTE21"/>
+            </Node>
+            <Node>
+                <Name v="FNEGR521"/>
+            </Node>
+            <Node>
+                <Name v="FNEGR521"/>
+            </Node>
+            <Node>
+                <Name v="FNEGR521"/>
+            </Node>
+            <Node>
+                <Name v="FNEGR521"/>
+            </Node>
+            <Node>
+                <Name v="FNOURO21"/>
+            </Node>
+            <Node>
+                <Name v="FNOURO21"/>
+            </Node>
+            <Node>
+                <Name v="FNOURO21"/>
+            </Node>
+            <Node>
+                <Name v="FNOURO21"/>
+            </Node>
+            <Node>
+                <Name v="FORAIS21"/>
+            </Node>
+            <Node>
+                <Name v="FORAIS21"/>
+            </Node>
+            <Node>
+                <Name v="FORAIS21"/>
+            </Node>
+            <Node>
+                <Name v="FORAIS21"/>
+            </Node>
+            <Node>
+                <Name v="FORELL21"/>
+            </Node>
+            <Node>
+                <Name v="FORELL21"/>
+            </Node>
+            <Node>
+                <Name v="FORELL21"/>
+            </Node>
+            <Node>
+                <Name v="FORELL21"/>
+            </Node>
+            <Node>
+                <Name v="FORMES23"/>
+            </Node>
+            <Node>
+                <Name v="FORMES23"/>
+            </Node>
+            <Node>
+                <Name v="FORMES23"/>
+            </Node>
+            <Node>
+                <Name v="FORMES23"/>
+            </Node>
+            <Node>
+                <Name v="FORMES22"/>
+            </Node>
+            <Node>
+                <Name v="FORMES22"/>
+            </Node>
+            <Node>
+                <Name v="FORMES22"/>
+            </Node>
+            <Node>
+                <Name v="FORMES22"/>
+            </Node>
+            <Node>
+                <Name v="FORSON21"/>
+            </Node>
+            <Node>
+                <Name v="FORSON21"/>
+            </Node>
+            <Node>
+                <Name v="FORSON21"/>
+            </Node>
+            <Node>
+                <Name v="FORSON21"/>
+            </Node>
+            <Node>
+                <Name v="FROMAI21"/>
+            </Node>
+            <Node>
+                <Name v="FROMAI21"/>
+            </Node>
+            <Node>
+                <Name v="FROMAI21"/>
+            </Node>
+            <Node>
+                <Name v="FROMAI21"/>
+            </Node>
+            <Node>
+                <Name v="FROUMA21"/>
+            </Node>
+            <Node>
+                <Name v="FROUMA21"/>
+            </Node>
+            <Node>
+                <Name v="FROUMA21"/>
+            </Node>
+            <Node>
+                <Name v="FROUMA21"/>
+            </Node>
+            <Node>
+                <Name v="FROUMO21"/>
+            </Node>
+            <Node>
+                <Name v="FROUMO21"/>
+            </Node>
+            <Node>
+                <Name v="FROUMO21"/>
+            </Node>
+            <Node>
+                <Name v="FROUMO21"/>
+            </Node>
+            <Node>
+                <Name v="FROYE 21"/>
+            </Node>
+            <Node>
+                <Name v="FROYE 21"/>
+            </Node>
+            <Node>
+                <Name v="FROYE 21"/>
+            </Node>
+            <Node>
+                <Name v="FROYE 21"/>
+            </Node>
+            <Node>
+                <Name v="FRUHBO21"/>
+            </Node>
+            <Node>
+                <Name v="FRUHBO21"/>
+            </Node>
+            <Node>
+                <Name v="FRUHBO21"/>
+            </Node>
+            <Node>
+                <Name v="FRUHBO21"/>
+            </Node>
+            <Node>
+                <Name v="FS.AIR21"/>
+            </Node>
+            <Node>
+                <Name v="FS.AIR21"/>
+            </Node>
+            <Node>
+                <Name v="FS.AIR21"/>
+            </Node>
+            <Node>
+                <Name v="FS.AIR21"/>
+            </Node>
+            <Node>
+                <Name v="FS.CUR21"/>
+            </Node>
+            <Node>
+                <Name v="FS.CUR21"/>
+            </Node>
+            <Node>
+                <Name v="FS.CUR21"/>
+            </Node>
+            <Node>
+                <Name v="FS.CUR21"/>
+            </Node>
+            <Node>
+                <Name v="FSABLO72"/>
+            </Node>
+            <Node>
+                <Name v="FSABLO72"/>
+            </Node>
+            <Node>
+                <Name v="FSABLO72"/>
+            </Node>
+            <Node>
+                <Name v="FSABLO72"/>
+            </Node>
+            <Node>
+                <Name v="FSACL521"/>
+            </Node>
+            <Node>
+                <Name v="FSACL521"/>
+            </Node>
+            <Node>
+                <Name v="FSACL521"/>
+            </Node>
+            <Node>
+                <Name v="FSACL521"/>
+            </Node>
+            <Node>
+                <Name v="FSALIG21"/>
+            </Node>
+            <Node>
+                <Name v="FSALIG21"/>
+            </Node>
+            <Node>
+                <Name v="FSALIG21"/>
+            </Node>
+            <Node>
+                <Name v="FSALIG21"/>
+            </Node>
+            <Node>
+                <Name v="FSAULE21"/>
+            </Node>
+            <Node>
+                <Name v="FSAULE21"/>
+            </Node>
+            <Node>
+                <Name v="FSAULE21"/>
+            </Node>
+            <Node>
+                <Name v="FSAULE21"/>
+            </Node>
+            <Node>
+                <Name v="FSAUM621"/>
+            </Node>
+            <Node>
+                <Name v="FSAUM621"/>
+            </Node>
+            <Node>
+                <Name v="FSAUM621"/>
+            </Node>
+            <Node>
+                <Name v="FSAUM621"/>
+            </Node>
+            <Node>
+                <Name v="FSAUMA21"/>
+            </Node>
+            <Node>
+                <Name v="FSAUMA21"/>
+            </Node>
+            <Node>
+                <Name v="FSAUMA21"/>
+            </Node>
+            <Node>
+                <Name v="FSAUMA21"/>
+            </Node>
+            <Node>
+                <Name v="FSAUS222"/>
+            </Node>
+            <Node>
+                <Name v="FSAUS222"/>
+            </Node>
+            <Node>
+                <Name v="FSAUS222"/>
+            </Node>
+            <Node>
+                <Name v="FSAUS222"/>
+            </Node>
+            <Node>
+                <Name v="FSAVIG21"/>
+            </Node>
+            <Node>
+                <Name v="FSAVIG21"/>
+            </Node>
+            <Node>
+                <Name v="FSAVIG21"/>
+            </Node>
+            <Node>
+                <Name v="FSAVIG21"/>
+            </Node>
+            <Node>
+                <Name v="FSENAR23"/>
+            </Node>
+            <Node>
+                <Name v="FSENAR23"/>
+            </Node>
+            <Node>
+                <Name v="FSENAR23"/>
+            </Node>
+            <Node>
+                <Name v="FSENAR23"/>
+            </Node>
+            <Node>
+                <Name v="FSINAR21"/>
+            </Node>
+            <Node>
+                <Name v="FSINAR21"/>
+            </Node>
+            <Node>
+                <Name v="FSINAR21"/>
+            </Node>
+            <Node>
+                <Name v="FSINAR21"/>
+            </Node>
+            <Node>
+                <Name v="FMOUIS21"/>
+            </Node>
+            <Node>
+                <Name v="FMOUIS21"/>
+            </Node>
+            <Node>
+                <Name v="FMOUIS21"/>
+            </Node>
+            <Node>
+                <Name v="FMOUIS21"/>
+            </Node>
+            <Node>
+                <Name v="FMOUL821"/>
+            </Node>
+            <Node>
+                <Name v="FMOUL821"/>
+            </Node>
+            <Node>
+                <Name v="FMOUL821"/>
+            </Node>
+            <Node>
+                <Name v="FMOUL821"/>
+            </Node>
+            <Node>
+                <Name v="FMTAHU21"/>
+            </Node>
+            <Node>
+                <Name v="FMTAHU21"/>
+            </Node>
+            <Node>
+                <Name v="FMTAHU21"/>
+            </Node>
+            <Node>
+                <Name v="FMTAHU21"/>
+            </Node>
+            <Node>
+                <Name v="FMTCRO21"/>
+            </Node>
+            <Node>
+                <Name v="FMTCRO21"/>
+            </Node>
+            <Node>
+                <Name v="FMTCRO21"/>
+            </Node>
+            <Node>
+                <Name v="FMTCRO21"/>
+            </Node>
+            <Node>
+                <Name v="FMTJAY21"/>
+            </Node>
+            <Node>
+                <Name v="FMTJAY21"/>
+            </Node>
+            <Node>
+                <Name v="FMTJAY21"/>
+            </Node>
+            <Node>
+                <Name v="FMTJAY21"/>
+            </Node>
+            <Node>
+                <Name v="FMUREA21"/>
+            </Node>
+            <Node>
+                <Name v="FMUREA21"/>
+            </Node>
+            <Node>
+                <Name v="FMUREA21"/>
+            </Node>
+            <Node>
+                <Name v="FMUREA21"/>
+            </Node>
+            <Node>
+                <Name v="FMUREM21"/>
+            </Node>
+            <Node>
+                <Name v="FMUREM21"/>
+            </Node>
+            <Node>
+                <Name v="FMUREM21"/>
+            </Node>
+            <Node>
+                <Name v="FMUREM21"/>
+            </Node>
+            <Node>
+                <Name v="FN.MAR22"/>
+            </Node>
+            <Node>
+                <Name v="FN.MAR22"/>
+            </Node>
+            <Node>
+                <Name v="FN.MAR22"/>
+            </Node>
+            <Node>
+                <Name v="FN.MAR22"/>
+            </Node>
+            <Node>
+                <Name v="FN.SE111"/>
+            </Node>
+            <Node>
+                <Name v="FN.SE111"/>
+            </Node>
+            <Node>
+                <Name v="FN.SE111"/>
+            </Node>
+            <Node>
+                <Name v="FN.SE111"/>
+            </Node>
+            <Node>
+                <Name v="FN.SE211"/>
+            </Node>
+            <Node>
+                <Name v="FN.SE211"/>
+            </Node>
+            <Node>
+                <Name v="FN.SE211"/>
+            </Node>
+            <Node>
+                <Name v="FN.SE211"/>
+            </Node>
+            <Node>
+                <Name v="FCANTE23"/>
+            </Node>
+            <Node>
+                <Name v="FCANTE23"/>
+            </Node>
+            <Node>
+                <Name v="FCANTE23"/>
+            </Node>
+            <Node>
+                <Name v="FCANTE23"/>
+            </Node>
+            <Node>
+                <Name v="FCARDI22"/>
+            </Node>
+            <Node>
+                <Name v="FCARDI22"/>
+            </Node>
+            <Node>
+                <Name v="FCARDI22"/>
+            </Node>
+            <Node>
+                <Name v="FCARDI22"/>
+            </Node>
+            <Node>
+                <Name v="FCARDI21"/>
+            </Node>
+            <Node>
+                <Name v="FCARDI21"/>
+            </Node>
+            <Node>
+                <Name v="FCARDI21"/>
+            </Node>
+            <Node>
+                <Name v="FCARDI21"/>
+            </Node>
+            <Node>
+                <Name v="FCATG211"/>
+            </Node>
+            <Node>
+                <Name v="FCATG211"/>
+            </Node>
+            <Node>
+                <Name v="FCATG211"/>
+            </Node>
+            <Node>
+                <Name v="FCATG211"/>
+            </Node>
+            <Node>
+                <Name v="FCATG311"/>
+            </Node>
+            <Node>
+                <Name v="FCATG311"/>
+            </Node>
+            <Node>
+                <Name v="FCATG311"/>
+            </Node>
+            <Node>
+                <Name v="FCATG311"/>
+            </Node>
+            <Node>
+                <Name v="FCATG411"/>
+            </Node>
+            <Node>
+                <Name v="FCATG411"/>
+            </Node>
+            <Node>
+                <Name v="FCATG411"/>
+            </Node>
+            <Node>
+                <Name v="FCATG411"/>
+            </Node>
+            <Node>
+                <Name v="FCHA.S21"/>
+            </Node>
+            <Node>
+                <Name v="FCHA.S21"/>
+            </Node>
+            <Node>
+                <Name v="FCHA.S21"/>
+            </Node>
+            <Node>
+                <Name v="FCHA.S21"/>
+            </Node>
+            <Node>
+                <Name v="FCHA.S22"/>
+            </Node>
+            <Node>
+                <Name v="FCHA.S22"/>
+            </Node>
+            <Node>
+                <Name v="FCHA.S22"/>
+            </Node>
+            <Node>
+                <Name v="FCHA.S22"/>
+            </Node>
+            <Node>
+                <Name v="FCHATI22"/>
+            </Node>
+            <Node>
+                <Name v="FCHATI22"/>
+            </Node>
+            <Node>
+                <Name v="FCHATI22"/>
+            </Node>
+            <Node>
+                <Name v="FCHATI22"/>
+            </Node>
+            <Node>
+                <Name v="FCHENE21"/>
+            </Node>
+            <Node>
+                <Name v="FCHENE21"/>
+            </Node>
+            <Node>
+                <Name v="FCHENE21"/>
+            </Node>
+            <Node>
+                <Name v="FCHENE21"/>
+            </Node>
+            <Node>
+                <Name v="FCHINX12"/>
+            </Node>
+            <Node>
+                <Name v="FCHINX12"/>
+            </Node>
+            <Node>
+                <Name v="FCHINX12"/>
+            </Node>
+            <Node>
+                <Name v="FCHINX12"/>
+            </Node>
+            <Node>
+                <Name v="FCHOO111"/>
+            </Node>
+            <Node>
+                <Name v="FCHOO111"/>
+            </Node>
+            <Node>
+                <Name v="FCHOO111"/>
+            </Node>
+            <Node>
+                <Name v="FCHOO111"/>
+            </Node>
+            <Node>
+                <Name v="FCHOO211"/>
+            </Node>
+            <Node>
+                <Name v="FCHOO211"/>
+            </Node>
+            <Node>
+                <Name v="FCHOO211"/>
+            </Node>
+            <Node>
+                <Name v="FCHOO211"/>
+            </Node>
+            <Node>
+                <Name v="FCIVAU11"/>
+            </Node>
+            <Node>
+                <Name v="FCIVAU11"/>
+            </Node>
+            <Node>
+                <Name v="FCIVAU11"/>
+            </Node>
+            <Node>
+                <Name v="FCIVAU11"/>
+            </Node>
+            <Node>
+                <Name v="FCIVAU12"/>
+            </Node>
+            <Node>
+                <Name v="FCIVAU12"/>
+            </Node>
+            <Node>
+                <Name v="FCIVAU12"/>
+            </Node>
+            <Node>
+                <Name v="FCIVAU12"/>
+            </Node>
+            <Node>
+                <Name v="FCLEON21"/>
+            </Node>
+            <Node>
+                <Name v="FCLEON21"/>
+            </Node>
+            <Node>
+                <Name v="FCLEON21"/>
+            </Node>
+            <Node>
+                <Name v="FCLEON21"/>
+            </Node>
+            <Node>
+                <Name v="FP.ME521"/>
+            </Node>
+            <Node>
+                <Name v="FP.ME521"/>
+            </Node>
+            <Node>
+                <Name v="FP.ME521"/>
+            </Node>
+            <Node>
+                <Name v="FP.ME521"/>
+            </Node>
+            <Node>
+                <Name v="FP.TRI21"/>
+            </Node>
+            <Node>
+                <Name v="FP.TRI21"/>
+            </Node>
+            <Node>
+                <Name v="FP.TRI21"/>
+            </Node>
+            <Node>
+                <Name v="FP.TRI21"/>
+            </Node>
+            <Node>
+                <Name v="FP.VIL21"/>
+            </Node>
+            <Node>
+                <Name v="FP.VIL21"/>
+            </Node>
+            <Node>
+                <Name v="FP.VIL21"/>
+            </Node>
+            <Node>
+                <Name v="FP.VIL21"/>
+            </Node>
+            <Node>
+                <Name v="FPALAY21"/>
+            </Node>
+            <Node>
+                <Name v="FPALAY21"/>
+            </Node>
+            <Node>
+                <Name v="FPALAY21"/>
+            </Node>
+            <Node>
+                <Name v="FPALAY21"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE13"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE13"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE13"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE13"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE14"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE14"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE14"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE14"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE12"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE12"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE12"/>
+            </Node>
+            <Node>
+                <Name v="FPALUE12"/>
+            </Node>
+            <Node>
+                <Name v="FPAUDY21"/>
+            </Node>
+            <Node>
+                <Name v="FPAUDY21"/>
+            </Node>
+            <Node>
+                <Name v="FPAUDY21"/>
+            </Node>
+            <Node>
+                <Name v="FPAUDY21"/>
+            </Node>
+            <Node>
+                <Name v="FPELAD21"/>
+            </Node>
+            <Node>
+                <Name v="FPELAD21"/>
+            </Node>
+            <Node>
+                <Name v="FPELAD21"/>
+            </Node>
+            <Node>
+                <Name v="FPELAD21"/>
+            </Node>
+            <Node>
+                <Name v="FPENLY12"/>
+            </Node>
+            <Node>
+                <Name v="FPENLY12"/>
+            </Node>
+            <Node>
+                <Name v="FPENLY12"/>
+            </Node>
+            <Node>
+                <Name v="FPENLY12"/>
+            </Node>
+            <Node>
+                <Name v="FPENLY11"/>
+            </Node>
+            <Node>
+                <Name v="FPENLY11"/>
+            </Node>
+            <Node>
+                <Name v="FPENLY11"/>
+            </Node>
+            <Node>
+                <Name v="FPENLY11"/>
+            </Node>
+            <Node>
+                <Name v="FPEYRO21"/>
+            </Node>
+            <Node>
+                <Name v="FPEYRO21"/>
+            </Node>
+            <Node>
+                <Name v="FPEYRO21"/>
+            </Node>
+            <Node>
+                <Name v="FPEYRO21"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA23"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA23"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA23"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA23"/>
+            </Node>
+            <Node>
+                <Name v="FCHEVI21"/>
+            </Node>
+            <Node>
+                <Name v="FCHEVI21"/>
+            </Node>
+            <Node>
+                <Name v="FCHEVI21"/>
+            </Node>
+            <Node>
+                <Name v="FCHEVI21"/>
+            </Node>
+            <Node>
+                <Name v="FCHIN212"/>
+            </Node>
+            <Node>
+                <Name v="FCHIN212"/>
+            </Node>
+            <Node>
+                <Name v="FCHIN212"/>
+            </Node>
+            <Node>
+                <Name v="FCHIN212"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA22"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA22"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA22"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA22"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA21"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA21"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA21"/>
+            </Node>
+            <Node>
+                <Name v="FPOTEA21"/>
+            </Node>
+            <Node>
+                <Name v="FPUTEA21"/>
+            </Node>
+            <Node>
+                <Name v="FPUTEA21"/>
+            </Node>
+            <Node>
+                <Name v="FPUTEA21"/>
+            </Node>
+            <Node>
+                <Name v="FPUTEA21"/>
+            </Node>
+            <Node>
+                <Name v="FQ.ECL21"/>
+            </Node>
+            <Node>
+                <Name v="FQ.ECL21"/>
+            </Node>
+            <Node>
+                <Name v="FQ.ECL21"/>
+            </Node>
+            <Node>
+                <Name v="FQ.ECL21"/>
+            </Node>
+            <Node>
+                <Name v="FQ.SEI21"/>
+            </Node>
+            <Node>
+                <Name v="FQ.SEI21"/>
+            </Node>
+            <Node>
+                <Name v="FQ.SEI21"/>
+            </Node>
+            <Node>
+                <Name v="FQ.SEI21"/>
+            </Node>
+            <Node>
+                <Name v="FRABAT21"/>
+            </Node>
+            <Node>
+                <Name v="FRABAT21"/>
+            </Node>
+            <Node>
+                <Name v="FRABAT21"/>
+            </Node>
+            <Node>
+                <Name v="FRABAT21"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS22"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS22"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS26"/>
+            </Node>
+            <Node>
+                <Name v="FGENIS26"/>
+            </Node>
+            <Node>
+                <Name v="FSONNE21"/>
+            </Node>
+            <Node>
+                <Name v="FSONNE21"/>
+            </Node>
+            <Node>
+                <Name v="FSONNE21"/>
+            </Node>
+            <Node>
+                <Name v="FSONNE21"/>
+            </Node>
+            <Node>
+                <Name v="FSSAL712"/>
+            </Node>
+            <Node>
+                <Name v="FSSAL712"/>
+            </Node>
+            <Node>
+                <Name v="FSSAL712"/>
+            </Node>
+            <Node>
+                <Name v="FSSAL712"/>
+            </Node>
+            <Node>
+                <Name v="FSSAU521"/>
+            </Node>
+            <Node>
+                <Name v="FSSAU521"/>
+            </Node>
+            <Node>
+                <Name v="FSSAU521"/>
+            </Node>
+            <Node>
+                <Name v="FSSAU521"/>
+            </Node>
+            <Node>
+                <Name v="FSSCES21"/>
+            </Node>
+            <Node>
+                <Name v="FSSCES21"/>
+            </Node>
+            <Node>
+                <Name v="FSSCES21"/>
+            </Node>
+            <Node>
+                <Name v="FSSCES21"/>
+            </Node>
+            <Node>
+                <Name v="FSSEA211"/>
+            </Node>
+            <Node>
+                <Name v="FSSEA211"/>
+            </Node>
+            <Node>
+                <Name v="FSSEA211"/>
+            </Node>
+            <Node>
+                <Name v="FSSEA211"/>
+            </Node>
+            <Node>
+                <Name v="FSSEST21"/>
+            </Node>
+            <Node>
+                <Name v="FSSEST21"/>
+            </Node>
+            <Node>
+                <Name v="FSSEST21"/>
+            </Node>
+            <Node>
+                <Name v="FSSEST21"/>
+            </Node>
+            <Node>
+                <Name v="FSSFLO21"/>
+            </Node>
+            <Node>
+                <Name v="FSSFLO21"/>
+            </Node>
+            <Node>
+                <Name v="FSSFLO21"/>
+            </Node>
+            <Node>
+                <Name v="FSSFLO21"/>
+            </Node>
+            <Node>
+                <Name v="FSSJUL21"/>
+            </Node>
+            <Node>
+                <Name v="FSSJUL21"/>
+            </Node>
+            <Node>
+                <Name v="FSSJUL21"/>
+            </Node>
+            <Node>
+                <Name v="FSSJUL21"/>
+            </Node>
+            <Node>
+                <Name v="FSSMR 21"/>
+            </Node>
+            <Node>
+                <Name v="FSSMR 21"/>
+            </Node>
+            <Node>
+                <Name v="FSSMR 21"/>
+            </Node>
+            <Node>
+                <Name v="FSSMR 21"/>
+            </Node>
+            <Node>
+                <Name v="FSSMR 22"/>
+            </Node>
+            <Node>
+                <Name v="FSSMR 22"/>
+            </Node>
+            <Node>
+                <Name v="FSSMR 22"/>
+            </Node>
+            <Node>
+                <Name v="FSSMR 22"/>
+            </Node>
+            <Node>
+                <Name v="FTHIOT21"/>
+            </Node>
+            <Node>
+                <Name v="FTHIOT21"/>
+            </Node>
+            <Node>
+                <Name v="FTHIOT21"/>
+            </Node>
+            <Node>
+                <Name v="FTHIOT21"/>
+            </Node>
+            <Node>
+                <Name v="FTOU.C22"/>
+            </Node>
+            <Node>
+                <Name v="FTOU.C22"/>
+            </Node>
+            <Node>
+                <Name v="FTOU.C22"/>
+            </Node>
+            <Node>
+                <Name v="FTOU.C22"/>
+            </Node>
+            <Node>
+                <Name v="FTRICA21"/>
+            </Node>
+            <Node>
+                <Name v="FTRICA21"/>
+            </Node>
+            <Node>
+                <Name v="FTRICA21"/>
+            </Node>
+            <Node>
+                <Name v="FTRICA21"/>
+            </Node>
+            <Node>
+                <Name v="FTRICA24"/>
+            </Node>
+            <Node>
+                <Name v="FTRICA24"/>
+            </Node>
+            <Node>
+                <Name v="FTRICA24"/>
+            </Node>
+            <Node>
+                <Name v="FTRICA24"/>
+            </Node>
+            <Node>
+                <Name v="FV.BEL21"/>
+            </Node>
+            <Node>
+                <Name v="FV.BEL21"/>
+            </Node>
+            <Node>
+                <Name v="FV.BEL21"/>
+            </Node>
+            <Node>
+                <Name v="FV.BEL21"/>
+            </Node>
+            <Node>
+                <Name v="FV.GEO21"/>
+            </Node>
+            <Node>
+                <Name v="FV.GEO21"/>
+            </Node>
+            <Node>
+                <Name v="FV.GEO21"/>
+            </Node>
+            <Node>
+                <Name v="FV.GEO21"/>
+            </Node>
+            <Node>
+                <Name v="FV.GEO24"/>
+            </Node>
+            <Node>
+                <Name v="FV.GEO24"/>
+            </Node>
+            <Node>
+                <Name v="FV.GEO24"/>
+            </Node>
+            <Node>
+                <Name v="FV.SEP21"/>
+            </Node>
+            <Node>
+                <Name v="FV.SEP21"/>
+            </Node>
+            <Node>
+                <Name v="FV.SEP21"/>
+            </Node>
+            <Node>
+                <Name v="FV.SEP21"/>
+            </Node>
+            <Node>
+                <Name v="FVALDE21"/>
+            </Node>
+            <Node>
+                <Name v="FVALDE21"/>
+            </Node>
+            <Node>
+                <Name v="FVALDE21"/>
+            </Node>
+            <Node>
+                <Name v="FVALDE21"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN24"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN24"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN24"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN24"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN25"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN25"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN25"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN25"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN23"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN23"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN23"/>
+            </Node>
+            <Node>
+                <Name v="FVALEN23"/>
+            </Node>
+            <Node>
+                <Name v="FVAROI21"/>
+            </Node>
+            <Node>
+                <Name v="FVAROI21"/>
+            </Node>
+            <Node>
+                <Name v="FVAROI21"/>
+            </Node>
+            <Node>
+                <Name v="FVAROI21"/>
+            </Node>
+            <Node>
+                <Name v="FVENDI21"/>
+            </Node>
+            <Node>
+                <Name v="FVENDI21"/>
+            </Node>
+            <Node>
+                <Name v="FVENDI21"/>
+            </Node>
+            <Node>
+                <Name v="FVENDI21"/>
+            </Node>
+            <Node>
+                <Name v="FVENIS21"/>
+            </Node>
+            <Node>
+                <Name v="FVENIS21"/>
+            </Node>
+            <Node>
+                <Name v="FVENIS21"/>
+            </Node>
+            <Node>
+                <Name v="FVENIS21"/>
+            </Node>
+            <Node>
+                <Name v="FVERIN21"/>
+            </Node>
+            <Node>
+                <Name v="FVERIN21"/>
+            </Node>
+            <Node>
+                <Name v="FVERIN21"/>
+            </Node>
+            <Node>
+                <Name v="FVERIN21"/>
+            </Node>
+            <Node>
+                <Name v="FVICOG21"/>
+            </Node>
+            <Node>
+                <Name v="FVICOG21"/>
+            </Node>
+            <Node>
+                <Name v="FVICOG21"/>
+            </Node>
+            <Node>
+                <Name v="FVICOG21"/>
+            </Node>
+            <Node>
+                <Name v="FVIGNE21"/>
+            </Node>
+            <Node>
+                <Name v="FVIGNE21"/>
+            </Node>
+            <Node>
+                <Name v="FVIGNE21"/>
+            </Node>
+            <Node>
+                <Name v="FVIGNE21"/>
+            </Node>
+            <Node>
+                <Name v="FVIT.N21"/>
+            </Node>
+            <Node>
+                <Name v="FVIT.N21"/>
+            </Node>
+            <Node>
+                <Name v="FVIT.N21"/>
+            </Node>
+            <Node>
+                <Name v="FVIT.N21"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH73"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH73"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH73"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH73"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH74"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH74"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH74"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH74"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH71"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH71"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH71"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH71"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH72"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH72"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH72"/>
+            </Node>
+            <Node>
+                <Name v="FVOGEH72"/>
+            </Node>
+            <Node>
+                <Name v="FWATTR21"/>
+            </Node>
+            <Node>
+                <Name v="FWATTR21"/>
+            </Node>
+            <Node>
+                <Name v="FWATTR21"/>
+            </Node>
+            <Node>
+                <Name v="FWATTR21"/>
+            </Node>
+            <Node>
+                <Name v="FWATTR22"/>
+            </Node>
+            <Node>
+                <Name v="FWATTR22"/>
+            </Node>
+            <Node>
+                <Name v="FWATTR22"/>
+            </Node>
+            <Node>
+                <Name v="FWATTR22"/>
+            </Node>
+            <Node>
+                <Name v="FC.RHO21"/>
+            </Node>
+            <Node>
+                <Name v="FC.RHO21"/>
+            </Node>
+            <Node>
+                <Name v="FC.RHO21"/>
+            </Node>
+            <Node>
+                <Name v="FC.RHO21"/>
+            </Node>
+            <Node>
+                <Name v="FCAEN 21"/>
+            </Node>
+            <Node>
+                <Name v="FCAEN 21"/>
+            </Node>
+            <Node>
+                <Name v="FCAEN 21"/>
+            </Node>
+            <Node>
+                <Name v="FCAEN 21"/>
+            </Node>
+            <Node>
+                <Name v="FCANTE22"/>
+            </Node>
+            <Node>
+                <Name v="FCANTE22"/>
+            </Node>
+            <Node>
+                <Name v="FCANTE22"/>
+            </Node>
+            <Node>
+                <Name v="FCANTE22"/>
+            </Node>
+            <Node>
+                <Name v="FARGOE21"/>
+            </Node>
+            <Node>
+                <Name v="FARGOE21"/>
+            </Node>
+            <Node>
+                <Name v="FARGOE21"/>
+            </Node>
+            <Node>
+                <Name v="FARGOE21"/>
+            </Node>
+            <Node>
+                <Name v="FB.CAR21"/>
+            </Node>
+            <Node>
+                <Name v="FB.CAR21"/>
+            </Node>
+            <Node>
+                <Name v="FB.CAR21"/>
+            </Node>
+            <Node>
+                <Name v="FB.CAR21"/>
+            </Node>
+            <Node>
+                <Name v="FCERGY21"/>
+            </Node>
+            <Node>
+                <Name v="FCERGY21"/>
+            </Node>
+            <Node>
+                <Name v="FCERGY21"/>
+            </Node>
+            <Node>
+                <Name v="FCERGY21"/>
+            </Node>
+            <Node>
+                <Name v="FCERGY23"/>
+            </Node>
+            <Node>
+                <Name v="FCERGY23"/>
+            </Node>
+            <Node>
+                <Name v="FCERGY23"/>
+            </Node>
+            <Node>
+                <Name v="FCERGY23"/>
+            </Node>
+            <Node>
+                <Name v="FGAUDI24"/>
+            </Node>
+            <Node>
+                <Name v="FGAUDI24"/>
+            </Node>
+            <Node>
+                <Name v="FGAUDI24"/>
+            </Node>
+            <Node>
+                <Name v="FGAUDI24"/>
+            </Node>
+            <Node>
+                <Name v="FGAUDI23"/>
+            </Node>
+            <Node>
+                <Name v="FGAUDI23"/>
+            </Node>
+            <Node>
+                <Name v="FGAUDI23"/>
+            </Node>
+            <Node>
+                <Name v="FGAUDI23"/>
+            </Node>
+            <Node>
+                <Name v="FSAUS521"/>
+            </Node>
+            <Node>
+                <Name v="FSAUS521"/>
+            </Node>
+            <Node>
+                <Name v="FSAUS521"/>
+            </Node>
+            <Node>
+                <Name v="FSAUS521"/>
+            </Node>
+            <Node>
+                <Name v="FCRENE22"/>
+            </Node>
+            <Node>
+                <Name v="FCRENE22"/>
+            </Node>
+            <Node>
+                <Name v="FCRENE22"/>
+            </Node>
+            <Node>
+                <Name v="FCRENE22"/>
+            </Node>
+            <Node>
+                <Name v="FCRENE21"/>
+            </Node>
+            <Node>
+                <Name v="FCRENE21"/>
+            </Node>
+            <Node>
+                <Name v="FCRENE21"/>
+            </Node>
+            <Node>
+                <Name v="FCRENE21"/>
+            </Node>
+            <Node>
+                <Name v="FA.COM21"/>
+            </Node>
+            <Node>
+                <Name v="FA.COM21"/>
+            </Node>
+            <Node>
+                <Name v="FA.COM21"/>
+            </Node>
+            <Node>
+                <Name v="FA.COM21"/>
+            </Node>
+            <Node>
+                <Name v="FA.DOU21"/>
+            </Node>
+            <Node>
+                <Name v="FA.DOU21"/>
+            </Node>
+            <Node>
+                <Name v="FA.DOU21"/>
+            </Node>
+            <Node>
+                <Name v="FA.DOU21"/>
+            </Node>
+            <Node>
+                <Name v="FA.MOU22"/>
+            </Node>
+            <Node>
+                <Name v="FA.MOU22"/>
+            </Node>
+            <Node>
+                <Name v="FA.MOU22"/>
+            </Node>
+            <Node>
+                <Name v="FA.MOU22"/>
+            </Node>
+            <Node>
+                <Name v="FAIRVA21"/>
+            </Node>
+            <Node>
+                <Name v="FAIRVA21"/>
+            </Node>
+            <Node>
+                <Name v="FAIRVA21"/>
+            </Node>
+            <Node>
+                <Name v="FAIRVA21"/>
+            </Node>
+            <Node>
+                <Name v="FALESI21"/>
+            </Node>
+            <Node>
+                <Name v="FALESI21"/>
+            </Node>
+            <Node>
+                <Name v="FALESI21"/>
+            </Node>
+            <Node>
+                <Name v="FALESI21"/>
+            </Node>
+            <Node>
+                <Name v="FALOUE21"/>
+            </Node>
+            <Node>
+                <Name v="FALOUE21"/>
+            </Node>
+            <Node>
+                <Name v="FALOUE21"/>
+            </Node>
+            <Node>
+                <Name v="FALOUE21"/>
+            </Node>
+            <Node>
+                <Name v="FAMARG21"/>
+            </Node>
+            <Node>
+                <Name v="FAMARG21"/>
+            </Node>
+            <Node>
+                <Name v="FAMARG21"/>
+            </Node>
+            <Node>
+                <Name v="FAMARG21"/>
+            </Node>
+            <Node>
+                <Name v="FAMFAR22"/>
+            </Node>
+            <Node>
+                <Name v="FAMFAR22"/>
+            </Node>
+            <Node>
+                <Name v="FAMFAR22"/>
+            </Node>
+            <Node>
+                <Name v="FAMFAR22"/>
+            </Node>
+            <Node>
+                <Name v="FM.PON21"/>
+            </Node>
+            <Node>
+                <Name v="FM.PON21"/>
+            </Node>
+            <Node>
+                <Name v="FM.PON21"/>
+            </Node>
+            <Node>
+                <Name v="FM.PON21"/>
+            </Node>
+            <Node>
+                <Name v="FMALA621"/>
+            </Node>
+            <Node>
+                <Name v="FMALA621"/>
+            </Node>
+            <Node>
+                <Name v="FMALA621"/>
+            </Node>
+            <Node>
+                <Name v="FMALA621"/>
+            </Node>
+            <Node>
+                <Name v="FMALEC21"/>
+            </Node>
+            <Node>
+                <Name v="FMALEC21"/>
+            </Node>
+            <Node>
+                <Name v="FMALEC21"/>
+            </Node>
+            <Node>
+                <Name v="FMALEC21"/>
+            </Node>
+            <Node>
+                <Name v="FMALGO24"/>
+            </Node>
+            <Node>
+                <Name v="FMALGO24"/>
+            </Node>
+            <Node>
+                <Name v="FMALGO23"/>
+            </Node>
+            <Node>
+                <Name v="FMALGO23"/>
+            </Node>
+            <Node>
+                <Name v="FMALLE21"/>
+            </Node>
+            <Node>
+                <Name v="FMALLE21"/>
+            </Node>
+            <Node>
+                <Name v="FMALLE21"/>
+            </Node>
+            <Node>
+                <Name v="FMALLE21"/>
+            </Node>
+            <Node>
+                <Name v="FMANOS21"/>
+            </Node>
+            <Node>
+                <Name v="FMANOS21"/>
+            </Node>
+            <Node>
+                <Name v="FMANOS21"/>
+            </Node>
+            <Node>
+                <Name v="FMANOS21"/>
+            </Node>
+            <Node>
+                <Name v="FMAROL21"/>
+            </Node>
+            <Node>
+                <Name v="FMAROL21"/>
+            </Node>
+            <Node>
+                <Name v="FMAROL21"/>
+            </Node>
+            <Node>
+                <Name v="FMAROL21"/>
+            </Node>
+            <Node>
+                <Name v="FMAUBE21"/>
+            </Node>
+            <Node>
+                <Name v="FMAUBE21"/>
+            </Node>
+            <Node>
+                <Name v="FMAUBE21"/>
+            </Node>
+            <Node>
+                <Name v="FMAUBE21"/>
+            </Node>
+            <Node>
+                <Name v="FMAZAR21"/>
+            </Node>
+            <Node>
+                <Name v="FMAZAR21"/>
+            </Node>
+            <Node>
+                <Name v="FMAZAR21"/>
+            </Node>
+            <Node>
+                <Name v="FMAZAR21"/>
+            </Node>
+            <Node>
+                <Name v="FMEYZI21"/>
+            </Node>
+            <Node>
+                <Name v="FMEYZI21"/>
+            </Node>
+            <Node>
+                <Name v="FMEYZI21"/>
+            </Node>
+            <Node>
+                <Name v="FMEYZI21"/>
+            </Node>
+            <Node>
+                <Name v="FMIOLL21"/>
+            </Node>
+            <Node>
+                <Name v="FMIOLL21"/>
+            </Node>
+            <Node>
+                <Name v="FMIOLL21"/>
+            </Node>
+            <Node>
+                <Name v="FMIOLL21"/>
+            </Node>
+            <Node>
+                <Name v="FMOIMO21"/>
+            </Node>
+            <Node>
+                <Name v="FMOIMO21"/>
+            </Node>
+            <Node>
+                <Name v="FMOIMO21"/>
+            </Node>
+            <Node>
+                <Name v="FMOIMO21"/>
+            </Node>
+            <Node>
+                <Name v="FMORB521"/>
+            </Node>
+            <Node>
+                <Name v="FMORB521"/>
+            </Node>
+            <Node>
+                <Name v="FMORB521"/>
+            </Node>
+            <Node>
+                <Name v="FMORB521"/>
+            </Node>
+            <Node>
+                <Name v="FMORB522"/>
+            </Node>
+            <Node>
+                <Name v="FMORB522"/>
+            </Node>
+            <Node>
+                <Name v="FMORB522"/>
+            </Node>
+            <Node>
+                <Name v="FMORB522"/>
+            </Node>
+            <Node>
+                <Name v="FM.LIL22"/>
+            </Node>
+            <Node>
+                <Name v="FM.LIL22"/>
+            </Node>
+            <Node>
+                <Name v="FM.LIL22"/>
+            </Node>
+            <Node>
+                <Name v="FM.LIL22"/>
+            </Node>
+            <Node>
+                <Name v="FM.LIL21"/>
+            </Node>
+            <Node>
+                <Name v="FM.LIL21"/>
+            </Node>
+            <Node>
+                <Name v="FM.LIL21"/>
+            </Node>
+            <Node>
+                <Name v="FM.LIL21"/>
+            </Node>
+            <Node>
+                <Name v="FM.MA521"/>
+            </Node>
+            <Node>
+                <Name v="FM.MA521"/>
+            </Node>
+            <Node>
+                <Name v="FM.MA521"/>
+            </Node>
+            <Node>
+                <Name v="FM.MA521"/>
+            </Node>
+            <Node>
+                <Name v="FMTEZI12"/>
+            </Node>
+            <Node>
+                <Name v="FMTEZI12"/>
+            </Node>
+            <Node>
+                <Name v="FMTEZI11"/>
+            </Node>
+            <Node>
+                <Name v="FMTEZI11"/>
+            </Node>
+            <Node>
+                <Name v="FP.JER21"/>
+            </Node>
+            <Node>
+                <Name v="FP.JER21"/>
+            </Node>
+            <Node>
+                <Name v="FP.JER21"/>
+            </Node>
+            <Node>
+                <Name v="FP.JER21"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUR12"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUR12"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUR12"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUR12"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUR11"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUR11"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUR11"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUR11"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUX11"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUX11"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUX11"/>
+            </Node>
+            <Node>
+                <Name v="FD.BUX11"/>
+            </Node>
+            <Node>
+                <Name v="FD.FRA21"/>
+            </Node>
+            <Node>
+                <Name v="FD.FRA21"/>
+            </Node>
+            <Node>
+                <Name v="FD.FRA21"/>
+            </Node>
+            <Node>
+                <Name v="FD.FRA21"/>
+            </Node>
+            <Node>
+                <Name v="FDECIN21"/>
+            </Node>
+            <Node>
+                <Name v="FDECIN21"/>
+            </Node>
+            <Node>
+                <Name v="FDECIN21"/>
+            </Node>
+            <Node>
+                <Name v="FDECIN21"/>
+            </Node>
+            <Node>
+                <Name v="FDOULO21"/>
+            </Node>
+            <Node>
+                <Name v="FDOULO21"/>
+            </Node>
+            <Node>
+                <Name v="FDOULO21"/>
+            </Node>
+            <Node>
+                <Name v="FDOULO21"/>
+            </Node>
+            <Node>
+                <Name v="FDOUVR21"/>
+            </Node>
+            <Node>
+                <Name v="FDOUVR21"/>
+            </Node>
+            <Node>
+                <Name v="FDOUVR21"/>
+            </Node>
+            <Node>
+                <Name v="FDOUVR21"/>
+            </Node>
+            <Node>
+                <Name v="FDRONN21"/>
+            </Node>
+            <Node>
+                <Name v="FDRONN21"/>
+            </Node>
+            <Node>
+                <Name v="FDRONN21"/>
+            </Node>
+            <Node>
+                <Name v="FDRONN21"/>
+            </Node>
+            <Node>
+                <Name v="FDURAN21"/>
+            </Node>
+            <Node>
+                <Name v="FDURAN21"/>
+            </Node>
+            <Node>
+                <Name v="FDURAN21"/>
+            </Node>
+            <Node>
+                <Name v="FDURAN21"/>
+            </Node>
+            <Node>
+                <Name v="FE.BOT21"/>
+            </Node>
+            <Node>
+                <Name v="FE.BOT21"/>
+            </Node>
+            <Node>
+                <Name v="FE.BOT21"/>
+            </Node>
+            <Node>
+                <Name v="FE.BOT21"/>
+            </Node>
+            <Node>
+                <Name v="FE.RHO21"/>
+            </Node>
+            <Node>
+                <Name v="FE.RHO21"/>
+            </Node>
+            <Node>
+                <Name v="FE.RHO21"/>
+            </Node>
+            <Node>
+                <Name v="FE.RHO21"/>
+            </Node>
+            <Node>
+                <Name v="FEPIZO21"/>
+            </Node>
+            <Node>
+                <Name v="FEPIZO21"/>
+            </Node>
+            <Node>
+                <Name v="FEPIZO21"/>
+            </Node>
+            <Node>
+                <Name v="FEPIZO21"/>
+            </Node>
+            <Node>
+                <Name v="FESPI521"/>
+            </Node>
+            <Node>
+                <Name v="FESPI521"/>
+            </Node>
+            <Node>
+                <Name v="FESPI521"/>
+            </Node>
+            <Node>
+                <Name v="FESPI521"/>
+            </Node>
+            <Node>
+                <Name v="FFAVAR21"/>
+            </Node>
+            <Node>
+                <Name v="FFAVAR21"/>
+            </Node>
+            <Node>
+                <Name v="FFAVAR21"/>
+            </Node>
+            <Node>
+                <Name v="FFAVAR21"/>
+            </Node>
+            <Node>
+                <Name v="FFESSH71"/>
+            </Node>
+            <Node>
+                <Name v="FFESSH71"/>
+            </Node>
+            <Node>
+                <Name v="FFESSH71"/>
+            </Node>
+            <Node>
+                <Name v="FFESSH71"/>
+            </Node>
+            <Node>
+                <Name v="FCTAUR21"/>
+            </Node>
+            <Node>
+                <Name v="FCTAUR21"/>
+            </Node>
+            <Node>
+                <Name v="FCTAUR21"/>
+            </Node>
+            <Node>
+                <Name v="FCTAUR21"/>
+            </Node>
+            <Node>
+                <Name v="FCURBA21"/>
+            </Node>
+            <Node>
+                <Name v="FCURBA21"/>
+            </Node>
+            <Node>
+                <Name v="FCURBA21"/>
+            </Node>
+            <Node>
+                <Name v="FCURBA21"/>
+            </Node>
+            <Node>
+                <Name v="FCYCOF21"/>
+            </Node>
+            <Node>
+                <Name v="FCYCOF21"/>
+            </Node>
+            <Node>
+                <Name v="FCYCOF21"/>
+            </Node>
+            <Node>
+                <Name v="FCYCOF21"/>
+            </Node>
+            <Node>
+                <Name v="FCZNEU21"/>
+            </Node>
+            <Node>
+                <Name v="FCZNEU21"/>
+            </Node>
+            <Node>
+                <Name v="FCZNEU21"/>
+            </Node>
+            <Node>
+                <Name v="FCZNEU21"/>
+            </Node>
+            <Node>
+                <Name v="FBOLL521"/>
+            </Node>
+            <Node>
+                <Name v="FBOLL521"/>
+            </Node>
+            <Node>
+                <Name v="FBOLL521"/>
+            </Node>
+            <Node>
+                <Name v="FBOLL521"/>
+            </Node>
+            <Node>
+                <Name v="FBOR.C21"/>
+            </Node>
+            <Node>
+                <Name v="FBOR.C21"/>
+            </Node>
+            <Node>
+                <Name v="FBOR.C21"/>
+            </Node>
+            <Node>
+                <Name v="FBOR.C21"/>
+            </Node>
+            <Node>
+                <Name v="FBOSCH21"/>
+            </Node>
+            <Node>
+                <Name v="FBOSCH21"/>
+            </Node>
+            <Node>
+                <Name v="FBOSCH21"/>
+            </Node>
+            <Node>
+                <Name v="FBOSCH21"/>
+            </Node>
+            <Node>
+                <Name v="FBOUCH11"/>
+            </Node>
+            <Node>
+                <Name v="FBOUCH11"/>
+            </Node>
+            <Node>
+                <Name v="FBOUCH11"/>
+            </Node>
+            <Node>
+                <Name v="FBOUCH11"/>
+            </Node>
+            <Node>
+                <Name v="FBOUSC21"/>
+            </Node>
+            <Node>
+                <Name v="FBOUSC21"/>
+            </Node>
+            <Node>
+                <Name v="FBOUSC21"/>
+            </Node>
+            <Node>
+                <Name v="FBOUSC21"/>
+            </Node>
+            <Node>
+                <Name v="FBREAU21"/>
+            </Node>
+            <Node>
+                <Name v="FBREAU21"/>
+            </Node>
+            <Node>
+                <Name v="FBREAU21"/>
+            </Node>
+            <Node>
+                <Name v="FBREAU21"/>
+            </Node>
+            <Node>
+                <Name v="FBRENS71"/>
+            </Node>
+            <Node>
+                <Name v="FBRENS71"/>
+            </Node>
+            <Node>
+                <Name v="FBRENS71"/>
+            </Node>
+            <Node>
+                <Name v="FBRENS71"/>
+            </Node>
+            <Node>
+                <Name v="FBRIO621"/>
+            </Node>
+            <Node>
+                <Name v="FBRIO621"/>
+            </Node>
+            <Node>
+                <Name v="FBRIO621"/>
+            </Node>
+            <Node>
+                <Name v="FBRIO621"/>
+            </Node>
+            <Node>
+                <Name v="FBRIZE21"/>
+            </Node>
+            <Node>
+                <Name v="FBRIZE21"/>
+            </Node>
+            <Node>
+                <Name v="FBRIZE21"/>
+            </Node>
+            <Node>
+                <Name v="FBRIZE21"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY13"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY13"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY13"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY13"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY12"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY12"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY12"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY12"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY11"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY11"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY11"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY11"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY14"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY14"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY14"/>
+            </Node>
+            <Node>
+                <Name v="FBUGEY14"/>
+            </Node>
+            <Node>
+                <Name v="FBZGET21"/>
+            </Node>
+            <Node>
+                <Name v="FBZGET21"/>
+            </Node>
+            <Node>
+                <Name v="FBZGET21"/>
+            </Node>
+            <Node>
+                <Name v="FBZGET21"/>
+            </Node>
+            <Node>
+                <Name v="FC.GOM21"/>
+            </Node>
+            <Node>
+                <Name v="FC.GOM21"/>
+            </Node>
+            <Node>
+                <Name v="FC.GOM21"/>
+            </Node>
+            <Node>
+                <Name v="FC.GOM21"/>
+            </Node>
+            <Node>
+                <Name v="FC.MER21"/>
+            </Node>
+            <Node>
+                <Name v="FC.MER21"/>
+            </Node>
+            <Node>
+                <Name v="FC.MER21"/>
+            </Node>
+            <Node>
+                <Name v="FC.MER21"/>
+            </Node>
+            <Node>
+                <Name v="FC.REG21"/>
+            </Node>
+            <Node>
+                <Name v="FC.REG21"/>
+            </Node>
+            <Node>
+                <Name v="FC.REG21"/>
+            </Node>
+            <Node>
+                <Name v="FC.REG21"/>
+            </Node>
+            <Node>
+                <Name v="FSOLEI21"/>
+            </Node>
+            <Node>
+                <Name v="FSOLEI21"/>
+            </Node>
+            <Node>
+                <Name v="FSOLEI21"/>
+            </Node>
+            <Node>
+                <Name v="FSOLEI21"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE21"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE21"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE21"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE21"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE22"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE22"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE22"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE22"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE23"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE23"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE23"/>
+            </Node>
+            <Node>
+                <Name v="FRANCE23"/>
+            </Node>
+            <Node>
+                <Name v="FRANVI21"/>
+            </Node>
+            <Node>
+                <Name v="FRANVI21"/>
+            </Node>
+            <Node>
+                <Name v="FRANVI21"/>
+            </Node>
+            <Node>
+                <Name v="FRANVI21"/>
+            </Node>
+            <Node>
+                <Name v="FRECOU21"/>
+            </Node>
+            <Node>
+                <Name v="FRECOU21"/>
+            </Node>
+            <Node>
+                <Name v="FRECOU21"/>
+            </Node>
+            <Node>
+                <Name v="FRECOU21"/>
+            </Node>
+            <Node>
+                <Name v="FRHINH72"/>
+            </Node>
+            <Node>
+                <Name v="FRHINH72"/>
+            </Node>
+            <Node>
+                <Name v="FRHINH72"/>
+            </Node>
+            <Node>
+                <Name v="FRHINH72"/>
+            </Node>
+            <Node>
+                <Name v="FRHINH71"/>
+            </Node>
+            <Node>
+                <Name v="FRHINH71"/>
+            </Node>
+            <Node>
+                <Name v="FRHINH71"/>
+            </Node>
+            <Node>
+                <Name v="FRHINH71"/>
+            </Node>
+            <Node>
+                <Name v="FRICH521"/>
+            </Node>
+            <Node>
+                <Name v="FRICH521"/>
+            </Node>
+            <Node>
+                <Name v="FRICH521"/>
+            </Node>
+            <Node>
+                <Name v="FRICH521"/>
+            </Node>
+            <Node>
+                <Name v="FRICHA22"/>
+            </Node>
+            <Node>
+                <Name v="FRICHA22"/>
+            </Node>
+            <Node>
+                <Name v="FRICHA22"/>
+            </Node>
+            <Node>
+                <Name v="FRICHA22"/>
+            </Node>
+            <Node>
+                <Name v="FRIGOT21"/>
+            </Node>
+            <Node>
+                <Name v="FRIGOT21"/>
+            </Node>
+            <Node>
+                <Name v="FRIGOT21"/>
+            </Node>
+            <Node>
+                <Name v="FRIGOT21"/>
+            </Node>
+            <Node>
+                <Name v="FRISSO21"/>
+            </Node>
+            <Node>
+                <Name v="FRISSO21"/>
+            </Node>
+            <Node>
+                <Name v="FRISSO21"/>
+            </Node>
+            <Node>
+                <Name v="FRISSO21"/>
+            </Node>
+            <Node>
+                <Name v="FRIVIE21"/>
+            </Node>
+            <Node>
+                <Name v="FRIVIE21"/>
+            </Node>
+            <Node>
+                <Name v="FRIVIE21"/>
+            </Node>
+            <Node>
+                <Name v="FRIVIE21"/>
+            </Node>
+            <Node>
+                <Name v="FROBI522"/>
+            </Node>
+            <Node>
+                <Name v="FROBI522"/>
+            </Node>
+            <Node>
+                <Name v="FROBI522"/>
+            </Node>
+            <Node>
+                <Name v="FROBI522"/>
+            </Node>
+            <Node>
+                <Name v="FAMFAR21"/>
+            </Node>
+            <Node>
+                <Name v="FAMFAR21"/>
+            </Node>
+            <Node>
+                <Name v="FAMFAR21"/>
+            </Node>
+            <Node>
+                <Name v="FAMFAR21"/>
+            </Node>
+            <Node>
+                <Name v="FCOCHE71"/>
+            </Node>
+            <Node>
+                <Name v="FCOCHE71"/>
+            </Node>
+            <Node>
+                <Name v="FCOCHE71"/>
+            </Node>
+            <Node>
+                <Name v="FCOCHE71"/>
+            </Node>
+            <Node>
+                <Name v="FCOLON21"/>
+            </Node>
+            <Node>
+                <Name v="FCOLON21"/>
+            </Node>
+            <Node>
+                <Name v="FCOLON21"/>
+            </Node>
+            <Node>
+                <Name v="FCOLON21"/>
+            </Node>
+            <Node>
+                <Name v="FCONCE21"/>
+            </Node>
+            <Node>
+                <Name v="FCONCE21"/>
+            </Node>
+            <Node>
+                <Name v="FCONCE21"/>
+            </Node>
+            <Node>
+                <Name v="FCONCE21"/>
+            </Node>
+            <Node>
+                <Name v="FCONF521"/>
+            </Node>
+            <Node>
+                <Name v="FCONF521"/>
+            </Node>
+            <Node>
+                <Name v="FCONF521"/>
+            </Node>
+            <Node>
+                <Name v="FCONF521"/>
+            </Node>
+            <Node>
+                <Name v="FCOQU522"/>
+            </Node>
+            <Node>
+                <Name v="FCOQU522"/>
+            </Node>
+            <Node>
+                <Name v="FCOQU522"/>
+            </Node>
+            <Node>
+                <Name v="FCOQU522"/>
+            </Node>
+            <Node>
+                <Name v="FCORDE21"/>
+            </Node>
+            <Node>
+                <Name v="FCORDE21"/>
+            </Node>
+            <Node>
+                <Name v="FCORDE21"/>
+            </Node>
+            <Node>
+                <Name v="FCORDE21"/>
+            </Node>
+            <Node>
+                <Name v="FCORME23"/>
+            </Node>
+            <Node>
+                <Name v="FCORME23"/>
+            </Node>
+            <Node>
+                <Name v="FCORME23"/>
+            </Node>
+            <Node>
+                <Name v="FCORME23"/>
+            </Node>
+            <Node>
+                <Name v="FCOSSI21"/>
+            </Node>
+            <Node>
+                <Name v="FCOSSI21"/>
+            </Node>
+            <Node>
+                <Name v="FCOSSI21"/>
+            </Node>
+            <Node>
+                <Name v="FCOSSI21"/>
+            </Node>
+            <Node>
+                <Name v="FCOUFF21"/>
+            </Node>
+            <Node>
+                <Name v="FCOUFF21"/>
+            </Node>
+            <Node>
+                <Name v="FCOUFF21"/>
+            </Node>
+            <Node>
+                <Name v="FCOUFF21"/>
+            </Node>
+            <Node>
+                <Name v="FCOUPV21"/>
+            </Node>
+            <Node>
+                <Name v="FCOUPV21"/>
+            </Node>
+            <Node>
+                <Name v="FCOUPV21"/>
+            </Node>
+            <Node>
+                <Name v="FCOUPV21"/>
+            </Node>
+            <Node>
+                <Name v="FCRETA21"/>
+            </Node>
+            <Node>
+                <Name v="FCRETA21"/>
+            </Node>
+            <Node>
+                <Name v="FCRETA21"/>
+            </Node>
+            <Node>
+                <Name v="FCRETA21"/>
+            </Node>
+            <Node>
+                <Name v="FCRUA512"/>
+            </Node>
+            <Node>
+                <Name v="FCRUA512"/>
+            </Node>
+            <Node>
+                <Name v="FCRUA512"/>
+            </Node>
+            <Node>
+                <Name v="FCRUA512"/>
+            </Node>
+            <Node>
+                <Name v="FCRUA514"/>
+            </Node>
+            <Node>
+                <Name v="FCRUA514"/>
+            </Node>
+            <Node>
+                <Name v="FCRUA514"/>
+            </Node>
+            <Node>
+                <Name v="FCRUA514"/>
+            </Node>
+            <Node>
+                <Name v="FSSCOG21"/>
+            </Node>
+            <Node>
+                <Name v="FSSCOG21"/>
+            </Node>
+            <Node>
+                <Name v="FCOCHE72"/>
+            </Node>
+            <Node>
+                <Name v="FCOCHE72"/>
+            </Node>
+            <Node>
+                <Name v="FAMIEN21"/>
+            </Node>
+            <Node>
+                <Name v="FAMIEN21"/>
+            </Node>
+            <Node>
+                <Name v="FAMIEN21"/>
+            </Node>
+            <Node>
+                <Name v="FAMIEN21"/>
+            </Node>
+            <Node>
+                <Name v="FAMNEV21"/>
+            </Node>
+            <Node>
+                <Name v="FAMNEV21"/>
+            </Node>
+            <Node>
+                <Name v="FAMNEV21"/>
+            </Node>
+            <Node>
+                <Name v="FAMNEV21"/>
+            </Node>
+            <Node>
+                <Name v="FANSER22"/>
+            </Node>
+            <Node>
+                <Name v="FANSER22"/>
+            </Node>
+            <Node>
+                <Name v="FANSER22"/>
+            </Node>
+            <Node>
+                <Name v="FANSER22"/>
+            </Node>
+            <Node>
+                <Name v="FANSER24"/>
+            </Node>
+            <Node>
+                <Name v="FANSER24"/>
+            </Node>
+            <Node>
+                <Name v="FANSER24"/>
+            </Node>
+            <Node>
+                <Name v="FANSER24"/>
+            </Node>
+            <Node>
+                <Name v="FANSER23"/>
+            </Node>
+            <Node>
+                <Name v="FANSER23"/>
+            </Node>
+            <Node>
+                <Name v="FANSER23"/>
+            </Node>
+            <Node>
+                <Name v="FANSER23"/>
+            </Node>
+            <Node>
+                <Name v="FANTIB21"/>
+            </Node>
+            <Node>
+                <Name v="FANTIB21"/>
+            </Node>
+            <Node>
+                <Name v="FANTIB21"/>
+            </Node>
+            <Node>
+                <Name v="FANTIB21"/>
+            </Node>
+            <Node>
+                <Name v="FARENC21"/>
+            </Node>
+            <Node>
+                <Name v="FARENC21"/>
+            </Node>
+            <Node>
+                <Name v="FARENC21"/>
+            </Node>
+            <Node>
+                <Name v="FARENC21"/>
+            </Node>
+            <Node>
+                <Name v="FARNAG21"/>
+            </Node>
+            <Node>
+                <Name v="FARNAG21"/>
+            </Node>
+            <Node>
+                <Name v="FARNAG21"/>
+            </Node>
+            <Node>
+                <Name v="FARNAG21"/>
+            </Node>
+            <Node>
+                <Name v="FAULNO21"/>
+            </Node>
+            <Node>
+                <Name v="FAULNO21"/>
+            </Node>
+            <Node>
+                <Name v="FAULNO21"/>
+            </Node>
+            <Node>
+                <Name v="FAULNO21"/>
+            </Node>
+            <Node>
+                <Name v="FAUSSO21"/>
+            </Node>
+            <Node>
+                <Name v="FAUSSO21"/>
+            </Node>
+            <Node>
+                <Name v="FAUSSO21"/>
+            </Node>
+            <Node>
+                <Name v="FAUSSO21"/>
+            </Node>
+            <Node>
+                <Name v="FAVENI21"/>
+            </Node>
+            <Node>
+                <Name v="FAVENI21"/>
+            </Node>
+            <Node>
+                <Name v="FAVENI21"/>
+            </Node>
+            <Node>
+                <Name v="FAVENI21"/>
+            </Node>
+            <Node>
+                <Name v="FAVIGN21"/>
+            </Node>
+            <Node>
+                <Name v="FAVIGN21"/>
+            </Node>
+            <Node>
+                <Name v="FAVIGN21"/>
+            </Node>
+            <Node>
+                <Name v="FAVIGN21"/>
+            </Node>
+            <Node>
+                <Name v="FB.MAI21"/>
+            </Node>
+            <Node>
+                <Name v="FB.MAI21"/>
+            </Node>
+            <Node>
+                <Name v="FB.MAI21"/>
+            </Node>
+            <Node>
+                <Name v="FB.MAI21"/>
+            </Node>
+            <Node>
+                <Name v="FB.MES21"/>
+            </Node>
+            <Node>
+                <Name v="FB.MES21"/>
+            </Node>
+            <Node>
+                <Name v="FB.MES21"/>
+            </Node>
+            <Node>
+                <Name v="FB.MES21"/>
+            </Node>
+            <Node>
+                <Name v="FB.SSB21"/>
+            </Node>
+            <Node>
+                <Name v="FB.SSB21"/>
+            </Node>
+            <Node>
+                <Name v="FB.SSB21"/>
+            </Node>
+            <Node>
+                <Name v="FB.SSB21"/>
+            </Node>
+            <Node>
+                <Name v="FB.SSB22"/>
+            </Node>
+            <Node>
+                <Name v="FB.SSB22"/>
+            </Node>
+            <Node>
+                <Name v="FB.SSB22"/>
+            </Node>
+            <Node>
+                <Name v="FB.SSB22"/>
+            </Node>
+            <Node>
+                <Name v="FS.BIS12"/>
+            </Node>
+            <Node>
+                <Name v="FS.BIS12"/>
+            </Node>
+            <Node>
+                <Name v="FS.BIS14"/>
+            </Node>
+            <Node>
+                <Name v="FS.BIS14"/>
+            </Node>
+            <Node>
+                <Name v="FS.BIS13"/>
+            </Node>
+            <Node>
+                <Name v="FS.BIS13"/>
+            </Node>
+            <Node>
+                <Name v="FREVI512"/>
+            </Node>
+            <Node>
+                <Name v="FREVI512"/>
+            </Node>
+            <Node>
+                <Name v="FREVI514"/>
+            </Node>
+            <Node>
+                <Name v="FREVI514"/>
+            </Node>
+            <Node>
+                <Name v="FBARBU21"/>
+            </Node>
+            <Node>
+                <Name v="FBARBU21"/>
+            </Node>
+            <Node>
+                <Name v="FBARBU21"/>
+            </Node>
+            <Node>
+                <Name v="FBARBU21"/>
+            </Node>
+            <Node>
+                <Name v="FBARJA21"/>
+            </Node>
+            <Node>
+                <Name v="FBARJA21"/>
+            </Node>
+            <Node>
+                <Name v="FBARJA21"/>
+            </Node>
+            <Node>
+                <Name v="FBARJA21"/>
+            </Node>
+            <Node>
+                <Name v="FBATHI11"/>
+            </Node>
+            <Node>
+                <Name v="FBATHI11"/>
+            </Node>
+            <Node>
+                <Name v="FBATHI21"/>
+            </Node>
+            <Node>
+                <Name v="FBATHI21"/>
+            </Node>
+            <Node>
+                <Name v="FBATIG21"/>
+            </Node>
+            <Node>
+                <Name v="FBATIG21"/>
+            </Node>
+            <Node>
+                <Name v="FBATIG21"/>
+            </Node>
+            <Node>
+                <Name v="FBATIG21"/>
+            </Node>
+            <Node>
+                <Name v="FBATIG22"/>
+            </Node>
+            <Node>
+                <Name v="FBATIG22"/>
+            </Node>
+            <Node>
+                <Name v="FBATIG22"/>
+            </Node>
+            <Node>
+                <Name v="FBATIG22"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA23"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA23"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA23"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA23"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA22"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA22"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA22"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA22"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA21"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA21"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA21"/>
+            </Node>
+            <Node>
+                <Name v="FBERSA21"/>
+            </Node>
+            <Node>
+                <Name v="FBERT521"/>
+            </Node>
+            <Node>
+                <Name v="FBERT521"/>
+            </Node>
+            <Node>
+                <Name v="FBERT521"/>
+            </Node>
+            <Node>
+                <Name v="FBERT521"/>
+            </Node>
+            <Node>
+                <Name v="FBEZ.E21"/>
+            </Node>
+            <Node>
+                <Name v="FBEZ.E21"/>
+            </Node>
+            <Node>
+                <Name v="FBEZ.E21"/>
+            </Node>
+            <Node>
+                <Name v="FBEZ.E21"/>
+            </Node>
+            <Node>
+                <Name v="FBLAYA14"/>
+            </Node>
+            <Node>
+                <Name v="FBLAYA14"/>
+            </Node>
+            <Node>
+                <Name v="FBLAYA14"/>
+            </Node>
+            <Node>
+                <Name v="FBLAYA14"/>
+            </Node>
+            <Node>
+                <Name v="FBLAYA11"/>
+            </Node>
+            <Node>
+                <Name v="FBLAYA11"/>
+            </Node>
+            <Node>
+                <Name v="FBLAYA11"/>
+            </Node>
+            <Node>
+                <Name v="FBLAYA11"/>
+            </Node>
+            <Node>
+                <Name v="FBLENO12"/>
+            </Node>
+            <Node>
+                <Name v="FBLENO12"/>
+            </Node>
+            <Node>
+                <Name v="FBLENO12"/>
+            </Node>
+            <Node>
+                <Name v="FBLENO12"/>
+            </Node>
+            <Node>
+                <Name v="FBLENO11"/>
+            </Node>
+            <Node>
+                <Name v="FBLENO11"/>
+            </Node>
+            <Node>
+                <Name v="FBLENO11"/>
+            </Node>
+            <Node>
+                <Name v="FBLENO11"/>
+            </Node>
+            <Node>
+                <Name v="FBLOCA21"/>
+            </Node>
+            <Node>
+                <Name v="FBLOCA21"/>
+            </Node>
+            <Node>
+                <Name v="FBLOCA21"/>
+            </Node>
+            <Node>
+                <Name v="FBLOCA21"/>
+            </Node>
+            <Node>
+                <Name v="FBOCCA23"/>
+            </Node>
+            <Node>
+                <Name v="FBOCCA23"/>
+            </Node>
+            <Node>
+                <Name v="FBOCCA23"/>
+            </Node>
+            <Node>
+                <Name v="FBOCCA23"/>
+            </Node>
+        </PropGSKBlock>
+    </TimeSeries>
+    <TimeSeries>
+        <TimeSeriesIdentification v="1"/>
+        <BusinessType v="Z02"/>
+        <Area v="10YCH-SWISSGRIDZ" codingScheme="A01"/>
+        <Name v="CH"/>
+        <TimeInterval v="2023-07-19T11:00Z/2023-07-19T12:00Z"/>
+        <ReserveGSKBlock>
+            <Node>
+                <Name v="SASPHA1A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="0"/>
+            </Node>
+            <Node>
+                <Name v="SBAERE2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-55"/>
+            </Node>
+            <Node>
+                <Name v="SBAERE2B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-55"/>
+            </Node>
+            <Node>
+                <Name v="SBAERE2C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-55"/>
+            </Node>
+            <Node>
+                <Name v="SBATIA7A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-69.5"/>
+            </Node>
+            <Node>
+                <Name v="SBATIA7B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-69.5"/>
+            </Node>
+            <Node>
+                <Name v="SBAVON2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-57"/>
+            </Node>
+            <Node>
+                <Name v="SBAVON2B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-57"/>
+            </Node>
+            <Node>
+                <Name v="SBIASC2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-64.53"/>
+            </Node>
+            <Node>
+                <Name v="SBIASC2B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-64.53"/>
+            </Node>
+            <Node>
+                <Name v="SBIASC2C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-64.53"/>
+            </Node>
+            <Node>
+                <Name v="SBIASC2D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-40.4"/>
+            </Node>
+            <Node>
+                <Name v="SBITSC2B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-97"/>
+            </Node>
+            <Node>
+                <Name v="SBITSC2C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-97"/>
+            </Node>
+            <Node>
+                <Name v="SBITSC2D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-133"/>
+            </Node>
+            <Node>
+                <Name v="SCASTA2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-50"/>
+            </Node>
+            <Node>
+                <Name v="SCASTA2B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-50"/>
+            </Node>
+            <Node>
+                <Name v="SCAVER7C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-21"/>
+            </Node>
+            <Node>
+                <Name v="SCAVER7D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-21"/>
+            </Node>
+            <Node>
+                <Name v="SCHAMO1A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-252.47"/>
+            </Node>
+            <Node>
+                <Name v="SCHAMO1B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-252.47"/>
+            </Node>
+            <Node>
+                <Name v="SCHAMO1C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-252.47"/>
+            </Node>
+            <Node>
+                <Name v="SCHAMO2E"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-64"/>
+            </Node>
+            <Node>
+                <Name v="SCHAMO2H"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-64"/>
+            </Node>
+            <Node>
+                <Name v="SFERRE2A"/>
+                <Pmin v="37.31"/>
+                <Pmax v="-60"/>
+            </Node>
+            <Node>
+                <Name v="SFERRE2C"/>
+                <Pmin v="62.18"/>
+                <Pmax v="-60"/>
+            </Node>
+            <Node>
+                <Name v="SGABI_7B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-12"/>
+            </Node>
+            <Node>
+                <Name v="SGOESC2B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="0"/>
+            </Node>
+            <Node>
+                <Name v="SGOESC2C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="0"/>
+            </Node>
+            <Node>
+                <Name v="SGONDO7B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-19"/>
+            </Node>
+            <Node>
+                <Name v="SGRIMS2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-21.42"/>
+            </Node>
+            <Node>
+                <Name v="SGRIMS2C"/>
+                <Pmin v="153.38"/>
+                <Pmax v="-58.15"/>
+            </Node>
+            <Node>
+                <Name v="SGRIMS2D"/>
+                <Pmin v="153.38"/>
+                <Pmax v="-58.15"/>
+            </Node>
+            <Node>
+                <Name v="SGRIMS2E"/>
+                <Pmin v="153.38"/>
+                <Pmax v="-58.15"/>
+            </Node>
+            <Node>
+                <Name v="SHAND17A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-25"/>
+            </Node>
+            <Node>
+                <Name v="SHAND17B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-25"/>
+            </Node>
+            <Node>
+                <Name v="SHAND27A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-34"/>
+            </Node>
+            <Node>
+                <Name v="SHAND27B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-34"/>
+            </Node>
+            <Node>
+                <Name v="SHAND27C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-34"/>
+            </Node>
+            <Node>
+                <Name v="SHAND27D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-34"/>
+            </Node>
+            <Node>
+                <Name v="SHAND27E"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-93"/>
+            </Node>
+            <Node>
+                <Name v="SHAND27F"/>
+                <Pmin v="47.00"/>
+                <Pmax v="-55"/>
+            </Node>
+            <Node>
+                <Name v="SILANZ2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-60"/>
+            </Node>
+            <Node>
+                <Name v="SINNER3B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-18.97"/>
+            </Node>
+            <Node>
+                <Name v="SINNER3C"/>
+                <Pmin v="6.97"/>
+                <Pmax v="-6.12"/>
+            </Node>
+            <Node>
+                <Name v="SINNER3D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-31.22"/>
+            </Node>
+            <Node>
+                <Name v="SINNER3F"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-31.22"/>
+            </Node>
+            <Node>
+                <Name v="SINNER3H"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-31.22"/>
+            </Node>
+            <Node>
+                <Name v="SINNER3J"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-31.22"/>
+            </Node>
+            <Node>
+                <Name v="SINNER3L"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-31.22"/>
+            </Node>
+            <Node>
+                <Name v="SINNER3M"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-93.65"/>
+            </Node>
+            <Node>
+                <Name v="SLINTH1A"/>
+                <Pmin v="250.00"/>
+                <Pmax v="-250"/>
+            </Node>
+            <Node>
+                <Name v="SLINTH1C"/>
+                <Pmin v="250.00"/>
+                <Pmax v="-250"/>
+            </Node>
+            <Node>
+                <Name v="SLINTH1D"/>
+                <Pmin v="250.00"/>
+                <Pmax v="-250"/>
+            </Node>
+            <Node>
+                <Name v="SLOEBB2A"/>
+                <Pmin v="40.28"/>
+                <Pmax v="-50"/>
+            </Node>
+            <Node>
+                <Name v="SLOEBB2B"/>
+                <Pmin v="9.72"/>
+                <Pmax v="-36"/>
+            </Node>
+            <Node>
+                <Name v="SMAPRA7A"/>
+                <Pmin v="53.00"/>
+                <Pmax v="-110"/>
+            </Node>
+            <Node>
+                <Name v="SMAPRA7B"/>
+                <Pmin v="53.00"/>
+                <Pmax v="-110"/>
+            </Node>
+            <Node>
+                <Name v="SMAPRA7C"/>
+                <Pmin v="53.00"/>
+                <Pmax v="-110"/>
+            </Node>
+            <Node>
+                <Name v="SNDDRA7A"/>
+                <Pmin v="187.20"/>
+                <Pmax v="-113.6"/>
+            </Node>
+            <Node>
+                <Name v="SNDDRA7C"/>
+                <Pmin v="187.20"/>
+                <Pmax v="-113.6"/>
+            </Node>
+            <Node>
+                <Name v="SNDDRA7D"/>
+                <Pmin v="187.20"/>
+                <Pmax v="-113.6"/>
+            </Node>
+            <Node>
+                <Name v="SNDDRA7E"/>
+                <Pmin v="187.20"/>
+                <Pmax v="-113.6"/>
+            </Node>
+            <Node>
+                <Name v="SNDDRA7F"/>
+                <Pmin v="187.20"/>
+                <Pmax v="-113.6"/>
+            </Node>
+            <Node>
+                <Name v="SOLIVO2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-49.5"/>
+            </Node>
+            <Node>
+                <Name v="SOLIVO2B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-49.5"/>
+            </Node>
+            <Node>
+                <Name v="SPECCI7A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-18.5"/>
+            </Node>
+            <Node>
+                <Name v="SPECCI7C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-18.5"/>
+            </Node>
+            <Node>
+                <Name v="SPRADE5B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-35"/>
+            </Node>
+            <Node>
+                <Name v="SPRADE5D"/>
+                <Pmin v="25.00"/>
+                <Pmax v="-25"/>
+            </Node>
+            <Node>
+                <Name v="SPRADE7A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-72"/>
+            </Node>
+            <Node>
+                <Name v="SPRADE7B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-72"/>
+            </Node>
+            <Node>
+                <Name v="SPRADE7C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-72"/>
+            </Node>
+            <Node>
+                <Name v="SPRADE7D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-72"/>
+            </Node>
+            <Node>
+                <Name v="SRIDDE2C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="0"/>
+            </Node>
+            <Node>
+                <Name v="SRIDDE2E"/>
+                <Pmin v="0.00"/>
+                <Pmax v="0"/>
+            </Node>
+            <Node>
+                <Name v="SROBIE7A"/>
+                <Pmin v="40.00"/>
+                <Pmax v="-32.3"/>
+            </Node>
+            <Node>
+                <Name v="SROBIE7C"/>
+                <Pmin v="40.00"/>
+                <Pmax v="-32.3"/>
+            </Node>
+            <Node>
+                <Name v="SROBIE7D"/>
+                <Pmin v="40.00"/>
+                <Pmax v="-32.3"/>
+            </Node>
+            <Node>
+                <Name v="SSIEBN2A"/>
+                <Pmin v="4.00"/>
+                <Pmax v="-15"/>
+            </Node>
+            <Node>
+                <Name v="SSILS_7A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-62"/>
+            </Node>
+            <Node>
+                <Name v="SSILS_7B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-62"/>
+            </Node>
+            <Node>
+                <Name v="SSILS_7C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-62"/>
+            </Node>
+            <Node>
+                <Name v="SSILS_7D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-62"/>
+            </Node>
+            <Node>
+                <Name v="SSOAZZ2B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-31.5"/>
+            </Node>
+            <Node>
+                <Name v="SSOAZZ2D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-31.5"/>
+            </Node>
+            <Node>
+                <Name v="SSTALD2B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-85.89"/>
+            </Node>
+            <Node>
+                <Name v="SSTALD2D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-85.89"/>
+            </Node>
+            <Node>
+                <Name v="STAVAN7A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-38.45"/>
+            </Node>
+            <Node>
+                <Name v="STAVAN7B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-38.45"/>
+            </Node>
+            <Node>
+                <Name v="STAVAN7C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-38.45"/>
+            </Node>
+            <Node>
+                <Name v="STAVAN7D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-38.45"/>
+            </Node>
+            <Node>
+                <Name v="STIEFE2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-26"/>
+            </Node>
+            <Node>
+                <Name v="STIERF2B"/>
+                <Pmin v="22.28"/>
+                <Pmax v="-23"/>
+            </Node>
+            <Node>
+                <Name v="STIERF2D"/>
+                <Pmin v="22.28"/>
+                <Pmax v="-23"/>
+            </Node>
+            <Node>
+                <Name v="STIERF2E"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-102"/>
+            </Node>
+            <Node>
+                <Name v="STIERF2F"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-102"/>
+            </Node>
+            <Node>
+                <Name v="STIERF2G"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-102"/>
+            </Node>
+            <Node>
+                <Name v="STIERF2H"/>
+                <Pmin v="171.65"/>
+                <Pmax v="-138"/>
+            </Node>
+            <Node>
+                <Name v="STINZE7B"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-26"/>
+            </Node>
+            <Node>
+                <Name v="STINZE7D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-26"/>
+            </Node>
+            <Node>
+                <Name v="STINZE7E"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-17"/>
+            </Node>
+            <Node>
+                <Name v="SVALLO2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-33.48"/>
+            </Node>
+            <Node>
+                <Name v="SVALLO2B"/>
+                <Pmin v="40.00"/>
+                <Pmax v="-38.26"/>
+            </Node>
+            <Node>
+                <Name v="SVALLO2C"/>
+                <Pmin v="40.00"/>
+                <Pmax v="-38.26"/>
+            </Node>
+            <Node>
+                <Name v="SVERBA2A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-31.63"/>
+            </Node>
+            <Node>
+                <Name v="SVERBA7A"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-16.12"/>
+            </Node>
+            <Node>
+                <Name v="SVERBA7C"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-16.12"/>
+            </Node>
+            <Node>
+                <Name v="SVERBA7D"/>
+                <Pmin v="0.00"/>
+                <Pmax v="-16.12"/>
+            </Node>
+            <Node>
+                <Name v="SVEYTA1B"/>
+                <Pmin v="114.00"/>
+                <Pmax v="-122"/>
+            </Node>
+            <Node>
+                <Name v="SVEYTA1C"/>
+                <Pmin v="114.00"/>
+                <Pmax v="-122"/>
+            </Node>
+            <Node>
+                <Name v="SVEYTA2A"/>
+                <Pmin v="65.00"/>
+                <Pmax v="-64"/>
+            </Node>
+            <Node>
+                <Name v="SVEYTA2B"/>
+                <Pmin v="65.00"/>
+                <Pmax v="-64"/>
+            </Node>
+            <Node>
+                <Name v="SVEYTA2C"/>
+                <Pmin v="65.00"/>
+                <Pmax v="-64"/>
+            </Node>
+            <Node>
+                <Name v="SZERME2B"/>
+                <Pmin v="23.00"/>
+                <Pmax v="-36"/>
+            </Node>
+            <Node>
+                <Name v="SZERME2C"/>
+                <Pmin v="23.00"/>
+                <Pmax v="-36"/>
+            </Node>
+        </ReserveGSKBlock>
+    </TimeSeries>
+    <TimeSeries>
+        <TimeSeriesIdentification v="1"/>
+        <BusinessType v="Z02"/>
+        <Area v="10YAT-APG------L" codingScheme="A01"/>
+        <Name v="AT"/>
+        <TimeInterval v="2023-07-19T11:00Z/2023-07-19T12:00Z"/>
+        <ManualGSKBlock>
+            <Factor v="1"/>
+            <Node>
+                <Name v="OHAEUS21"/>
+                <Factor v="1.415373"/>
+            </Node>
+            <Node>
+                <Name v="OKAPRU11"/>
+                <Factor v="0.668370"/>
+            </Node>
+            <Node>
+                <Name v="OKAPRU51"/>
+                <Factor v="0.872813"/>
+            </Node>
+            <Node>
+                <Name v="OLIMBG11"/>
+                <Factor v="1.887163"/>
+            </Node>
+            <Node>
+                <Name v="OMALTA21"/>
+                <Factor v="1.759387"/>
+            </Node>
+            <Node>
+                <Name v="OMALTA22"/>
+                <Factor v="0.717515"/>
+            </Node>
+            <Node>
+                <Name v="OMALTA51"/>
+                <Factor v="0.668370"/>
+            </Node>
+            <Node>
+                <Name v="OMAYRH22"/>
+                <Factor v="1.106743"/>
+            </Node>
+            <Node>
+                <Name v="OROSSH21"/>
+                <Factor v="0.452133"/>
+            </Node>
+            <Node>
+                <Name v="OROSSH22"/>
+                <Factor v="0.452133"/>
+            </Node>
+        </ManualGSKBlock>
+    </TimeSeries>
+    <TimeSeries>
+        <TimeSeriesIdentification v="1"/>
+        <BusinessType v="Z02"/>
+        <Area v="10YSI-ELES-----O" codingScheme="A01"/>
+        <Name v="SI"/>
+        <TimeInterval v="2023-07-19T11:00Z/2023-07-19T12:00Z"/>
+        <PropGSKBlock>
+            <Factor v="0.5"/>
+            <Node>
+                <Name v="LSOSTA16"/>
+            </Node>
+            <Node>
+                <Name v="LPODLO21"/>
+            </Node>
+        </PropGSKBlock>
+        <PropLSKBlock>
+            <Factor v="0.5"/>
+            <Node>
+                <Name v="LKRSKO11"/>
+            </Node>
+            <Node>
+                <Name v="LOKROG11"/>
+            </Node>
+            <Node>
+                <Name v="LPODLO11"/>
+            </Node>
+            <Node>
+                <Name v="LBERIC21"/>
+            </Node>
+            <Node>
+                <Name v="LCIRKO11"/>
+            </Node>
+            <Node>
+                <Name v="LDIVAC51"/>
+            </Node>
+            <Node>
+                <Name v="LKLECE21"/>
+            </Node>
+            <Node>
+                <Name v="LMARIB11"/>
+            </Node>
+        </PropLSKBlock>
+    </TimeSeries>
+    <TimeSeries>
+        <TimeSeriesIdentification v="1"/>
+        <BusinessType v="Z02"/>
+        <Area v="10YIT-GRTN-----B" codingScheme="A01"/>
+        <Name v="IT"/>
+        <TimeInterval v="2023-07-19T11:00Z/2023-07-19T12:00Z"/>
+        <MeritOrderGSKBlock>
+            <Up>
+                <Factor v="1"/>
+                <Node>
+                    <Name v="IGSCR111"/>
+                    <Pmax v="-319.00"/>
+                </Node>
+                <Node>
+                    <Name v="ISCCN111"/>
+                    <Pmax v="-323.00"/>
+                </Node>
+                <Node>
+                    <Name v="ICSSM111"/>
+                    <Pmax v="-236.95"/>
+                </Node>
+                <Node>
+                    <Name v="ICSSM121"/>
+                    <Pmax v="-203.10"/>
+                </Node>
+                <Node>
+                    <Name v="ICSSM211"/>
+                    <Pmax v="-236.95"/>
+                </Node>
+                <Node>
+                    <Name v="IAEPT111"/>
+                    <Pmax v="-327.00"/>
+                </Node>
+                <Node>
+                    <Name v="IRELF111"/>
+                    <Pmax v="-327.00"/>
+                </Node>
+                <Node>
+                    <Name v="IVGRM111"/>
+                    <Pmax v="-333.00"/>
+                </Node>
+                <Node>
+                    <Name v="INALN121"/>
+                    <Pmax v="-320.10"/>
+                </Node>
+                <Node>
+                    <Name v="IVDTT511"/>
+                    <Pmax v="-673.40"/>
+                </Node>
+                <Node>
+                    <Name v="ISPCV121"/>
+                    <Pmax v="-34.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITNCT321"/>
+                    <Pmax v="-215.41"/>
+                </Node>
+                <Node>
+                    <Name v="ITNCT421"/>
+                    <Pmax v="-115.99"/>
+                </Node>
+                <Node>
+                    <Name v="ILCSM311"/>
+                    <Pmax v="-325.00"/>
+                </Node>
+                <Node>
+                    <Name v="ILCSM411"/>
+                    <Pmax v="-325.00"/>
+                </Node>
+                <Node>
+                    <Name v="ISERMC11"/>
+                    <Pmax v="-344.00"/>
+                </Node>
+                <Node>
+                    <Name v="IEONT111"/>
+                    <Pmax v="-645.00"/>
+                </Node>
+                <Node>
+                    <Name v="IOSCM411"/>
+                    <Pmax v="-332.00"/>
+                </Node>
+                <Node>
+                    <Name v="IFRBM111"/>
+                    <Pmax v="-280.00"/>
+                </Node>
+                <Node>
+                    <Name v="IMTVM211"/>
+                    <Pmax v="-284.00"/>
+                </Node>
+                <Node>
+                    <Name v="IMTVM311"/>
+                    <Pmax v="-316.00"/>
+                </Node>
+                <Node>
+                    <Name v="ILANV121"/>
+                    <Pmax v="-78.00"/>
+                </Node>
+                <Node>
+                    <Name v="IMOATA22"/>
+                    <Pmax v="-311.70"/>
+                </Node>
+                <Node>
+                    <Name v="IVILTA21"/>
+                    <Pmax v="-38.90"/>
+                </Node>
+                <Node>
+                    <Name v="ISTVN111"/>
+                    <Pmax v="-270.18"/>
+                </Node>
+                <Node>
+                    <Name v="IASGR111"/>
+                    <Pmax v="-680.00"/>
+                </Node>
+                <Node>
+                    <Name v="IMDGN111"/>
+                    <Pmax v="-670.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITENR111"/>
+                    <Pmax v="-647.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITUNM211"/>
+                    <Pmax v="-673.00"/>
+                </Node>
+                <Node>
+                    <Name v="IBSCN111"/>
+                    <Pmax v="-400.00"/>
+                </Node>
+                <Node>
+                    <Name v="IBSCN411"/>
+                    <Pmax v="-400.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITVNR211"/>
+                    <Pmax v="-530.00"/>
+                </Node>
+                <Node>
+                    <Name v="IRATN111"/>
+                    <Pmax v="-310.00"/>
+                </Node>
+            </Up>
+            <Down>
+                <Factor v="1"/>
+                <Node>
+                    <Name v="IGSCR111"/>
+                    <Pmin v="-167.00"/>
+                </Node>
+                <Node>
+                    <Name v="ISCCN111"/>
+                    <Pmin v="-240.00"/>
+                </Node>
+                <Node>
+                    <Name v="ICSSM111"/>
+                    <Pmin v="-126.00"/>
+                </Node>
+                <Node>
+                    <Name v="ICSSM121"/>
+                    <Pmin v="-108.00"/>
+                </Node>
+                <Node>
+                    <Name v="ICSSM211"/>
+                    <Pmin v="-126.00"/>
+                </Node>
+                <Node>
+                    <Name v="IAEPT111"/>
+                    <Pmin v="-215.00"/>
+                </Node>
+                <Node>
+                    <Name v="IRELF111"/>
+                    <Pmin v="-206.00"/>
+                </Node>
+                <Node>
+                    <Name v="IVGRM111"/>
+                    <Pmin v="-209.00"/>
+                </Node>
+                <Node>
+                    <Name v="INALN121"/>
+                    <Pmin v="-190.00"/>
+                </Node>
+                <Node>
+                    <Name v="IVDTT511"/>
+                    <Pmin v="-400.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITNCT321"/>
+                    <Pmin v="-97.50"/>
+                </Node>
+                <Node>
+                    <Name v="ITNCT421"/>
+                    <Pmin v="-52.50"/>
+                </Node>
+                <Node>
+                    <Name v="ILCSM311"/>
+                    <Pmin v="-160.00"/>
+                </Node>
+                <Node>
+                    <Name v="ILCSM411"/>
+                    <Pmin v="-145.00"/>
+                </Node>
+                <Node>
+                    <Name v="ISERMC11"/>
+                    <Pmin v="-180.00"/>
+                </Node>
+                <Node>
+                    <Name v="IEONT111"/>
+                    <Pmin v="-410.00"/>
+                </Node>
+                <Node>
+                    <Name v="IOSCM411"/>
+                    <Pmin v="-174.00"/>
+                </Node>
+                <Node>
+                    <Name v="IFRBM111"/>
+                    <Pmin v="-142.00"/>
+                </Node>
+                <Node>
+                    <Name v="IMTVM211"/>
+                    <Pmin v="-166.00"/>
+                </Node>
+                <Node>
+                    <Name v="IMTVM311"/>
+                    <Pmin v="-143.00"/>
+                </Node>
+                <Node>
+                    <Name v="ILANV121"/>
+                    <Pmin v="-4.00"/>
+                </Node>
+                <Node>
+                    <Name v="IMOATA22"/>
+                    <Pmin v="-160.00"/>
+                </Node>
+                <Node>
+                    <Name v="IVILTA21"/>
+                    <Pmin v="-4.00"/>
+                </Node>
+                <Node>
+                    <Name v="ISTVN111"/>
+                    <Pmin v="-160.00"/>
+                </Node>
+                <Node>
+                    <Name v="IASGR111"/>
+                    <Pmin v="-380.00"/>
+                </Node>
+                <Node>
+                    <Name v="IMDGN111"/>
+                    <Pmin v="-440.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITENR111"/>
+                    <Pmin v="-440.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITUNM211"/>
+                    <Pmin v="-380.00"/>
+                </Node>
+                <Node>
+                    <Name v="IRATN111"/>
+                    <Pmin v="-165.00"/>
+                </Node>
+                <Node>
+                    <Name v="IFSNV111"/>
+                    <Pmin v="-120.00"/>
+                </Node>
+                <Node>
+                    <Name v="ISBAF211"/>
+                    <Pmin v="-107.25"/>
+                </Node>
+                <Node>
+                    <Name v="ISBAF111"/>
+                    <Pmin v="-57.75"/>
+                </Node>
+                <Node>
+                    <Name v="IPFNR121"/>
+                    <Pmin v="-150.00"/>
+                </Node>
+                <Node>
+                    <Name v="IPCOF111"/>
+                    <Pmin v="-170.00"/>
+                </Node>
+                <Node>
+                    <Name v="ILCSM211"/>
+                    <Pmin v="-180.00"/>
+                </Node>
+                <Node>
+                    <Name v="ILCSM111"/>
+                    <Pmin v="-160.00"/>
+                </Node>
+                <Node>
+                    <Name v="IFRBM112"/>
+                    <Pmin v="-128.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITURM611"/>
+                    <Pmin v="-126.72"/>
+                </Node>
+                <Node>
+                    <Name v="ITURM511"/>
+                    <Pmin v="-126.72"/>
+                </Node>
+                <Node>
+                    <Name v="ITURM411"/>
+                    <Pmin v="-130.56"/>
+                </Node>
+                <Node>
+                    <Name v="IEFEF111"/>
+                    <Pmin v="-367.00"/>
+                </Node>
+                <Node>
+                    <Name v="IECRF111"/>
+                    <Pmin v="-314.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITZCM211"/>
+                    <Pmin v="-179.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITZCM111"/>
+                    <Pmin v="-390.00"/>
+                </Node>
+                <Node>
+                    <Name v="IOSCM211"/>
+                    <Pmin v="-200.00"/>
+                </Node>
+                <Node>
+                    <Name v="IOSCM111"/>
+                    <Pmin v="-200.00"/>
+                </Node>
+                <Node>
+                    <Name v="ICTMMA21"/>
+                    <Pmin v="-107.20"/>
+                </Node>
+                <Node>
+                    <Name v="ICHTT111"/>
+                    <Pmin v="-450.00"/>
+                </Node>
+                <Node>
+                    <Name v="IEPBN111"/>
+                    <Pmin v="-616.00"/>
+                </Node>
+                <Node>
+                    <Name v="ITRSV111"/>
+                    <Pmin v="-380.00"/>
+                </Node>
+                <Node>
+                    <Name v="ISPNN111"/>
+                    <Pmin v="-220.00"/>
+                </Node>
+                <Node>
+                    <Name v="IRICN111"/>
+                    <Pmin v="-219.00"/>
+                </Node>
+                <Node>
+                    <Name v="ICDLN111"/>
+                    <Pmin v="-165.00"/>
+                </Node>
+                <Node>
+                    <Name v="IRICN211"/>
+                    <Pmin v="-0.00"/>
+                </Node>
+                <Node>
+                    <Name v="ISCRN111"/>
+                    <Pmin v="-370.00"/>
+                </Node>
+                <Node>
+                    <Name v="IALCN311"/>
+                    <Pmin v="-126.00"/>
+                </Node>
+                <Node>
+                    <Name v="IALCN211"/>
+                    <Pmin v="-112.00"/>
+                </Node>
+                <Node>
+                    <Name v="IALCN111"/>
+                    <Pmin v="-112.00"/>
+                </Node>
+            </Down>
+        </MeritOrderGSKBlock>
+    </TimeSeries>
+</GSKDocument>

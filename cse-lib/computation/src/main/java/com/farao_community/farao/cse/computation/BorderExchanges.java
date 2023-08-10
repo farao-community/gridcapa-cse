@@ -48,6 +48,15 @@ public final class BorderExchanges {
             .reduce(0., Double::sum);
     }
 
+    public static Map<Country, Double> computeExports(Network network) {
+        runLoadFlow(network);
+        CountryArea itArea = new CountryAreaFactory(Country.IT).create(network);
+        Map<Country, Double> map = new HashMap<>();
+        Stream.of(Country.FR, Country.AT, Country.CH, Country.SI)
+            .forEach(country -> map.put(country, new CountryAreaFactory(country).create(network).getLeavingFlowToCountry(itArea)));
+        return map;
+    }
+
     public static Map<String, Double> computeCseBordersExchanges(Network network) {
         return computeCseBordersExchanges(network, true);
     }

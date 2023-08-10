@@ -11,15 +11,20 @@ import com.farao_community.farao.cse.runner.api.JsonApiConverter;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
+import com.powsybl.glsk.api.GlskDocument;
+import com.powsybl.glsk.commons.ZonalData;
+import com.powsybl.glsk.cse.CseGlskDocumentImporter;
+import com.powsybl.iidm.modification.scalable.Scalable;
+import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.stream.function.StreamBridge;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
