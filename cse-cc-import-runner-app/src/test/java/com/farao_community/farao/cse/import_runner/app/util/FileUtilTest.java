@@ -75,8 +75,6 @@ class FileUtilTest {
         try {
             linearScaler.shiftNetwork(8097, network);
             Map<Country, Double> exportsFinal = BorderExchanges.computeExports(network);
-            linearScaler.shiftNetwork(8097, network);
-            exportsFinal = BorderExchanges.computeExports(network);
             System.out.println("zz");
         } catch (GlskLimitationException e) {
             throw new RuntimeException(e);
