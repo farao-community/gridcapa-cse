@@ -18,7 +18,9 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class InitialShiftService {
@@ -42,18 +44,7 @@ public class InitialShiftService {
             businessLogger.info("Summary : Net positions on preprocessed network : for area {} : net position is {}.", entry.getKey(), entry.getValue());
         }
 
-        Map<String, Double> flowOnNotModelledLinesPerCountryEic =
-            NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtc().getFlowPerCountryOnNotModelizedLines());
-        Map<String, Double> initialShifts = new HashMap<>();
-
-        BORDER_COUNTRIES.forEach(country -> {
-            double initialShift = ntcsByEic.get(country)
-                - referenceExchanges.get(country)
-                - flowOnNotModelledLinesPerCountryEic.get(country);
-            initialShifts.put(country, initialShift);
-        });
-
-        initialShifts.put(CseCountry.IT.getEiCode(), -initialShifts.values().stream().mapToDouble(Double::doubleValue).sum());
+        Map<String, Double> initialShifts = getInitialShiftValues(cseData, referenceExchanges, ntcsByEic);
 
         for (Map.Entry<String, Double> entry : initialShifts.entrySet()) {
             businessLogger.info("Summary : Initial shift for area {} : {}.", entry.getKey(), entry.getValue());
@@ -70,6 +61,24 @@ public class InitialShiftService {
 
         fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, networkAfterInitialShiftPath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
         businessLogger.info("Summary : Initial shift is finished, network is updated and initial model is exported to outputs.");
+    }
+
+    public Map<String, Double> getInitialShiftValues(CseData cseData, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) {
+        Map<String, Double> initialShifts = new HashMap<>();
+
+        Map<String, Double> flowOnNotModelledLinesPerCountryEic =
+            NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtc().getFlowPerCountryOnNotModelizedLines());
+
+        BORDER_COUNTRIES.forEach(country -> {
+            double initialShift = ntcsByEic.get(country)
+                - referenceExchanges.get(country)
+                - flowOnNotModelledLinesPerCountryEic.get(country);
+            initialShifts.put(country, initialShift);
+        });
+
+        initialShifts.put(CseCountry.IT.getEiCode(), -initialShifts.values().stream().mapToDouble(Double::doubleValue).sum());
+
+        return initialShifts;
     }
 
     private void shiftNetwork(Map<String, Double> scalingValuesByCountry, CseRequest cseRequest, Network network) {

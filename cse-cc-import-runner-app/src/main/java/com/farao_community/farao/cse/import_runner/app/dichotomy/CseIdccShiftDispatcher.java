@@ -25,6 +25,7 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
     private final Map<String, Double> splittingFactors;
     private final Map<String, Double> referenceExchanges;
     private final Map<String, Double> ntcs;
+    private final Map<String, Double> initialShiftValues;
 
     private final double referenceItalianImport;
     private final double ntcSum;
@@ -33,11 +34,13 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
     public CseIdccShiftDispatcher(Logger businessLogger,
                                   Map<String, Double> ntcs,
                                   Map<String, Double> splittingFactors,
-                                  Map<String, Double> referenceExchanges) {
+                                  Map<String, Double> referenceExchanges,
+                                  Map<String, Double> initialShiftValues) {
         this.businessLogger = businessLogger;
         this.ntcs = ntcs;
         this.splittingFactors = splittingFactors;
         this.referenceExchanges = referenceExchanges;
+        this.initialShiftValues = initialShiftValues;
 
         referenceItalianImport = NetworkShifterUtil.getReferenceItalianImport(referenceExchanges);
         ntcSum = ntcs.values().stream().reduce(0., Double::sum);
@@ -52,15 +55,23 @@ public class CseIdccShiftDispatcher implements ShiftDispatcher {
     public Map<String, Double> dispatch(double value) {
         Map<String, Double> shifts;
         if (value <= ntcSum && value > referenceItalianImport) {
-            LOGGER.debug("Computing a shift proportional to D2 ATC.");
+            LOGGER.info("Computing a shift proportional to D2 ATC.");
             shifts = getShiftsProportionallyToAtcCapacity(value);
         } else if (value <= referenceItalianImport) {
-            LOGGER.debug("Computing a shift proportional to D2 capacity.");
+            LOGGER.info("Computing a shift proportional to D2 capacity.");
             shifts = getShiftsProportionallyToNtcCapacity(value);
         } else {
-            LOGGER.debug("Computing a shift proportional to splitting factors above D2 capacity.");
+            LOGGER.info("Computing a shift proportional to splitting factors above D2 capacity.");
             shifts = getShiftsAboveAtcProportionallyToSplittingFactors(value);
         }
+
+        LOGGER.info("Step shifts without initial shifts: {}", shifts);
+        shifts.forEach((countryEiCode, shiftValue) -> {
+            double newValue = initialShiftValues.get(countryEiCode) + shiftValue;
+            shifts.put(countryEiCode, newValue);
+        });
+        LOGGER.info("Step shifts with initial shifts: {}", shifts);
+
         logShifts(value, shifts);
         shiftCounter++;
         return shifts;

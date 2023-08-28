@@ -22,6 +22,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CseIdccShiftDispatcherTest {
     private static final double DOUBLE_TOLERANCE = 1;
 
+    private static final Map<String, Double> INITIAL_SHIFTS_ZERO = Map.of(
+        AT.getEiCode(), 0.0,
+        CH.getEiCode(), 0.0,
+        FR.getEiCode(), 0.0,
+        IT.getEiCode(), 0.0,
+        SI.getEiCode(), 0.0
+    );
+
+    private static final Map<String, Double> INITIAL_SHIFTS_TEN = Map.of(
+        AT.getEiCode(), 10.0,
+        CH.getEiCode(), 10.0,
+        FR.getEiCode(), 10.0,
+        IT.getEiCode(), 10.0,
+        SI.getEiCode(), 10.0
+    );
+
     private Map<String, Double> splittingFactors1;
     private Map<String, Double> referenceExchanges;
     private Map<String, Double> ntcs2;
@@ -53,7 +69,7 @@ class CseIdccShiftDispatcherTest {
 
     @Test
     void testDispatchForValueLowerThanNtc2ButGreaterThanReferenceExchanges() {
-        CseIdccShiftDispatcher dispatcher = new CseIdccShiftDispatcher(LoggerFactory.getLogger(""), ntcs2, splittingFactors1, referenceExchanges);
+        CseIdccShiftDispatcher dispatcher = new CseIdccShiftDispatcher(LoggerFactory.getLogger(""), ntcs2, splittingFactors1, referenceExchanges, INITIAL_SHIFTS_ZERO);
 
         Map<String, Double> shifts = dispatcher.dispatch(6250);
         assertEquals(5, shifts.keySet().size());
@@ -66,7 +82,7 @@ class CseIdccShiftDispatcherTest {
 
     @Test
     void testDispatchForValueLowerThanReferenceExchanges() {
-        CseIdccShiftDispatcher dispatcher = new CseIdccShiftDispatcher(LoggerFactory.getLogger(""), ntcs2, splittingFactors1, referenceExchanges);
+        CseIdccShiftDispatcher dispatcher = new CseIdccShiftDispatcher(LoggerFactory.getLogger(""), ntcs2, splittingFactors1, referenceExchanges, INITIAL_SHIFTS_ZERO);
 
         Map<String, Double> shifts = dispatcher.dispatch(3000);
         assertEquals(5, shifts.keySet().size());
@@ -79,7 +95,7 @@ class CseIdccShiftDispatcherTest {
 
     @Test
     void testDispatchForValueAboveReferenceExchangeAndNtc2() {
-        CseIdccShiftDispatcher dispatcher = new CseIdccShiftDispatcher(LoggerFactory.getLogger(""), ntcs2, splittingFactors1, referenceExchanges);
+        CseIdccShiftDispatcher dispatcher = new CseIdccShiftDispatcher(LoggerFactory.getLogger(""), ntcs2, splittingFactors1, referenceExchanges, INITIAL_SHIFTS_ZERO);
 
         Map<String, Double> shifts = dispatcher.dispatch(7000);
         assertEquals(5, shifts.keySet().size());
@@ -90,4 +106,42 @@ class CseIdccShiftDispatcherTest {
         assertEquals(-500, shifts.get(IT.getEiCode()), DOUBLE_TOLERANCE);
     }
 
+    @Test
+    void testDispatchForValueLowerThanNtc2ButGreaterThanReferenceExchangesWithInitialShifts() {
+        CseIdccShiftDispatcher dispatcher = new CseIdccShiftDispatcher(LoggerFactory.getLogger(""), ntcs2, splittingFactors1, referenceExchanges, INITIAL_SHIFTS_TEN);
+
+        Map<String, Double> shifts = dispatcher.dispatch(6250);
+        assertEquals(5, shifts.keySet().size());
+        assertEquals(-90., shifts.get(FR.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-140., shifts.get(CH.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-5., shifts.get(AT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(25., shifts.get(SI.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(260., shifts.get(IT.getEiCode()), DOUBLE_TOLERANCE);
+    }
+
+    @Test
+    void testDispatchForValueLowerThanReferenceExchangesWithInitialShifts() {
+        CseIdccShiftDispatcher dispatcher = new CseIdccShiftDispatcher(LoggerFactory.getLogger(""), ntcs2, splittingFactors1, referenceExchanges, INITIAL_SHIFTS_TEN);
+
+        Map<String, Double> shifts = dispatcher.dispatch(3000);
+        assertEquals(5, shifts.keySet().size());
+        assertEquals(-1451.53, shifts.get(FR.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-1874.61, shifts.get(CH.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-240., shifts.get(AT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(106.15, shifts.get(SI.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(3510., shifts.get(IT.getEiCode()), DOUBLE_TOLERANCE);
+    }
+
+    @Test
+    void testDispatchForValueAboveReferenceExchangeAndNtc2WithInitialShifts() {
+        CseIdccShiftDispatcher dispatcher = new CseIdccShiftDispatcher(LoggerFactory.getLogger(""), ntcs2, splittingFactors1, referenceExchanges, INITIAL_SHIFTS_TEN);
+
+        Map<String, Double> shifts = dispatcher.dispatch(7000);
+        assertEquals(5, shifts.keySet().size());
+        assertEquals(210., shifts.get(FR.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(160.0, shifts.get(CH.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(60, shifts.get(AT.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(110., shifts.get(SI.getEiCode()), DOUBLE_TOLERANCE);
+        assertEquals(-490, shifts.get(IT.getEiCode()), DOUBLE_TOLERANCE);
+    }
 }
