@@ -24,12 +24,6 @@ class InitialShiftServiceTest {
     @Autowired
     InitialShiftService initialShiftService;
 
-//    @InjectMocks
-//    private final Logger businessLogger;
-//    private final FileExporter fileExporter;
-//    private final FileImporter fileImporter;
-//    private final ProcessConfiguration processConfiguration;
-
     @Test
     void getInitialShiftValues() {
         Ntc ntc = Mockito.mock(Ntc.class);
