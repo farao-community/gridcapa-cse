@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.cse.import_runner.app.CseData;
+import com.farao_community.farao.cse.import_runner.app.services.InitialShiftService;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.dichotomy.api.NetworkShifter;
@@ -28,10 +29,12 @@ public class NetworkShifterProvider {
     private static final double SHIFT_TOLERANCE = 1;
 
     private final ZonalScalableProvider zonalScalableProvider;
+    private final InitialShiftService initialShiftService;
     private final Logger businessLogger;
 
-    public NetworkShifterProvider(ZonalScalableProvider zonalScalableProvider, Logger businessLogger) {
+    public NetworkShifterProvider(ZonalScalableProvider zonalScalableProvider, InitialShiftService initialShiftService, Logger businessLogger) {
         this.zonalScalableProvider = zonalScalableProvider;
+        this.initialShiftService = initialShiftService;
         this.businessLogger = businessLogger;
     }
 
@@ -47,17 +50,21 @@ public class NetworkShifterProvider {
     }
 
     private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) {
+        Map<String, Double> splittingFactors = NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors(ntcsByEic));
+
         if (processType.equals(ProcessType.D2CC)) {
             return new CseD2ccShiftDispatcher(
                 businessLogger,
-                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors(ntcsByEic)),
+                splittingFactors,
                 ntcsByEic);
         } else {
+            Map<String, Double> initialShiftValues = initialShiftService.getInitialShiftValues(cseData, referenceExchanges, ntcsByEic);
             return new CseIdccShiftDispatcher(
                 businessLogger,
                 ntcsByEic,
-                NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors(ntcsByEic)),
-                referenceExchanges);
+                splittingFactors,
+                referenceExchanges,
+                initialShiftValues);
         }
     }
 }

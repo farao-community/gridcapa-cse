@@ -8,14 +8,17 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
-import com.farao_community.farao.cse.import_runner.app.dichotomy.*;
+import com.farao_community.farao.cse.import_runner.app.CseData;
+import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.NetworkShifterUtil;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
 import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstInitializer;
-import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -32,7 +35,7 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -95,8 +98,12 @@ public class CseRunner {
             NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry());
 
         double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(ntcsByEic.values().stream().mapToDouble(Double::doubleValue).sum());
+        String initialVariantId = network.getVariantManager().getWorkingVariantId();
         // input cgm corresponds to vulcanus file but we want to start calculation from ntc values
         initialShiftService.performInitialShiftFromVulcanusLevelToNtcLevel(network, cseData, cseRequest, cseData.getCseReferenceExchanges().getExchanges(), ntcsByEic);
+        if (cseRequest.getProcessType().equals(ProcessType.IDCC)) {
+            network.getVariantManager().setWorkingVariant(initialVariantId);
+        }
 
         MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult = multipleDichotomyRunner.runMultipleDichotomy(
             cseRequest,
