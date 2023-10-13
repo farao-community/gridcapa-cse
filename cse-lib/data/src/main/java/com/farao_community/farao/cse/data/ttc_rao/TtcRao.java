@@ -12,11 +12,11 @@ import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.cnec.CnecPreventive;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.*;
 import com.farao_community.farao.data.crac_api.Contingency;
+import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_creation.creator.api.ElementaryCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.RemedialActionCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CseHvdcCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CsePstCreationContext;
-import com.farao_community.farao.data.rao_result_api.OptimizationState;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public final class TtcRao {
         CseRaoResult cseRaoResult = new CseRaoResult();
         addTime(cseRaoResult, timestamp.toString());
 
-        if (cracResultsHelper.getRaoResult().getFunctionalCost(OptimizationState.AFTER_CRA) <= 0) {
+        if (cracResultsHelper.getRaoResult().getFunctionalCost(Instant.CURATIVE) <= 0) {
             addStatus(cseRaoResult, Status.SECURE);
         } else {
             addStatus(cseRaoResult, Status.UNSECURE);

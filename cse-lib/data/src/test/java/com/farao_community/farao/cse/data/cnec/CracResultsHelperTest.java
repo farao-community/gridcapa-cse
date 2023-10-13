@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_creation.creator.api.parameters.CracCreationParameters;
 import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.BranchCnecCreationContext;
@@ -13,7 +14,6 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
-import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
 import com.powsybl.iidm.network.Network;
@@ -71,7 +71,7 @@ class CracResultsHelperTest {
         assertEquals(1, monitoredBranchesForContingency.size());
 
         FlowCnec branchCnec = cracResultsHelper.getCrac().getFlowCnec("French line 1 - FFR1AA1 ->FFR2AA1   - outage_1 - outage");
-        assertEquals(50, cracResultsHelper.getFlowCnecResultInAmpere(branchCnec, OptimizationState.AFTER_PRA).getFlow(), 0.1);
+        assertEquals(50, cracResultsHelper.getFlowCnecResultInAmpere(branchCnec, Instant.PREVENTIVE).getFlow(), 0.1);
     }
 
     @Test
