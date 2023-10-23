@@ -202,7 +202,7 @@ class NetworkModifierTest {
         assertTrue(createdTieLine instanceof TieLine);
         assertEquals("DDE3AA1N", createdTieLine.getTerminal1().getBusBreakerView().getBus().getId());
         assertEquals("DDE3AA1", createdTieLine.getTerminal1().getVoltageLevel().getId());
-        assertEquals("X_DEFR1 ", ((TieLine) createdTieLine).getUcteXnodeCode());
+        assertEquals("X_DEFR1 ", ((TieLine) createdTieLine).getPairingKey());
         assertEquals("FFR2AA1 ", createdTieLine.getTerminal2().getBusBreakerView().getBus().getId());
         assertEquals("FFR2AA1", createdTieLine.getTerminal2().getVoltageLevel().getId());
 

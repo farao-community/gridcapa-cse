@@ -20,7 +20,6 @@ import com.farao_community.farao.data.crac_creation.creator.api.std_creation_con
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.critical_branch.CseCriticalBranchCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.outage.CseOutageCreationContext;
-import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.powsybl.ucte.network.UcteCountryCode;
 
@@ -136,10 +135,10 @@ public class CracResultsHelper {
                             ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected());
                     CnecPreventive cnecPrev = new CnecPreventive();
                     cnecPrev.setCnecCommon(cnecCommon);
-                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.AFTER_PRA);
+                    FlowCnecResult flowCnecResult = getFlowCnecResultInAmpere(flowCnecPrev, Instant.PREVENTIVE);
                     cnecPrev.setI(flowCnecResult.getFlow());
                     cnecPrev.setiMax(flowCnecResult.getiMax());
-                    FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnecPrev, OptimizationState.INITIAL);
+                    FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnecPrev, null);
                     cnecPrev.setiBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
                     cnecPreventives.add(cnecPrev);
                 } else {
@@ -162,19 +161,19 @@ public class CracResultsHelper {
                 FlowCnecResult flowCnecResult;
                 switch (entry.getKey()) {
                     case OUTAGE:
-                        flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
+                        flowCnecResult = getFlowCnecResultInAmpere(flowCnec, Instant.PREVENTIVE);
                         mergedCnec.setiAfterOutage(flowCnecResult.getFlow());
                         mergedCnec.setiMaxAfterOutage(flowCnecResult.getiMax());
-                        FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnec, OptimizationState.INITIAL);
+                        FlowCnecResult flowCnecResultBeforeOptim = getFlowCnecResultInAmpere(flowCnec, null);
                         mergedCnec.setiAfterOutageBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
                         break;
                     case CURATIVE:
-                        flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_CRA);
+                        flowCnecResult = getFlowCnecResultInAmpere(flowCnec, Instant.CURATIVE);
                         mergedCnec.setiAfterCra(flowCnecResult.getFlow());
                         mergedCnec.setiMaxAfterCra(flowCnecResult.getiMax());
                         break;
                     case AUTO:
-                        flowCnecResult = getFlowCnecResultInAmpere(flowCnec, OptimizationState.AFTER_PRA);
+                        flowCnecResult = getFlowCnecResultInAmpere(flowCnec, Instant.PREVENTIVE);
                         mergedCnec.setiAfterSps(flowCnecResult.getFlow());
                         mergedCnec.setiMaxAfterSps(flowCnecResult.getiMax());
                         break;
@@ -207,21 +206,21 @@ public class CracResultsHelper {
         return nativeBranch.getFrom() + " " + nativeBranch.getTo() + " " + nativeBranch.getSuffix();
     }
 
-    public FlowCnecResult getFlowCnecResultInAmpere(FlowCnec flowCnec, OptimizationState optimizationState) {
+    public FlowCnecResult getFlowCnecResultInAmpere(FlowCnec flowCnec, Instant optimizedInstant) {
         Side monitoredSide = flowCnec.getMonitoredSides().contains(Side.LEFT) ? Side.LEFT : Side.RIGHT;
         Optional<Double> upperBound = flowCnec.getUpperBound(monitoredSide, Unit.AMPERE);
         Optional<Double> lowerBound = flowCnec.getLowerBound(monitoredSide, Unit.AMPERE);
         double flow;
         double iMax;
         if (upperBound.isPresent() && lowerBound.isEmpty()) {
-            flow = raoResult.getFlow(optimizationState, flowCnec, monitoredSide, Unit.AMPERE);
+            flow = raoResult.getFlow(optimizedInstant, flowCnec, monitoredSide, Unit.AMPERE);
             iMax = upperBound.get();
         } else if (upperBound.isEmpty() && lowerBound.isPresent()) {
             // Case where it is limited in opposite direction so the flow is inverted
-            flow = -raoResult.getFlow(optimizationState, flowCnec, monitoredSide, Unit.AMPERE);
+            flow = -raoResult.getFlow(optimizedInstant, flowCnec, monitoredSide, Unit.AMPERE);
             iMax = Math.abs(lowerBound.get());
         } else if (upperBound.isPresent() && lowerBound.isPresent()) {
-            double flowTemp = raoResult.getFlow(optimizationState, flowCnec, monitoredSide, Unit.AMPERE);
+            double flowTemp = raoResult.getFlow(optimizedInstant, flowCnec, monitoredSide, Unit.AMPERE);
             flow = Math.abs(flowTemp);
             if (flowTemp >= 0) {
                 iMax = upperBound.get();

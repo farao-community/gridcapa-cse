@@ -312,7 +312,7 @@ public class NetworkModifier {
         return voltageLevel.newDanglingLine()
                 .setId(danglingLineToReplace.getId().replace(nodeToReplace, newNodeId))
                 .setFictitious(danglingLineToReplace.isFictitious())
-                .setUcteXnodeCode(danglingLineToReplace.getUcteXnodeCode())
+                .setPairingKey(danglingLineToReplace.getPairingKey())
                 .setR(danglingLineToReplace.getR())
                 .setX(danglingLineToReplace.getX())
                 .setG(danglingLineToReplace.getG())
@@ -327,7 +327,7 @@ public class NetworkModifier {
     private static String getTieLineNodeToReplace(TieLine tieLine, DanglingLine danglingLineToReplace) {
         String node1 = danglingLineToReplace.getId().substring(0, 8);
         String node2 = danglingLineToReplace.getId().substring(9, 17);
-        return node1.equals(tieLine.getUcteXnodeCode()) ? node2 : node1;
+        return node1.equals(tieLine.getPairingKey()) ? node2 : node1;
     }
 
     private TieLine replaceTieLine(TieLine tieLine, String newId, DanglingLine danglingLineToReplace, Bus bus) {

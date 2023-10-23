@@ -73,13 +73,13 @@ public class ZonalScalableProvider {
     }
 
     private static Scalable getStackedScalable(CseCountry cseCountry, Scalable scalable, Network network, double sum) {
-        List<Float> percentageList = new ArrayList<>();
+        List<Double> percentageList = new ArrayList<>();
         List<Scalable> scalableList = new ArrayList<>();
 
         network.getLoadStream()
             .filter(load -> isLoadCorrespondingToTheCountry(load, cseCountry))
             .forEach(load -> {
-                percentageList.add((float) (load.getP0() / sum) * 100);
+                percentageList.add((load.getP0() / sum) * 100);
                 scalableList.add(Scalable.onLoad(load.getId()));
             });
 
