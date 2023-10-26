@@ -125,10 +125,22 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
 
     private RaoRequest buildRaoRequest(String networkPreSignedUrl, String baseDirPathForCurrentStep, List<String> appliedRemedialActionInPreviousStep) {
         if (appliedRemedialActionInPreviousStep.isEmpty() || appliedRemedialActionInPreviousStep.size() == 1) {
-            return new RaoRequest(requestId, networkPreSignedUrl, cracUrl, raoParametersUrl, baseDirPathForCurrentStep);
+            return new RaoRequest.RaoRequestBuilder()
+                    .withId(requestId)
+                    .withNetworkFileUrl(networkPreSignedUrl)
+                    .withCracFileUrl(cracUrl)
+                    .withRaoParametersFileUrl(raoParametersUrl)
+                    .withResultsDestination(baseDirPathForCurrentStep)
+                    .build();
         } else {
             String raoParametersWithAppliedRemedialActionInPreviousStepUrl = fileExporter.saveRaoParameters(baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep, processTargetDateTime, processType, isImportEcProcess);
-            return new RaoRequest(requestId, networkPreSignedUrl, cracUrl, raoParametersWithAppliedRemedialActionInPreviousStepUrl, baseDirPathForCurrentStep);
+            return new RaoRequest.RaoRequestBuilder()
+                    .withId(requestId)
+                    .withNetworkFileUrl(networkPreSignedUrl)
+                    .withCracFileUrl(cracUrl)
+                    .withRaoParametersFileUrl(raoParametersWithAppliedRemedialActionInPreviousStepUrl)
+                    .withResultsDestination(baseDirPathForCurrentStep)
+                    .build();
         }
     }
 
