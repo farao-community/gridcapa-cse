@@ -31,14 +31,14 @@ class RaoRunnerServiceTest {
     @InjectMocks
     private RaoRunnerService raoRunnerService;
 
+    private final String id = "testId";
+    private final String networkPresignedUrl = "http://network.url";
+    private final String cracInJsonFormatUrl = "http://crac.url";
+    private final String raoParametersUrl = "http://parameters.url";
+    private final String artifactDestinationPath = "/path/to/artifact";
+
     @Test
     void testRunSuccessful() throws CseInternalException {
-        String id = "testId";
-        String networkPresignedUrl = "http://network.url";
-        String cracInJsonFormatUrl = "http://crac.url";
-        String raoParametersUrl = "http://parameters.url";
-        String artifactDestinationPath = "/path/to/artifact";
-
         RaoResponse expectedResponse = new RaoResponse.RaoResponseBuilder().withId("id").build(); // Assuming RaoResponse is a valid response type
 
         when(raoRunnerClient.runRao(any(RaoRequest.class))).thenReturn(expectedResponse);
@@ -50,13 +50,6 @@ class RaoRunnerServiceTest {
 
     @Test
     void testRunThrowsCseInternalException() {
-        // Arrange
-        String id = "testId";
-        String networkPresignedUrl = "http://network.url";
-        String cracInJsonFormatUrl = "http://crac.url";
-        String raoParametersUrl = "http://parameters.url";
-        String artifactDestinationPath = "/path/to/artifact";
-
         when(raoRunnerClient.runRao(any())).thenThrow(new RuntimeException("Test exception"));
 
         Exception exception = assertThrows(CseInternalException.class, () -> {
@@ -71,12 +64,6 @@ class RaoRunnerServiceTest {
 
     @Test
     void testRaoRequestValues() {
-        String id = "testId";
-        String networkPresignedUrl = "http://network.url";
-        String cracInJsonFormatUrl = "http://crac.url";
-        String raoParametersUrl = "http://parameters.url";
-        String artifactDestinationPath = "/path/to/artifact";
-
         RaoRequest raoRequest = new RaoRequest.RaoRequestBuilder()
                 .withId(id)
                 .withNetworkFileUrl(networkPresignedUrl)

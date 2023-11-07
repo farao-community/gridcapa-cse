@@ -7,12 +7,12 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.commons.Unit;
-import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
-import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
+import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
+import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
@@ -32,7 +32,6 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -87,7 +86,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         try {
             Crac crac = fileImporter.importCracFromJson(cracUrl);
             List<String> appliedRemedialActionInPreviousStep = lastDichotomyStepResult != null && lastDichotomyStepResult.getRaoResult() != null ? lastDichotomyStepResult.getRaoResult().getActivatedNetworkActionsDuringState(crac.getPreventiveState())
-                     .stream().map(NetworkAction::getId).collect(Collectors.toList()) : Collections.emptyList();
+                     .stream().map(NetworkAction::getId).toList() : Collections.emptyList();
             RaoRequest raoRequest = buildRaoRequest(networkPresignedUrl, baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep);
             // We don't stop computation even if there are no applied RAs, because we cannot be sure in the case where
             // the RAs are applicable on constraint, that it won't be applicable later on in the dichotomy (higher index)
@@ -123,25 +122,25 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         }
     }
 
-    private RaoRequest buildRaoRequest(String networkPreSignedUrl, String baseDirPathForCurrentStep, List<String> appliedRemedialActionInPreviousStep) {
-        if (appliedRemedialActionInPreviousStep.isEmpty() || appliedRemedialActionInPreviousStep.size() == 1) {
-            return new RaoRequest.RaoRequestBuilder()
-                    .withId(requestId)
-                    .withNetworkFileUrl(networkPreSignedUrl)
-                    .withCracFileUrl(cracUrl)
-                    .withRaoParametersFileUrl(raoParametersUrl)
-                    .withResultsDestination(baseDirPathForCurrentStep)
-                    .build();
+    public RaoRequest buildRaoRequest(String networkPreSignedUrl, String baseDirPathForCurrentStep, List<String> appliedRemedialActionInPreviousStep) {
+        RaoRequest.RaoRequestBuilder builder = new RaoRequest.RaoRequestBuilder()
+                .withId(requestId)
+                .withNetworkFileUrl(networkPreSignedUrl)
+                .withCracFileUrl(cracUrl)
+                .withResultsDestination(baseDirPathForCurrentStep);
+
+        if (appliedRemedialActionInPreviousStep.size() == 1) {
+            builder.withRaoParametersFileUrl(this.raoParametersUrl);
         } else {
-            String raoParametersWithAppliedRemedialActionInPreviousStepUrl = fileExporter.saveRaoParameters(baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep, processTargetDateTime, processType, isImportEcProcess);
-            return new RaoRequest.RaoRequestBuilder()
-                    .withId(requestId)
-                    .withNetworkFileUrl(networkPreSignedUrl)
-                    .withCracFileUrl(cracUrl)
-                    .withRaoParametersFileUrl(raoParametersWithAppliedRemedialActionInPreviousStepUrl)
-                    .withResultsDestination(baseDirPathForCurrentStep)
-                    .build();
+            String raoParametersWithAppliedRemedialActionInPreviousStepUrl = saveRaoParametersIfNeeded(baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep);
+            builder.withRaoParametersFileUrl(raoParametersWithAppliedRemedialActionInPreviousStepUrl);
         }
+
+        return builder.build();
+    }
+
+    private String saveRaoParametersIfNeeded(String baseDirPathForCurrentStep, List<String> appliedRemedialActionInPreviousStep) {
+        return fileExporter.saveRaoParameters(baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep, processTargetDateTime, processType, isImportEcProcess);
     }
 
     private String generateBaseDirPathFromScaledNetwork(Network network) {
