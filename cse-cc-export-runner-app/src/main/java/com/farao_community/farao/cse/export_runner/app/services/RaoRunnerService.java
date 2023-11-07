@@ -49,5 +49,4 @@ public class RaoRunnerService {
                 .withResultsDestination(artifactDestinationPath)
                 .build();
     }
-
 }
