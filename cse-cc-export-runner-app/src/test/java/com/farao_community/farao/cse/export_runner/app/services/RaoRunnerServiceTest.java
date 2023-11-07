@@ -32,7 +32,7 @@ class RaoRunnerServiceTest {
     private RaoRunnerService raoRunnerService;
 
     @Test
-    void testRun_Successful() throws CseInternalException {
+    void testRunSuccessful() throws CseInternalException {
         String id = "testId";
         String networkPresignedUrl = "http://network.url";
         String cracInJsonFormatUrl = "http://crac.url";
@@ -49,7 +49,7 @@ class RaoRunnerServiceTest {
     }
 
     @Test
-    void testRun_ThrowsCseInternalException() {
+    void testRunThrowsCseInternalException() {
         // Arrange
         String id = "testId";
         String networkPresignedUrl = "http://network.url";
