@@ -130,7 +130,7 @@ public class FileExporter {
             jaxbMarshaller.marshal(root, stringWriter);
 
         } catch (JAXBException e) {
-            throw new CseInternalException("XSD matching error");
+            throw new CseInternalException("XSD matching error", e);
         }
         ByteArrayInputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
         String ttcPath =  getDestinationPath(processTargetDate, processType, GridcapaFileGroup.OUTPUT) + getTtcRaoResultOutputFilename(processTargetDate, initialCgmFilename, processType);

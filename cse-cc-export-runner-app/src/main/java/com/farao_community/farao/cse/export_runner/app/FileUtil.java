@@ -30,7 +30,7 @@ public final class FileUtil {
             URL url = new URL(stringUrl);
             return FilenameUtils.getName(url.getPath());
         } catch (IOException e) {
-            throw new CseDataException(String.format("Exception occurred while retrieving file name from : %s Cause: %s ", stringUrl, e.getMessage()));
+            throw new CseDataException(String.format("Exception occurred while retrieving file name from : %s", stringUrl), e);
         }
     }
 

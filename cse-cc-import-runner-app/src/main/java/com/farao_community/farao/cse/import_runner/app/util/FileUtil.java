@@ -26,7 +26,7 @@ public final class FileUtil {
         try {
             return FilenameUtils.getName(new URL(url).getPath());
         } catch (MalformedURLException e) {
-            throw new CseInvalidDataException(String.format("URL is invalid: %s", url));
+            throw new CseInvalidDataException(String.format("URL is invalid: %s", url), e);
         }
     }
 }
