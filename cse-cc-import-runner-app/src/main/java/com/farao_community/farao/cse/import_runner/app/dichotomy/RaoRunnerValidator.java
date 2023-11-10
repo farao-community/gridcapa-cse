@@ -104,7 +104,8 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
             DichotomyRaoResponse dichotomyRaoResponse = new DichotomyRaoResponse(raoResponse, appliedForcedPras);
             return DichotomyStepResult.fromNetworkValidationResult(raoResult, dichotomyRaoResponse);
         } catch (RuntimeException e) {
-            LOGGER.error("Exception occured during validation. Nested exception: " + e.getMessage());
+            String errorMessage = "Exception occurred during validation. Nested exception: {}" + e.getMessage();
+            LOGGER.error(errorMessage);
             throw new ValidationException("RAO run failed", e);
         }
     }
