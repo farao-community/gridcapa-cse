@@ -58,8 +58,8 @@ public class FileImporter {
             URL url = new URL(urlString);
             return url.openStream(); // NOSONAR Usage of whitelist not triggered by Sonar quality assessment, even if listed as a solution to the vulnerability
         } catch (IOException e) {
-            businessLogger.error("Error while retrieving content of file : {}, Link may have expired.", FileUtil.getFilenameFromUrl(urlString));
-            throw new CseDataException(String.format("Exception occurred while retrieving file content from : %s Cause: %s ", urlString, e.getMessage()));
+            businessLogger.error("Error while retrieving content of file \"{}\", link may have expired.", FileUtil.getFilenameFromUrl(urlString));
+            throw new CseDataException(String.format("Exception occurred while retrieving file content from %s", urlString), e);
         }
     }
 

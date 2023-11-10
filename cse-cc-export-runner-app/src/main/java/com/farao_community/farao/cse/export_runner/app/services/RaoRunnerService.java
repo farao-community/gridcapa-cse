@@ -36,7 +36,7 @@ public class RaoRunnerService {
             LOGGER.info("RAO response received: {}", raoResponse);
             return raoResponse;
         } catch (Exception e) {
-            throw new CseInternalException("RAO run failed. Nested exception: " + e.getMessage());
+            throw new CseInternalException("RAO run failed", e);
         }
     }
 
