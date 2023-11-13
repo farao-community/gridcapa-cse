@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>gridcapa-cse</artifactId>
-    <version>1.21.2-SNAPSHOT</version>
+    <version>1.21.2</version>
     <packaging>pom</packaging>
 
     <name>GridCapa CSE</name>
