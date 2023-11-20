@@ -54,6 +54,12 @@ public final class UctePstProcessor {
         }
     }
 
+    public void setTransformerInActivePowerRegulation(Network network) {
+        TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
+        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
+        setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
+    }
+
     private PhaseTapChanger getPhaseTapChanger(TwoWindingsTransformer transformer) {
         if (transformer == null) {
             throw new UctePstException(String.format(
