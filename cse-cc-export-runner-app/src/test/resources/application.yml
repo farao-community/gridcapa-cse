@@ -19,6 +19,9 @@ cse-cc-runner:
     ttc-rao: TTC_RAO
   xnodes:
     file-path: xnodes/cvg_xnodes_20200714.xml
+  mendrisio:
+    mendrisio-pst-id: SMENDR3T SMENDR32 1
+    mendrisio-node-id: SMENDR3T
   pisa:
     link1:
       node-fr: FFG.IL12

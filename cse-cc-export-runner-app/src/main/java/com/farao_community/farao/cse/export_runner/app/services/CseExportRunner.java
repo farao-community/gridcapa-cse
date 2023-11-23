@@ -49,8 +49,9 @@ public class CseExportRunner {
     private final TtcRaoService ttcRaoService;
     private final Logger businessLogger;
     private final ProcessConfiguration processConfiguration;
+    private final MerchantLineService merchantLineService;
 
-    public CseExportRunner(FileImporter fileImporter, FileExporter fileExporter, PiSaService pisaService, RaoRunnerService raoRunnerService, TtcRaoService ttcRaoService, Logger businessLogger, ProcessConfiguration processConfiguration) {
+    public CseExportRunner(FileImporter fileImporter, FileExporter fileExporter, PiSaService pisaService, RaoRunnerService raoRunnerService, TtcRaoService ttcRaoService, Logger businessLogger, ProcessConfiguration processConfiguration, MerchantLineService merchantLineService) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.pisaService = pisaService;
@@ -58,6 +59,7 @@ public class CseExportRunner {
         this.ttcRaoService = ttcRaoService;
         this.businessLogger = businessLogger;
         this.processConfiguration = processConfiguration;
+        this.merchantLineService = merchantLineService;
     }
 
     public CseExportResponse run(CseExportRequest cseExportRequest) {
@@ -68,6 +70,7 @@ public class CseExportRunner {
 
         // Import and pre-treatment on Network
         Network network = fileImporter.importNetwork(cseExportRequest.getCgmUrl());
+        merchantLineService.setTransformerInActivePowerRegulation(network);
         pisaService.alignGenerators(network);
 
         // Create CRAC creation context
