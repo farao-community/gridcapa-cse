@@ -41,8 +41,12 @@ public class RaoRunnerService {
     }
 
     private RaoRequest buildRaoRequest(String id, String networkPresignedUrl, String cracUrl, String raoParametersUrl, String artifactDestinationPath) {
-
-        return new RaoRequest(id, networkPresignedUrl, cracUrl, raoParametersUrl, artifactDestinationPath);
+        return new RaoRequest.RaoRequestBuilder()
+                .withId(id)
+                .withNetworkFileUrl(networkPresignedUrl)
+                .withCracFileUrl(cracUrl)
+                .withRaoParametersFileUrl(raoParametersUrl)
+                .withResultsDestination(artifactDestinationPath)
+                .build();
     }
-
 }
