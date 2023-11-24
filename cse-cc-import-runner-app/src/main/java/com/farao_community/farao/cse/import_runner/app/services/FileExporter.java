@@ -133,7 +133,7 @@ public class FileExporter {
             jaxbMarshaller.marshal(root, stringWriter);
 
         } catch (JAXBException e) {
-            throw new CseInternalException("XSD matching error");
+            throw new CseInternalException("XSD matching error", e);
         }
         InputStream is = new ByteArrayInputStream(stringWriter.toString().getBytes());
         String outputFilePath = getFilePath(processTargetDate, processType, isImportEc);

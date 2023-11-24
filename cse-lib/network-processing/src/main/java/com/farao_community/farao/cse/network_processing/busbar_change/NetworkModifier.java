@@ -56,7 +56,7 @@ public class NetworkModifier {
             LOGGER.debug("New bus '{}' has been created", newBus.getId());
             return newBus;
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not create bus %s: %s", newBusId, e.getMessage()));
+            throw new FaraoException(String.format("Could not create bus %s", newBusId), e);
         }
     }
 
@@ -106,7 +106,7 @@ public class NetworkModifier {
             LOGGER.debug("New switch '{}' has been created", newSwitch.getId());
             return newSwitch;
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not create switch between %s and %s: %s", bus1Id, bus2Id, e.getMessage()));
+            throw new FaraoException(String.format("Could not create switch between %s and %s", bus1Id, bus2Id), e);
         }
     }
 
@@ -143,7 +143,7 @@ public class NetworkModifier {
                 throw new FaraoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
             }
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not move line %s: %s", branch.getId(), e.getMessage()));
+            throw new FaraoException(String.format("Could not move line %s", branch.getId()), e);
         }
     }
 
@@ -409,7 +409,7 @@ public class NetworkModifier {
             busesToRemove = new HashSet<>();
             cleanAliases();
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not apply all changes to network: %s", e.getMessage()));
+            throw new FaraoException("Could not apply all changes to network", e);
         }
     }
 
