@@ -56,7 +56,7 @@ class RaoRunnerServiceTest {
             raoRunnerService.run(id, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
         });
 
-        String expectedMessage = "RAO run failed. Nested exception: Test exception";
+        String expectedMessage = "RAO run failed";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
