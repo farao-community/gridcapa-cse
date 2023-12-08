@@ -25,7 +25,11 @@ import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.loadflow.LoadFlow;
+import com.powsybl.loadflow.LoadFlowParameters;
+import com.powsybl.loadflow.LoadFlowResult;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -42,6 +46,7 @@ import java.util.Set;
 public class CseExportRunner {
     private static final String NETWORK_PRE_PROCESSED_FILE_NAME = "network_pre_processed";
     private static final DateTimeFormatter OUTPUTS_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
+    private static final Logger LOGGER = LoggerFactory.getLogger(CseExportRunner.class);
     private final FileImporter fileImporter;
     private final FileExporter fileExporter;
     private final PiSaService pisaService;
@@ -94,6 +99,7 @@ public class CseExportRunner {
 
             Network networkWithPra = fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl());
             BusBarChangePostProcessor.process(networkWithPra, busBarChangeSwitchesSet);
+            runLoadFlow(networkWithPra);
             // Save again on MinIO to proper process location and naming
             String networkWithPraUrl = saveNetworkWithPra(cseExportRequest, networkWithPra);
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), cseCracCreationContext.getCrac());
@@ -128,5 +134,13 @@ public class CseExportRunner {
         int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
         String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
         return dateAndTime + "_2D" + dayOfWeek + "_ce_Transit_RAO_CSE" + FileUtil.getFileVersion(initialCgmFilename, processType);
+    }
+
+    private void runLoadFlow(Network network) {
+        LoadFlowResult result = LoadFlow.run(network, LoadFlowParameters.load());
+        if (!result.isOk()) {
+            LOGGER.error("Loadflow computation diverged on network '{}'", network.getId());
+            throw new CseInternalException(String.format("Loadflow computation diverged on network %s", network.getId()));
+        }
     }
 }
