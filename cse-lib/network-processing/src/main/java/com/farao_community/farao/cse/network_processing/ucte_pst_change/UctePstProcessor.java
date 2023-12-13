@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class UctePstProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(UctePstProcessor.class);
-
     private final String pstId;
     private final String nodeId;
 
@@ -60,7 +59,7 @@ public final class UctePstProcessor {
         setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
     }
 
-    private PhaseTapChanger getPhaseTapChanger(TwoWindingsTransformer transformer) {
+    public PhaseTapChanger getPhaseTapChanger(TwoWindingsTransformer transformer) {
         if (transformer == null) {
             throw new UctePstException(String.format(
                 "Transformer is not present in the network with the following ID : %s", pstId));
@@ -86,6 +85,10 @@ public final class UctePstProcessor {
         } else {
             return transformer.getTerminal1();
         }
+    }
+
+    public String getPstId() {
+        return pstId;
     }
 
 }
