@@ -86,9 +86,4 @@ public final class UctePstProcessor {
             return transformer.getTerminal1();
         }
     }
-
-    public String getPstId() {
-        return pstId;
-    }
-
 }
