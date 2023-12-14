@@ -8,7 +8,6 @@ package com.farao_community.farao.cse.data.cnec;
 
 import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
-import com.farao_community.farao.cse.data.xnode.XNode;
 import com.farao_community.farao.data.crac_api.*;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_api.cnec.Side;
@@ -21,7 +20,11 @@ import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationC
 import com.farao_community.farao.data.crac_creation.creator.cse.critical_branch.CseCriticalBranchCreationContext;
 import com.farao_community.farao.data.crac_creation.creator.cse.outage.CseOutageCreationContext;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
+import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
 import com.powsybl.ucte.network.UcteCountryCode;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,13 +38,13 @@ public class CracResultsHelper {
     private final CseCracCreationContext cseCracCreationContext;
     private final Crac crac;
     private final RaoResult raoResult;
-    private final List<XNode> xNodeList;
+    private final Network network;
 
-    public CracResultsHelper(CseCracCreationContext cseCracCreationContext, RaoResult result, List<XNode> xNodeList) {
+    public CracResultsHelper(CseCracCreationContext cseCracCreationContext, RaoResult result, Network network) {
         this.cseCracCreationContext = cseCracCreationContext;
         this.crac = cseCracCreationContext.getCrac();
         this.raoResult = result;
-        this.xNodeList = xNodeList;
+        this.network = network;
     }
 
     public Crac getCrac() {
@@ -131,7 +134,7 @@ public class CracResultsHelper {
                 // CNEC name is in the FlowCnec name
                 FlowCnec flowCnecPrev = crac.getFlowCnec(branchCnecCreationContext.getCreatedCnecsIds().get(Instant.PREVENTIVE));
                 if (flowCnecPrev != null) {
-                    CnecCommon cnecCommon = makeCnecCommon(flowCnecPrev.getName(), branchCnecCreationContext.getNativeBranch(),
+                    CnecCommon cnecCommon = makeCnecCommon(flowCnecPrev, branchCnecCreationContext.getNativeBranch(),
                             ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected());
                     CnecPreventive cnecPrev = new CnecPreventive();
                     cnecPrev.setCnecCommon(cnecCommon);
@@ -154,10 +157,9 @@ public class CracResultsHelper {
         branchCnecCreationContexts.forEach(branchCnecCreationContext -> {
             MergedCnec mergedCnec = new MergedCnec();
             mergedCnecs.put(branchCnecCreationContext.getNativeId(), mergedCnec);
-            String cnecName = "undefined";
+            FlowCnec flowCnec = null;
             for (Map.Entry<Instant, String> entry : branchCnecCreationContext.getCreatedCnecsIds().entrySet()) {
-                FlowCnec flowCnec = crac.getFlowCnec(entry.getValue());
-                cnecName = flowCnec.getName();
+                flowCnec = crac.getFlowCnec(entry.getValue());
                 FlowCnecResult flowCnecResult;
                 switch (entry.getKey()) {
                     case OUTAGE:
@@ -182,19 +184,19 @@ public class CracResultsHelper {
                         throw new CseDataException("Couldn't find Cnec type in cnec Id : " + flowCnec.getId());
                 }
             }
-            CnecCommon cnecCommon = makeCnecCommon(cnecName, branchCnecCreationContext.getNativeBranch(),
+            CnecCommon cnecCommon = makeCnecCommon(flowCnec, branchCnecCreationContext.getNativeBranch(),
                 ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected());
             mergedCnec.setCnecCommon(cnecCommon);
         });
         return mergedCnecs;
     }
 
-    private CnecCommon makeCnecCommon(String nativeId, NativeBranch nativeBranch, boolean selected) {
+    private CnecCommon makeCnecCommon(FlowCnec cnec, NativeBranch nativeBranch, boolean selected) {
         CnecCommon cnecCommon = new CnecCommon();
-        cnecCommon.setName(nativeId);
+        cnecCommon.setName(cnec.getName());
         cnecCommon.setCode(makeCode(nativeBranch));
-        cnecCommon.setAreaFrom(getAreaFrom(nativeBranch));
-        cnecCommon.setAreaTo(getAreaTo(nativeBranch));
+        cnecCommon.setAreaFrom(getAreaFrom(cnec.getNetworkElement()));
+        cnecCommon.setAreaTo(getAreaTo(cnec.getNetworkElement()));
         cnecCommon.setNodeFrom(nativeBranch.getFrom());
         cnecCommon.setNodeTo(nativeBranch.getTo());
         cnecCommon.setOrderCode(nativeBranch.getSuffix());
@@ -233,24 +235,12 @@ public class CracResultsHelper {
         return new FlowCnecResult(flow, iMax);
     }
 
-    public String getAreaFrom(NativeBranch nativeBranch) {
-        String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
-        String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
-        return getCountryOfNode(nativeBranch.getFrom(), countryFrom, countryTo);
-    }
-
     public String getAreaFrom(NetworkElement networkElement) {
         String nodeFrom = getNodeFrom(networkElement);
         String nodeTo = getNodeTo(networkElement);
         String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(nodeFrom, countryFrom, countryTo);
-    }
-
-    public String getAreaTo(NativeBranch nativeBranch) {
-        String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
-        String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
-        return getCountryOfNode(nativeBranch.getTo(), countryTo, countryFrom);
+        return getCountryOfNode(networkElement, countryFrom, countryTo);
     }
 
     public String getAreaTo(NetworkElement networkElement) {
@@ -258,26 +248,61 @@ public class CracResultsHelper {
         String nodeTo = getNodeTo(networkElement);
         String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(nodeTo, countryTo, countryFrom);
+        return getCountryOfNode(networkElement, countryTo, countryFrom);
     }
 
-    private String getCountryOfNode(String nodeFrom, String countryFrom, String countryTo) {
+    private String getCountryOfNode(NetworkElement networkElement, String countryFrom, String countryTo) {
         if (!countryFrom.equals(UcteCountryCode.XX.toString())) {
             return countryFrom;
         } else {
-            Optional<XNode> xNodeOpt = xNodeList.stream().filter(xNode -> xNode.getName().equals(nodeFrom)).findFirst();
-            if (xNodeOpt.isPresent()) {
-                String area1 = xNodeOpt.get().getArea1();
-                String area2 = xNodeOpt.get().getArea2();
-                if (area1.equals(countryTo)) {
-                    return area2;
-                } else {
-                    return area1;
-                }
+            String area1 = getCountrySide1(networkElement);
+            String area2 = getCountrySide2(networkElement);
+            if (StringUtils.equals(area1, countryTo)) {
+                return area2;
             } else {
-                throw new CseDataException("XNode " + nodeFrom + " Not found in XNodes configuration file");
+                return area1;
             }
         }
+    }
+
+    private String getCountrySide1(NetworkElement networkElement) {
+
+        Optional<Substation> substationOpt = network.getBranch(networkElement.getId()).getTerminal1().getVoltageLevel().getSubstation();
+        Optional<Country> country = getCountryOptionalFromSubstation(substationOpt);
+        if (country.isEmpty()) {
+            substationOpt = network.getTieLine(networkElement.getId()).getDanglingLine1().getTerminal().getVoltageLevel().getSubstation();
+            country = getCountryOptionalFromSubstation(substationOpt);
+        }
+        if (country.isPresent()) {
+            return country.get().toString();
+        } else {
+            throw new CseDataException("NetworkElement " + networkElement.getId() + " has no country on side 1");
+        }
+    }
+
+    private String getCountrySide2(NetworkElement networkElement) {
+
+        Optional<Substation> substationOpt = network.getBranch(networkElement.getId()).getTerminal2().getVoltageLevel().getSubstation();
+        Optional<Country> country = getCountryOptionalFromSubstation(substationOpt);
+        if (country.isEmpty()) {
+            substationOpt = network.getTieLine(networkElement.getId()).getDanglingLine2().getTerminal().getVoltageLevel().getSubstation();
+            country = getCountryOptionalFromSubstation(substationOpt);
+        }
+        if (country.isPresent()) {
+            return country.get().toString();
+        } else {
+            throw new CseDataException("NetworkElement " + networkElement.getId() + " has no country on side 2");
+        }
+    }
+
+    Optional<Country> getCountryOptionalFromSubstation(Optional<Substation> substation) {
+        if (substation.isPresent()) {
+            Optional<Country> countryOpt = substation.get().getCountry();
+            if (countryOpt.isPresent()) {
+                return countryOpt;
+            }
+        }
+        return Optional.empty();
     }
 
     public String getNodeFrom(NetworkElement networkElement) {
@@ -306,7 +331,7 @@ public class CracResultsHelper {
         if (contingencyOpt.isPresent()) {
             return contingencyOpt.get().getNetworkElements();
         } else {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
     }
 

@@ -20,7 +20,6 @@ import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -121,6 +120,6 @@ class CracResultsHelperTest {
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
         RaoResult raoResult = new RaoResultImporter().importRaoResult(raoResultInputStream, cseCracCreationContext.getCrac());
 
-        return new CracResultsHelper(cseCracCreationContext, raoResult, new ArrayList<>());
+        return new CracResultsHelper(cseCracCreationContext, raoResult, network);
     }
 }
