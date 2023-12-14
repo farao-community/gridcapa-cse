@@ -9,13 +9,22 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 import com.farao_community.farao.commons.FaraoException;
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteFlowElementHelper;
 import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Branch;
+import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.Identifiable;
+import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.network.LoadingLimits;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Switch;
+import com.powsybl.iidm.network.TieLine;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -27,17 +36,18 @@ public final class NetworkHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkHelper.class);
 
     private NetworkHelper() {
-      // utility class
+        // utility class
     }
 
     /**
      * Returns the line ID in the network, for a branch affected by a busbar change.
      * Tries all possible combinations that are coherent with the bus bar change RA.
-     * @param fromNodeId: the "from" node of the branch
-     * @param toNodeId: the "to" node of the branch
-     * @param suffix: the suffix or order code of the branch
-     * @param initialNodeId: the initial node ID of the bus bar change RA
-     * @param finalNodeId: the final node ID of the bus bar change RA
+     *
+     * @param fromNodeId:          the "from" node of the branch
+     * @param toNodeId:            the "to" node of the branch
+     * @param suffix:              the suffix or order code of the branch
+     * @param initialNodeId:       the initial node ID of the bus bar change RA
+     * @param finalNodeId:         the final node ID of the bus bar change RA
      * @param ucteNetworkAnalyzer: the UCTE network analyzer
      * @return the ID of the line in the network if it is found
      * @throws FaraoException if the line is not found
@@ -106,8 +116,8 @@ public final class NetworkHelper {
      * The switches are open or closed depending on the initial state of the branch
      *
      * @param switchPairToCreate: object containing ID of the branch, ID of node1, ID of node2
-     * @param  networkModifier: object that modifies a network
-     * @param fictitiousBusId: the fictitious bus ID to put the switch pair on
+     * @param networkModifier:    object that modifies a network
+     * @param fictitiousBusId:    the fictitious bus ID to put the switch pair on
      * @return a BusBarEquivalentModel object, mapping initial and final node IDs to the two created switches' IDs
      */
     public static BusBarEquivalentModel createSwitchPair(SwitchPairToCreate switchPairToCreate, NetworkModifier networkModifier, String fictitiousBusId) {
@@ -135,10 +145,10 @@ public final class NetworkHelper {
 
     private static Double getMinimumCurrentLimit(Branch<?> branch) {
         return Stream.of(branch.getCurrentLimits1(), branch.getCurrentLimits2())
-            .flatMap(Optional::stream)
-            .map(LoadingLimits::getPermanentLimit)
-            .min(Double::compareTo)
-            .orElse(null);
+                .flatMap(Optional::stream)
+                .map(LoadingLimits::getPermanentLimit)
+                .min(Double::compareTo)
+                .orElse(null);
     }
 
     /**
@@ -162,8 +172,8 @@ public final class NetworkHelper {
     public static Set<Bus> getBuses(Switch networkSwitch) {
         VoltageLevel voltageLevel = networkSwitch.getVoltageLevel();
         return Set.of(
-            voltageLevel.getBusBreakerView().getBus1(networkSwitch.getId()),
-            voltageLevel.getBusBreakerView().getBus2(networkSwitch.getId())
+                voltageLevel.getBusBreakerView().getBus1(networkSwitch.getId()),
+                voltageLevel.getBusBreakerView().getBus2(networkSwitch.getId())
         );
     }
 
@@ -204,6 +214,7 @@ public final class NetworkHelper {
         /**
          * Depending on the contents of the "SwitchPairToCreate" and on the network object, returns the side of the branch
          * to move to the fictitious bus
+         *
          * @param network: the Network
          */
         private Branch.Side computeBranchSideToModify(Network network) {
@@ -240,7 +251,7 @@ public final class NetworkHelper {
         }
 
         String branchAndSide() {
-            return branchId  + " - " + branchSideToModify.toString();
+            return branchId + " - " + branchSideToModify.toString();
         }
 
         Branch.Side getBranchSideToModify() {
@@ -262,8 +273,8 @@ public final class NetworkHelper {
             }
             SwitchPairToCreate other = (SwitchPairToCreate) obj;
             return this.branchId.equals(other.branchId) &&
-                ((this.initialNodeId.equals(other.initialNodeId) && this.finalNodeId.equals(other.finalNodeId)) ||
-                    (this.initialNodeId.equals(other.finalNodeId) && this.finalNodeId.equals(other.initialNodeId)));
+                    (this.initialNodeId.equals(other.initialNodeId) && this.finalNodeId.equals(other.finalNodeId) ||
+                            this.initialNodeId.equals(other.finalNodeId) && this.finalNodeId.equals(other.initialNodeId));
         }
 
         @Override
