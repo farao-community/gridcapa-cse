@@ -27,7 +27,7 @@ public final class DateTimeUtil {
         try {
             OffsetDateTime startTime = OffsetDateTime.parse(startingTime);
             OffsetDateTime endTime = OffsetDateTime.parse(endingTime);
-            return targetDate.isEqual(startTime) || (targetDate.isAfter(startTime) && targetDate.isBefore(endTime));
+            return targetDate.isEqual(startTime) || targetDate.isAfter(startTime) && targetDate.isBefore(endTime);
         } catch (DateTimeParseException e) {
             double utcHour = targetDate.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime().getHour();
             double startHour = LocalTime.parse(startingTime, DateTimeFormatter.ofPattern("'T'HH:mm'Z'")).getHour();
