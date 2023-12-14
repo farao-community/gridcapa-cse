@@ -170,11 +170,6 @@ public class CracResultsHelper {
             FlowCnec flowCnec = null;
             for (Map.Entry<Instant, String> entry : branchCnecCreationContext.getCreatedCnecsIds().entrySet()) {
                 flowCnec = crac.getFlowCnec(entry.getValue());
-                if (flowCnec.isMonitored()) {
-                    System.out.println("MONITORED " + flowCnec.getName());
-                } else {
-                    System.out.println("NOT MONITORED " + flowCnec.getName());
-                }
                 cnecName = flowCnec.getName();
                 FlowCnecResult flowCnecResult;
                 switch (entry.getKey()) {
