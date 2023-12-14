@@ -9,6 +9,9 @@ package com.farao_community.farao.cse.export_runner.app.services;
 import com.farao_community.farao.cse.export_runner.app.configurations.MendrisioConfiguration;
 import com.farao_community.farao.cse.network_processing.ucte_pst_change.UctePstProcessor;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.PhaseTapChanger;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,16 +21,24 @@ import org.springframework.stereotype.Service;
 public class MerchantLineService {
 
     private final UctePstProcessor uctePstProcessor;
+    private final Logger businessLogger;
+    private final String mendrisioPstId;
 
-    public MerchantLineService(MendrisioConfiguration mendrisioConfiguration) {
-
+    public MerchantLineService(MendrisioConfiguration mendrisioConfiguration, Logger businessLogger) {
+        this.businessLogger = businessLogger;
+        this.mendrisioPstId = mendrisioConfiguration.getMendrisioPstId();
         this.uctePstProcessor = new UctePstProcessor(
                 mendrisioConfiguration.getMendrisioPstId(),
                 mendrisioConfiguration.getMendrisioNodeId());
     }
 
     public void setTransformerInActivePowerRegulation(Network network) {
-        uctePstProcessor.setTransformerInActivePowerRegulation(network);
-
+        TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(mendrisioPstId);
+        PhaseTapChanger phaseTapChanger = uctePstProcessor.getPhaseTapChanger(transformer);
+        if (Double.isNaN(phaseTapChanger.getRegulationValue())) {
+            businessLogger.warn("PST {} cannot be put in flow regulation mode, because no target flow was available in input CGM", mendrisioPstId);
+        } else {
+            uctePstProcessor.setTransformerInActivePowerRegulation(network);
+        }
     }
 }
