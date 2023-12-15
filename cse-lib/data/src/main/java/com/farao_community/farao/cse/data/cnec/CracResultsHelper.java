@@ -192,11 +192,12 @@ public class CracResultsHelper {
     }
 
     private CnecCommon makeCnecCommon(FlowCnec cnec, NativeBranch nativeBranch, boolean selected) {
+        NetworkElement networkElement = cnec.getNetworkElement();
         CnecCommon cnecCommon = new CnecCommon();
         cnecCommon.setName(cnec.getName());
         cnecCommon.setCode(makeCode(nativeBranch));
-        cnecCommon.setAreaFrom(getAreaFrom(cnec.getNetworkElement()));
-        cnecCommon.setAreaTo(getAreaTo(cnec.getNetworkElement()));
+        cnecCommon.setAreaFrom(getAreaFrom(networkElement, nativeBranch));
+        cnecCommon.setAreaTo(getAreaTo(networkElement, nativeBranch));
         cnecCommon.setNodeFrom(nativeBranch.getFrom());
         cnecCommon.setNodeTo(nativeBranch.getTo());
         cnecCommon.setOrderCode(nativeBranch.getSuffix());
@@ -251,13 +252,25 @@ public class CracResultsHelper {
         return getCountryOfNode(networkElement, countryTo, countryFrom);
     }
 
-    private String getCountryOfNode(NetworkElement networkElement, String countryFrom, String countryTo) {
-        if (!countryFrom.equals(UcteCountryCode.XX.toString())) {
-            return countryFrom;
+    public String getAreaFrom(NetworkElement networkElement, NativeBranch nativeBranch) {
+        String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
+        String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
+        return getCountryOfNode(networkElement, countryFrom, countryTo);
+    }
+
+    public String getAreaTo(NetworkElement networkElement, NativeBranch nativeBranch) {
+        String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
+        String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
+        return getCountryOfNode(networkElement, countryTo, countryFrom);
+    }
+
+    private String getCountryOfNode(NetworkElement networkElement, String nodeCountry, String destinationNodeCountry) {
+        if (!nodeCountry.equals(UcteCountryCode.XX.toString())) {
+            return nodeCountry;
         } else {
             String area1 = getCountrySide1(networkElement);
             String area2 = getCountrySide2(networkElement);
-            if (StringUtils.equals(area1, countryTo)) {
+            if (StringUtils.equals(area1, destinationNodeCountry)) {
                 return area2;
             } else {
                 return area1;
