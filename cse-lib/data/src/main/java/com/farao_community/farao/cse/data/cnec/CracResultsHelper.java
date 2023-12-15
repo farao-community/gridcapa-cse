@@ -266,13 +266,8 @@ public class CracResultsHelper {
     }
 
     private String getCountrySide1(NetworkElement networkElement) {
-
         Optional<Substation> substationOpt = network.getBranch(networkElement.getId()).getTerminal1().getVoltageLevel().getSubstation();
         Optional<Country> country = getCountryOptionalFromSubstation(substationOpt);
-        if (country.isEmpty()) {
-            substationOpt = network.getTieLine(networkElement.getId()).getDanglingLine1().getTerminal().getVoltageLevel().getSubstation();
-            country = getCountryOptionalFromSubstation(substationOpt);
-        }
         if (country.isPresent()) {
             return country.get().toString();
         } else {
@@ -281,13 +276,8 @@ public class CracResultsHelper {
     }
 
     private String getCountrySide2(NetworkElement networkElement) {
-
         Optional<Substation> substationOpt = network.getBranch(networkElement.getId()).getTerminal2().getVoltageLevel().getSubstation();
         Optional<Country> country = getCountryOptionalFromSubstation(substationOpt);
-        if (country.isEmpty()) {
-            substationOpt = network.getTieLine(networkElement.getId()).getDanglingLine2().getTerminal().getVoltageLevel().getSubstation();
-            country = getCountryOptionalFromSubstation(substationOpt);
-        }
         if (country.isPresent()) {
             return country.get().toString();
         } else {
