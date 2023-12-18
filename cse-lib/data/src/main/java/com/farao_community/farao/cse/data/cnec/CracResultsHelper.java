@@ -252,13 +252,13 @@ public class CracResultsHelper {
         return getCountryOfNode(networkElement, countryTo, countryFrom);
     }
 
-    public String getAreaFrom(NetworkElement networkElement, NativeBranch nativeBranch) {
+    private String getAreaFrom(NetworkElement networkElement, NativeBranch nativeBranch) {
         String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
         return getCountryOfNode(networkElement, countryFrom, countryTo);
     }
 
-    public String getAreaTo(NetworkElement networkElement, NativeBranch nativeBranch) {
+    private String getAreaTo(NetworkElement networkElement, NativeBranch nativeBranch) {
         String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
         return getCountryOfNode(networkElement, countryTo, countryFrom);
