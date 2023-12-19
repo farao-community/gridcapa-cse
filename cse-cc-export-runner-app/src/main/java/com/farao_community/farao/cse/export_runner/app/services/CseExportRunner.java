@@ -103,7 +103,8 @@ public class CseExportRunner {
             // Save again on MinIO to proper process location and naming
             String networkWithPraUrl = saveNetworkWithPra(cseExportRequest, networkWithPra);
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), cseCracCreationContext.getCrac());
-            String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, cseCracCreationContext, raoResult, fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl()), preprocessedPsts);
+            Network networkForTtc = fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl());
+            String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, cseCracCreationContext, raoResult, networkForTtc, preprocessedPsts);
             return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, networkWithPraUrl, logsFileUrl);
         } catch (CseInternalException e) {
             // Temporary return of an empty string for ttc logs file and cgm file
