@@ -107,6 +107,25 @@ class CracResultsHelperTest {
         assertEquals(0, frFrMergedCnec.getiMaxAfterSps(), .1);
     }
 
+    @Test
+    void geMergedCnecsXnodeTest() {
+        CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
+        Map<String, MergedCnec> mergedCnecs = cracResultsHelper.getMergedCnecs("outage_4_xnode");
+        assertEquals(1, mergedCnecs.size());
+
+        MergedCnec xnodeMergedCnec = mergedCnecs.get("Xnode - XAA_AA11 - NNL2AA1 - outage_4_xnode");
+        assertEquals("Xnode", xnodeMergedCnec.getCnecCommon().getName());
+        assertEquals("XAA_AA11 NNL2AA1 1", xnodeMergedCnec.getCnecCommon().getCode());
+        assertEquals("FR", xnodeMergedCnec.getCnecCommon().getAreaFrom());
+        assertEquals("NL", xnodeMergedCnec.getCnecCommon().getAreaTo());
+        assertEquals(Double.NaN, xnodeMergedCnec.getiAfterOutage(), .1);
+        assertEquals(2940, xnodeMergedCnec.getiMaxAfterOutage(), .1);
+        assertEquals(Double.NaN, xnodeMergedCnec.getiAfterCra(), .1);
+        assertEquals(2450, xnodeMergedCnec.getiMaxAfterCra(), .1);
+        assertEquals(0, xnodeMergedCnec.getiAfterSps(), .1);
+        assertEquals(0, xnodeMergedCnec.getiMaxAfterSps(), .1);
+    }
+
     private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) {
         InputStream cracInputStream = getClass().getResourceAsStream(cracXmlFileName);
         CseCracImporter importer = new CseCracImporter();
