@@ -8,13 +8,12 @@ package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_rao.TtcRao;
-import com.farao_community.farao.cse.data.xnode.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.CseRaoResult;
 import com.farao_community.farao.cse.export_runner.app.FileUtil;
-import com.farao_community.farao.cse.export_runner.app.configurations.XNodesConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
+import com.powsybl.iidm.network.Network;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -26,18 +25,16 @@ import java.util.Map;
 public class TtcRaoService {
 
     private final FileExporter fileExporter;
-    private final XNodesConfiguration xNodesConfiguration;
 
-    public TtcRaoService(FileExporter fileExporter, XNodesConfiguration xNodesConfiguration) {
+    public TtcRaoService(FileExporter fileExporter) {
         this.fileExporter = fileExporter;
-        this.xNodesConfiguration = xNodesConfiguration;
     }
 
-    public String saveTtcRao(CseExportRequest request, CseCracCreationContext cracCreationContext, RaoResult raoResult, Map<String, Integer> preprocessedPsts) {
+    public String saveTtcRao(CseExportRequest request, CseCracCreationContext cracCreationContext, RaoResult raoResult, Network network, Map<String, Integer> preprocessedPsts) {
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
             cracCreationContext,
             raoResult,
-            XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath()));
+            network);
         CseRaoResult cseRaoResult = TtcRao.generate(request.getTargetProcessDateTime(), cracResultsHelper, preprocessedPsts);
         return fileExporter.saveTtcRao(cseRaoResult, request.getProcessType(), request.getTargetProcessDateTime(), FileUtil.getFilenameFromUrl(request.getCgmUrl()));
     }

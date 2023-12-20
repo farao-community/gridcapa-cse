@@ -42,6 +42,19 @@
                     <Order v="1"/>
                 </Branch>
             </Outage>
+            <Outage>
+                <Name v="outage_4_xnode"/>
+                <Branch>
+                    <FromNode v="FFR3AA1"/>
+                    <ToNode v="XAA_AA11"/>
+                    <Order v="1"/>
+                </Branch>
+                <Branch>
+                    <FromNode v="XAA_AA11"/>
+                    <ToNode v="NNL2AA1"/>
+                    <Order v="1"/>
+                </Branch>
+            </Outage>
         </Outages>
         <RemedialActions>
             <RemedialAction>
@@ -148,6 +161,29 @@
                     </Node>
                 </Generation>
             </RemedialAction>
+
+            <RemedialAction>
+                <Name v="cra_7"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <Operator v="FR"/>
+                <Application v="CURATIVE"/>
+                <SharedWith v="None"/>
+                <Status>
+                    <Branch>
+                        <FromNode v="FFR3AA1"/>
+                        <ToNode v="XAA_AA11*"/>
+                        <Order v="1"/>
+                        <Status v="OPEN"/>
+                    </Branch>
+                    <Branch>
+                        <FromNode v="XAA_AA11"/>
+                        <ToNode v="NNL2AA1*"/>
+                        <Order v="1"/>
+                        <Status v="OPEN"/>
+                    </Branch>
+                </Status>
+            </RemedialAction>
+
         </RemedialActions>
         <CriticalBranches>
             <BaseCaseBranches>
@@ -202,6 +238,25 @@
                     <ImaxAfterPRA unit="A" v="2590"/>
                     <ImaxAfterCRA unit="A" v="2585"/>
                     <Direction v="DIRECT"/>
+                </Branch>
+            </CriticalBranch>
+            <CriticalBranch>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <Outage v="outage_4_xnode"/>
+                <Branch>
+                    <Name v="Xnode"/>
+                    <AlwaysSelected v="true"/>
+                    <FromNode v="XAA_AA11"/>
+                    <ToNode v="NNL2AA1"/>
+                    <Order v="1"/>
+                    <ImaxAfterOutage v="120" unit="Pct"/>
+                    <ImaxAfterCRA v="100" unit="Pct"/>
+                    <Vn v="380" unit="kV"/>
+                    <minMargin v="70" unit="Pct"/>
+                    <Direction v="DIRECT"/>
+                    <RemedialActions>
+                        <Name v="cra_7"/>
+                    </RemedialActions>
                 </Branch>
             </CriticalBranch>
         </CriticalBranches>

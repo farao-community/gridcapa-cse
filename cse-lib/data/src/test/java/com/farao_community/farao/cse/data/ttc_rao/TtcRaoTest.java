@@ -59,7 +59,7 @@ class TtcRaoTest {
         CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
         RaoResult raoResult = new RaoResultImporter().importRaoResult(raoResultInputStream, cseCracCreationContext.getCrac());
-        return new CracResultsHelper(cseCracCreationContext, raoResult, new ArrayList<>());
+        return new CracResultsHelper(cseCracCreationContext, raoResult, network);
     }
 
     @Test

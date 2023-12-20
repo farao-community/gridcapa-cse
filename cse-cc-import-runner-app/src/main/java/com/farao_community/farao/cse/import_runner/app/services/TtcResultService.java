@@ -10,14 +10,12 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
-import com.farao_community.farao.cse.data.xnode.XNodeReader;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.NetworkShifterUtil;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.farao_community.farao.cse.import_runner.app.configurations.XNodesConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
@@ -36,12 +34,10 @@ public class TtcResultService {
 
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
-    private final XNodesConfiguration xNodesConfiguration;
 
-    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter, XNodesConfiguration xNodesConfiguration) {
+    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
-        this.xNodesConfiguration = xNodesConfiguration;
     }
 
     public String saveFailedTtcResult(CseRequest cseRequest, String firstShiftNetworkName, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason) {
@@ -76,7 +72,7 @@ public class TtcResultService {
 
         RaoResult raoResult = fileImporter.importRaoResult(highestSecureStepRaoResponse.getRaoResponse().getRaoResultFileUrl(), cseCracCreationContext.getCrac());
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
-            cseCracCreationContext, raoResult, XNodeReader.getXNodes(xNodesConfiguration.getxNodesFilePath()));
+            cseCracCreationContext, raoResult, networkWithPra);
         Timestamp timestamp = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, preprocessedPisaLinks);
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
     }
