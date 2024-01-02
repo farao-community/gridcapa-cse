@@ -20,6 +20,7 @@ public class CnecCommon {
     private String nodeTo;
     private String orderCode;
     private boolean selected;
+    private boolean isMonitored;
 
     public String getName() {
         return name;
@@ -83,5 +84,13 @@ public class CnecCommon {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public boolean isMonitored() {
+        return isMonitored;
+    }
+
+    public void setMonitored(boolean monitored) {
+        isMonitored = monitored;
     }
 }

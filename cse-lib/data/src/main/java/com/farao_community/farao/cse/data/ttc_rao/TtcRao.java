@@ -8,9 +8,21 @@
 package com.farao_community.farao.cse.data.ttc_rao;
 
 import com.farao_community.farao.cse.data.cnec.CnecCommon;
-import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.cnec.CnecPreventive;
-import com.farao_community.farao.cse.data.xsd.ttc_rao.*;
+import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.Action;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.AfterOutageBranchResult;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.BooleanValue;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.Branch;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.CseRaoResult;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.IValue;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.IntValue;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.Outage;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.OutageResult;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.PreventiveBranchResult;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.PreventiveResult;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.Status;
+import com.farao_community.farao.cse.data.xsd.ttc_rao.StringValue;
 import com.farao_community.farao.data.crac_api.Contingency;
 import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_creation.creator.api.ElementaryCreationContext;
@@ -99,19 +111,22 @@ public final class TtcRao {
             outageResult.setCurativeActions(curativeActions);
 
             List<AfterOutageBranchResult> afterOutageBranchResults = new ArrayList<>();
-            cracResultsHelper.getMergedCnecs(contingency.getId()).values().forEach(mergedCnec -> {
-                AfterOutageBranchResult afterOutageBranchResult = new AfterOutageBranchResult();
-                afterOutageBranchResult.setName(mergedCnec.getCnecCommon().getName());
-                fillBranchCommonPropertiesFromCnecCommon(mergedCnec.getCnecCommon(), afterOutageBranchResult);
+            cracResultsHelper.getMergedCnecs(contingency.getId()).values()
+                    // We want to exclude mnec from the TTCRao
+                    .stream().filter(mergedCnec -> !mergedCnec.getCnecCommon().isMonitored())
+                    .forEach(mergedCnec -> {
+                        AfterOutageBranchResult afterOutageBranchResult = new AfterOutageBranchResult();
+                        afterOutageBranchResult.setName(mergedCnec.getCnecCommon().getName());
+                        fillBranchCommonPropertiesFromCnecCommon(mergedCnec.getCnecCommon(), afterOutageBranchResult);
 
-                afterOutageBranchResult.setIMaxAfterOutage(getIValue((int) mergedCnec.getiMaxAfterOutage()));
-                afterOutageBranchResult.setIAfterOutageAfterOptimization(getIValue((int) mergedCnec.getiAfterOutage()));
-                afterOutageBranchResult.setIAfterOutageBeforeOptimization(getIValue((int) mergedCnec.getiAfterOutageBeforeOptimisation()));
+                        afterOutageBranchResult.setIMaxAfterOutage(getIValue((int) mergedCnec.getiMaxAfterOutage()));
+                        afterOutageBranchResult.setIAfterOutageAfterOptimization(getIValue((int) mergedCnec.getiAfterOutage()));
+                        afterOutageBranchResult.setIAfterOutageBeforeOptimization(getIValue((int) mergedCnec.getiAfterOutageBeforeOptimisation()));
 
-                afterOutageBranchResult.setIMaxAfterCRA(getIValue((int) mergedCnec.getiMaxAfterCra()));
-                afterOutageBranchResult.setIAfterCRAAfterOptimization(getIValue((int) mergedCnec.getiAfterCra()));
-                afterOutageBranchResults.add(afterOutageBranchResult);
-            });
+                        afterOutageBranchResult.setIMaxAfterCRA(getIValue((int) mergedCnec.getiMaxAfterCra()));
+                        afterOutageBranchResult.setIAfterCRAAfterOptimization(getIValue((int) mergedCnec.getiAfterCra()));
+                        afterOutageBranchResults.add(afterOutageBranchResult);
+                    });
             outageResult.getMonitoredElement().addAll(afterOutageBranchResults);
             outageResultList.add(outageResult);
         });
@@ -145,52 +160,52 @@ public final class TtcRao {
     private static List<Action> getPreventiveActions(CracResultsHelper cracResultsHelper, Map<String, Integer> preprocessedPsts) {
         List<Action> preventiveActions = new ArrayList<>();
         List<RemedialActionCreationContext> importedRemedialActionCreationContext = cracResultsHelper.getCseCracCreationContext()
-            .getRemedialActionCreationContexts()
-            .stream()
-            .filter(ElementaryCreationContext::isImported)
-            .collect(Collectors.toList());
+                .getRemedialActionCreationContexts()
+                .stream()
+                .filter(ElementaryCreationContext::isImported)
+                .collect(Collectors.toList());
 
         importedRemedialActionCreationContext.stream()
-            .filter(remedialActionCreationContext -> cracResultsHelper.getPreventiveNetworkActionIds().contains(remedialActionCreationContext.getCreatedRAId()))
-            .forEach(remedialActionCreationContext -> addTopologicalAction(preventiveActions, remedialActionCreationContext));
+                .filter(remedialActionCreationContext -> cracResultsHelper.getPreventiveNetworkActionIds().contains(remedialActionCreationContext.getCreatedRAId()))
+                .forEach(remedialActionCreationContext -> addTopologicalAction(preventiveActions, remedialActionCreationContext));
 
         importedRemedialActionCreationContext.stream()
-            .filter(CsePstCreationContext.class::isInstance)
-            .map(CsePstCreationContext.class::cast)
-            .filter(csePstCreationContext -> cracResultsHelper.getPreventivePstRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
-            .forEach(csePstCreationContext -> addPstAction(preventiveActions, csePstCreationContext, cracResultsHelper::getTapOfPstRangeActionInPreventive));
+                .filter(CsePstCreationContext.class::isInstance)
+                .map(CsePstCreationContext.class::cast)
+                .filter(csePstCreationContext -> cracResultsHelper.getPreventivePstRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
+                .forEach(csePstCreationContext -> addPstAction(preventiveActions, csePstCreationContext, cracResultsHelper::getTapOfPstRangeActionInPreventive));
         addPstsActionsModifiedByPreprocessingAndNotByRao(importedRemedialActionCreationContext, preprocessedPsts, cracResultsHelper, preventiveActions);
         importedRemedialActionCreationContext.stream()
-            .filter(CseHvdcCreationContext.class::isInstance)
-            .map(CseHvdcCreationContext.class::cast)
-            .filter(csePstCreationContext -> cracResultsHelper.getPreventiveHvdcRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
-            .forEach(cseHvdcCreationContext -> addHvdcAction(preventiveActions, cseHvdcCreationContext, cracResultsHelper::getSetpointOfHvdcRangeActionInPreventive));
+                .filter(CseHvdcCreationContext.class::isInstance)
+                .map(CseHvdcCreationContext.class::cast)
+                .filter(csePstCreationContext -> cracResultsHelper.getPreventiveHvdcRangeActionIds().contains(csePstCreationContext.getCreatedRAId()))
+                .forEach(cseHvdcCreationContext -> addHvdcAction(preventiveActions, cseHvdcCreationContext, cracResultsHelper::getSetpointOfHvdcRangeActionInPreventive));
         return preventiveActions;
     }
 
     private static List<Action> getCurativeActions(String contingencyId, CracResultsHelper cracResultsHelper) {
         List<Action> curativeActions = new ArrayList<>();
         List<RemedialActionCreationContext> importedRemedialActionCreationContext = cracResultsHelper.getCseCracCreationContext()
-            .getRemedialActionCreationContexts()
-            .stream()
-            .filter(ElementaryCreationContext::isImported)
-            .collect(Collectors.toList());
+                .getRemedialActionCreationContexts()
+                .stream()
+                .filter(ElementaryCreationContext::isImported)
+                .collect(Collectors.toList());
 
         importedRemedialActionCreationContext.stream()
-            .filter(remedialActionCreationContext -> cracResultsHelper.getCurativeNetworkActionIds(contingencyId).contains(remedialActionCreationContext.getCreatedRAId()))
-            .forEach(remedialActionCreationContext -> addTopologicalAction(curativeActions, remedialActionCreationContext));
+                .filter(remedialActionCreationContext -> cracResultsHelper.getCurativeNetworkActionIds(contingencyId).contains(remedialActionCreationContext.getCreatedRAId()))
+                .forEach(remedialActionCreationContext -> addTopologicalAction(curativeActions, remedialActionCreationContext));
 
         importedRemedialActionCreationContext.stream()
-            .filter(CsePstCreationContext.class::isInstance)
-            .map(CsePstCreationContext.class::cast)
-            .filter(csePstCreationContext -> cracResultsHelper.getCurativePstRangeActionIds(contingencyId).contains(csePstCreationContext.getCreatedRAId()))
-            .forEach(csePstCreationContext -> addPstAction(curativeActions, csePstCreationContext, raId -> cracResultsHelper.getTapOfPstRangeActionInCurative(contingencyId, raId)));
+                .filter(CsePstCreationContext.class::isInstance)
+                .map(CsePstCreationContext.class::cast)
+                .filter(csePstCreationContext -> cracResultsHelper.getCurativePstRangeActionIds(contingencyId).contains(csePstCreationContext.getCreatedRAId()))
+                .forEach(csePstCreationContext -> addPstAction(curativeActions, csePstCreationContext, raId -> cracResultsHelper.getTapOfPstRangeActionInCurative(contingencyId, raId)));
 
         importedRemedialActionCreationContext.stream()
-            .filter(CseHvdcCreationContext.class::isInstance)
-            .map(CseHvdcCreationContext.class::cast)
-            .filter(csePstCreationContext -> cracResultsHelper.getCurativeHvdcRangeActionIds(contingencyId).contains(csePstCreationContext.getCreatedRAId()))
-            .forEach(cseHvdcCreationContext -> addHvdcAction(curativeActions, cseHvdcCreationContext, raId -> cracResultsHelper.getSetpointOfHvdcRangeActionInCurative(contingencyId, raId)));
+                .filter(CseHvdcCreationContext.class::isInstance)
+                .map(CseHvdcCreationContext.class::cast)
+                .filter(csePstCreationContext -> cracResultsHelper.getCurativeHvdcRangeActionIds(contingencyId).contains(csePstCreationContext.getCreatedRAId()))
+                .forEach(cseHvdcCreationContext -> addHvdcAction(curativeActions, cseHvdcCreationContext, raId -> cracResultsHelper.getSetpointOfHvdcRangeActionInCurative(contingencyId, raId)));
 
         return curativeActions;
     }
@@ -244,7 +259,7 @@ public final class TtcRao {
         actions.add(action);
     }
 
-    private static void addHvdcAction(List<Action>  actions, CseHvdcCreationContext cseHvdcCreationContext, SetPointFinder finder) {
+    private static void addHvdcAction(List<Action> actions, CseHvdcCreationContext cseHvdcCreationContext, SetPointFinder finder) {
         String nativeId = cseHvdcCreationContext.getNativeId();
         int setPoint = finder.findSetPoint(cseHvdcCreationContext.getCreatedRAId());
         Action action = new Action();
