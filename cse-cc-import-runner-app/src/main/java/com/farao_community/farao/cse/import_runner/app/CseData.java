@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app;
 
-import com.farao_community.farao.commons.EICode;
+import com.powsybl.openrao.commons.EICode;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;

@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
-import com.farao_community.farao.commons.EICode;
+import com.powsybl.openrao.commons.EICode;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.powsybl.iidm.network.Country;

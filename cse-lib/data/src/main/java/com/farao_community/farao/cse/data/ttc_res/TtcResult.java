@@ -9,15 +9,16 @@ package com.farao_community.farao.cse.data.ttc_res;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.cnec.*;
 import com.farao_community.farao.cse.data.xsd.ttc_res.*;
-import com.farao_community.farao.data.crac_api.Contingency;
-import com.farao_community.farao.data.crac_api.Instant;
-import com.farao_community.farao.data.crac_api.NetworkElement;
-import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
-import com.farao_community.farao.data.crac_creation.creator.api.ElementaryCreationContext;
-import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.RemedialActionCreationContext;
-import com.farao_community.farao.data.crac_creation.creator.cse.outage.CseOutageCreationContext;
-import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CseHvdcCreationContext;
-import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CsePstCreationContext;
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracapi.Contingency;
+import com.powsybl.openrao.data.cracapi.NetworkElement;
+import com.powsybl.openrao.data.cracapi.InstantKind;
+import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
+import com.powsybl.openrao.data.craccreation.creator.api.ElementaryCreationContext;
+import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.RemedialActionCreationContext;
+import com.powsybl.openrao.data.craccreation.creator.cse.outage.CseOutageCreationContext;
+import com.powsybl.openrao.data.craccreation.creator.cse.remedialaction.CseHvdcCreationContext;
+import com.powsybl.openrao.data.craccreation.creator.cse.remedialaction.CsePstCreationContext;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -301,6 +302,7 @@ public final class TtcResult {
     }
 
     private static void fillLimitingElement(CracResultsHelper cracResultsHelper, Timestamp ttcResults) {
+        Crac crac = cracResultsHelper.getCrac();
         LimitingElement limitingElement = new LimitingElement();
         CriticalBranch mostLimitingCriticalBranch = new CriticalBranch();
         Outage outage = new Outage();
@@ -314,7 +316,7 @@ public final class TtcResult {
         if (worstCnec.getState().isPreventive()) {
             outageName.setV(CracResultsHelper.PREVENTIVE_OUTAGE_NAME);
             outage.setName(outageName);
-            fillPreventiveCnecFlow(mostLimitingElement, cracResultsHelper.getFlowCnecResultInAmpere(worstCnec, Instant.PREVENTIVE));
+            fillPreventiveCnecFlow(mostLimitingElement, cracResultsHelper.getFlowCnecResultInAmpere(worstCnec, crac.getPreventiveInstant()));
         } else {
             outageName.setV(CracResultsHelper.getOutageName(worstCnec));
             outage.setName(outageName);
@@ -322,8 +324,8 @@ public final class TtcResult {
                 fillOutageElements(cracResultsHelper, outage, networkElement)
             );
 
-            if (worstCnec.getState().getInstant() == Instant.CURATIVE) {
-                FlowCnecResult flowCnecResult = cracResultsHelper.getFlowCnecResultInAmpere(worstCnec, Instant.CURATIVE);
+            if (worstCnec.getState().getInstant() == crac.getLastInstant()) {
+                FlowCnecResult flowCnecResult = cracResultsHelper.getFlowCnecResultInAmpere(worstCnec, crac.getLastInstant());
                 IAfterCRA iAfterCRA = new IAfterCRA();
                 iAfterCRA.setUnit(FLOW_UNIT);
                 iAfterCRA.setV(BigInteger.valueOf((int) flowCnecResult.getFlow()));
@@ -332,8 +334,8 @@ public final class TtcResult {
                 imaxAfterCRA.setV(BigInteger.valueOf((int) flowCnecResult.getiMax()));
                 mostLimitingElement.setIAfterCRA(iAfterCRA);
                 mostLimitingElement.setImaxAfterCRA(imaxAfterCRA);
-            } else if (worstCnec.getState().getInstant() == Instant.OUTAGE) {
-                FlowCnecResult flowCnecResult = cracResultsHelper.getFlowCnecResultInAmpere(worstCnec, Instant.PREVENTIVE);
+            } else if (worstCnec.getState().getInstant() == crac.getOutageInstant()) {
+                FlowCnecResult flowCnecResult = cracResultsHelper.getFlowCnecResultInAmpere(worstCnec, crac.getPreventiveInstant());
                 IAfterOutage iAfterOutage = new IAfterOutage();
                 iAfterOutage.setUnit(FLOW_UNIT);
                 iAfterOutage.setV(BigInteger.valueOf((int) flowCnecResult.getFlow()));
@@ -342,8 +344,8 @@ public final class TtcResult {
                 imaxAfterOutage.setV(BigInteger.valueOf((int) flowCnecResult.getiMax()));
                 mostLimitingElement.setIAfterOutage(iAfterOutage);
                 mostLimitingElement.setImaxAfterOutage(imaxAfterOutage);
-            } else if (worstCnec.getState().getInstant() == Instant.AUTO) {
-                FlowCnecResult flowCnecResult = cracResultsHelper.getFlowCnecResultInAmpere(worstCnec, Instant.PREVENTIVE);
+            } else if (worstCnec.getState().getInstant() == crac.getInstant(InstantKind.AUTO)) {
+                FlowCnecResult flowCnecResult = cracResultsHelper.getFlowCnecResultInAmpere(worstCnec, crac.getPreventiveInstant());
                 IAfterSPS iAfterSPS = new IAfterSPS();
                 iAfterSPS.setUnit(FLOW_UNIT);
                 iAfterSPS.setV(BigInteger.valueOf((int) flowCnecResult.getFlow()));

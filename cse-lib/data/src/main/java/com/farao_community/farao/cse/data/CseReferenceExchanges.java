@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.cse.data;
 
-import com.farao_community.farao.commons.EICode;
+import com.powsybl.openrao.commons.EICode;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.iidm.network.Country;
 import org.apache.poi.hssf.usermodel.HSSFRow;

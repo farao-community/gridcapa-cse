@@ -10,12 +10,14 @@ import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.UrlWhitelistConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
-import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
-import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
-import com.farao_community.farao.data.rao_result_api.RaoResult;
-import com.farao_community.farao.data.rao_result_json.RaoResultImporter;
+
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
+import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
+
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.raoresultapi.RaoResult;
+import com.powsybl.openrao.data.raoresultjson.RaoResultImporter;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 

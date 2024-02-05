@@ -10,8 +10,8 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkConfiguration;
 import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkProcessor;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.farao_community.farao.data.crac_api.Crac;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.cracapi.Crac;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

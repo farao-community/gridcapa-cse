@@ -6,19 +6,10 @@
  */
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
-import com.farao_community.farao.commons.FaraoException;
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteFlowElementHelper;
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
-import com.powsybl.iidm.network.Branch;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Identifiable;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.LoadingLimits;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.Switch;
-import com.powsybl.iidm.network.TieLine;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.network.*;
+import com.powsybl.openrao.commons.OpenRaoException;
+import com.powsybl.openrao.data.craccreation.util.ucte.UcteFlowElementHelper;
+import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +41,7 @@ public final class NetworkHelper {
      * @param finalNodeId:         the final node ID of the bus bar change RA
      * @param ucteNetworkAnalyzer: the UCTE network analyzer
      * @return the ID of the line in the network if it is found
-     * @throws FaraoException if the line is not found
+     * @throws OpenRaoException if the line is not found
      */
     public static String getLineIdInNetwork(String fromNodeId, String toNodeId, String suffix, String initialNodeId, String finalNodeId, UcteNetworkAnalyzer ucteNetworkAnalyzer) {
         Network network = ucteNetworkAnalyzer.getNetwork();
@@ -68,16 +59,16 @@ public final class NetworkHelper {
             triedIds += ", " + branchHelper.getUcteId();
         }
         if (!branchHelper.isValid()) {
-            throw new FaraoException(String.format("One of the branches in the remedial action was not found in the network (%s)", triedIds));
+            throw new OpenRaoException(String.format("One of the branches in the remedial action was not found in the network (%s)", triedIds));
         }
         Identifiable<?> identifiable = network.getIdentifiable(branchHelper.getIdInNetwork());
         if (!(identifiable instanceof Line) &&
                 !(identifiable instanceof TwoWindingsTransformer) &&
                 !(identifiable instanceof TieLine)) {
-            throw new FaraoException(String.format("One of the branches (%s) in the remedial action is neither a line nor a two-windings-transformer: %s", branchHelper.getIdInNetwork(), identifiable.getClass()));
+            throw new OpenRaoException(String.format("One of the branches (%s) in the remedial action is neither a line nor a two-windings-transformer: %s", branchHelper.getIdInNetwork(), identifiable.getClass()));
         }
         if (!isBranchConnected(branchHelper.getIdInNetwork(), initialNodeId, network) && !isBranchConnected(branchHelper.getIdInNetwork(), finalNodeId, network)) {
-            throw new FaraoException(String.format("Branch %s is neither connected to initial node (%s) nor to final node (%s)", branchHelper.getIdInNetwork(), initialNodeId, finalNodeId));
+            throw new OpenRaoException(String.format("Branch %s is neither connected to initial node (%s) nor to final node (%s)", branchHelper.getIdInNetwork(), initialNodeId, finalNodeId));
         }
         return branchHelper.getIdInNetwork();
     }
@@ -96,7 +87,7 @@ public final class NetworkHelper {
         return bus1.equals(nodeId) || bus2.equals(nodeId);
     }
 
-    public static String moveBranchToNewFictitiousBus(String branchId, Branch.Side branchSideToModify, VoltageLevel voltageLevelSideToModify, NetworkModifier networkModifier) {
+    public static String moveBranchToNewFictitiousBus(String branchId, TwoSides branchSideToModify, VoltageLevel voltageLevelSideToModify, NetworkModifier networkModifier) {
         Network network = networkModifier.getNetwork();
         Branch<?> branch = network.getBranch(branchId);
 
@@ -130,7 +121,7 @@ public final class NetworkHelper {
 
         VoltageLevel voltageLevel = ((Bus) network.getIdentifiable(node1)).getVoltageLevel();
 
-        boolean moveSide1 = switchPairToCreate.branchSideToModify == Branch.Side.ONE;
+        boolean moveSide1 = switchPairToCreate.branchSideToModify == TwoSides.ONE;
         // check if branch is initially on node1
         boolean branchIsOnNode1 = moveSide1 ? bus1.equals(node1) : bus2.equals(node1);
 
@@ -185,7 +176,7 @@ public final class NetworkHelper {
         private final String initialNodeId; // ID of the initial node to connect the switch to
         private final String finalNodeId; // ID of the final node to connect the switch to
         private final String uniqueId;
-        private final Branch.Side branchSideToModify;
+        private final TwoSides branchSideToModify;
         private final String initialNodeSide1;
         private final String initialNodeSide2;
         private final Double minimumCurrentLimit;
@@ -217,7 +208,7 @@ public final class NetworkHelper {
          *
          * @param network: the Network
          */
-        private Branch.Side computeBranchSideToModify(Network network) {
+        private TwoSides computeBranchSideToModify(Network network) {
             String node1 = initialNodeId;
             String node2 = finalNodeId;
             Branch<?> branch = network.getBranch(branchId);
@@ -225,12 +216,12 @@ public final class NetworkHelper {
             String bus2 = branch.getTerminal2().getBusBreakerView().getConnectableBus().getId();
 
             if (bus1.equals(node1) || bus1.equals(node2)) {
-                return Branch.Side.ONE;
+                return TwoSides.ONE;
             } else if (bus2.equals(node1) || bus2.equals(node2)) {
-                return Branch.Side.TWO;
+                return TwoSides.TWO;
             } else {
                 // Should not happen
-                throw new FaraoException(String.format("The SwitchPairToCreate %s is not coherent", uniqueId));
+                throw new OpenRaoException(String.format("The SwitchPairToCreate %s is not coherent", uniqueId));
             }
         }
 
@@ -254,7 +245,7 @@ public final class NetworkHelper {
             return branchId + " - " + branchSideToModify.toString();
         }
 
-        Branch.Side getBranchSideToModify() {
+        TwoSides getBranchSideToModify() {
             return branchSideToModify;
         }
 

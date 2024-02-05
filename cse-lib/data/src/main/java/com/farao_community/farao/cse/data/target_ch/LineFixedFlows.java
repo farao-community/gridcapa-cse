@@ -7,8 +7,8 @@
 
 package com.farao_community.farao.cse.data.target_ch;
 
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteFlowElementHelper;
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
+import com.powsybl.openrao.data.craccreation.util.ucte.UcteFlowElementHelper;
+import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzer;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Network;
 

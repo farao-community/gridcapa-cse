@@ -135,24 +135,24 @@
             <artifactId>powsybl-iidm-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-creation-util</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-crac-creation-util</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-commons</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-commons</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-api</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-crac-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-dichotomy-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-rao-result-api</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-rao-result-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>
@@ -176,18 +176,18 @@
 
         <!-- TEST -->
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-impl</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-crac-impl</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-io-json</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-crac-io-json</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-rao-result-json</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-rao-result-json</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -216,12 +216,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-creator-api</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-crac-creator-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-creator-cse</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-crac-creator-cse</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
