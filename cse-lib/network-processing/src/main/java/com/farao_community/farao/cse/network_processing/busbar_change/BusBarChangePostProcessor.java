@@ -6,13 +6,10 @@
  */
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
-import com.farao_community.farao.commons.FaraoException;
-import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
-import com.farao_community.farao.data.crac_creation.creator.cse.parameters.SwitchPairId;
-import com.powsybl.iidm.network.Branch;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.Switch;
+import com.powsybl.iidm.network.*;
+import com.powsybl.openrao.commons.OpenRaoException;
+import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
+import com.powsybl.openrao.data.craccreation.creator.cse.parameters.SwitchPairId;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -84,8 +81,8 @@ public final class BusBarChangePostProcessor {
             Set<Switch> switches = entry.getValue();
             Switch closedSwitch = switches.stream().filter(s -> !s.isOpen()).collect(toSingleton());
             Bus realBus = NetworkHelper.getBuses(closedSwitch).stream().filter(otherBus -> !otherBus.equals(fictitiousBus)).collect(toSingleton());
-            Map<Branch<?>, Branch.Side> connectedBranches = networkModifier.getBranchesStillConnectedToBus(fictitiousBus);
-            for (Map.Entry<Branch<?>, Branch.Side> branchEntry : connectedBranches.entrySet()) {
+            Map<Branch<?>, TwoSides> connectedBranches = networkModifier.getBranchesStillConnectedToBus(fictitiousBus);
+            for (Map.Entry<Branch<?>, TwoSides> branchEntry : connectedBranches.entrySet()) {
                 networkModifier.moveBranch(branchEntry.getKey(), branchEntry.getValue(), realBus);
             }
             networkModifier.removeBus(fictitiousBus);
@@ -102,7 +99,7 @@ public final class BusBarChangePostProcessor {
             Collectors.toSet(),
             set -> {
                 if (set.size() != 1) {
-                    throw new FaraoException("Expected exactly one element");
+                    throw new OpenRaoException("Expected exactly one element");
                 }
                 return set.iterator().next();
             }

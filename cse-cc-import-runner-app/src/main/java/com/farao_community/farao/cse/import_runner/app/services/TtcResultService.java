@@ -17,10 +17,10 @@ import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreationContext;
-import com.farao_community.farao.data.rao_result_api.RaoResult;
+import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 

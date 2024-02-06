@@ -11,14 +11,15 @@ import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_io_api.CracExporters;
+
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
-import com.farao_community.farao.rao_api.json.JsonRaoParameters;
-import com.farao_community.farao.rao_api.parameters.RaoParameters;
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracioapi.CracExporters;
+import com.powsybl.openrao.raoapi.json.JsonRaoParameters;
+import com.powsybl.openrao.raoapi.parameters.RaoParameters;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 

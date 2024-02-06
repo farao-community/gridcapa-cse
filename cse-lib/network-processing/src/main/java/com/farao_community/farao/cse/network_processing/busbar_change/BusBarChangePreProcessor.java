@@ -6,20 +6,20 @@
  */
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
-import com.farao_community.farao.commons.FaraoException;
-import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
-import com.farao_community.farao.data.crac_creation.creator.cse.CseCracCreator;
-import com.farao_community.farao.data.crac_creation.creator.cse.CseCracImporter;
-import com.farao_community.farao.data.crac_creation.creator.cse.parameters.BusBarChangeSwitches;
-import com.farao_community.farao.data.crac_creation.creator.cse.parameters.SwitchPairId;
-import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TCRACSeries;
-import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TRemedialAction;
-import com.farao_community.farao.data.crac_creation.creator.cse.xsd.TRemedialActions;
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteBusHelper;
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzerProperties;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.commons.OpenRaoException;
+import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
+import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreator;
+import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
+import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
+import com.powsybl.openrao.data.craccreation.creator.cse.parameters.SwitchPairId;
+import com.powsybl.openrao.data.craccreation.creator.cse.xsd.TCRACSeries;
+import com.powsybl.openrao.data.craccreation.creator.cse.xsd.TRemedialAction;
+import com.powsybl.openrao.data.craccreation.creator.cse.xsd.TRemedialActions;
+import com.powsybl.openrao.data.craccreation.util.ucte.UcteBusHelper;
+import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzer;
+import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public final class BusBarChangePreProcessor {
                     .forEach(tRemedialAction -> {
                         try {
                             computeBusesAndSwitchesToCreate(tRemedialAction, ucteNetworkAnalyzer, busesToCreate, switchesToCreatePerRa);
-                        } catch (FaraoException e) {
+                        } catch (OpenRaoException e) {
                             LOGGER.warn("RA {} has been skipped: {}", tRemedialAction.getName().getV(), e.getMessage());
                         }
                     });
@@ -105,7 +105,7 @@ public final class BusBarChangePreProcessor {
             initialNodeId = tRemedialAction.getBusBar().getInitialNode().getV();
             raBusToCreate = Optional.of(new BusToCreate(initialNodeId, ((Bus) ucteNetworkAnalyzer.getNetwork().getIdentifiable(finalNodeId)).getVoltageLevel().getId()));
         } else {
-            throw new FaraoException(String.format("Remedial action's initial and final nodes are not valid: %s", initialNodeHelper.getInvalidReason()));
+            throw new OpenRaoException(String.format("Remedial action's initial and final nodes are not valid: %s", initialNodeHelper.getInvalidReason()));
         }
 
         // Store all switches to create

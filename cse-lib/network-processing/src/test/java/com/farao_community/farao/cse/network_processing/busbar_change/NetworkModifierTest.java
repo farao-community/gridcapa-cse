@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
-import com.farao_community.farao.commons.FaraoException;
+import com.powsybl.openrao.commons.OpenRaoException;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.LoadFlow;
@@ -61,7 +61,7 @@ class NetworkModifierTest {
     void testCreateBusException() {
         setUpMock();
         when(network.getVoltageLevel(any())).thenThrow(new PowsyblException("mock exception"));
-        assertThrows(FaraoException.class, () -> networkModifier.createBus("BBE2AA12", "BBE2AA1"));
+        assertThrows(OpenRaoException.class, () -> networkModifier.createBus("BBE2AA12", "BBE2AA1"));
     }
 
     @Test
@@ -91,7 +91,7 @@ class NetworkModifierTest {
         setUp("BaseNetwork.uct");
         VoltageLevel voltageLevel = network.getVoltageLevel("BBE1AA1");
         // should throw an error because buses are not on the same voltage level
-        assertThrows(FaraoException.class, () -> networkModifier.createSwitch(voltageLevel, "BBE1AA11", "DDE1AA12", 1350., true));
+        assertThrows(OpenRaoException.class, () -> networkModifier.createSwitch(voltageLevel, "BBE1AA11", "DDE1AA12", 1350., true));
     }
 
     void assertBranchesAreSimilar(Branch<?> expected, Branch<?> actual) {
@@ -100,7 +100,7 @@ class NetworkModifierTest {
     }
 
     void assertSameCurrentLimits(Branch<?> expected, Branch<?> actual) {
-        for (Branch.Side side : Set.of(Branch.Side.ONE, Branch.Side.TWO)) {
+        for (TwoSides side : Set.of(TwoSides.ONE, TwoSides.TWO)) {
             if (expected.getNullableCurrentLimits(side) != null) {
                 assertEquals(expected.getNullableCurrentLimits(side).getPermanentLimit(), actual.getNullableCurrentLimits(side).getPermanentLimit());
             } else {
@@ -131,7 +131,7 @@ class NetworkModifierTest {
         networkModifier.createBus("BBE1AA1N", "BBE1AA1");
         networkModifier.createSwitch(network.getVoltageLevel("BBE1AA1"), "BBE1AA1N", "BBE1AA11", null, false);
         Branch<?> branchToMove = network.getLine("BBE1AA11 BBE2AA1  1");
-        networkModifier.moveBranch(branchToMove, Branch.Side.ONE, (Bus) network.getIdentifiable("BBE1AA1N"));
+        networkModifier.moveBranch(branchToMove, TwoSides.ONE, (Bus) network.getIdentifiable("BBE1AA1N"));
         networkModifier.commitAllChanges();
 
         // check that the correct modifications have been made to move the line
@@ -162,7 +162,7 @@ class NetworkModifierTest {
         networkModifier.createBus("BBE2AA1N", "BBE2AA1");
         networkModifier.createSwitch(network.getVoltageLevel("BBE2AA1"), "BBE2AA1N", "BBE2AA1 ", null, false);
         Branch<?> branchToMove = network.getLine("BBE1AA11 BBE2AA1  1");
-        networkModifier.moveBranch(branchToMove, Branch.Side.TWO, (Bus) network.getIdentifiable("BBE2AA1N"));
+        networkModifier.moveBranch(branchToMove, TwoSides.TWO, (Bus) network.getIdentifiable("BBE2AA1N"));
         networkModifier.commitAllChanges();
 
         assertNull(network.getIdentifiable("BBE1AA11 BBE2AA1  1"));
@@ -192,7 +192,7 @@ class NetworkModifierTest {
         networkModifier.createBus("DDE3AA1N", "DDE3AA1");
         networkModifier.createSwitch(network.getVoltageLevel("DDE3AA1"), "DDE3AA1N", "DDE3AA1 ", null, false);
         Branch<?> branchToMove = network.getBranch(initialTieLineId);
-        networkModifier.moveBranch(branchToMove, Branch.Side.ONE, (Bus) network.getIdentifiable("DDE3AA1N"));
+        networkModifier.moveBranch(branchToMove, TwoSides.ONE, (Bus) network.getIdentifiable("DDE3AA1N"));
         networkModifier.commitAllChanges();
 
         // check that the correct modifications have been made to move the line
@@ -227,7 +227,7 @@ class NetworkModifierTest {
         networkModifier.createSwitch(network.getVoltageLevel("BBE2AA1"), "BBE3AA1N", "BBE3AA1 ", null, false);
         Branch<?> branchToMove = network.getTwoWindingsTransformer("BBE2AA1  BBE3AA1  1");
         // PS: in Powsybl convention, side one of a TwoWindingsTransformer is node "to" (BBE3AA1  in this case)
-        networkModifier.moveBranch(branchToMove, Branch.Side.ONE, (Bus) network.getIdentifiable("BBE3AA1N"));
+        networkModifier.moveBranch(branchToMove, TwoSides.ONE, (Bus) network.getIdentifiable("BBE3AA1N"));
         networkModifier.commitAllChanges();
 
         // check that the correct modifications have been made to move the line
@@ -276,6 +276,6 @@ class NetworkModifierTest {
         Branch<?> branchToMove = network.getLine("BBE1AA11 BBE2AA1  1");
         Bus bus = (Bus) network.getIdentifiable("BBE3AA1 ");
         // should fail : The network already contains a line with the id 'BBE1AA11 BBE3AA1  1'
-        assertThrows(FaraoException.class, () -> networkModifier.moveBranch(branchToMove, Branch.Side.TWO, bus));
+        assertThrows(OpenRaoException.class, () -> networkModifier.moveBranch(branchToMove, TwoSides.TWO, bus));
     }
 }

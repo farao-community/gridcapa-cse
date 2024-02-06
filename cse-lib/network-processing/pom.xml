@@ -16,16 +16,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-creation-util</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-crac-creation-util</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-creator-cse</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-crac-creator-cse</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-impl</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-crac-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>

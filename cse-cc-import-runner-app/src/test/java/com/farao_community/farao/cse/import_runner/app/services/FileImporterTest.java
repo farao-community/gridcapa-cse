@@ -11,7 +11,7 @@ import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
-import com.farao_community.farao.data.crac_creation.creator.cse.CseCrac;
+import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

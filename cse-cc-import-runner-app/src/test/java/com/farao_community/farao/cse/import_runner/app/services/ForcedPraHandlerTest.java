@@ -6,10 +6,10 @@
  */
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.commons.Unit;
-import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_io_api.CracImporters;
-import com.farao_community.farao.search_tree_rao.result.api.FlowResult;
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracioapi.CracImporters;
+import com.powsybl.openrao.raoapi.parameters.RaoParameters;
+import com.powsybl.openrao.searchtreerao.result.api.FlowResult;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -54,7 +54,7 @@ class ForcedPraHandlerTest {
         assertTrue(crac.getNetworkAction("Open line NL1-NL2").hasImpactOnNetwork(network));
         assertTrue(crac.getNetworkAction("Open line BE2-FR3").hasImpactOnNetwork(network));
 
-        Set<String> appliedForcedPras = forcedPrasHandler.forcePras(manualForcedPrasIds, network, crac, Mockito.mock(FlowResult.class), Unit.AMPERE);
+        Set<String> appliedForcedPras = forcedPrasHandler.forcePras(manualForcedPrasIds, network, crac, Mockito.mock(FlowResult.class), RaoParameters.load());
 
         assertFalse(crac.getNetworkAction("Open line NL1-NL2").hasImpactOnNetwork(network));
         assertFalse(crac.getNetworkAction("Open line BE2-FR3").hasImpactOnNetwork(network));

@@ -6,23 +6,23 @@
  */
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
-import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
 import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
-import com.farao_community.farao.data.rao_result_api.RaoResult;
+import com.powsybl.openrao.commons.Unit;
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracapi.networkaction.NetworkAction;
+import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
-import com.farao_community.farao.search_tree_rao.result.api.FlowResult;
+import com.powsybl.openrao.searchtreerao.result.api.FlowResult;
 import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +117,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
 
             // We get only the RAs that have been actually applied
             // Even if the set is empty we still do the computation, in worst case scenario the computation is useless
-            return forcedPrasHandler.forcePras(forcedPrasIds, network, crac, flowResult, unit);
+            return forcedPrasHandler.forcePras(forcedPrasIds, network, crac, flowResult, fileExporter.loadRaoParameters());
         } else {
             return Collections.emptySet();
         }

@@ -7,11 +7,11 @@
 
 package com.farao_community.farao.cse.network_processing.ucte_pst_change;
 
-import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_api.range_action.PstRangeAction;
-import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.PhaseTapChanger;
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracapi.rangeaction.PstRangeAction;
+import com.powsybl.openrao.data.cracapi.usagerule.UsageMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

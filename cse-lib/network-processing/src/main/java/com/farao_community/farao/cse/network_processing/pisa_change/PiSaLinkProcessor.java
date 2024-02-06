@@ -7,12 +7,12 @@
 
 package com.farao_community.farao.cse.network_processing.pisa_change;
 
-import com.farao_community.farao.data.crac_api.Crac;
-import com.farao_community.farao.data.crac_api.Identifiable;
-import com.farao_community.farao.data.crac_api.range_action.InjectionRangeAction;
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracapi.Identifiable;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.cracapi.rangeaction.InjectionRangeAction;
 
 import java.util.List;
 import java.util.Set;

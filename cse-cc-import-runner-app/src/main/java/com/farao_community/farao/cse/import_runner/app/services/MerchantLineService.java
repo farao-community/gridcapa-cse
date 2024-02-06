@@ -12,9 +12,9 @@ import com.farao_community.farao.cse.network_processing.ucte_pst_change.UctePstP
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzer;
-import com.farao_community.farao.data.crac_creation.util.ucte.UcteNetworkAnalyzerProperties;
 import com.powsybl.iidm.network.*;
+import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzer;
+import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

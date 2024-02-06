@@ -23,12 +23,11 @@ import com.farao_community.farao.cse.data.xsd.ttc_rao.PreventiveBranchResult;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.PreventiveResult;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.Status;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.StringValue;
-import com.farao_community.farao.data.crac_api.Contingency;
-import com.farao_community.farao.data.crac_api.Instant;
-import com.farao_community.farao.data.crac_creation.creator.api.ElementaryCreationContext;
-import com.farao_community.farao.data.crac_creation.creator.api.std_creation_context.RemedialActionCreationContext;
-import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CseHvdcCreationContext;
-import com.farao_community.farao.data.crac_creation.creator.cse.remedial_action.CsePstCreationContext;
+import com.powsybl.openrao.data.cracapi.Contingency;
+import com.powsybl.openrao.data.craccreation.creator.api.ElementaryCreationContext;
+import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.RemedialActionCreationContext;
+import com.powsybl.openrao.data.craccreation.creator.cse.remedialaction.CseHvdcCreationContext;
+import com.powsybl.openrao.data.craccreation.creator.cse.remedialaction.CsePstCreationContext;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ public final class TtcRao {
         CseRaoResult cseRaoResult = new CseRaoResult();
         addTime(cseRaoResult, timestamp.toString());
 
-        if (cracResultsHelper.getRaoResult().getFunctionalCost(Instant.CURATIVE) <= 0) {
+        if (cracResultsHelper.getRaoResult().getFunctionalCost(cracResultsHelper.getCrac().getLastInstant()) <= 0) {
             addStatus(cseRaoResult, Status.SECURE);
         } else {
             addStatus(cseRaoResult, Status.UNSECURE);

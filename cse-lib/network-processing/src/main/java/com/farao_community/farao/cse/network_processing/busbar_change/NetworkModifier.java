@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
-import com.farao_community.farao.commons.FaraoException;
+import com.powsybl.openrao.commons.OpenRaoException;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.ucte.converter.util.UcteConstants;
@@ -56,7 +56,7 @@ public class NetworkModifier {
             LOGGER.debug("New bus '{}' has been created", newBus.getId());
             return newBus;
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not create bus %s", newBusId), e);
+            throw new OpenRaoException(String.format("Could not create bus %s", newBusId), e);
         }
     }
 
@@ -106,7 +106,7 @@ public class NetworkModifier {
             LOGGER.debug("New switch '{}' has been created", newSwitch.getId());
             return newSwitch;
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not create switch between %s and %s", bus1Id, bus2Id), e);
+            throw new OpenRaoException(String.format("Could not create switch between %s and %s", bus1Id, bus2Id), e);
         }
     }
 
@@ -126,7 +126,7 @@ public class NetworkModifier {
      * @param side   the side of the branch to move
      * @param bus    the new bus to connect to the side
      */
-    public void moveBranch(Branch<?> branch, Branch.Side side, Bus bus) {
+    public void moveBranch(Branch<?> branch, TwoSides side, Bus bus) {
         // In case line has already been modified on the other side, then modify the new line instead
         // For example if we have a line "NODE1 NODE2"
         // RA1 moves side 1 : then the line is replaced with "FBUS1 NODE2" (FBUS = fictitious bus)
@@ -140,10 +140,10 @@ public class NetworkModifier {
             } else if (branch instanceof Line) {
                 moveLine((Line) branch, side, bus);
             } else {
-                throw new FaraoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
+                throw new OpenRaoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
             }
         } catch (PowsyblException e) {
-            throw new FaraoException(String.format("Could not move line %s", branch.getId()), e);
+            throw new OpenRaoException(String.format("Could not move line %s", branch.getId()), e);
         }
     }
 
@@ -168,7 +168,7 @@ public class NetworkModifier {
         }
     }
 
-    private void moveLine(Line line, Branch.Side side, Bus bus) {
+    private void moveLine(Line line, TwoSides side, Bus bus) {
         String newLineId = replaceSimpleBranchNode(line, side, bus.getId());
         LineAdder adder = initializeLineAdderToMove(line, newLineId);
         setBranchAdderProperties(adder, line, side, bus);
@@ -180,7 +180,7 @@ public class NetworkModifier {
         addAliasesFromOldToNew(line, newLine);
     }
 
-    private void moveTwoWindingsTransformer(TwoWindingsTransformer transformer, Branch.Side side, Bus bus) {
+    private void moveTwoWindingsTransformer(TwoWindingsTransformer transformer, TwoSides side, Bus bus) {
         String newId = replaceSimpleBranchNode(transformer, side, bus.getId());
         TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(transformer, newId);
         setBranchAdderProperties(adder, transformer, side, bus);
@@ -193,8 +193,8 @@ public class NetworkModifier {
         addAliasesFromOldToNew(transformer, newTransformer);
     }
 
-    private void moveTieLine(TieLine tieLine, Branch.Side side, Bus bus) {
-        DanglingLine danglingLineToReplace = (side == Branch.Side.ONE) ? tieLine.getDanglingLine1() : tieLine.getDanglingLine2();
+    private void moveTieLine(TieLine tieLine, TwoSides side, Bus bus) {
+        DanglingLine danglingLineToReplace = (side == TwoSides.ONE) ? tieLine.getDanglingLine1() : tieLine.getDanglingLine2();
         String newTieLineId = replaceTieLineNodeInTieLineId(tieLine, danglingLineToReplace, bus.getId());
         TieLine newTieLine = replaceTieLine(tieLine, newTieLineId, danglingLineToReplace, bus);
         copyCurrentLimits(tieLine, newTieLine);
@@ -263,8 +263,8 @@ public class NetworkModifier {
      * Sets LineAdder's attributes identical to a given side of a branch
      * WARNING: This only works for bus breaker topology. UCTE import in PowSyBl is always done in bus breaker view.
      */
-    private static BranchAdder<?, ?> setIdenticalToSide(Branch<?> branch, Branch.Side side, BranchAdder<?, ?> adder) {
-        if (side == Branch.Side.ONE) {
+    private static BranchAdder<?, ?> setIdenticalToSide(Branch<?> branch, TwoSides side, BranchAdder<?, ?> adder) {
+        if (side == TwoSides.ONE) {
             return adder.setVoltageLevel1(branch.getTerminal1().getVoltageLevel().getId())
                 .setConnectableBus1(branch.getTerminal1().getBusBreakerView().getConnectableBus().getId())
                 .setBus1(branch.getTerminal1().getBusBreakerView().getBus() != null ? branch.getTerminal1().getBusBreakerView().getBus().getId() : null);
@@ -275,23 +275,23 @@ public class NetworkModifier {
         }
     }
 
-    private void setBranchAdderProperties(BranchAdder<?, ?> adder, Branch<?> branchToCopy, Branch.Side sideToUpdate, Bus busToUpdate) {
-        if (sideToUpdate == Branch.Side.ONE) {
-            setIdenticalToSide(branchToCopy, Branch.Side.TWO, adder)
+    private void setBranchAdderProperties(BranchAdder<?, ?> adder, Branch<?> branchToCopy, TwoSides sideToUpdate, Bus busToUpdate) {
+        if (sideToUpdate == TwoSides.ONE) {
+            setIdenticalToSide(branchToCopy, TwoSides.TWO, adder)
                 .setConnectableBus1(busToUpdate.getId())
                 .setBus1(busToUpdate.getId())
                 .setVoltageLevel1(busToUpdate.getVoltageLevel().getId());
-        } else if (sideToUpdate == Branch.Side.TWO) {
-            setIdenticalToSide(branchToCopy, Branch.Side.ONE, adder)
+        } else if (sideToUpdate == TwoSides.TWO) {
+            setIdenticalToSide(branchToCopy, TwoSides.ONE, adder)
                 .setConnectableBus2(busToUpdate.getId())
                 .setBus2(busToUpdate.getId())
                 .setVoltageLevel2(busToUpdate.getVoltageLevel().getId());
         }
     }
 
-    private String replaceSimpleBranchNode(Branch<?> branch, Branch.Side side, String newNodeId) {
-        String from = (side == Branch.Side.ONE) ? newNodeId : branch.getTerminal1().getBusBreakerView().getConnectableBus().getId();
-        String to = (side == Branch.Side.ONE) ? branch.getTerminal2().getBusBreakerView().getConnectableBus().getId() : newNodeId;
+    private String replaceSimpleBranchNode(Branch<?> branch, TwoSides side, String newNodeId) {
+        String from = (side == TwoSides.ONE) ? newNodeId : branch.getTerminal1().getBusBreakerView().getConnectableBus().getId();
+        String to = (side == TwoSides.ONE) ? branch.getTerminal2().getBusBreakerView().getConnectableBus().getId() : newNodeId;
         if (branch instanceof TwoWindingsTransformer) {
             // convention is inverted
             return generateUcteId(to, from, getOrderCode(branch));
@@ -357,7 +357,7 @@ public class NetworkModifier {
     }
 
     private TwoWindingsTransformerAdder initializeTwoWindingsTransformerAdderToMove(TwoWindingsTransformer twoWindingsTransformer, String newId) {
-        return twoWindingsTransformer.getSubstation().orElseThrow(FaraoException::new).newTwoWindingsTransformer()
+        return twoWindingsTransformer.getSubstation().orElseThrow(OpenRaoException::new).newTwoWindingsTransformer()
             .setEnsureIdUnicity(true)
             .setId(newId)
             .setRatedU1(twoWindingsTransformer.getRatedU1())
@@ -386,14 +386,14 @@ public class NetworkModifier {
      * Returns the connected branches to a given bus, and the side they're connected to it
      * If the branch has been moved, the move shall be taken into account
      */
-    public Map<Branch<?>, Branch.Side> getBranchesStillConnectedToBus(Bus bus) {
-        Map<Branch<?>, Branch.Side> connectedBranches = new HashMap<>();
+    public Map<Branch<?>, TwoSides> getBranchesStillConnectedToBus(Bus bus) {
+        Map<Branch<?>, TwoSides> connectedBranches = new HashMap<>();
         network.getBranchStream()
             .forEach(branch -> {
                 if (branch.getTerminal1().getBusBreakerView().getConnectableBus().equals(bus)) {
-                    connectedBranches.put(branch, Branch.Side.ONE);
+                    connectedBranches.put(branch, TwoSides.ONE);
                 } else if (branch.getTerminal2().getBusBreakerView().getConnectableBus().equals(bus)) {
-                    connectedBranches.put(branch, Branch.Side.TWO);
+                    connectedBranches.put(branch, TwoSides.TWO);
                 }
             });
         return connectedBranches;
@@ -409,7 +409,7 @@ public class NetworkModifier {
             busesToRemove = new HashSet<>();
             cleanAliases();
         } catch (PowsyblException e) {
-            throw new FaraoException("Could not apply all changes to network", e);
+            throw new OpenRaoException("Could not apply all changes to network", e);
         }
     }
 
