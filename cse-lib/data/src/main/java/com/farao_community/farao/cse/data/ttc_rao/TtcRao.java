@@ -212,16 +212,18 @@ public final class TtcRao {
     private static List<PreventiveBranchResult> getPreventiveBranchResults(CracResultsHelper cracResultsHelper) {
         List<PreventiveBranchResult> preventiveBranchResults = new ArrayList<>();
         List<CnecPreventive> preventiveCnecs = cracResultsHelper.getPreventiveCnecs();
-        preventiveCnecs.forEach(cnecPrev -> {
-            PreventiveBranchResult preventiveBranchResult = new PreventiveBranchResult();
-            preventiveBranchResult.setName(cnecPrev.getCnecCommon().getName());
-            fillBranchCommonPropertiesFromCnecCommon(cnecPrev.getCnecCommon(), preventiveBranchResult);
+        preventiveCnecs.stream()
+                .filter(mergedCnec -> !mergedCnec.getCnecCommon().isMonitored())
+                .forEach(cnecPrev -> {
+                    PreventiveBranchResult preventiveBranchResult = new PreventiveBranchResult();
+                    preventiveBranchResult.setName(cnecPrev.getCnecCommon().getName());
+                    fillBranchCommonPropertiesFromCnecCommon(cnecPrev.getCnecCommon(), preventiveBranchResult);
 
-            preventiveBranchResult.setIMax(getIValue((int) cnecPrev.getiMax()));
-            preventiveBranchResult.setIBeforeOptimization(getIValue((int) cnecPrev.getiBeforeOptimisation()));
-            preventiveBranchResult.setIAfterOptimization(getIValue((int) cnecPrev.getI()));
-            preventiveBranchResults.add(preventiveBranchResult);
-        });
+                    preventiveBranchResult.setIMax(getIValue((int) cnecPrev.getiMax()));
+                    preventiveBranchResult.setIBeforeOptimization(getIValue((int) cnecPrev.getiBeforeOptimisation()));
+                    preventiveBranchResult.setIAfterOptimization(getIValue((int) cnecPrev.getI()));
+                    preventiveBranchResults.add(preventiveBranchResult);
+                });
         return preventiveBranchResults;
     }
 
