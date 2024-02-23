@@ -10,9 +10,12 @@ import com.farao_community.farao.cse.export_runner.app.configurations.MendrisioC
 import com.farao_community.farao.cse.network_processing.ucte_pst_change.UctePstProcessor;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.PhaseTapChanger;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.PhaseTapChangerHolder;
+import com.powsybl.iidm.network.VoltageLevel;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -22,21 +25,25 @@ public class MerchantLineService {
 
     private final UctePstProcessor uctePstProcessor;
     private final Logger businessLogger;
-    private final String mendrisioPstId;
+    private final String mendrisioVoltageLevel;
 
     public MerchantLineService(MendrisioConfiguration mendrisioConfiguration, Logger businessLogger) {
         this.businessLogger = businessLogger;
-        this.mendrisioPstId = mendrisioConfiguration.getMendrisioPstId();
-        this.uctePstProcessor = new UctePstProcessor(
-                mendrisioConfiguration.getMendrisioPstId(),
+        this.mendrisioVoltageLevel = mendrisioConfiguration.getMendrisioVoltageLevel();
+        this.uctePstProcessor = new UctePstProcessor(mendrisioConfiguration.getMendrisioVoltageLevel(),
                 mendrisioConfiguration.getMendrisioNodeId());
     }
 
     public void setTransformerInActivePowerRegulation(Network network) {
-        TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(mendrisioPstId);
-        PhaseTapChanger phaseTapChanger = uctePstProcessor.getPhaseTapChanger(transformer);
-        if (Double.isNaN(phaseTapChanger.getRegulationValue())) {
-            businessLogger.warn("PST {} cannot be put in flow regulation mode, because no target flow was available in input CGM", mendrisioPstId);
+        final Optional<VoltageLevel> optionalVoltageLevel = Optional.ofNullable(network.getVoltageLevel(mendrisioVoltageLevel));
+        final Optional<Double> optionalRegulationValue = optionalVoltageLevel.flatMap(level -> level
+                .getTwoWindingsTransformerStream()
+                .filter(PhaseTapChangerHolder::hasPhaseTapChanger)
+                .findAny()
+                .map(PhaseTapChangerHolder::getPhaseTapChanger)
+                .map(PhaseTapChanger::getRegulationValue));
+        if (optionalRegulationValue.isEmpty() || Double.isNaN(optionalRegulationValue.get())) {
+            businessLogger.warn("PST at voltage level {} cannot be put in flow regulation mode, because no target flow was available in input CGM", mendrisioVoltageLevel);
         } else {
             uctePstProcessor.setTransformerInActivePowerRegulation(network);
         }

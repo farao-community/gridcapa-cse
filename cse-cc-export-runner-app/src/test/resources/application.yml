@@ -20,7 +20,7 @@ cse-cc-runner:
   xnodes:
     file-path: xnodes/cvg_xnodes_20200714.xml
   mendrisio:
-    mendrisio-pst-id: SMENDR3T SMENDR32 1
+    mendrisio-voltage-level: SMENDR3
     mendrisio-node-id: SMENDR3T
   pisa:
     link1:

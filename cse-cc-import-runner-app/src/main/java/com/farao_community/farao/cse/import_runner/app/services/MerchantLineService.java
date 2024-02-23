@@ -34,9 +34,8 @@ public class MerchantLineService {
 
     public MerchantLineService(MendrisioConfiguration mendrisioConfiguration) {
         this.mendrisioConfiguration = mendrisioConfiguration;
-        this.uctePstProcessor = new UctePstProcessor(
-            mendrisioConfiguration.getMendrisioPstId(),
-            mendrisioConfiguration.getMendrisioNodeId());
+        this.uctePstProcessor = new UctePstProcessor(mendrisioConfiguration.getMendrisioVoltageLevel(),
+                mendrisioConfiguration.getMendrisioNodeId());
     }
 
     public void activateMerchantLine(ProcessType processType, Network network, CseData cseData) {

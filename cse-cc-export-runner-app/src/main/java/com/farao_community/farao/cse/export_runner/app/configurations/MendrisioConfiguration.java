@@ -14,13 +14,13 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class MendrisioConfiguration {
-    @Value("${cse-cc-runner.mendrisio.mendrisio-pst-id}")
-    private String mendrisioPstId;
+    @Value("${cse-cc-runner.mendrisio.mendrisio-voltage-level}")
+    private String mendrisioVoltageLevel;
     @Value("${cse-cc-runner.mendrisio.mendrisio-node-id}")
     private String mendrisioNodeId;
 
-    public String getMendrisioPstId() {
-        return mendrisioPstId;
+    public String getMendrisioVoltageLevel() {
+        return mendrisioVoltageLevel;
     }
 
     public String getMendrisioNodeId() {
