@@ -40,7 +40,7 @@ cse-cc-runner:
   xnodes:
     file-path: /home/farao/xnodes/xnodes.xml
   mendrisio:
-    mendrisio-pst-id: SMENDR3T SMENDR32 1
+    mendrisio-voltage-level: SMENDR3
     mendrisio-node-id: SMENDR3T
   pisa:
     link1:

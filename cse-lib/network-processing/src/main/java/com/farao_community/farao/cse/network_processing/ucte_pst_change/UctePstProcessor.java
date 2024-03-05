@@ -7,39 +7,64 @@
 
 package com.farao_community.farao.cse.network_processing.ucte_pst_change;
 
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.PhaseTapChanger;
+import com.powsybl.iidm.network.PhaseTapChangerHolder;
+import com.powsybl.iidm.network.Terminal;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 /**
- * In CSE computations this should only apply to mendridio PST, but it can theoretically be used on other PSTs.
+ * In CSE computations this should only apply to mendrisio PST, but it can theoretically be used on other PSTs.
+ *
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public final class UctePstProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(UctePstProcessor.class);
-    private final String pstId;
+    private final Logger businessLogger;
+    private final String voltageLevel;
     private final String nodeId;
 
-    public UctePstProcessor(String pstId, String nodeId) {
-        this.pstId = pstId;
+    public UctePstProcessor(Logger businessLogger, String voltageLevel, String nodeId) {
+        this.businessLogger = businessLogger;
+        this.voltageLevel = voltageLevel;
         this.nodeId = nodeId;
     }
 
     public void forcePhaseTapChangerInActivePowerRegulationForIdcc(Network network, double defaultRegulationValue) {
-        TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
-        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
-        double regulationValue = phaseTapChanger.getRegulationValue();
-        if (Double.isNaN(regulationValue)) {
-            phaseTapChanger.setRegulationValue(defaultRegulationValue); // Powsybl iidm model requirement: regulationValue must be not empty in order to activate regulation mode
+        TwoWindingsTransformer transformer = getTwoWindingsTransformerAtVoltageLevelWithPhaseTapChanger(network);
+        if (transformer != null) {
+            PhaseTapChanger phaseTapChanger = transformer.getPhaseTapChanger();
+            double regulationValue = phaseTapChanger.getRegulationValue();
+            if (Double.isNaN(regulationValue)) {
+                phaseTapChanger.setRegulationValue(defaultRegulationValue); // Powsybl iidm model requirement: regulationValue must be not empty in order to activate regulation mode
+            }
+            setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
+        } else {
+            businessLogger.warn(String.format("No PST at voltage level (%s) has been found.", voltageLevel));
         }
-        setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
     }
 
     public void forcePhaseTapChangerInActivePowerRegulationForD2cc(Network network, double regulationValue) {
-        TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
-        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
-        phaseTapChanger.setRegulationValue(regulationValue);
-        setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
+        TwoWindingsTransformer transformer = getTwoWindingsTransformerAtVoltageLevelWithPhaseTapChanger(network);
+        if (transformer != null) {
+            PhaseTapChanger phaseTapChanger = transformer.getPhaseTapChanger();
+            phaseTapChanger.setRegulationValue(regulationValue);
+            setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
+        } else {
+            businessLogger.warn(String.format("No PST at voltage level (%s) has been found.", voltageLevel));
+        }
+    }
+
+    private TwoWindingsTransformer getTwoWindingsTransformerAtVoltageLevelWithPhaseTapChanger(final Network network) {
+        final Optional<VoltageLevel> optionalVoltageLevel = Optional.ofNullable(network.getVoltageLevel(voltageLevel));
+        return optionalVoltageLevel.flatMap(a -> a.getTwoWindingsTransformerStream()
+                .filter(PhaseTapChangerHolder::hasPhaseTapChanger)
+                .findAny()).orElse(null);
     }
 
     private void setTransformerInActivePowerRegulation(TwoWindingsTransformer transformer, PhaseTapChanger phaseTapChanger) {
@@ -48,28 +73,19 @@ public final class UctePstProcessor {
         phaseTapChanger.setTargetDeadband(5);
         phaseTapChanger.setRegulating(true);
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(String.format("PST (%s) has been set in active power control to %.0f MW",
-                pstId, phaseTapChanger.getRegulationValue()));
+            LOGGER.info(String.format("PST at voltage level (%s) has been set in active power control to %.0f MW",
+                    voltageLevel, phaseTapChanger.getRegulationValue()));
         }
     }
 
     public void setTransformerInActivePowerRegulation(Network network) {
-        TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(pstId);
-        PhaseTapChanger phaseTapChanger = getPhaseTapChanger(transformer);
-        setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
-    }
-
-    public PhaseTapChanger getPhaseTapChanger(TwoWindingsTransformer transformer) {
-        if (transformer == null) {
-            throw new UctePstException(String.format(
-                "Transformer is not present in the network with the following ID : %s", pstId));
+        TwoWindingsTransformer transformer = getTwoWindingsTransformerAtVoltageLevelWithPhaseTapChanger(network);
+        if (transformer != null) {
+            PhaseTapChanger phaseTapChanger = transformer.getPhaseTapChanger();
+            setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
+        } else {
+            businessLogger.warn(String.format("No PST at voltage level (%s) has been found.", voltageLevel));
         }
-        PhaseTapChanger phaseTapChanger = transformer.getPhaseTapChanger();
-        if (phaseTapChanger == null) {
-            throw new UctePstException(String.format(
-                "Transformer (%s) has no phase tap changer", pstId));
-        }
-        return phaseTapChanger;
     }
 
     /**

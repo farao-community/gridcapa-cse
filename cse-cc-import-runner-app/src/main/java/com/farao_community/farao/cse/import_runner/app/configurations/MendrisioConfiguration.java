@@ -17,12 +17,12 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConstructorBinding
 public class MendrisioConfiguration {
     private final MendrisioCagnoLineProperties mendrisioCagnoLine;
-    private final String mendrisioPstId;
+    private final String mendrisioVoltageLevel;
     private final String mendrisioNodeId;
 
-    public MendrisioConfiguration(MendrisioCagnoLineProperties mendrisioCagnoLine, String mendrisioPstId, String mendrisioNodeId) {
+    public MendrisioConfiguration(MendrisioCagnoLineProperties mendrisioCagnoLine, String mendrisioVoltageLevel, String mendrisioNodeId) {
         this.mendrisioCagnoLine = mendrisioCagnoLine;
-        this.mendrisioPstId = mendrisioPstId;
+        this.mendrisioVoltageLevel = mendrisioVoltageLevel;
         this.mendrisioNodeId = mendrisioNodeId;
     }
 
@@ -30,8 +30,8 @@ public class MendrisioConfiguration {
         return mendrisioCagnoLine;
     }
 
-    public String getMendrisioPstId() {
-        return mendrisioPstId;
+    public String getMendrisioVoltageLevel() {
+        return mendrisioVoltageLevel;
     }
 
     public String getMendrisioNodeId() {

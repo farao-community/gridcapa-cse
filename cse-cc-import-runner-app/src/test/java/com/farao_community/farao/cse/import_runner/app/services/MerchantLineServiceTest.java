@@ -9,10 +9,14 @@ package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
+import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.MendrisioConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.PhaseTapChanger;
+import com.powsybl.iidm.network.PhaseTapChangerHolder;
+import com.powsybl.iidm.network.TieLine;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +29,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -68,7 +75,7 @@ class MerchantLineServiceTest {
     @Test
     void testTransformerSettings() {
         merchantLineService.activateMerchantLine(ProcessType.IDCC, network, cseData);
-        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
+        TwoWindingsTransformer twoWindingsTransformer = getTwoWindingsTransformer(network);
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL, phaseTapChanger.getRegulationMode());
         assertEquals(-300, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
@@ -79,7 +86,7 @@ class MerchantLineServiceTest {
     @Test
     void testWithLoadFlow() {
         merchantLineService.activateMerchantLine(ProcessType.IDCC, network, cseData);
-        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
+        TwoWindingsTransformer twoWindingsTransformer = getTwoWindingsTransformer(network);
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(0, phaseTapChanger.getTapPosition());
         LoadFlow.run(network, LoadFlowParameters.load());
@@ -89,14 +96,14 @@ class MerchantLineServiceTest {
 
     @Test
     void testTransformerSettingsForD2ccProcess() {
-        TwoWindingsTransformer twoWindingsTransformer = networkWithMendrisioCagnoLine.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
+        TwoWindingsTransformer twoWindingsTransformer = getTwoWindingsTransformer(networkWithMendrisioCagnoLine);
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         when(cseData.getLineFixedFlows().getFixedFlow(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
         merchantLineService.activateMerchantLine(ProcessType.D2CC, networkWithMendrisioCagnoLine, cseData);
         LoadFlow.run(networkWithMendrisioCagnoLine, LoadFlowParameters.load());
         assertEquals(175, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
         TieLine mendrisioCagnoLine = networkWithMendrisioCagnoLine.getTieLine("SMENDR11 XME_CA11 1 + XME_CA11 NNL1AA1  1");
-        assertEquals(75, mendrisioCagnoLine.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
+        assertEquals(-250, mendrisioCagnoLine.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
     }
 
     @Test
@@ -109,10 +116,18 @@ class MerchantLineServiceTest {
 
     @Test
     void testMendrisioIdccWorksWithDefaultValue() {
-        TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer(mendrisioConfiguration.getMendrisioPstId());
+        TwoWindingsTransformer twoWindingsTransformer = getTwoWindingsTransformer(network);
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         phaseTapChanger.setRegulationValue(Double.NaN);
         assertDoesNotThrow(() -> merchantLineService.activateMerchantLine(ProcessType.IDCC, network, cseData));
         assertEquals(75.0, phaseTapChanger.getRegulationValue(), DOUBLE_PRECISION);
+    }
+
+    private TwoWindingsTransformer getTwoWindingsTransformer(final Network network) {
+        return network.getVoltageLevel(mendrisioConfiguration.getMendrisioVoltageLevel())
+                .getTwoWindingsTransformerStream()
+                .filter(PhaseTapChangerHolder::hasPhaseTapChanger)
+                .findAny()
+                .orElse(null);
     }
 }
