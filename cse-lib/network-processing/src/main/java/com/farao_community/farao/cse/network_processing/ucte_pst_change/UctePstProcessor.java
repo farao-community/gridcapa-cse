@@ -25,10 +25,12 @@ import java.util.Optional;
  */
 public final class UctePstProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(UctePstProcessor.class);
+    private final Logger businessLogger;
     private final String voltageLevel;
     private final String nodeId;
 
-    public UctePstProcessor(String voltageLevel, String nodeId) {
+    public UctePstProcessor(Logger businessLogger, String voltageLevel, String nodeId) {
+        this.businessLogger = businessLogger;
         this.voltageLevel = voltageLevel;
         this.nodeId = nodeId;
     }
@@ -42,6 +44,8 @@ public final class UctePstProcessor {
                 phaseTapChanger.setRegulationValue(defaultRegulationValue); // Powsybl iidm model requirement: regulationValue must be not empty in order to activate regulation mode
             }
             setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
+        } else {
+            businessLogger.warn(String.format("No PST at voltage level (%s) has been found.", voltageLevel));
         }
     }
 
@@ -51,6 +55,8 @@ public final class UctePstProcessor {
             PhaseTapChanger phaseTapChanger = transformer.getPhaseTapChanger();
             phaseTapChanger.setRegulationValue(regulationValue);
             setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
+        } else {
+            businessLogger.warn(String.format("No PST at voltage level (%s) has been found.", voltageLevel));
         }
     }
 
@@ -77,6 +83,8 @@ public final class UctePstProcessor {
         if (transformer != null) {
             PhaseTapChanger phaseTapChanger = transformer.getPhaseTapChanger();
             setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
+        } else {
+            businessLogger.warn(String.format("No PST at voltage level (%s) has been found.", voltageLevel));
         }
     }
 
