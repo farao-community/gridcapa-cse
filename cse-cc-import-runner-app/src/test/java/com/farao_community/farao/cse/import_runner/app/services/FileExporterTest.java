@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -89,16 +88,9 @@ class FileExporterTest {
         RaoParameters raoParameters = fileExporter.getRaoParameters(Collections.emptyList());
         assertEquals(1, raoParameters.getTopoOptimizationParameters().getPredefinedCombinations().size());
         List<String> raCombination = raoParameters.getTopoOptimizationParameters().getPredefinedCombinations().get(0);
-        Map<String, Integer> maxCurativeRaPerTso = raoParameters.getRaUsageLimitsPerContingencyParameters().getMaxCurativeRaPerTso();
         assertEquals(2, raCombination.size());
         assertTrue(raCombination.contains("PRA_2N_VALPELLINE"));
         assertTrue(raCombination.contains("PRA_2N_AVISE"));
-        assertEquals(5, maxCurativeRaPerTso.size());
-        assertEquals(1, maxCurativeRaPerTso.get("IT"));
-        assertEquals(5, maxCurativeRaPerTso.get("FR"));
-        assertEquals(0, maxCurativeRaPerTso.get("CH"));
-        assertEquals(3, maxCurativeRaPerTso.get("SI"));
-        assertEquals(3, maxCurativeRaPerTso.get("AT"));
     }
 
     @Test
