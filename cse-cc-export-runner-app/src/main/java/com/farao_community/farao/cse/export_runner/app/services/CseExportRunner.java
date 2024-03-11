@@ -48,7 +48,7 @@ public class CseExportRunner {
     private static final String NETWORK_PRE_PROCESSED_FILE_NAME = "network_pre_processed";
     private static final DateTimeFormatter OUTPUTS_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
     private static final Logger LOGGER = LoggerFactory.getLogger(CseExportRunner.class);
-    private static final String CRAC_CREATION_PARAMETERS_JSON = "cseCracCreationParameters.json";
+    private static final String CRAC_CREATION_PARAMETERS_JSON = "/crac/cseCracCreationParameters.json";
     private final FileImporter fileImporter;
     private final FileExporter fileExporter;
     private final PiSaService pisaService;
