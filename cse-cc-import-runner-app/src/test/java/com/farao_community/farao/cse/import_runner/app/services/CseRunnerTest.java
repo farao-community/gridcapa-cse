@@ -15,15 +15,10 @@ import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichoto
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.powsybl.openrao.data.cracapi.Crac;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.openrao.data.cracapi.RaUsageLimits;
-import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
-import com.powsybl.openrao.data.craccreation.creator.cse.parameters.CseCracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.parameters.SwitchPairId;
+import com.powsybl.openrao.data.cracapi.Crac;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +31,21 @@ import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyDouble;
+import static org.mockito.Mockito.anyMap;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -136,21 +140,5 @@ class CseRunnerTest {
         } catch (IOException e) {
             fail();
         }
-    }
-
-    @Test
-    void getCracCreationParametersTest() {
-        Set<BusBarChangeSwitches> busBarChangesSwitches = Set.of(new BusBarChangeSwitches("ra-id", Set.of(new SwitchPairId("switch-to-open", "switch-to-close"))));
-        CracCreationParameters cracCreationParameters = cseRunner.getCracCreationParameters(busBarChangesSwitches);
-        RaUsageLimits raUsageLimits = cracCreationParameters.getRaUsageLimitsPerInstant().get("curative");
-        assertTrue(raUsageLimits.getMaxTopoPerTso().isEmpty());
-        assertTrue(raUsageLimits.getMaxTopoPerTso().isEmpty());
-        assertEquals(6, raUsageLimits.getMaxRaPerTso().get("IT"));
-        assertEquals(5, raUsageLimits.getMaxRaPerTso().get("FR"));
-        assertEquals(1, raUsageLimits.getMaxRaPerTso().get("CH"));
-        assertEquals(3, raUsageLimits.getMaxRaPerTso().get("AT"));
-        assertEquals(3, raUsageLimits.getMaxRaPerTso().get("SI"));
-        CseCracCreationParameters cseCracCreationParameters = cracCreationParameters.getExtension(CseCracCreationParameters.class);
-        assertEquals(1, cseCracCreationParameters.getBusBarChangeSwitches("ra-id").getSwitchPairs().size());
     }
 }

@@ -16,6 +16,7 @@ import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichoto
 import com.farao_community.farao.cse.import_runner.app.dichotomy.NetworkShifterUtil;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.import_runner.app.util.Threadable;
+import com.farao_community.farao.cse.network_processing.CracCreationParametersService;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
 import com.farao_community.farao.cse.network_processing.ucte_pst_change.PstInitializer;
@@ -29,16 +30,15 @@ import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.data.craccreation.creator.api.CracCreators;
 import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.api.parameters.JsonCracCreationParameters;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
-import com.powsybl.openrao.data.craccreation.creator.cse.parameters.CseCracCreationParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -149,24 +149,12 @@ public class CseRunner {
         CseCrac nativeCseCrac = fileImporter.importCseCrac(cracUrl);
         // Pre-treatment on network
         Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, nativeCseCrac);
-        CracCreationParameters cracCreationParameters = getCracCreationParameters(busBarChangeSwitchesSet);
+        LOGGER.info("Importing Crac Creation Parameters file: {}", CRAC_CREATION_PARAMETERS_JSON);
+        InputStream cracCreationParametersIs = getClass().getResourceAsStream(CRAC_CREATION_PARAMETERS_JSON);
+        CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersIs, busBarChangeSwitchesSet);
         CseCracCreationContext cracCreationContext = (CseCracCreationContext) CracCreators.createCrac(
             nativeCseCrac, network, targetProcessDateTime, cracCreationParameters);
         return new CracImportData(cracCreationContext, busBarChangeSwitchesSet);
-    }
-
-    CracCreationParameters getCracCreationParameters(Set<BusBarChangeSwitches> busBarChangeSwitches) {
-        LOGGER.info("Importing Crac Creation Parameters file: {}", CRAC_CREATION_PARAMETERS_JSON);
-        CracCreationParameters cracCreationParameters = JsonCracCreationParameters.read(getClass().getResourceAsStream(CRAC_CREATION_PARAMETERS_JSON));
-        CseCracCreationParameters cseCracCreationParameters = cracCreationParameters.getExtension(CseCracCreationParameters.class);
-        if (cseCracCreationParameters != null) {
-            cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitches);
-        } else {
-            cseCracCreationParameters = new CseCracCreationParameters();
-            cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitches);
-            cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
-        }
-        return cracCreationParameters;
     }
 
     static final class CracImportData {
