@@ -19,6 +19,11 @@ import com.powsybl.openrao.data.cracapi.Crac;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.cracapi.RaUsageLimits;
+import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
+import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
+import com.powsybl.openrao.data.craccreation.creator.cse.parameters.CseCracCreationParameters;
+import com.powsybl.openrao.data.craccreation.creator.cse.parameters.SwitchPairId;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +36,7 @@ import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -130,5 +136,21 @@ class CseRunnerTest {
         } catch (IOException e) {
             fail();
         }
+    }
+
+    @Test
+    void getCracCreationParametersTest() {
+        Set<BusBarChangeSwitches> busBarChangesSwitches = Set.of(new BusBarChangeSwitches("ra-id", Set.of(new SwitchPairId("switch-to-open", "switch-to-close"))));
+        CracCreationParameters cracCreationParameters = cseRunner.getCracCreationParameters(busBarChangesSwitches);
+        RaUsageLimits raUsageLimits = cracCreationParameters.getRaUsageLimitsPerInstant().get("curative");
+        assertTrue(raUsageLimits.getMaxTopoPerTso().isEmpty());
+        assertTrue(raUsageLimits.getMaxTopoPerTso().isEmpty());
+        assertEquals(6, raUsageLimits.getMaxRaPerTso().get("IT"));
+        assertEquals(5, raUsageLimits.getMaxRaPerTso().get("FR"));
+        assertEquals(1, raUsageLimits.getMaxRaPerTso().get("CH"));
+        assertEquals(3, raUsageLimits.getMaxRaPerTso().get("AT"));
+        assertEquals(3, raUsageLimits.getMaxRaPerTso().get("SI"));
+        CseCracCreationParameters cseCracCreationParameters = cracCreationParameters.getExtension(CseCracCreationParameters.class);
+        assertEquals(1, cseCracCreationParameters.getBusBarChangeSwitches("ra-id").getSwitchPairs().size());
     }
 }
