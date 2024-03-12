@@ -1,0 +1,14 @@
+{
+  "crac-factory": "CracImplFactory",
+  "ra-usage-limits-per-instant": [
+    {
+      "instant": "curative",
+      "max-ra-per-tso": {
+        "IT": 6,
+        "FR": 5,
+        "CH": 1,
+        "AT": 3,
+        "SI": 3
+      }
+    }]
+}
