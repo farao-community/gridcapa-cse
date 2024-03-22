@@ -9,9 +9,9 @@ spring:
     template:
       reply-timeout: 2400000
   cloud:
+    function:
+      definition: interrupt;request
     stream:
-      function:
-        definition: interrupt;request
       default:
         binder: rabbit
       bindings:
