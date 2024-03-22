@@ -8,13 +8,11 @@
 package com.farao_community.farao.cse.import_runner.app.configurations;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @ConfigurationProperties(prefix = "cse-cc-runner.mendrisio")
-@ConstructorBinding
 public class MendrisioConfiguration {
     private final MendrisioCagnoLineProperties mendrisioCagnoLine;
     private final String mendrisioVoltageLevel;

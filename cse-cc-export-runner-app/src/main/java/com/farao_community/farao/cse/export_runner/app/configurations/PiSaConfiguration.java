@@ -8,14 +8,12 @@ package com.farao_community.farao.cse.export_runner.app.configurations;
 
 import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.context.annotation.Bean;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @ConfigurationProperties(prefix = "cse-cc-runner.pisa")
-@ConstructorBinding
 public class PiSaConfiguration {
     private final PisaLinkProperties link1;
     private final PisaLinkProperties link2;
