@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import com.powsybl.contingency.ContingencyElement;
 import com.powsybl.openrao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
 
@@ -13,7 +14,7 @@ import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.Identifiable;
 import com.powsybl.openrao.data.cracapi.Instant;
 import com.powsybl.openrao.data.cracapi.NetworkElement;
-import com.powsybl.openrao.data.cracapi.Contingency;
+import com.powsybl.contingency.Contingency;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
 import com.powsybl.openrao.data.cracapi.cnec.Side;
 import com.powsybl.openrao.data.cracapi.rangeaction.InjectionRangeAction;
@@ -38,7 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -250,12 +250,28 @@ public class CracResultsHelper {
         return new FlowCnecResult(flow, iMax);
     }
 
+    public String getAreaFrom(ContingencyElement contingencyElement) {
+        String nodeFrom = getNodeFrom(contingencyElement);
+        String nodeTo = getNodeTo(contingencyElement);
+        String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
+        String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
+        return getCountryOfNode(contingencyElement.getId(), countryFrom, countryTo);
+    }
+
+    public String getAreaTo(ContingencyElement contingencyElement) {
+        String nodeFrom = getNodeFrom(contingencyElement);
+        String nodeTo = getNodeTo(contingencyElement);
+        String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
+        String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
+        return getCountryOfNode(contingencyElement.getId(), countryTo, countryFrom);
+    }
+
     public String getAreaFrom(NetworkElement networkElement) {
         String nodeFrom = getNodeFrom(networkElement);
         String nodeTo = getNodeTo(networkElement);
         String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(networkElement, countryFrom, countryTo);
+        return getCountryOfNode(networkElement.getId(), countryFrom, countryTo);
     }
 
     public String getAreaTo(NetworkElement networkElement) {
@@ -263,27 +279,27 @@ public class CracResultsHelper {
         String nodeTo = getNodeTo(networkElement);
         String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(networkElement, countryTo, countryFrom);
+        return getCountryOfNode(networkElement.getId(), countryTo, countryFrom);
     }
 
     private String getAreaFrom(NetworkElement networkElement, NativeBranch nativeBranch) {
         String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
-        return getCountryOfNode(networkElement, countryFrom, countryTo);
+        return getCountryOfNode(networkElement.getId(), countryFrom, countryTo);
     }
 
     private String getAreaTo(NetworkElement networkElement, NativeBranch nativeBranch) {
         String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
-        return getCountryOfNode(networkElement, countryTo, countryFrom);
+        return getCountryOfNode(networkElement.getId(), countryTo, countryFrom);
     }
 
-    private String getCountryOfNode(NetworkElement networkElement, String nodeCountry, String destinationNodeCountry) {
+    private String getCountryOfNode(String elementId, String nodeCountry, String destinationNodeCountry) {
         if (!nodeCountry.equals(UcteCountryCode.XX.toString())) {
             return nodeCountry;
         } else {
-            String area1 = getCountrySide1(networkElement);
-            String area2 = getCountrySide2(networkElement);
+            String area1 = getCountrySide1(elementId);
+            String area2 = getCountrySide2(elementId);
             if (StringUtils.equals(area1, destinationNodeCountry)) {
                 return area2;
             } else {
@@ -292,31 +308,31 @@ public class CracResultsHelper {
         }
     }
 
-    private String getCountrySide1(NetworkElement networkElement) {
-        Optional<Substation> substationOpt = network.getBranch(networkElement.getId()).getTerminal1().getVoltageLevel().getSubstation();
+    private String getCountrySide1(String elementId) {
+        Optional<Substation> substationOpt = network.getBranch(elementId).getTerminal1().getVoltageLevel().getSubstation();
         if (substationOpt.isPresent()) {
             Optional<Country> country = substationOpt.get().getCountry();
             if (country.isPresent()) {
                 return country.get().toString();
             } else {
-                throw new CseDataException("NetworkElement " + networkElement.getId() + " has no country on side 1");
+                throw new CseDataException("NetworkElement " + elementId + " has no country on side 1");
             }
         } else {
-            throw new CseDataException("NetworkElement " + networkElement.getId() + " has no country on side 1");
+            throw new CseDataException("NetworkElement " + elementId + " has no country on side 1");
         }
     }
 
-    private String getCountrySide2(NetworkElement networkElement) {
-        Optional<Substation> substationOpt = network.getBranch(networkElement.getId()).getTerminal2().getVoltageLevel().getSubstation();
+    private String getCountrySide2(String elementId) {
+        Optional<Substation> substationOpt = network.getBranch(elementId).getTerminal2().getVoltageLevel().getSubstation();
         if (substationOpt.isPresent()) {
             Optional<Country> country = substationOpt.get().getCountry();
             if (country.isPresent()) {
                 return country.get().toString();
             } else {
-                throw new CseDataException("NetworkElement " + networkElement.getId() + " has no country on side 2");
+                throw new CseDataException("NetworkElement " + elementId + " has no country on side 2");
             }
         } else {
-            throw new CseDataException("NetworkElement " + networkElement.getId() + " has no country on side 2");
+            throw new CseDataException("NetworkElement " + elementId + " has no country on side 2");
         }
     }
 
@@ -328,25 +344,33 @@ public class CracResultsHelper {
         return networkElement.getId().substring(9, 17);
     }
 
-    public String getOrderCode(NetworkElement networkElement) {
-        return networkElement.getId().substring(18, 19);
+    public String getNodeFrom(ContingencyElement contingencyElement) {
+        return contingencyElement.getId().substring(0, 8);
+    }
+
+    public String getNodeTo(ContingencyElement contingencyElement) {
+        return contingencyElement.getId().substring(9, 17);
+    }
+
+    public String getOrderCode(ContingencyElement contingencyElement) {
+        return contingencyElement.getId().substring(18, 19);
     }
 
     public static String getOutageName(FlowCnec flowCnec) {
         Optional<Contingency> contingencyOpt = flowCnec.getState().getContingency();
         if (contingencyOpt.isPresent()) {
-            return contingencyOpt.get().getName();
+            return contingencyOpt.get().getName().orElse(contingencyOpt.get().getId());
         } else {
             return PREVENTIVE_OUTAGE_NAME;
         }
     }
 
-    public static Set<NetworkElement> getOutageElements(FlowCnec flowCnec) {
+    public static List<ContingencyElement> getOutageElements(FlowCnec flowCnec) {
         Optional<Contingency> contingencyOpt = flowCnec.getState().getContingency();
         if (contingencyOpt.isPresent()) {
-            return contingencyOpt.get().getNetworkElements();
+            return contingencyOpt.get().getElements();
         } else {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
     }
 

@@ -23,7 +23,7 @@ import com.farao_community.farao.cse.data.xsd.ttc_rao.PreventiveBranchResult;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.PreventiveResult;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.Status;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.StringValue;
-import com.powsybl.openrao.data.cracapi.Contingency;
+import com.powsybl.contingency.Contingency;
 import com.powsybl.openrao.data.craccreation.creator.api.ElementaryCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.RemedialActionCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.cse.remedialaction.CseHvdcCreationContext;
@@ -96,11 +96,11 @@ public final class TtcRao {
             outage.setName(cseOutageCreationContext.getNativeId());
             outageResult.setOutage(outage);
             Contingency contingency = cracResultsHelper.getCrac().getContingency(cseOutageCreationContext.getCreatedContingencyId());
-            contingency.getNetworkElements().forEach(contingencyNetworkElement -> {
+            contingency.getElements().forEach(contingencyElement -> {
                 Branch branch = new Branch();
-                branch.setCode(getStringValue(cracResultsHelper.getOrderCode(contingencyNetworkElement)));
-                branch.setFromNode(getStringValue(cracResultsHelper.getNodeFrom(contingencyNetworkElement)));
-                branch.setToNode(getStringValue(cracResultsHelper.getNodeTo(contingencyNetworkElement)));
+                branch.setCode(getStringValue(cracResultsHelper.getOrderCode(contingencyElement)));
+                branch.setFromNode(getStringValue(cracResultsHelper.getNodeFrom(contingencyElement)));
+                branch.setToNode(getStringValue(cracResultsHelper.getNodeTo(contingencyElement)));
                 outage.getBranch().add(branch);
             });
 
