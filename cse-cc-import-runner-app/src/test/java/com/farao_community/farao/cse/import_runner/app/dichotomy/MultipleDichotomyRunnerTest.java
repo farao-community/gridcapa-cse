@@ -139,7 +139,7 @@ class MultipleDichotomyRunnerTest {
     private DichotomyResult<DichotomyRaoResponse> mockDichotomyResult(String limitingElement, double lowestUnsecureItalianImport) throws IOException {
         DichotomyStepResult<DichotomyRaoResponse> highestValidStep = Mockito.mock(DichotomyStepResult.class);
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
-        Network network = Mockito.mock(Network.class);
+
         Mockito.when(dichotomyResult.getHighestValidStep()).thenReturn(highestValidStep);
         Mockito.when(dichotomyResult.hasValidStep()).thenReturn(true);
         Mockito.when(dichotomyResultHelper.getLimitingElement(dichotomyResult, network)).thenReturn(limitingElement);
