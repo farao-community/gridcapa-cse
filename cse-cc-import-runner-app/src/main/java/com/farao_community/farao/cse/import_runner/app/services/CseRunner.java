@@ -15,7 +15,6 @@ import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichoto
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.NetworkShifterUtil;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
-import com.farao_community.farao.cse.import_runner.app.util.Threadable;
 import com.farao_community.farao.cse.network_processing.CracCreationParametersService;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
@@ -76,7 +75,6 @@ public class CseRunner {
         this.initialShiftService = initialShiftService;
     }
 
-    @Threadable
     public CseResponse run(CseRequest cseRequest) throws IOException {
         final boolean importEcProcess = cseRequest.isImportEcProcess();
         CseData cseData = new CseData(cseRequest, fileImporter);
@@ -119,11 +117,17 @@ public class CseRunner {
             NetworkShifterUtil.getReferenceExchanges(cseData),
             ntcsByEic);
 
-        DichotomyResult<DichotomyRaoResponse> dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
         String firstShiftNetworkName = fileExporter.getFirstShiftNetworkName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String ttcResultUrl;
         String finalCgmUrl;
-        if (dichotomyResult.hasValidStep()) {
+        DichotomyResult<DichotomyRaoResponse> dichotomyResult;
+        try {
+            dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
+        } catch (IndexOutOfBoundsException ioobe) {
+            dichotomyResult = null;
+        }
+
+        if (dichotomyResult != null && dichotomyResult.hasValidStep() && dichotomyResult.getHighestValidStep().getValidationData() != null) {
             String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
             Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
                 .getRaoResponse().getNetworkWithPraFileUrl());
@@ -134,14 +138,15 @@ public class CseRunner {
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
                 firstShiftNetworkName, FileUtil.getFilenameFromUrl(finalCgmUrl), preprocessedPsts, preprocessedPisaLinks);
         } else {
+            TtcResult.FailedProcessData.FailedProcessReason  failedProcessReason = multipleDichotomyResult.isInterrupted() ? TtcResult.FailedProcessData.FailedProcessReason.OTHER : TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC;
             ttcResultUrl = ttcResultService.saveFailedTtcResult(
                 cseRequest,
                 firstShiftNetworkName,
-                TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC);
+                failedProcessReason);
             finalCgmUrl = firstShiftNetworkName;
         }
 
-        return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl);
+        return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl, multipleDichotomyResult.isInterrupted());
     }
 
     CracImportData importCracAndModifyNetworkForBusBars(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) {

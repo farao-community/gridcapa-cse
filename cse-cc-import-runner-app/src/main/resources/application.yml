@@ -1,6 +1,6 @@
 spring:
   application:
-    name: cse-cc-runner
+    name: cse-x-runner # replace 'x' with the process: import-d2cc, import-idcc...
   rabbitmq:
     host: localhost
     port: 5672
@@ -10,30 +10,31 @@ spring:
       reply-timeout: 2400000
   cloud:
     function:
-      definition: interrupt;request
+      definition: softInterrupt;request
     stream:
       default:
         binder: rabbit
       bindings:
-        interrupt-in-0:
-          destination: cse-interrupt
+        softInterrupt-in-0:
+          destination: cse-x-stop-task # replace 'x' with the process: import-d2cc, import-idcc...
         request-in-0:
-          destination: cse-import-idcc-request
+          destination: cse-x-request # replace 'x' with the process: import-d2cc, import-idcc...
+          group: cse-x-runner # replace 'x' with the process: import-d2cc, import-idcc...
         request-out-0:
-          destination: cse-response
+          destination: cse-x-response # replace 'x' with the process: import-d2cc, import-idcc...
         task-status-update:
-          destination: cse-import-idcc-task-status-updated
+          destination: cse-x-task-status-updated # replace 'x' with the process: import-d2cc, import-idcc...
         stop-rao:
-          destination: cse-import-stop-rao
+          destination: stop-rao-runner
 
 logback:
   amqp:
-    exchange: task-manager-events
+    exchange: cse-x-task-manager-logs-exchange # replace 'x' with the process: import-d2cc, import-idcc...
     routing-key: "#"
 
 rao-runner-server:
   amqp:
-    client-app-id: cse-cc-runner  # should be overridden with value of app name
+    client-app-id: cse-x-runner # replace 'x' with the process: import-d2cc, import-idcc...
     queue-name: rao-request-queue
 
 minio-adapter:

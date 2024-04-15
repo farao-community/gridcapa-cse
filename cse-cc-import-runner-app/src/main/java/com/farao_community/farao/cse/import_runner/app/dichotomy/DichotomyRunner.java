@@ -10,6 +10,7 @@ import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
+import com.farao_community.farao.cse.import_runner.app.services.InterruptionService;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.dichotomy.api.DichotomyEngine;
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
@@ -39,14 +40,16 @@ public class DichotomyRunner {
     private final ForcedPrasHandler forcedPrasHandler;
     private final RaoRunnerClient raoRunnerClient;
     private final Logger logger;
+    private final InterruptionService interruptionService;
 
-    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, Logger logger) {
+    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, Logger logger, InterruptionService interruptionService) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
         this.networkShifterProvider = networkShifterProvider;
         this.forcedPrasHandler = forcedPrasHandler;
         this.raoRunnerClient = raoRunnerClient;
         this.logger = logger;
+        this.interruptionService = interruptionService;
     }
 
     public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
@@ -74,8 +77,10 @@ public class DichotomyRunner {
         DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
             index,
             new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, NetworkShifterUtil.getReferenceItalianImport(referenceExchanges)),
+            interruptionService,
             networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges, ntcsByEic),
-            getNetworkValidator(cseRequest, cseData, forcedPrasIds));
+            getNetworkValidator(cseRequest, cseData, forcedPrasIds),
+            cseRequest.getId());
         return engine.run(network);
     }
 
