@@ -30,10 +30,10 @@ public final class DichotomyResultHelper {
         this.fileImporter = fileImporter;
     }
 
-    public String getLimitingElement(DichotomyResult<DichotomyRaoResponse> dichotomyResult) {
+    public String getLimitingElement(DichotomyResult<DichotomyRaoResponse> dichotomyResult, Network network) {
         DichotomyStepResult<DichotomyRaoResponse> highestValidStepResult = dichotomyResult.getHighestValidStep();
         Crac crac = fileImporter.importCracFromJson(highestValidStepResult.getValidationData()
-            .getRaoResponse().getCracFileUrl());
+            .getRaoResponse().getCracFileUrl(), network);
         RaoResult raoResult = fileImporter.importRaoResult(highestValidStepResult.getValidationData()
             .getRaoResponse().getRaoResultFileUrl(), crac);
         FlowCnec worstCnec = CnecUtil.getWorstCnec(crac, raoResult);

@@ -84,7 +84,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkName, "", processTargetDateTime, processType, isImportEcProcess);
 
         try {
-            Crac crac = fileImporter.importCracFromJson(cracUrl);
+            Crac crac = fileImporter.importCracFromJson(cracUrl, network);
             List<String> appliedRemedialActionInPreviousStep = lastDichotomyStepResult != null && lastDichotomyStepResult.getRaoResult() != null ? lastDichotomyStepResult.getRaoResult().getActivatedNetworkActionsDuringState(crac.getPreventiveState())
                      .stream().map(NetworkAction::getId).toList() : Collections.emptyList();
             RaoRequest raoRequest = buildRaoRequest(networkPresignedUrl, baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep);

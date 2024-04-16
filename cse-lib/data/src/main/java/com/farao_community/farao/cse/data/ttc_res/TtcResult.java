@@ -9,9 +9,9 @@ package com.farao_community.farao.cse.data.ttc_res;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.cnec.*;
 import com.farao_community.farao.cse.data.xsd.ttc_res.*;
+import com.powsybl.contingency.ContingencyElement;
 import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.cracapi.Contingency;
-import com.powsybl.openrao.data.cracapi.NetworkElement;
+import com.powsybl.contingency.Contingency;
 import com.powsybl.openrao.data.cracapi.InstantKind;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
 import com.powsybl.openrao.data.craccreation.creator.api.ElementaryCreationContext;
@@ -320,8 +320,8 @@ public final class TtcResult {
         } else {
             outageName.setV(CracResultsHelper.getOutageName(worstCnec));
             outage.setName(outageName);
-            CracResultsHelper.getOutageElements(worstCnec).forEach(networkElement ->
-                fillOutageElements(cracResultsHelper, outage, networkElement)
+            CracResultsHelper.getOutageElements(worstCnec).forEach(contingencyElement ->
+                fillOutageElements(cracResultsHelper, outage, contingencyElement)
             );
 
             if (worstCnec.getState().getInstant() == crac.getLastInstant()) {
@@ -366,14 +366,14 @@ public final class TtcResult {
         ttcResults.setLimitingElement(limitingElement);
     }
 
-    private static void fillOutageElements(CracResultsHelper cracResultsHelper, Outage outage, NetworkElement networkElement) {
+    private static void fillOutageElements(CracResultsHelper cracResultsHelper, Outage outage, ContingencyElement contingencyElement) {
         Element outageElement = new Element();
         Code outageElementCode = new Code();
-        outageElementCode.setV(networkElement.getId());
+        outageElementCode.setV(contingencyElement.getId());
         Areafrom outageAreaFrom = new Areafrom();
-        outageAreaFrom.setV(cracResultsHelper.getAreaFrom(networkElement));
+        outageAreaFrom.setV(cracResultsHelper.getAreaFrom(contingencyElement));
         Areato outageAreaTo = new Areato();
-        outageAreaTo.setV(cracResultsHelper.getAreaTo(networkElement));
+        outageAreaTo.setV(cracResultsHelper.getAreaTo(contingencyElement));
         outageElement.setCode(outageElementCode);
         outageElement.setAreafrom(outageAreaFrom);
         outageElement.setAreato(outageAreaTo);
@@ -396,8 +396,8 @@ public final class TtcResult {
             outage.setName(outageName);
             MonitoredElement monitoredElement = new MonitoredElement();
             Contingency contingency = cracResultsHelper.getCrac().getContingency(cseOutageCreationContext.getCreatedContingencyId());
-            contingency.getNetworkElements().forEach(contingencyNetworkElement ->
-                fillOutageElements(cracResultsHelper, outage, contingencyNetworkElement)
+            contingency.getElements().forEach(contingencyElement ->
+                fillOutageElements(cracResultsHelper, outage, contingencyElement)
             );
 
             addCurativeRemedialActions(contingency.getId(), cracResultsHelper, criticalBranch);

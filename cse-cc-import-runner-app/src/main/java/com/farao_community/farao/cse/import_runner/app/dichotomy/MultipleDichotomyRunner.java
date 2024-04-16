@@ -77,7 +77,7 @@ public class MultipleDichotomyRunner {
         String limitingCause = TtcResult.limitingCauseToString(initialDichotomyResult.getLimitingCause());
 
         if (initialDichotomyResult.hasValidStep()) {
-            limitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
+            limitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult(), network);
             ttcString = String.valueOf(round(dichotomyResultHelper.computeHighestSecureItalianImport(initialDichotomyResult)));
             printablePrasIds = toString(getActivatedRangeActionInPreventive(crac, initialDichotomyResult));
             printableForcedPrasIds = toString(getForcedPrasIds(initialDichotomyResult));
@@ -126,7 +126,7 @@ public class MultipleDichotomyRunner {
                     flattenPrasIds(forcedPrasIds));
 
                 if (nextDichotomyResult.hasValidStep()) {
-                    String newLimitingElement = dichotomyResultHelper.getLimitingElement(nextDichotomyResult);
+                    String newLimitingElement = dichotomyResultHelper.getLimitingElement(nextDichotomyResult, network);
                     double previousLowestUnsecureItalianImport =
                         dichotomyResultHelper.computeLowestUnsecureItalianImport(multipleDichotomyResult.getBestDichotomyResult());
                     double newLowestUnsecureItalianImport = dichotomyResultHelper.computeLowestUnsecureItalianImport(nextDichotomyResult);
@@ -181,7 +181,7 @@ public class MultipleDichotomyRunner {
         String finalLimitingCause = TtcResult.limitingCauseToString(multipleDichotomyResult.getBestDichotomyResult().getLimitingCause());
 
         if (multipleDichotomyResult.getBestDichotomyResult().hasValidStep()) {
-            finalLimitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult());
+            finalLimitingElement = dichotomyResultHelper.getLimitingElement(multipleDichotomyResult.getBestDichotomyResult(), network);
             finalTtcString = String.valueOf(round(dichotomyResultHelper.computeHighestSecureItalianImport(multipleDichotomyResult.getBestDichotomyResult())));
             finalPrintablePrasIds = toString(getActivatedRangeActionInPreventive(crac, multipleDichotomyResult.getBestDichotomyResult()));
             finalPrintableForcedPrasIds = toString(getForcedPrasIds(multipleDichotomyResult.getBestDichotomyResult()));

@@ -10,6 +10,9 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
+import com.powsybl.iidm.network.Identifiable;
+import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,11 @@ class DichotomyResultHelperTest {
         DichotomyStepResult<DichotomyRaoResponse> highestValidStep = Mockito.mock(DichotomyStepResult.class);
         DichotomyRaoResponse dichotomyRaoResponse = Mockito.mock(DichotomyRaoResponse.class);
         RaoResponse raoResponse = Mockito.mock(RaoResponse.class);
+        Network network = Mockito.mock(Network.class);
+        Identifiable line = Mockito.mock(Line.class);
+
+        Mockito.when(line.getId()).thenReturn("anId");
+        Mockito.when(network.getIdentifiable(Mockito.anyString())).thenReturn(line);
 
         Mockito.when(dichotomyResult.getHighestValidStep()).thenReturn(highestValidStep);
         Mockito.when(highestValidStep.getValidationData()).thenReturn(dichotomyRaoResponse);
@@ -42,7 +50,7 @@ class DichotomyResultHelperTest {
         Mockito.when(raoResponse.getRaoResultFileUrl()).thenReturn("file://" + Objects.requireNonNull(getClass().getResource("rao-result-v1.1.json")).getPath());
         Mockito.when(raoResponse.getCracFileUrl()).thenReturn("file://" + Objects.requireNonNull(getClass().getResource("crac-for-rao-result-v1.1.json")).getPath());
 
-        String limitingElement = dichotomyResultHelper.getLimitingElement(dichotomyResult);
+        String limitingElement = dichotomyResultHelper.getLimitingElement(dichotomyResult, network);
 
         assertEquals("cnec1prevId", limitingElement);
     }
