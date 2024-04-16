@@ -89,7 +89,7 @@ class RaoRunnerValidatorTest {
         when(network.getNameOrId()).thenReturn("networkName");
         when(fileExporter.saveNetworkInArtifact(any(), any(), any(), any(), any(), anyBoolean())).thenReturn(NETWORK_PRE_SIGNED_URL);
         Crac crac = mock(Crac.class);
-        when(fileImporter.importCracFromJson(CRAC_URL)).thenReturn(crac);
+        when(fileImporter.importCracFromJson(CRAC_URL, network)).thenReturn(crac);
         RaoResponse raoResponse = mock(RaoResponse.class);
         when(raoRunnerClient.runRao(any())).thenReturn(raoResponse);
         when(raoResponse.isInterrupted()).thenReturn(true);
@@ -124,7 +124,7 @@ class RaoRunnerValidatorTest {
         when(variantManager.getWorkingVariantId()).thenReturn("variantId");
         when(network.getNameOrId()).thenReturn("networkName");
         when(fileExporter.saveNetworkInArtifact(any(), any(), any(), any(), any(), anyBoolean())).thenReturn(NETWORK_PRE_SIGNED_URL);
-        when(fileImporter.importCracFromJson(CRAC_URL)).thenThrow(RuntimeException.class);
+        when(fileImporter.importCracFromJson(CRAC_URL, network)).thenThrow(RuntimeException.class);
         assertThrows(ValidationException.class, () -> raoRunnerValidator.validateNetwork(network, null));
     }
 }
