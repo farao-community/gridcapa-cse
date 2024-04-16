@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
+import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
@@ -38,14 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyDouble;
-import static org.mockito.Mockito.anyMap;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -65,6 +58,9 @@ class CseRunnerTest {
     @MockBean
     private FileExporter fileExporter;
 
+    @MockBean
+    private TtcResultService ttcResultService;
+
     @Test
     void testCracImportAndBusbarPreprocess() {
         String cracUrl = Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1_busbar.xml")).toString();
@@ -73,7 +69,7 @@ class CseRunnerTest {
         assertEquals(1, Stream.of(network.getVoltageLevel("ITALY11").getBusBreakerView().getBuses()).count());
 
         Crac crac = cseRunner.importCracAndModifyNetworkForBusBars(cracUrl, OffsetDateTime.parse("2021-09-01T20:30Z"), network)
-            .cseCracCreationContext.getCrac();
+                .cseCracCreationContext.getCrac();
 
         // After pre-processing 4 buses in this voltage level ITALY111, ITALY112, ITALY11Z and ITALY11Y
         assertEquals(4, StreamSupport.stream(network.getVoltageLevel("ITALY11").getBusBreakerView().getBuses().spliterator(), true).count());
@@ -84,29 +80,7 @@ class CseRunnerTest {
     void testRun() {
         CseRequest cseRequest = null;
         try {
-            cseRequest = new CseRequest(
-                "ID1",
-                ProcessType.IDCC,
-                OffsetDateTime.parse("2021-09-01T20:30Z"),
-                getClass().getResource("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct").toURI().toURL().toString(),
-                getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml").toURI().toURL().toString(),
-                getClass().getResource("crac.xml").toURI().toURL().toString(),
-                getClass().getResource("20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
-                getClass().getResource("NTC2_20210901_2D1_AT-IT1.xml").toURI().toURL().toString(),
-                getClass().getResource("NTC2_20210901_2D1_CH-IT1.xml").toURI().toURL().toString(),
-                getClass().getResource("NTC2_20210901_2D1_FR-IT1.xml").toURI().toURL().toString(),
-                getClass().getResource("NTC2_20210901_2D1_SI-IT1.xml").toURI().toURL().toString(),
-                null,
-                getClass().getResource("vulcanus_01032021_96.xls").toURI().toURL().toString(),
-                getClass().getResource("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
-                null,
-                null,
-                null,
-                50.0,
-                0.0,
-                null,
-                true
-            );
+            cseRequest = buildTestCseRequest();
         } catch (MalformedURLException | URISyntaxException e) {
             fail();
         }
@@ -114,13 +88,13 @@ class CseRunnerTest {
             MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult = mock(MultipleDichotomyResult.class);
 
             when(multipleDichotomyRunner.runMultipleDichotomy(
-                any(CseRequest.class),
-                any(CseData.class),
-                any(Network.class),
-                any(Crac.class),
-                anyDouble(),
-                any(Map.class),
-                any(Map.class)
+                    any(CseRequest.class),
+                    any(CseData.class),
+                    any(Network.class),
+                    any(Crac.class),
+                    anyDouble(),
+                    any(Map.class),
+                    any(Map.class)
             )).thenReturn(dichotomyResult);
             DichotomyResult<DichotomyRaoResponse> raoResponse = mock(DichotomyResult.class);
 
@@ -129,7 +103,7 @@ class CseRunnerTest {
 
             when(fileExporter.getFinalNetworkFilePath(any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("AnyString");
             when(fileExporter.exportAndUploadNetwork(any(Network.class), anyString(), any(GridcapaFileGroup.class), anyString(), anyString(), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyString/IMPORT_EC/test");
-            when(fileExporter.saveTtcResult(any(Timestamp.class), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyTTCfilepath/IMPORT_EC/test");
+            when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("file:/AnyTTCfilepath/IMPORT_EC/test");
 
             doNothing().when(initialShiftService).performInitialShiftFromVulcanusLevelToNtcLevel(any(), any(), any(), anyMap(), anyMap());
 
@@ -140,5 +114,63 @@ class CseRunnerTest {
         } catch (IOException e) {
             fail();
         }
+    }
+
+    @Test
+    void testRunInterrupted() throws IOException, URISyntaxException {
+
+        CseRequest cseRequest = buildTestCseRequest();
+
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult = mock(MultipleDichotomyResult.class);
+
+        when(multipleDichotomyRunner.runMultipleDichotomy(
+                any(CseRequest.class),
+                any(CseData.class),
+                any(Network.class),
+                any(Crac.class),
+                anyDouble(),
+                any(Map.class),
+                any(Map.class)
+        )).thenReturn(dichotomyResult);
+
+        when(dichotomyResult.isInterrupted()).thenReturn(true);
+        when(dichotomyResult.getBestDichotomyResult()).thenThrow(new IndexOutOfBoundsException());
+
+        when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("interruptedTTCFilePath");
+
+        // WHEN
+        CseResponse response = cseRunner.run(cseRequest);
+
+        // THEN
+        verify(ttcResultService, times(1)).saveFailedTtcResult(eq(cseRequest), any(), eq(TtcResult.FailedProcessData.FailedProcessReason.OTHER));
+        assertNotNull(response);
+        assertEquals("interruptedTTCFilePath", response.getTtcFileUrl());
+        assertTrue(response.isInterrupted());
+    }
+
+    private CseRequest buildTestCseRequest() throws MalformedURLException, URISyntaxException {
+        return new CseRequest(
+                "ID1",
+                ProcessType.IDCC,
+                OffsetDateTime.parse("2021-09-01T20:30Z"),
+                getClass().getResource("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct").toURI().toURL().toString(),
+                getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml").toURI().toURL().toString(),
+                getClass().getResource("crac.xml").toURI().toURL().toString(),
+                getClass().getResource("20210624_2D4_NTC_reductions_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                getClass().getResource("vulcanus_01032021_96.xls").toURI().toURL().toString(),
+                getClass().getResource("2021_2Dp_NTC_annual_CSE1_Adapted_v8_8.xml").toURI().toURL().toString(),
+                null,
+                null,
+                null,
+                50.0,
+                0.0,
+                null,
+                true
+        );
     }
 }

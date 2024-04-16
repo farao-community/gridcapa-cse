@@ -12,6 +12,7 @@ import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandle
 import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.powsybl.openrao.commons.Unit;
 import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.networkaction.NetworkAction;
@@ -78,7 +79,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
     }
 
     @Override
-    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network, DichotomyStepResult lastDichotomyStepResult) throws ValidationException {
+    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network, DichotomyStepResult lastDichotomyStepResult) throws ValidationException, RaoInterruptionException {
         String baseDirPathForCurrentStep = generateBaseDirPathFromScaledNetwork(network);
         String scaledNetworkName = network.getNameOrId() + ".xiidm";
         String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkName, "", processTargetDateTime, processType, isImportEcProcess);
@@ -98,6 +99,9 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
             LOGGER.info("RAO response received: {}", raoResponse);
+            if (raoResponse.isInterrupted()) {
+                throw new RaoInterruptionException("RAO has been interrupted");
+            }
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), crac);
 
             DichotomyRaoResponse dichotomyRaoResponse = new DichotomyRaoResponse(raoResponse, appliedForcedPras);

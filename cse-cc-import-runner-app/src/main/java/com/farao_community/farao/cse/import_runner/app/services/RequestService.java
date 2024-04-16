@@ -7,28 +7,27 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.cse.import_runner.app.util.GenericThreadLauncher;
 import com.farao_community.farao.cse.runner.api.JsonApiConverter;
 import com.farao_community.farao.cse.runner.api.exception.AbstractCseException;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
-import com.farao_community.farao.cse.runner.api.resource.ThreadLauncherResult;
 import com.farao_community.farao.gridcapa.task_manager.api.TaskStatus;
 import com.farao_community.farao.gridcapa.task_manager.api.TaskStatusUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
-import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Service
 public class RequestService {
     private static final String TASK_STATUS_UPDATE = "task-status-update";
-    private static final String STOP_RAO_BINDING = "stop-rao";
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
     private final CseRunner cseServer;
     private final Logger businessLogger;
@@ -41,6 +40,13 @@ public class RequestService {
         this.streamBridge = streamBridge;
     }
 
+    @Bean
+    public Function<Flux<byte[]>, Flux<byte[]>> request(RequestService requestService) {
+        return cseRequestFlux -> cseRequestFlux
+                .map(this::launchCseRequest)
+                .log();
+    }
+
     public byte[] launchCseRequest(byte[] req) {
         byte[] result;
         CseRequest cseRequest = jsonApiConverter.fromJsonMessage(req, CseRequest.class);
@@ -50,22 +56,9 @@ public class RequestService {
         try {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
-            GenericThreadLauncher<CseRunner, CseResponse> launcher = new GenericThreadLauncher<>(cseServer, cseRequest.getId(), cseRequest);
-            launcher.start();
-            ThreadLauncherResult<CseResponse> cseResponse = launcher.getResult();
-            if (cseResponse.hasError() && cseResponse.getException() != null) {
-                throw cseResponse.getException();
-            }
-            Optional<CseResponse> resp = cseResponse.getResult();
-            if (resp.isPresent() && !cseResponse.hasError()) {
-                result = sendCseResponse(resp.get());
-                LOGGER.info("Cse response sent: {}", resp.get());
-            } else {
-                businessLogger.info("CSE run has been interrupted");
-                streamBridge.send(STOP_RAO_BINDING, cseRequest.getId());
-                result = sendCseResponse(new CseResponse(cseRequest.getId(), null, null));
-
-            }
+            CseResponse cseResponse = cseServer.run(cseRequest);
+            result = sendCseResponse(cseResponse);
+            LOGGER.info("Cse response sent: {}", cseResponse);
         } catch (Exception e) {
             result = handleError(e, cseRequest.getId());
         }
@@ -73,7 +66,8 @@ public class RequestService {
     }
 
     private byte[] sendCseResponse(CseResponse cseResponse) {
-        if (cseResponse.getFinalCgmFileUrl() == null && cseResponse.getTtcFileUrl() == null) {
+        if (cseResponse.isInterrupted()) {
+            businessLogger.info("CSE run has been interrupted");
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.INTERRUPTED));
         } else {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));

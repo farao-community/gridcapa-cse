@@ -11,19 +11,23 @@ import com.farao_community.farao.cse.runner.api.JsonApiConverter;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
+import com.farao_community.farao.gridcapa.task_manager.api.TaskStatus;
+import com.farao_community.farao.gridcapa.task_manager.api.TaskStatusUpdate;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.stream.function.StreamBridge;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -38,32 +42,43 @@ class RequestServiceTest {
     @Autowired
     private RequestService requestService;
 
+    private final JsonApiConverter jsonApiConverter = new JsonApiConverter();
+
     @Test
     void testRequestService() throws IOException {
         String id = UUID.randomUUID().toString();
         CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0.0, 0.0, null, false);
-        JsonApiConverter jsonApiConverter = new JsonApiConverter();
-        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null");
+        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null", false);
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         byte[] resp = jsonApiConverter.toJsonMessage(cseResponse, CseResponse.class);
         when(cseServer.run(any())).thenReturn(cseResponse);
-        when(streamBridge.send(any(), any())).thenReturn(true);
+
         byte[] result = requestService.launchCseRequest(req);
+
+        ArgumentCaptor<TaskStatusUpdate> captor = ArgumentCaptor.forClass(TaskStatusUpdate.class);
+        verify(streamBridge, times(2)).send(any(), captor.capture());
+        assertEquals(TaskStatus.RUNNING, captor.getAllValues().get(0).getTaskStatus());
+        assertEquals(TaskStatus.SUCCESS, captor.getAllValues().get(1).getTaskStatus());
+
         assertArrayEquals(resp, result);
     }
 
     @Test
-    void testInterruptionRequestService() throws IOException {
+    void testInterruptedRequestService() throws IOException {
         String id = UUID.randomUUID().toString();
-        Exception except = new InterruptedIOException("interrupted");
         CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0.0, 0.0, null, false);
-        JsonApiConverter jsonApiConverter = new JsonApiConverter();
-        CseResponse cseResponse = new CseResponse(cseRequest.getId(), null, null);
+        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null", true);
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         byte[] resp = jsonApiConverter.toJsonMessage(cseResponse, CseResponse.class);
-        when(cseServer.run(any())).thenThrow(except);
-        when(streamBridge.send(any(), any())).thenReturn(true);
+        when(cseServer.run(any())).thenReturn(cseResponse);
+
         byte[] result = requestService.launchCseRequest(req);
+
+        ArgumentCaptor<TaskStatusUpdate> captor = ArgumentCaptor.forClass(TaskStatusUpdate.class);
+        verify(streamBridge, times(2)).send(any(), captor.capture());
+        assertEquals(TaskStatus.RUNNING, captor.getAllValues().get(0).getTaskStatus());
+        assertEquals(TaskStatus.INTERRUPTED, captor.getAllValues().get(1).getTaskStatus());
+
         assertArrayEquals(resp, result);
     }
 
@@ -72,13 +87,16 @@ class RequestServiceTest {
         String id = UUID.randomUUID().toString();
         Exception except = new IOException("Mocked exception");
         CseRequest cseRequest = new CseRequest(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0.0, 0.0, null, false);
-        JsonApiConverter jsonApiConverter = new JsonApiConverter();
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         when(cseServer.run(any())).thenThrow(except);
-        when(streamBridge.send(any(), any())).thenReturn(true);
-        byte[] expectedResult = jsonApiConverter.toJsonMessage(new CseInternalException("CSE run failed", new InvocationTargetException(except)));
+        byte[] expectedResult = jsonApiConverter.toJsonMessage(new CseInternalException("CSE run failed", except));
 
         byte[] result = requestService.launchCseRequest(req);
+
+        ArgumentCaptor<TaskStatusUpdate> captor = ArgumentCaptor.forClass(TaskStatusUpdate.class);
+        verify(streamBridge, times(2)).send(any(), captor.capture());
+        assertEquals(TaskStatus.RUNNING, captor.getAllValues().get(0).getTaskStatus());
+        assertEquals(TaskStatus.ERROR, captor.getAllValues().get(1).getTaskStatus());
 
         assertArrayEquals(expectedResult, result);
     }
