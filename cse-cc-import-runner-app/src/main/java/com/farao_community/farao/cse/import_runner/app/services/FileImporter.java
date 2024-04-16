@@ -69,9 +69,9 @@ public class FileImporter {
         return cseCracImporter.importNativeCrac(cracInputStream);
     }
 
-    public Crac importCracFromJson(String cracUrl) {
+    public Crac importCracFromJson(String cracUrl, Network network) {
         InputStream cracResultStream = openUrlStream(cracUrl);
-        return CracImporters.importCrac(FileUtil.getFilenameFromUrl(cracUrl), cracResultStream);
+        return CracImporters.importCrac(FileUtil.getFilenameFromUrl(cracUrl), cracResultStream, network);
     }
 
     public ZonalData<Scalable> importGlsk(String glskUrl, Network network) {

@@ -45,8 +45,8 @@ class ForcedPraHandlerTest {
 
     @Test
     void checkCracAndForcedPrasAreConsistent() {
-        Crac crac = CracImporters.importCrac("crac-for-forced-pras.json", Objects.requireNonNull(getClass().getResourceAsStream("crac-for-forced-pras.json")));
         Network network = Network.read("network-for-forced-pras.xiidm", getClass().getResourceAsStream("network-for-forced-pras.xiidm"));
+        Crac crac = CracImporters.importCrac("crac-for-forced-pras.json", Objects.requireNonNull(getClass().getResourceAsStream("crac-for-forced-pras.json")), network);
 
         Set<String> manualForcedPrasIds = Set.of("Open line NL1-NL2", "Open line BE2-FR3", "PRA_PST_BE");
 
