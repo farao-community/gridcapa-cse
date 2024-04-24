@@ -1,5 +1,7 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.farao_community.farao.cse.import_runner.app.dichotomy.ZonalScalableProvider;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.openrao.commons.EICode;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.CseData;
@@ -17,6 +19,7 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,16 +32,18 @@ public class InitialShiftService {
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
     private final ProcessConfiguration processConfiguration;
+    private final ZonalScalableProvider zonalScalableProvider;
     private static final Set<String> BORDER_COUNTRIES = Set.of(CseCountry.FR.getEiCode(), CseCountry.CH.getEiCode(), CseCountry.AT.getEiCode(), CseCountry.SI.getEiCode());
 
-    public InitialShiftService(Logger businessLogger, FileExporter fileExporter, FileImporter fileImporter, ProcessConfiguration processConfiguration) {
+    public InitialShiftService(ZonalScalableProvider zonalScalableProvider, Logger businessLogger, FileExporter fileExporter, FileImporter fileImporter, ProcessConfiguration processConfiguration) {
         this.businessLogger = businessLogger;
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
         this.processConfiguration = processConfiguration;
+        this.zonalScalableProvider = zonalScalableProvider;
     }
 
-    void performInitialShiftFromVulcanusLevelToNtcLevel(Network network, CseData cseData, CseRequest cseRequest, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) {
+    void performInitialShiftFromVulcanusLevelToNtcLevel(Network network, CseData cseData, CseRequest cseRequest, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) throws IOException {
         Map<String, Double> preprocessedNetworkNps = BorderExchanges.computeCseCountriesBalances(network);
         for (Map.Entry<String, Double> entry : preprocessedNetworkNps.entrySet()) {
             businessLogger.info("Summary : Net positions on preprocessed network : for area {} : net position is {}.", entry.getKey(), entry.getValue());
@@ -81,8 +86,8 @@ public class InitialShiftService {
         return initialShifts;
     }
 
-    private void shiftNetwork(Map<String, Double> scalingValuesByCountry, CseRequest cseRequest, Network network) {
-        ZonalData<Scalable> zonalScalable = GlskDocumentImporters.importGlsk(fileImporter.openUrlStream(cseRequest.getMergedGlskUrl())).getZonalScalable(network);
+    private void shiftNetwork(Map<String, Double> scalingValuesByCountry, CseRequest cseRequest, Network network) throws IOException {
+        ZonalData<Scalable> zonalScalable = getZonalScalableForProcess(cseRequest, network);
         String initialVariantId = network.getVariantManager().getWorkingVariantId();
          // SecureRandom used to be compliant with sonar
         String newVariant = "temporary-working-variant" + new SecureRandom().nextInt(100) + initialVariantId;
@@ -111,5 +116,11 @@ public class InitialShiftService {
             }
         }
 
+    }
+
+    private ZonalData<Scalable> getZonalScalableForProcess(CseRequest cseRequest, Network network) throws IOException {
+        return cseRequest.getProcessType().equals(ProcessType.D2CC) ?
+            zonalScalableProvider.get(cseRequest.getMergedGlskUrl(), network, ProcessType.D2CC) :
+            GlskDocumentImporters.importGlsk(fileImporter.openUrlStream(cseRequest.getMergedGlskUrl())).getZonalScalable(network);
     }
 }
