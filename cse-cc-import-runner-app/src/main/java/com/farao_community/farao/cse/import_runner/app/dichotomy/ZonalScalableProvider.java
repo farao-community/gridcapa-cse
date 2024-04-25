@@ -61,6 +61,7 @@ public class ZonalScalableProvider {
         return network.getLoadStream()
             .filter(load -> isLoadCorrespondingToTheCountry(load, cseCountry))
             .map(Load::getP0)
+            .map(Math::abs)
             .reduce(0., Double::sum);
     }
 
@@ -79,7 +80,7 @@ public class ZonalScalableProvider {
         network.getLoadStream()
             .filter(load -> isLoadCorrespondingToTheCountry(load, cseCountry))
             .forEach(load -> {
-                percentageList.add((load.getP0() / sum) * 100);
+                percentageList.add(Math.abs(load.getP0() / sum) * 100);
                 scalableList.add(Scalable.onLoad(load.getId()));
             });
 
