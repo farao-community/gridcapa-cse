@@ -14,12 +14,12 @@
     <parent>
         <artifactId>gridcapa-cse-lib</artifactId>
         <groupId>com.farao-community.farao</groupId>
-        <version>1.25.1</version>
+        <version>1.25.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>gridcapa-cse-computation</artifactId>
-    <version>1.25.1</version>
+    <version>1.25.2</version>
     <packaging>jar</packaging>
     <name>Common CSE computation utilities</name>
     <description>Module that manages common computation for CSE processes</description>
