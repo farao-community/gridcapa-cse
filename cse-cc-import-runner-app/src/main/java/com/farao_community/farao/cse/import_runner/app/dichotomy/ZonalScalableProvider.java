@@ -59,9 +59,8 @@ public class ZonalScalableProvider {
 
     private static double getZoneSumOfActiveLoads(Network network, CseCountry cseCountry) {
         return network.getLoadStream()
-            .filter(load -> isLoadCorrespondingToTheCountry(load, cseCountry))
-            .map(Load::getP0)
-            .map(Math::abs)
+            .filter(load -> isLoadCorrespondingToTheCountry(load, cseCountry)).map(Load::getP0)
+            .filter(p0 -> p0 > 0)
             .reduce(0., Double::sum);
     }
 
@@ -78,7 +77,7 @@ public class ZonalScalableProvider {
         List<Scalable> scalableList = new ArrayList<>();
 
         network.getLoadStream()
-            .filter(load -> isLoadCorrespondingToTheCountry(load, cseCountry))
+            .filter(load -> isLoadCorrespondingToTheCountry(load, cseCountry) && load.getP0() > 0)
             .forEach(load -> {
                 percentageList.add(Math.abs(load.getP0() / sum) * 100);
                 scalableList.add(Scalable.onLoad(load.getId()));
