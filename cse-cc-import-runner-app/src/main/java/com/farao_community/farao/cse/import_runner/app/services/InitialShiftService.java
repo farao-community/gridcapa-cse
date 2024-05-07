@@ -90,7 +90,8 @@ public class InitialShiftService {
         ZonalData<Scalable> zonalScalable = getZonalScalableForProcess(cseRequest, network);
         String initialVariantId = network.getVariantManager().getWorkingVariantId();
          // SecureRandom used to be compliant with sonar
-        String newVariant = "temporary-working-variant" + new SecureRandom().nextInt(100) + initialVariantId;
+        String newVariant = "temporary-working-variant" + new SecureRandom().nextInt(100);
+
         network.getVariantManager().cloneVariant(initialVariantId, newVariant, true);
         network.getVariantManager().setWorkingVariant(newVariant);
         ScalingParameters scalingParameters = new ScalingParameters();
@@ -102,7 +103,7 @@ public class InitialShiftService {
             double done = zonalScalable.getData(zoneId).scale(network, asked, scalingParameters);
             businessLogger.info(String.format("Applying variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done));
 
-            if (Math.abs(done - asked) > 1e-2) {
+            if (Math.abs(done - asked) > 1e-3) {
                 businessLogger.warn(String.format("Glsk limitation : Incomplete variation on zone %s (target: %.3f, done: %.3f)",
                     zoneId, asked, done));
                 if (zoneId.equals(new EICode(Country.IT).getAreaCode())) {
@@ -115,6 +116,10 @@ public class InitialShiftService {
                 }
             }
         }
+        //Save shift in the initial variant
+        network.getVariantManager().cloneVariant(newVariant, initialVariantId, true);
+        network.getVariantManager().setWorkingVariant(initialVariantId);
+        network.getVariantManager().removeVariant(newVariant);
 
     }
 
