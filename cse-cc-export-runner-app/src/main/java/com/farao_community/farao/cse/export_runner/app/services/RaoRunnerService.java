@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 
@@ -28,14 +29,18 @@ public class RaoRunnerService {
         this.raoRunnerClient = raoRunnerClient;
     }
 
-    public RaoResponse run(String id, String networkPresignedUrl, String cracInJsonFormatUrl, String raoParametersUrl, String artifactDestinationPath) throws CseInternalException {
+    public RaoResponse run(String id, String networkPresignedUrl, String cracInJsonFormatUrl, String raoParametersUrl, String artifactDestinationPath) throws CseInternalException, RaoInterruptionException {
         RaoRequest raoRequest = buildRaoRequest(id, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
         try {
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
             LOGGER.info("RAO response received: {}", raoResponse);
+            if (raoResponse.isInterrupted()) {
+                LOGGER.info("RAO has been interrupted");
+                throw new RaoInterruptionException("RAO has been interrupted");
+            }
             return raoResponse;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new CseInternalException("RAO run failed", e);
         }
     }

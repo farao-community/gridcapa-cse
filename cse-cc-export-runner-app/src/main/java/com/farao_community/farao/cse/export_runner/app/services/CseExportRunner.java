@@ -16,6 +16,7 @@ import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.powsybl.openrao.data.craccreation.creator.api.CracCreators;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
@@ -39,6 +40,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
+
+import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.BUSINESS_WARNS;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -87,16 +90,16 @@ public class CseExportRunner {
         InputStream cracCreationParametersInputStream = getClass().getResourceAsStream(CRAC_CREATION_PARAMETERS_JSON);
         CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersInputStream, busBarChangeSwitchesSet);
         CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) CracCreators.createCrac(nativeCseCrac,
-            network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);
+                network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);
 
         // Put all PSTs within their ranges to be able to optimize them
         Map<String, Integer> preprocessedPsts = PstInitializer.withLogger(businessLogger).initializePsts(network, cseCracCreationContext.getCrac());
 
         String initialNetworkUrl = saveInitialNetwork(cseExportRequest, network);
         String cracInJsonFormatUrl = fileExporter.saveCracInJsonFormat(cseCracCreationContext.getCrac(),
-            cseExportRequest.getProcessType(), cseExportRequest.getTargetProcessDateTime());
+                cseExportRequest.getProcessType(), cseExportRequest.getTargetProcessDateTime());
         String raoParametersUrl = fileExporter.saveRaoParameters(cseExportRequest.getProcessType(),
-            cseExportRequest.getTargetProcessDateTime());
+                cseExportRequest.getTargetProcessDateTime());
         String artefactDestinationPath = fileExporter.getDestinationPath(cseExportRequest.getTargetProcessDateTime(), cseExportRequest.getProcessType(), GridcapaFileGroup.ARTIFACT);
         try {
             RaoResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), initialNetworkUrl, cracInJsonFormatUrl, raoParametersUrl, artefactDestinationPath);
@@ -109,10 +112,13 @@ public class CseExportRunner {
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), cseCracCreationContext.getCrac());
             Network networkForTtc = fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl());
             String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, cseCracCreationContext, raoResult, networkForTtc, preprocessedPsts);
-            return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, networkWithPraUrl, logsFileUrl);
+            return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, networkWithPraUrl, logsFileUrl, false);
+        } catch (RaoInterruptionException e) {
+            BUSINESS_WARNS.warn(String.format("RAO interrupted"));
+            return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", logsFileUrl, true);
         } catch (CseInternalException e) {
-            // Temporary return of an empty string for ttc logs file and cgm file
-            return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", logsFileUrl);
+            ttcRaoService.saveFailedTtcRao(cseExportRequest);
+            throw new CseInternalException("RAO run failed", e);
         }
     }
 
