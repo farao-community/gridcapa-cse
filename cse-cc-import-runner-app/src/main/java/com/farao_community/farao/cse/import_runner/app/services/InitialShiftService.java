@@ -103,7 +103,7 @@ public class InitialShiftService {
             double done = zonalScalable.getData(zoneId).scale(network, asked, scalingParameters);
             businessLogger.info(String.format("Applying variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done));
 
-            if (Math.abs(done - asked) > 1e-3) {
+            if (Math.abs(done - asked) > 1e-2) {
                 businessLogger.warn(String.format("Glsk limitation : Incomplete variation on zone %s (target: %.3f, done: %.3f)",
                     zoneId, asked, done));
                 if (zoneId.equals(new EICode(Country.IT).getAreaCode())) {
