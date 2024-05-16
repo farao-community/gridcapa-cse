@@ -9,11 +9,23 @@ spring:
     template:
       reply-timeout: 2400000
   cloud:
+    function:
+      definition: softInterrupt;request
     stream:
+      default:
+        binder: rabbit
       bindings:
+        softInterrupt-in-0:
+          destination: cse-x-stop-task # replace 'x' with the process
+        request-in-0:
+          destination: cse-x-request # replace 'x' with the process
+          group: cse-x-runner # replace 'x' with the process
+        request-out-0:
+          destination: cse-x-response # replace 'x' with the process
         task-status-update:
-          binder: rabbit
-          destination: task-status-updated
+          destination: cse-x-task-status-updated # replace 'x' with the process
+        stop-rao:
+          destination: stop-rao-runner
 
 logback:
   amqp:
@@ -55,14 +67,6 @@ cse-cc-runner:
       fictive-lines:
         - FFG.IL14 FFG.IL13 1
         - FFG.IL14 FFG.IL13 2
-  bindings:
-    request:
-      destination: cse-export-request
-      routing-key: "#"
-      group: cse-export-runner
-    response:
-      destination: cse-export-response
-      expiration: 60000
   whitelist:
     - http://minio:9000/
     - http://localhost:9000/

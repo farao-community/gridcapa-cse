@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
@@ -38,7 +39,7 @@ class RaoRunnerServiceTest {
     private final String artifactDestinationPath = "/path/to/artifact";
 
     @Test
-    void testRunSuccessful() throws CseInternalException {
+    void testRunSuccessful() throws CseInternalException, RaoInterruptionException {
         RaoResponse expectedResponse = new RaoResponse.RaoResponseBuilder().withId("id").build(); // Assuming RaoResponse is a valid response type
 
         when(raoRunnerClient.runRao(any(RaoRequest.class))).thenReturn(expectedResponse);
