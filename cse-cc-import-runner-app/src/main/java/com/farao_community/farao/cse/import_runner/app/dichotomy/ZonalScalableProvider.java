@@ -59,8 +59,8 @@ public class ZonalScalableProvider {
 
     private static double getZoneSumOfActiveLoads(Network network, CseCountry cseCountry) {
         return network.getLoadStream()
-            .filter(load -> isLoadCorrespondingToTheCountry(load, cseCountry)).map(Load::getP0)
-            .filter(p0 -> p0 > 0)
+            .filter(load -> isLoadCorrespondingToTheCountry(load, cseCountry))
+            .map(load -> Math.abs(load.getP0()))
             .reduce(0., Double::sum);
     }
 
