@@ -1,16 +1,9 @@
-spring:
-  rabbitmq:
-    host: rabbitmq-test
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
-
 minio-adapter:
-  bucket: gridcapa
-  base-path: ""
+  bucket: bucket-for-tests
+  base-path: base/path/for/tests
   access-key: gridcapa
-  secret-key: gridcapa
-  url: http://minio:9000/
+  secret-key: gridcapa-secret
+  url: https://minio.test/
 
 cse-cc-runner:
   zone-id: "Europe/Paris"

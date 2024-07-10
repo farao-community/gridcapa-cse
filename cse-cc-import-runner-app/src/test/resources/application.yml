@@ -1,16 +1,9 @@
-spring:
-  rabbitmq:
-    host: rabbitmq-test
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
-
 minio-adapter:
-  bucket: gridcapa
-  base-path: ""
+  bucket: bucket-for-tests
+  base-path: base/path/for/tests
   access-key: gridcapa
-  secret-key: gridcapa
-  url: http://minio:9000/
+  secret-key: gridcapa-secret
+  url: https://minio.test/
 
 cse-cc-runner:
   zone-id: "Europe/Paris"
@@ -47,14 +40,6 @@ cse-cc-runner:
         - SWISS311 SWISS411 2
         - SWISS311 SWISS411 3
       pra-name: PRA_HVDC_GILE_PIOSSASCO_2
-  bindings:
-    request:
-      destination: cse-request
-      routing-key: "#"
-      group: cse-runner
-    response:
-      destination: cse-response
-      expiration: 60000
   whitelist:
     - http://localhost:9000
     - file:/

@@ -1,48 +1,7 @@
 spring:
-  application:
-    name: cse-x-runner # replace 'x' with the process: import-d2cc, import-idcc...
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: gridcapa
-    password: gridcapa
-    template:
-      reply-timeout: 2400000
   cloud:
     function:
       definition: softInterrupt;request
-    stream:
-      default:
-        binder: rabbit
-      bindings:
-        softInterrupt-in-0:
-          destination: cse-x-stop-task # replace 'x' with the process: import-d2cc, import-idcc...
-        request-in-0:
-          destination: cse-x-request # replace 'x' with the process: import-d2cc, import-idcc...
-          group: cse-x-runner # replace 'x' with the process: import-d2cc, import-idcc...
-        request-out-0:
-          destination: cse-x-response # replace 'x' with the process: import-d2cc, import-idcc...
-        task-status-update:
-          destination: cse-x-task-status-updated # replace 'x' with the process: import-d2cc, import-idcc...
-        stop-rao:
-          destination: stop-rao-runner
-
-logback:
-  amqp:
-    exchange: cse-x-task-manager-logs-exchange # replace 'x' with the process: import-d2cc, import-idcc...
-    routing-key: "#"
-
-rao-runner-server:
-  amqp:
-    client-app-id: cse-x-runner # replace 'x' with the process: import-d2cc, import-idcc...
-    queue-name: rao-request-queue
-
-minio-adapter:
-  bucket: gridcapa
-  base-path:
-  access-key: gridcapa
-  secret-key: gridcapa
-  url: http://minio:9000
 
 cse-cc-runner:
   zone-id: "Europe/Paris"
@@ -54,26 +13,3 @@ cse-cc-runner:
     ttc-res: TTC_RES
   xnodes:
     file-path: /home/farao/xnodes.xml
-  mendrisio:
-    mendrisio-cagno-line:
-      target-ch-id: ml_0001
-      ntc-id: ml_mendrisio-cagno
-    mendrisio-voltage-level: SMENDR3
-    mendrisio-node-id: SMENDR3T
-  pisa:
-    link1:
-      node-fr: FFG.IL12
-      node-it: FFG.IL11
-      fictive-lines:
-        - FFG.IL12 FFG.IL11 1
-        - FFG.IL12 FFG.IL11 2
-      pra-name: PRA_HVDC_GILE_PIOSSASCO_1
-    link2:
-      node-fr: FFG.IL14
-      node-it: FFG.IL13
-      fictive-lines:
-        - FFG.IL14 FFG.IL13 1
-        - FFG.IL14 FFG.IL13 2
-      pra-name: PRA_HVDC_GILE_PIOSSASCO_2
-  whitelist:
-    - http://minio:9000/
