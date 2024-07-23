@@ -6,23 +6,28 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
 import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.BranchCnecCreationContext;
+import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.NativeBranch;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreator;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.powsybl.openrao.data.raoresultjson.RaoResultImporter;
-import com.powsybl.iidm.network.Network;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -123,6 +128,31 @@ class CracResultsHelperTest {
         assertEquals(2450, xnodeMergedCnec.getiMaxAfterCra(), .1);
         assertEquals(0, xnodeMergedCnec.getiAfterSps(), .1);
         assertEquals(0, xnodeMergedCnec.getiMaxAfterSps(), .1);
+    }
+
+    @Test
+    void testNullFlowCnec() {
+        final CseCracCreationContext mockedContext = Mockito.mock(CseCracCreationContext.class);
+        final CracResultsHelper helper = new CracResultsHelper(mockedContext, null, null);
+        final BranchCnecCreationContext branchCnecContext = Mockito.mock(BranchCnecCreationContext.class);
+        Mockito.when(branchCnecContext.isImported()).thenReturn(true);
+        final String contingencyId = "contingencyId";
+        Mockito.when(branchCnecContext.getContingencyId()).thenReturn(Optional.of(contingencyId));
+        Mockito.when(branchCnecContext.getCreatedCnecsIds()).thenReturn(Collections.emptyMap());
+        final List<BranchCnecCreationContext> mockedList = List.of(branchCnecContext);
+        final NativeBranch nativeBranchMock = Mockito.mock(NativeBranch.class);
+        Mockito.when(nativeBranchMock.getFrom()).thenReturn("fromNode");
+        Mockito.when(nativeBranchMock.getTo()).thenReturn("toNode");
+        Mockito.when(branchCnecContext.getNativeBranch()).thenReturn(nativeBranchMock);
+        whenReturningBranchCnecCreationContexts(mockedContext, mockedList);
+
+        Assertions.assertTrue(helper.getMergedCnecs(contingencyId).isEmpty());
+    }
+
+    private static void whenReturningBranchCnecCreationContexts(CseCracCreationContext mockedContext,
+                                                                List<BranchCnecCreationContext> mockedList) {
+        Mockito.when(mockedContext.getBranchCnecCreationContexts())
+                .thenAnswer(invocation -> mockedList);
     }
 
     private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) {
