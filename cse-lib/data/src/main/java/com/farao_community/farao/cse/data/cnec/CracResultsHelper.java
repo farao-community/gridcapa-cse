@@ -31,7 +31,6 @@ import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.powsybl.ucte.network.UcteCountryCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,13 +47,14 @@ import java.util.stream.Collectors;
 public class CracResultsHelper {
     public static final String PREVENTIVE_OUTAGE_NAME = "N Situation";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CracResultsHelper.class);
+    private final Logger businessLogger;
     private final CseCracCreationContext cseCracCreationContext;
     private final Crac crac;
     private final RaoResult raoResult;
     private final Network network;
 
-    public CracResultsHelper(CseCracCreationContext cseCracCreationContext, RaoResult result, Network network) {
+    public CracResultsHelper(CseCracCreationContext cseCracCreationContext, RaoResult result, Network network, Logger businessLogger) {
+        this.businessLogger = businessLogger;
         this.cseCracCreationContext = cseCracCreationContext;
         this.crac = cseCracCreationContext.getCrac();
         this.raoResult = result;
@@ -204,9 +204,8 @@ public class CracResultsHelper {
                         flowCnec.isMonitored());
                 mergedCnec.setCnecCommon(cnecCommon);
             } else {
-                LOGGER.warn("Couldn't find flowCnec for branch FROM : {} TO : {} ",
-                        branchCnecCreationContext.getNativeBranch().getFrom(),
-                        branchCnecCreationContext.getNativeBranch().getTo());
+                businessLogger.warn("Couldn't find flowCnec with native id : {}",
+                        branchCnecCreationContext.getNativeId());
             }
         });
         return mergedCnecs;

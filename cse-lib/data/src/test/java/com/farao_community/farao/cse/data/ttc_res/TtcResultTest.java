@@ -21,6 +21,8 @@ import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -62,7 +64,7 @@ class TtcResultTest {
         CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
         RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream("pst_and_topo/raoResult.json"), cseCracCreationContext.getCrac());
 
-        cracResultsHelper = new CracResultsHelper(cseCracCreationContext, raoResult, network);
+        cracResultsHelper = new CracResultsHelper(cseCracCreationContext, raoResult, network, Mockito.mock(Logger.class));
     }
 
     private TtcResult.ProcessData initProcessData(LimitingCause limitingCause, double finalItalianImport, double mniiOffsetValue) {
