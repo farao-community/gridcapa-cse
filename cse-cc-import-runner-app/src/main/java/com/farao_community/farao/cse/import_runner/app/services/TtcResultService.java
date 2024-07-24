@@ -22,6 +22,7 @@ import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -34,10 +35,12 @@ public class TtcResultService {
 
     private final FileExporter fileExporter;
     private final FileImporter fileImporter;
+    private final Logger businessLogger;
 
-    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter) {
+    public TtcResultService(FileExporter fileExporter, FileImporter fileImporter, Logger businessLogger) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
+        this.businessLogger = businessLogger;
     }
 
     public String saveFailedTtcResult(CseRequest cseRequest, String firstShiftNetworkName, TtcResult.FailedProcessData.FailedProcessReason failedProcessReason) {
@@ -72,7 +75,7 @@ public class TtcResultService {
 
         RaoResult raoResult = fileImporter.importRaoResult(highestSecureStepRaoResponse.getRaoResponse().getRaoResultFileUrl(), cseCracCreationContext.getCrac());
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
-            cseCracCreationContext, raoResult, networkWithPra);
+            cseCracCreationContext, raoResult, networkWithPra, businessLogger);
         Timestamp timestamp = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, preprocessedPisaLinks);
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
     }

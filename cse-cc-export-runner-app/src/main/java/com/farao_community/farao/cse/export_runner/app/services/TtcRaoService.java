@@ -15,6 +15,7 @@ import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 
 import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -26,16 +27,19 @@ import java.util.Map;
 public class TtcRaoService {
 
     private final FileExporter fileExporter;
+    private final Logger businessLogger;
 
-    public TtcRaoService(FileExporter fileExporter) {
+    public TtcRaoService(FileExporter fileExporter, Logger businessLogger) {
         this.fileExporter = fileExporter;
+        this.businessLogger = businessLogger;
     }
 
     public String saveTtcRao(CseExportRequest request, CseCracCreationContext cracCreationContext, RaoResult raoResult, Network network, Map<String, Integer> preprocessedPsts) {
         CracResultsHelper cracResultsHelper = new CracResultsHelper(
             cracCreationContext,
             raoResult,
-            network);
+            network,
+            businessLogger);
         CseRaoResult cseRaoResult = TtcRao.generate(request.getTargetProcessDateTime(), cracResultsHelper, preprocessedPsts);
         return fileExporter.saveTtcRao(cseRaoResult, request.getProcessType(), request.getTargetProcessDateTime(), FileUtil.getFilenameFromUrl(request.getCgmUrl()));
     }
