@@ -29,8 +29,8 @@ public class RaoRunnerService {
         this.raoRunnerClient = raoRunnerClient;
     }
 
-    public RaoResponse run(String id, String networkPresignedUrl, String cracInJsonFormatUrl, String raoParametersUrl, String artifactDestinationPath) throws CseInternalException, RaoInterruptionException {
-        RaoRequest raoRequest = buildRaoRequest(id, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
+    public RaoResponse run(String id, String runId, String networkPresignedUrl, String cracInJsonFormatUrl, String raoParametersUrl, String artifactDestinationPath) throws CseInternalException, RaoInterruptionException {
+        RaoRequest raoRequest = buildRaoRequest(id, runId, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
         try {
             LOGGER.info("RAO request sent: {}", raoRequest);
             RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
@@ -45,9 +45,10 @@ public class RaoRunnerService {
         }
     }
 
-    private RaoRequest buildRaoRequest(String id, String networkPresignedUrl, String cracUrl, String raoParametersUrl, String artifactDestinationPath) {
+    private RaoRequest buildRaoRequest(String id, String runId, String networkPresignedUrl, String cracUrl, String raoParametersUrl, String artifactDestinationPath) {
         return new RaoRequest.RaoRequestBuilder()
                 .withId(id)
+                .withRunId(runId)
                 .withNetworkFileUrl(networkPresignedUrl)
                 .withCracFileUrl(cracUrl)
                 .withRaoParametersFileUrl(raoParametersUrl)

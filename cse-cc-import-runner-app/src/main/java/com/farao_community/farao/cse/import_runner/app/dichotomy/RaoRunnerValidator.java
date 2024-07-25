@@ -11,6 +11,7 @@ import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
 import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
+import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.powsybl.openrao.commons.Unit;
@@ -43,6 +44,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
 
     private final ProcessType processType;
     private final String requestId;
+    private final String currentRunId;
     private final OffsetDateTime processTargetDateTime;
     private final String cracUrl;
     private final String raoParametersUrl;
@@ -54,9 +56,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
     private final boolean isImportEcProcess;
     private int variantCounter = 0;
 
-    public RaoRunnerValidator(ProcessType processType,
-                              String requestId,
-                              OffsetDateTime processTargetDateTime,
+    public RaoRunnerValidator(CseRequest cseRequest,
                               String cracUrl,
                               String raoParametersUrl,
                               RaoRunnerClient raoRunnerClient,
@@ -65,9 +65,10 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
                               ForcedPrasHandler forcedPrasHandler,
                               Set<String> forcedPrasIds,
                               boolean isImportEcProcess) {
-        this.processType = processType;
-        this.requestId = requestId;
-        this.processTargetDateTime = processTargetDateTime;
+        this.processType = cseRequest.getProcessType();
+        this.requestId = cseRequest.getId();
+        this.currentRunId = cseRequest.getCurrentRunId();
+        this.processTargetDateTime = cseRequest.getTargetProcessDateTime();
         this.cracUrl = cracUrl;
         this.raoParametersUrl = raoParametersUrl;
         this.raoRunnerClient = raoRunnerClient;
@@ -130,6 +131,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
     public RaoRequest buildRaoRequest(String networkPreSignedUrl, String baseDirPathForCurrentStep, List<String> appliedRemedialActionInPreviousStep) {
         RaoRequest.RaoRequestBuilder builder = new RaoRequest.RaoRequestBuilder()
                 .withId(requestId)
+                .withRunId(currentRunId)
                 .withNetworkFileUrl(networkPreSignedUrl)
                 .withCracFileUrl(cracUrl)
                 .withResultsDestination(baseDirPathForCurrentStep);

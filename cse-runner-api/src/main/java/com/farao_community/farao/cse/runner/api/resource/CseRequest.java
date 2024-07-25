@@ -24,6 +24,7 @@ import java.util.Set;
 public class CseRequest {
     @Id
     private final String id;
+    private final String currentRunId;
     private final ProcessType processType;
     private final OffsetDateTime targetProcessDateTime;
     private final String cgmUrl;
@@ -48,6 +49,7 @@ public class CseRequest {
 
     @JsonCreator
     public CseRequest(@JsonProperty("id") String id,
+                      @JsonProperty("currentRunId") String currentRunId,
                       @JsonProperty("processType") ProcessType processType,
                       @JsonProperty("targetProcessDateTime") OffsetDateTime targetProcessDateTime,
                       @JsonProperty("cgmUrl") String cgmUrl,
@@ -69,6 +71,7 @@ public class CseRequest {
                       @JsonProperty("initialDichotomyIndex") Double initialDichotomyIndex,
                       @JsonProperty("importEcProcess") boolean isImportEcProcess) {
         this.id = id;
+        this.currentRunId = currentRunId;
         this.processType = processType;
         this.targetProcessDateTime = targetProcessDateTime;
         this.cgmUrl = cgmUrl;
@@ -92,6 +95,7 @@ public class CseRequest {
     }
 
     public static CseRequest d2ccProcess(String id,
+                                         String currentRunId,
                                          OffsetDateTime targetProcessDateTime,
                                          String cgmUrl,
                                          String mergedCracUrl,
@@ -108,12 +112,13 @@ public class CseRequest {
                                          Double initialDichotomyIndex,
                                          boolean isImportEc) {
         return new CseRequest(
-            id, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
+            id, currentRunId, ProcessType.D2CC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl, null,
             null, null, null, targetChUrl, vulcanusUrl, yearlyNtcUrl, manualFrcedPrasIds,
             automatedForcedPras, maximumDichotomiesNumber, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex, isImportEc);
     }
 
     public static CseRequest idccProcess(String id,
+                                         String currentRunId,
                                          OffsetDateTime targetProcessDateTime,
                                          String cgmUrl,
                                          String mergedCracUrl,
@@ -132,13 +137,17 @@ public class CseRequest {
                                          double initialDichotomyStep,
                                          Double initialDichotomyIndex,
                                          boolean isImportEc) {
-        return new CseRequest(id, ProcessType.IDCC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl,
+        return new CseRequest(id, currentRunId, ProcessType.IDCC, targetProcessDateTime, cgmUrl, mergedCracUrl, mergedGlskUrl, ntcReductionsUrl,
             ntc2AtItUrl, ntc2ChItUrl, ntc2FrItUrl, ntc2SiItUrl, null, vulcanusUrl, yearlyNtcUrl, manualForcedPrasIds,
             automatedForcedPras, maximumDichotomiesNumber, dichotomyPrecision, initialDichotomyStep, initialDichotomyIndex, isImportEc);
     }
 
     public String getId() {
         return id;
+    }
+
+    public String getCurrentRunId() {
+        return currentRunId;
     }
 
     public ProcessType getProcessType() {
