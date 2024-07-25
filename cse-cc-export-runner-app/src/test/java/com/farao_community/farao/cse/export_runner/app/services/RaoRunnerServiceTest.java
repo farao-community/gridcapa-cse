@@ -33,6 +33,7 @@ class RaoRunnerServiceTest {
     private RaoRunnerService raoRunnerService;
 
     private final String id = "testId";
+    private final String runId = "testRunId";
     private final String networkPresignedUrl = "http://network.url";
     private final String cracInJsonFormatUrl = "http://crac.url";
     private final String raoParametersUrl = "http://parameters.url";
@@ -44,7 +45,7 @@ class RaoRunnerServiceTest {
 
         when(raoRunnerClient.runRao(any(RaoRequest.class))).thenReturn(expectedResponse);
 
-        RaoResponse actualResponse = raoRunnerService.run(id, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
+        RaoResponse actualResponse = raoRunnerService.run(id, runId, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
 
         assertEquals(expectedResponse, actualResponse);
     }
@@ -54,7 +55,7 @@ class RaoRunnerServiceTest {
         when(raoRunnerClient.runRao(any())).thenThrow(new RuntimeException("Test exception"));
 
         Exception exception = assertThrows(CseInternalException.class, () -> {
-            raoRunnerService.run(id, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
+            raoRunnerService.run(id, runId, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
         });
 
         String expectedMessage = "RAO run failed";
@@ -67,6 +68,7 @@ class RaoRunnerServiceTest {
     void testRaoRequestValues() {
         RaoRequest raoRequest = new RaoRequest.RaoRequestBuilder()
                 .withId(id)
+                .withRunId(runId)
                 .withNetworkFileUrl(networkPresignedUrl)
                 .withCracFileUrl(cracInJsonFormatUrl)
                 .withRaoParametersFileUrl(raoParametersUrl)
@@ -74,6 +76,7 @@ class RaoRunnerServiceTest {
                 .build();
 
         assertEquals("testId", raoRequest.getId());
+        assertEquals("testRunId", raoRequest.getRunId());
         assertEquals("http://network.url", raoRequest.getNetworkFileUrl());
         assertEquals("http://crac.url", raoRequest.getCracFileUrl());
         assertEquals("http://parameters.url", raoRequest.getRaoParametersFileUrl());

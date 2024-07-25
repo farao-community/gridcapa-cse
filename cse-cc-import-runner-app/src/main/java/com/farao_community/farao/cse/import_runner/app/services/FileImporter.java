@@ -15,7 +15,7 @@ import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.data.xsd.NTCAnnualDocument;
 import com.farao_community.farao.cse.data.xsd.NTCReductionsDocument;
-import com.farao_community.farao.cse.import_runner.app.configurations.UrlWhitelistConfiguration;
+import com.farao_community.farao.cse.import_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.import_runner.app.util.Ntc2Util;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -51,11 +51,11 @@ import java.util.Optional;
 public class FileImporter {
     public static final String IMPOSSIBLE_TO_CREATE_NTC = "Impossible to create NTC";
 
-    private final UrlWhitelistConfiguration urlWhitelistConfiguration;
+    private final UrlConfiguration urlConfiguration;
     private final Logger businessLogger;
 
-    public FileImporter(UrlWhitelistConfiguration urlWhitelistConfiguration, Logger businessLogger) {
-        this.urlWhitelistConfiguration = urlWhitelistConfiguration;
+    public FileImporter(UrlConfiguration urlConfiguration, Logger businessLogger) {
+        this.urlConfiguration = urlConfiguration;
         this.businessLogger = businessLogger;
     }
 
@@ -169,7 +169,7 @@ public class FileImporter {
 
     InputStream openUrlStream(String urlString) {
         try {
-            if (urlWhitelistConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
+            if (urlConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
                 throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelisted url's.", urlString));
             }
             URL url = new URL(urlString);

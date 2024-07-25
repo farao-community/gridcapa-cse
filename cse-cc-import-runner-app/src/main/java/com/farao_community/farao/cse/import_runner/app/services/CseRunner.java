@@ -10,6 +10,7 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
+import com.farao_community.farao.cse.import_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
@@ -33,6 +34,9 @@ import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChange
 import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -58,11 +62,14 @@ public class CseRunner {
     private final ProcessConfiguration processConfiguration;
     private final Logger businessLogger;
     private final InitialShiftService initialShiftService;
+    private final RestTemplateBuilder restTemplateBuilder;
+    private final UrlConfiguration urlConfiguration;
     private static final String CRAC_CREATION_PARAMETERS_JSON = "/crac/cseCracCreationParameters.json";
 
     public CseRunner(FileImporter fileImporter, FileExporter fileExporter, MultipleDichotomyRunner multipleDichotomyRunner,
                      TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
-                     ProcessConfiguration processConfiguration, Logger businessLogger, InitialShiftService initialShiftService) {
+                     ProcessConfiguration processConfiguration, Logger businessLogger, InitialShiftService initialShiftService,
+                     RestTemplateBuilder restTemplateBuilder, UrlConfiguration urlConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.multipleDichotomyRunner = multipleDichotomyRunner;
@@ -72,9 +79,25 @@ public class CseRunner {
         this.processConfiguration = processConfiguration;
         this.businessLogger = businessLogger;
         this.initialShiftService = initialShiftService;
+        this.restTemplateBuilder = restTemplateBuilder;
+        this.urlConfiguration = urlConfiguration;
     }
 
     public CseResponse run(CseRequest cseRequest) throws IOException {
+        String firstShiftNetworkName = fileExporter.getFirstShiftNetworkName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+
+        if (checkIsInterrupted(cseRequest)) {
+            businessLogger.warn("Computation has been interrupted for timestamp {}", cseRequest.getTargetProcessDateTime());
+            LOGGER.info("Response sent for timestamp {} : run has been interrupted", cseRequest.getTargetProcessDateTime());
+            String interruptedTtc = ttcResultService.saveFailedTtcResult(
+                    cseRequest,
+                    firstShiftNetworkName,
+                    TtcResult.FailedProcessData.FailedProcessReason.OTHER);
+            String interruptedCgm = firstShiftNetworkName;
+
+            return new CseResponse(cseRequest.getId(), interruptedTtc, interruptedCgm, true);
+        }
+
         final boolean importEcProcess = cseRequest.isImportEcProcess();
         CseData cseData = new CseData(cseRequest, fileImporter);
         // CRAC import and network pre-processing
@@ -116,7 +139,6 @@ public class CseRunner {
             NetworkShifterUtil.getReferenceExchanges(cseData),
             ntcsByEic);
 
-        String firstShiftNetworkName = fileExporter.getFirstShiftNetworkName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
         String ttcResultUrl;
         String finalCgmUrl;
         DichotomyResult<DichotomyRaoResponse> dichotomyResult;
@@ -171,5 +193,14 @@ public class CseRunner {
             this.cseCracCreationContext = cseCracCreationContext;
             this.busBarChangeSwitchesSet = busBarChangeSwitchesSet;
         }
+    }
+
+    private boolean checkIsInterrupted(CseRequest cseRequest) {
+        ResponseEntity<Boolean> responseEntity = restTemplateBuilder.build().getForEntity(getInterruptedUrl(cseRequest.getCurrentRunId()), Boolean.class);
+        return responseEntity.getBody() != null && responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody();
+    }
+
+    private String getInterruptedUrl(String runId) {
+        return urlConfiguration.getInterruptServerUrl() + runId;
     }
 }

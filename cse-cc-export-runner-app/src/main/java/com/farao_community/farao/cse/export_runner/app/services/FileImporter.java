@@ -8,7 +8,7 @@ package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.export_runner.app.FileUtil;
-import com.farao_community.farao.cse.export_runner.app.configurations.UrlWhitelistConfiguration;
+import com.farao_community.farao.cse.export_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 
 import com.powsybl.openrao.data.cracapi.Crac;
@@ -32,11 +32,11 @@ import java.net.URL;
  */
 @Service
 public class FileImporter {
-    private final UrlWhitelistConfiguration urlWhitelistConfiguration;
+    private final UrlConfiguration urlConfiguration;
     private final Logger businessLogger;
 
-    public FileImporter(UrlWhitelistConfiguration urlWhitelistConfiguration, Logger businessLogger) {
-        this.urlWhitelistConfiguration = urlWhitelistConfiguration;
+    public FileImporter(UrlConfiguration urlConfiguration, Logger businessLogger) {
+        this.urlConfiguration = urlConfiguration;
         this.businessLogger = businessLogger;
     }
 
@@ -66,7 +66,7 @@ public class FileImporter {
 
     InputStream openUrlStream(String urlString) {
         try {
-            if (urlWhitelistConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
+            if (urlConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
                 throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelisted url's.", urlString));
             }
             URL url = new URL(urlString);

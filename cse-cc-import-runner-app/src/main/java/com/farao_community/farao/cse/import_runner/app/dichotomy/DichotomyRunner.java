@@ -87,9 +87,7 @@ public class DichotomyRunner {
     private NetworkValidator<DichotomyRaoResponse> getNetworkValidator(CseRequest request, CseData cseData, Set<String> forcedPrasIds) {
         final boolean isImportEcProcess = request.isImportEcProcess();
         return new RaoRunnerValidator(
-            request.getProcessType(),
-            request.getId(),
-            request.getTargetProcessDateTime(),
+            request,
             cseData.getJsonCracUrl(),
             fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType(), isImportEcProcess),
             raoRunnerClient,

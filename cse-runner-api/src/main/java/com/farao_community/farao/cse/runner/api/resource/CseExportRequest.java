@@ -21,6 +21,7 @@ import java.time.OffsetDateTime;
 public class CseExportRequest {
     @Id
     private final String id;
+    private final String currentRunId;
     private final ProcessType processType;
     private final OffsetDateTime targetProcessDateTime;
     private final String cgmUrl;
@@ -28,11 +29,13 @@ public class CseExportRequest {
 
     @JsonCreator
     public CseExportRequest(@JsonProperty("id") String id,
+                            @JsonProperty("currentRunId") String currentRunId,
                             @JsonProperty("targetProcessDateTime") OffsetDateTime targetProcessDateTime,
                             @JsonProperty("processType") ProcessType processType,
                             @JsonProperty("cgmUrl") String cgmUrl,
                             @JsonProperty("mergedCracUrl") String mergedCracUrl) {
         this.id = id;
+        this.currentRunId = currentRunId;
         this.targetProcessDateTime = targetProcessDateTime;
         this.processType = processType;
         this.cgmUrl = cgmUrl;
@@ -41,6 +44,10 @@ public class CseExportRequest {
 
     public String getId() {
         return id;
+    }
+
+    public String getCurrentRunId() {
+        return currentRunId;
     }
 
     public String getCgmUrl() {

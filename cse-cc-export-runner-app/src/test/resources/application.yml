@@ -39,3 +39,4 @@ cse-cc-runner:
   whitelist:
     - http://minio:9000/
     - http://localhost:9000/
+  interrupt-server-url: http://testUrl/interrupted/

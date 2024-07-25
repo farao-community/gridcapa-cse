@@ -8,6 +8,7 @@ package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.ProcessConfiguration;
+import com.farao_community.farao.cse.export_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.network_processing.CracCreationParametersService;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePostProcessor;
 import com.farao_community.farao.cse.network_processing.busbar_change.BusBarChangePreProcessor;
@@ -31,6 +32,9 @@ import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -61,8 +65,10 @@ public class CseExportRunner {
     private final Logger businessLogger;
     private final ProcessConfiguration processConfiguration;
     private final MerchantLineService merchantLineService;
+    private final RestTemplateBuilder restTemplateBuilder;
+    private final UrlConfiguration urlConfiguration;
 
-    public CseExportRunner(FileImporter fileImporter, FileExporter fileExporter, PiSaService pisaService, RaoRunnerService raoRunnerService, TtcRaoService ttcRaoService, Logger businessLogger, ProcessConfiguration processConfiguration, MerchantLineService merchantLineService) {
+    public CseExportRunner(FileImporter fileImporter, FileExporter fileExporter, PiSaService pisaService, RaoRunnerService raoRunnerService, TtcRaoService ttcRaoService, Logger businessLogger, ProcessConfiguration processConfiguration, MerchantLineService merchantLineService, RestTemplateBuilder restTemplateBuilder, UrlConfiguration urlConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.pisaService = pisaService;
@@ -71,10 +77,18 @@ public class CseExportRunner {
         this.businessLogger = businessLogger;
         this.processConfiguration = processConfiguration;
         this.merchantLineService = merchantLineService;
+        this.restTemplateBuilder = restTemplateBuilder;
+        this.urlConfiguration = urlConfiguration;
     }
 
     public CseExportResponse run(CseExportRequest cseExportRequest) throws IOException {
         String logsFileUrl = ""; //TODO
+
+        if (checkIsInterrupted(cseExportRequest)) {
+            businessLogger.warn("Computation has been interrupted for timestamp {}", cseExportRequest.getTargetProcessDateTime());
+            LOGGER.info("Response sent for timestamp {} : run has been interrupted", cseExportRequest.getTargetProcessDateTime());
+            return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", logsFileUrl, true);
+        }
 
         // Check on cgm file name
         FileUtil.checkCgmFileName(cseExportRequest.getCgmUrl(), cseExportRequest.getProcessType());
@@ -103,7 +117,7 @@ public class CseExportRunner {
                 cseExportRequest.getTargetProcessDateTime());
         String artefactDestinationPath = fileExporter.getDestinationPath(cseExportRequest.getTargetProcessDateTime(), cseExportRequest.getProcessType(), GridcapaFileGroup.ARTIFACT);
         try {
-            RaoResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), initialNetworkUrl, cracInJsonFormatUrl, raoParametersUrl, artefactDestinationPath);
+            RaoResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), cseExportRequest.getCurrentRunId(), initialNetworkUrl, cracInJsonFormatUrl, raoParametersUrl, artefactDestinationPath);
 
             Network networkWithPra = fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl());
             BusBarChangePostProcessor.process(networkWithPra, busBarChangeSwitchesSet);
@@ -146,5 +160,14 @@ public class CseExportRunner {
             LOGGER.error("Loadflow computation diverged on network '{}'", network.getId());
             throw new CseInternalException(String.format("Loadflow computation diverged on network %s", network.getId()));
         }
+    }
+
+    private boolean checkIsInterrupted(CseExportRequest cseExportRequest) {
+        ResponseEntity<Boolean> responseEntity = restTemplateBuilder.build().getForEntity(getInterruptedUrl(cseExportRequest.getCurrentRunId()), Boolean.class);
+        return responseEntity.getBody() != null && responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody();
+    }
+
+    private String getInterruptedUrl(String runId) {
+        return urlConfiguration.getInterruptServerUrl() + runId;
     }
 }

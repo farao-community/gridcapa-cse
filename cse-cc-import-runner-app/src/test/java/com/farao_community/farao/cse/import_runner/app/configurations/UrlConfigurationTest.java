@@ -15,14 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @SpringBootTest
-class UrlWhitelistConfigurationTest {
+class UrlConfigurationTest {
 
     @Autowired
-    public UrlWhitelistConfiguration urlWhitelistConfiguration;
+    public UrlConfiguration urlConfiguration;
 
     @Test
     void checkUrlWhiteListIsRetrievedCorrectly() {
-        Assertions.assertEquals(2, urlWhitelistConfiguration.getWhitelist().size());
-        Assertions.assertEquals("http://localhost:9000", urlWhitelistConfiguration.getWhitelist().get(0));
+        Assertions.assertEquals(2, urlConfiguration.getWhitelist().size());
+        Assertions.assertEquals("http://localhost:9000", urlConfiguration.getWhitelist().get(0));
     }
 }

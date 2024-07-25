@@ -9,6 +9,7 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 import com.farao_community.farao.cse.import_runner.app.services.FileExporter;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
+import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
@@ -41,6 +42,7 @@ class RaoRunnerValidatorTest {
     private static final String BASE_DIR_PATH = "/base/dir/path";
     private static final String RAO_PARAMETERS_URL = "http://parameters.url";
     private static final String REQUEST_ID = "requestId";
+    private static final String RUN_ID = "runId";
     private static final String CRAC_URL = "http://crac.url";
 
     @MockBean
@@ -53,7 +55,7 @@ class RaoRunnerValidatorTest {
     void buildRaoRequestWithEmptyPreviousActionsShouldNotSaveParameters() {
         List<String> previousActions = Collections.singletonList("Action1");
 
-        RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(ProcessType.D2CC, REQUEST_ID, null, CRAC_URL, RAO_PARAMETERS_URL, null, null, null, null, null, false);
+        RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(getCseRequest(ProcessType.D2CC, null), CRAC_URL, RAO_PARAMETERS_URL, null, null, null, null, null, false);
         RaoRequest result = raoRunnerValidator.buildRaoRequest(NETWORK_PRE_SIGNED_URL, BASE_DIR_PATH, previousActions);
 
         verify(fileExporter, never()).saveRaoParameters(anyString(), anyList(), any(), any(), anyBoolean());
@@ -70,9 +72,8 @@ class RaoRunnerValidatorTest {
         Set<String> forcedPrasIds = Set.of();
         Network network = mock(Network.class);
 
-        RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(processType,
-                REQUEST_ID,
-                processTargetDateTime,
+        RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(
+                getCseRequest(processType, processTargetDateTime),
                 CRAC_URL,
                 RAO_PARAMETERS_URL,
                 raoRunnerClient,
@@ -106,9 +107,8 @@ class RaoRunnerValidatorTest {
         Set<String> forcedPrasIds = Set.of(); //
         Network network = mock(Network.class);
 
-        RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(processType,
-                REQUEST_ID,
-                processTargetDateTime,
+        RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(
+                getCseRequest(processType, processTargetDateTime),
                 CRAC_URL,
                 RAO_PARAMETERS_URL,
                 raoRunnerClient,
@@ -126,5 +126,14 @@ class RaoRunnerValidatorTest {
         when(fileExporter.saveNetworkInArtifact(any(), any(), any(), any(), any(), anyBoolean())).thenReturn(NETWORK_PRE_SIGNED_URL);
         when(fileImporter.importCracFromJson(CRAC_URL, network)).thenThrow(RuntimeException.class);
         assertThrows(ValidationException.class, () -> raoRunnerValidator.validateNetwork(network, null));
+    }
+
+    private CseRequest getCseRequest(ProcessType type, OffsetDateTime timestamp) {
+        CseRequest cseRequest = mock(CseRequest.class);
+        when(cseRequest.getId()).thenReturn(REQUEST_ID);
+        when(cseRequest.getCurrentRunId()).thenReturn(RUN_ID);
+        when(cseRequest.getTargetProcessDateTime()).thenReturn(timestamp);
+        when(cseRequest.getProcessType()).thenReturn(type);
+        return cseRequest;
     }
 }
