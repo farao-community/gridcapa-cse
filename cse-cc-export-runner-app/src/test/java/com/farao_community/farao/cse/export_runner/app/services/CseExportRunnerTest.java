@@ -6,14 +6,27 @@
  */
 package com.farao_community.farao.cse.export_runner.app.services;
 
+import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
+import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -24,6 +37,12 @@ class CseExportRunnerTest {
     @Autowired
     private CseExportRunner cseExportRunner;
 
+    @MockBean
+    private RestTemplateBuilder restTemplateBuilder;
+
+    @MockBean
+    private TtcRaoService ttcRaoService;
+
     @Test
     void getFinalNetworkFilenameTest() {
         OffsetDateTime processTargetDate = OffsetDateTime.parse("2022-10-20T16:30Z");
@@ -32,5 +51,26 @@ class CseExportRunnerTest {
         String expectedFilenameWithoutExtension = "20221020_1830_2D4_ce_Transit_RAO_CSE1";
         assertEquals(expectedFilenameWithoutExtension, actualFilenameWithoutExtension);
 
+    }
+
+    @Test
+    void runInterruptPendingCase() {
+        CseExportRequest request = Mockito.mock(CseExportRequest.class);
+        Mockito.when(request.getId()).thenReturn("ID");
+        Mockito.when(request.getCurrentRunId()).thenReturn("RUNID");
+        Mockito.when(request.getProcessType()).thenReturn(ProcessType.D2CC);
+        Mockito.when(request.getTargetProcessDateTime()).thenReturn(OffsetDateTime.now());
+        Mockito.when(request.getCgmUrl()).thenReturn("testCgmUrl");
+
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        ResponseEntity<Boolean> responseEntity = mock(ResponseEntity.class);
+        when(restTemplateBuilder.build()).thenReturn(restTemplate);
+        when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(responseEntity);
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+        when(responseEntity.getBody()).thenReturn(true);
+
+        CseExportResponse cseExportResponse = cseExportRunner.run(request);
+        assertTrue(cseExportResponse.isInterrupted());
+        assertEquals("ID", cseExportResponse.getId());
     }
 }
