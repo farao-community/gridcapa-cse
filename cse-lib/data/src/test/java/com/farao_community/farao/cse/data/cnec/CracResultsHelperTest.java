@@ -6,21 +6,28 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
-import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
 import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.BranchCnecCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
+import com.powsybl.openrao.data.raoresultjson.RaoResultImporter;
+import org.junit.jupiter.api.Assertions;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -76,9 +83,9 @@ class CracResultsHelperTest {
         List<CnecPreventive> cnecPreventives = cracResultsHelper.getPreventiveCnecs();
         assertEquals(3, cnecPreventives.size());
         CnecPreventive nlLine = cnecPreventives.stream()
-            .filter(cnecPreventive -> cnecPreventive.getCnecCommon().getCode().equals("NNL2AA1  NNL3AA1  1"))
-            .findFirst()
-            .orElseThrow();
+                .filter(cnecPreventive -> cnecPreventive.getCnecCommon().getCode().equals("NNL2AA1  NNL3AA1  1"))
+                .findFirst()
+                .orElseThrow();
         assertEquals("NL", nlLine.getCnecCommon().getAreaFrom());
         assertEquals("NL", nlLine.getCnecCommon().getAreaTo());
         assertEquals(818.1, nlLine.getI(), .1);
@@ -124,6 +131,33 @@ class CracResultsHelperTest {
     }
 
     private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) throws IOException {
+    @Test
+    void testNullFlowCnec() {
+        final CseCracCreationContext mockedContext = Mockito.mock(CseCracCreationContext.class);
+        final Logger mockedBusinessLogger = Mockito.mock(Logger.class);
+        final CracResultsHelper helper = new CracResultsHelper(mockedContext, null, null, mockedBusinessLogger);
+        final BranchCnecCreationContext branchCnecContext = Mockito.mock(BranchCnecCreationContext.class);
+        Mockito.when(branchCnecContext.isImported()).thenReturn(true);
+        final String contingencyId = "contingencyId";
+        Mockito.when(branchCnecContext.getContingencyId()).thenReturn(Optional.of(contingencyId));
+        Mockito.when(branchCnecContext.getCreatedCnecsIds()).thenReturn(Collections.emptyMap());
+        Mockito.when(branchCnecContext.getNativeId()).thenReturn("nativeId");
+        final List<BranchCnecCreationContext> mockedList = List.of(branchCnecContext);
+
+        whenReturningBranchCnecCreationContexts(mockedContext, mockedList);
+
+        Assertions.assertTrue(helper.getMergedCnecs(contingencyId).isEmpty());
+        verify(mockedBusinessLogger, times(1))
+                .warn("Couldn't find flowCnec with native id : {}", "nativeId");
+    }
+
+    private static void whenReturningBranchCnecCreationContexts(CseCracCreationContext mockedContext,
+                                                                List<BranchCnecCreationContext> mockedList) {
+        Mockito.when(mockedContext.getBranchCnecCreationContexts())
+                .thenAnswer(invocation -> mockedList);
+    }
+
+    private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) {
         InputStream cracInputStream = getClass().getResourceAsStream(cracXmlFileName);
         Network network = Network.read(networkFileName, getClass().getResourceAsStream(networkFileName));
         CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(cracXmlFileName, cracInputStream, network, null, new CracCreationParameters());
@@ -131,6 +165,6 @@ class CracResultsHelperTest {
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
         RaoResult raoResult = RaoResult.read(raoResultInputStream, cseCracCreationContext.getCrac());
 
-        return new CracResultsHelper(cseCracCreationContext, raoResult, network);
+        return new CracResultsHelper(cseCracCreationContext, raoResult, network, Mockito.mock(Logger.class));
     }
 }

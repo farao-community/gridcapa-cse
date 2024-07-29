@@ -6,16 +6,17 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
-import com.powsybl.contingency.ContingencyElement;
-import com.powsybl.iidm.network.TwoSides;
-import com.powsybl.openrao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
-
+import com.powsybl.contingency.Contingency;
+import com.powsybl.contingency.ContingencyElement;
+import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.openrao.commons.Unit;
 import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.Identifiable;
 import com.powsybl.openrao.data.cracapi.Instant;
 import com.powsybl.openrao.data.cracapi.NetworkElement;
-import com.powsybl.contingency.Contingency;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
 import com.powsybl.openrao.data.cracapi.rangeaction.InjectionRangeAction;
 import com.powsybl.openrao.data.cracapi.rangeaction.PstRangeAction;
@@ -26,11 +27,9 @@ import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.cse.criticalbranch.CseCriticalBranchCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.cse.outage.CseOutageCreationContext;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.Substation;
 import com.powsybl.ucte.network.UcteCountryCode;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,12 +46,14 @@ import java.util.stream.Collectors;
 public class CracResultsHelper {
     public static final String PREVENTIVE_OUTAGE_NAME = "N Situation";
 
+    private final Logger businessLogger;
     private final CseCracCreationContext cseCracCreationContext;
     private final Crac crac;
     private final RaoResult raoResult;
     private final Network network;
 
-    public CracResultsHelper(CseCracCreationContext cseCracCreationContext, RaoResult result, Network network) {
+    public CracResultsHelper(CseCracCreationContext cseCracCreationContext, RaoResult result, Network network, Logger businessLogger) {
+        this.businessLogger = businessLogger;
         this.cseCracCreationContext = cseCracCreationContext;
         this.crac = cseCracCreationContext.getCrac();
         this.raoResult = result;
@@ -96,7 +97,7 @@ public class CracResultsHelper {
     }
 
     public int getTapOfPstRangeActionInCurative(String contingencyId, String pstRangeActionId) {
-        return raoResult.getOptimizedTapOnState(crac.getState(contingencyId,  crac.getLastInstant()), crac.getPstRangeAction(pstRangeActionId));
+        return raoResult.getOptimizedTapOnState(crac.getState(contingencyId, crac.getLastInstant()), crac.getPstRangeAction(pstRangeActionId));
     }
 
     public int getSetpointOfHvdcRangeActionInPreventive(String hvdcRangeActionId) {
@@ -104,7 +105,7 @@ public class CracResultsHelper {
     }
 
     public List<String> getCurativeNetworkActionIds(String contingencyId) {
-        return raoResult.getActivatedNetworkActionsDuringState(crac.getState(contingencyId,  crac.getLastInstant())).stream()
+        return raoResult.getActivatedNetworkActionsDuringState(crac.getState(contingencyId, crac.getLastInstant())).stream()
                 .map(Identifiable::getId)
                 .toList();
     }
@@ -168,7 +169,6 @@ public class CracResultsHelper {
         List<BranchCnecCreationContext> branchCnecCreationContexts = getMonitoredBranchesForOutage(contingencyId);
         branchCnecCreationContexts.forEach(branchCnecCreationContext -> {
             MergedCnec mergedCnec = new MergedCnec();
-            mergedCnecs.put(branchCnecCreationContext.getNativeId(), mergedCnec);
             FlowCnec flowCnec = null;
             for (Map.Entry<String, String> entry : branchCnecCreationContext.getCreatedCnecsIds().entrySet()) {
                 flowCnec = crac.getFlowCnec(entry.getValue());
@@ -196,10 +196,16 @@ public class CracResultsHelper {
                         throw new CseDataException("Couldn't find Cnec type in cnec Id : " + flowCnec.getId());
                 }
             }
-            CnecCommon cnecCommon = makeCnecCommon(flowCnec, branchCnecCreationContext.getNativeBranch(),
-                    ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected(),
-                    flowCnec != null && flowCnec.isMonitored());
-            mergedCnec.setCnecCommon(cnecCommon);
+            if (flowCnec != null) {
+                mergedCnecs.put(branchCnecCreationContext.getNativeId(), mergedCnec);
+                CnecCommon cnecCommon = makeCnecCommon(flowCnec, branchCnecCreationContext.getNativeBranch(),
+                        ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected(),
+                        flowCnec.isMonitored());
+                mergedCnec.setCnecCommon(cnecCommon);
+            } else {
+                businessLogger.warn("Couldn't find flowCnec with native id : {}",
+                        branchCnecCreationContext.getNativeId());
+            }
         });
         return mergedCnecs;
     }
@@ -224,7 +230,7 @@ public class CracResultsHelper {
     }
 
     public FlowCnecResult getFlowCnecResultInAmpere(FlowCnec flowCnec, Instant optimizedInstant) {
-        TwoSides monitoredSide = flowCnec.getMonitoredSides().contains(TwoSides.ONE) ? TwoSides.ONE : TwoSides.TWO;
+        Side monitoredSide = flowCnec.getMonitoredSides().contains(Side.LEFT) ? Side.LEFT : Side.RIGHT;
         Optional<Double> upperBound = flowCnec.getUpperBound(monitoredSide, Unit.AMPERE);
         Optional<Double> lowerBound = flowCnec.getLowerBound(monitoredSide, Unit.AMPERE);
         double flow;
