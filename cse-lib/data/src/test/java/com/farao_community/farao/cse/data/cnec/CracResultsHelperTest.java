@@ -6,12 +6,12 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
 import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.BranchCnecCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
-import com.powsybl.openrao.data.raoresultjson.RaoResultImporter;
 import org.junit.jupiter.api.Assertions;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
@@ -130,7 +130,6 @@ class CracResultsHelperTest {
         assertEquals(0, xnodeMergedCnec.getiMaxAfterSps(), .1);
     }
 
-    private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) throws IOException {
     @Test
     void testNullFlowCnec() {
         final CseCracCreationContext mockedContext = Mockito.mock(CseCracCreationContext.class);
@@ -157,7 +156,7 @@ class CracResultsHelperTest {
                 .thenAnswer(invocation -> mockedList);
     }
 
-    private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) {
+    private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) throws IOException {
         InputStream cracInputStream = getClass().getResourceAsStream(cracXmlFileName);
         Network network = Network.read(networkFileName, getClass().getResourceAsStream(networkFileName));
         CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(cracXmlFileName, cracInputStream, network, null, new CracCreationParameters());
