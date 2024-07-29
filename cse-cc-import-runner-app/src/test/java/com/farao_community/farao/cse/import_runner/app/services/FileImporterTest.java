@@ -11,12 +11,11 @@ import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.ntc.Ntc;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
+import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -33,9 +32,9 @@ class FileImporterTest {
     private FileImporter fileImporter;
 
     @Test
-    void testCseCracImport() throws IOException {
-        CseCrac cseCrac = fileImporter.importCseCrac(Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
-        assertEquals(2, cseCrac.getCracDocument().getCRACSeries().get(0).getCriticalBranches().getBaseCaseBranches().getBranch().size());
+    void testCseCracImport() {
+        CRACDocumentType cseCrac = fileImporter.importCseCrac(Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
+        assertEquals(2, cseCrac.getCRACSeries().get(0).getCriticalBranches().getBaseCaseBranches().getBranch().size());
     }
 
     @Test

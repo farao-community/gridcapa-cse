@@ -7,7 +7,6 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.cracioapi.CracImporters;
 import com.powsybl.openrao.raoapi.parameters.RaoParameters;
 import com.powsybl.openrao.searchtreerao.result.api.FlowResult;
 import com.powsybl.iidm.network.Network;
@@ -21,6 +20,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -44,9 +44,9 @@ class ForcedPraHandlerTest {
     ForcedPrasHandler forcedPrasHandler;
 
     @Test
-    void checkCracAndForcedPrasAreConsistent() {
+    void checkCracAndForcedPrasAreConsistent() throws IOException {
         Network network = Network.read("network-for-forced-pras.xiidm", getClass().getResourceAsStream("network-for-forced-pras.xiidm"));
-        Crac crac = CracImporters.importCrac("crac-for-forced-pras.json", Objects.requireNonNull(getClass().getResourceAsStream("crac-for-forced-pras.json")), network);
+        Crac crac = Crac.readWithContext("crac-for-forced-pras.json", Objects.requireNonNull(getClass().getResourceAsStream("crac-for-forced-pras.json")), network).getCrac();
 
         Set<String> manualForcedPrasIds = Set.of("Open line NL1-NL2", "Open line BE2-FR3", "PRA_PST_BE");
 

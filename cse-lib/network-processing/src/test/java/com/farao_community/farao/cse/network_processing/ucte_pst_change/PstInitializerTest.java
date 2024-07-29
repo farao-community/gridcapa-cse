@@ -8,11 +8,11 @@
 package com.farao_community.farao.cse.network_processing.ucte_pst_change;
 
 import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.craccreation.creator.api.CracCreators;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.PhaseTapChanger;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,16 +23,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class PstInitializerTest {
 
     @Test
-    void testInitializePstWhenOutOfRange() {
+    void testInitializePstWhenOutOfRange() throws IOException {
         String networkFilename = "pst_initially_out_of_range.uct";
         String cracFilename = "pst_with_range.xml";
 
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
-        Crac crac = CracCreators.importAndCreateCrac(
+        Crac crac = Crac.read(
             cracFilename,
             Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
-            network,
-            null).getCrac();
+            network);
 
         PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
         assertEquals(-5, ptc.getTapPosition());
@@ -42,16 +41,15 @@ class PstInitializerTest {
     }
 
     @Test
-    void testInitializePstWhenInsideRange() {
+    void testInitializePstWhenInsideRange() throws IOException {
         String networkFilename = "pst_initially_inside_range.uct";
         String cracFilename = "pst_with_range.xml";
 
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
-        Crac crac = CracCreators.importAndCreateCrac(
+        Crac crac = Crac.read(
             cracFilename,
             Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
-            network,
-            null).getCrac();
+            network);
 
         PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
         assertEquals(5, ptc.getTapPosition());
@@ -61,16 +59,15 @@ class PstInitializerTest {
     }
 
     @Test
-    void testInitializePstWithMaxOfMinCracMinCgm() {
+    void testInitializePstWithMaxOfMinCracMinCgm() throws IOException {
         String networkFilename = "pst_initially_out_of_range_2.uct";
         String cracFilename = "pst_with_range_2.xml";
 
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
-        Crac crac = CracCreators.importAndCreateCrac(
+        Crac crac = Crac.read(
                 cracFilename,
                 Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
-                network,
-                null).getCrac();
+                network);
 
         PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
         assertEquals(4, ptc.getTapPosition());
@@ -80,16 +77,15 @@ class PstInitializerTest {
     }
 
     @Test
-    void testInitializePstWithMaxOfMinCracMinCgm2() {
+    void testInitializePstWithMaxOfMinCracMinCgm2() throws IOException {
         String networkFilename = "pst_initially_out_of_range_3.uct";
         String cracFilename = "pst_with_range_3.xml";
 
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
-        Crac crac = CracCreators.importAndCreateCrac(
+        Crac crac = Crac.read(
                 cracFilename,
                 Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
-                network,
-                null).getCrac();
+                network);
 
         PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
         assertEquals(-4, ptc.getTapPosition());

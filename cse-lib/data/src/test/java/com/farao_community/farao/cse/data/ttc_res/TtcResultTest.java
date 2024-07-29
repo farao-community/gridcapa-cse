@@ -9,13 +9,10 @@ package com.farao_community.farao.cse.data.ttc_res;
 
 import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
-import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreator;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
-import com.powsybl.openrao.data.raoresultjson.RaoResultImporter;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Assertions;
@@ -25,10 +22,7 @@ import org.junit.jupiter.api.Test;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,7 +37,7 @@ class TtcResultTest {
     private CracResultsHelper cracResultsHelper;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws IOException {
         ttcFiles = new TtcResult.TtcFiles(
             "20210101_1930_185_Initial_CSE1.uct",
             "20210101_1930_185_CSE1.uct",
@@ -54,13 +48,10 @@ class TtcResultTest {
             "secure_CGM_with_PRA.uct"
         );
         InputStream cracInputStream = getClass().getResourceAsStream("pst_and_topo/crac.xml");
-        CseCracImporter importer = new CseCracImporter();
-        CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
 
         Network network = Network.read("pst_and_topo/network.uct", getClass().getResourceAsStream("pst_and_topo/network.uct"));
-        CseCracCreator cseCracCreator = new CseCracCreator();
-        CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
-        RaoResult raoResult = new RaoResultImporter().importRaoResult(getClass().getResourceAsStream("pst_and_topo/raoResult.json"), cseCracCreationContext.getCrac());
+        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext("crac.xml", cracInputStream, network, null, new CracCreationParameters());
+        RaoResult raoResult = RaoResult.read(getClass().getResourceAsStream("pst_and_topo/raoResult.json"), cseCracCreationContext.getCrac());
 
         cracResultsHelper = new CracResultsHelper(cseCracCreationContext, raoResult, network);
     }

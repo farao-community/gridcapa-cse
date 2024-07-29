@@ -6,18 +6,16 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
-import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
+import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.BranchCnecCreationContext;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreator;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
-import com.powsybl.openrao.data.raoresultjson.RaoResultImporter;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -30,39 +28,39 @@ import static org.junit.jupiter.api.Assertions.*;
 class CracResultsHelperTest {
 
     @Test
-    void preventivePstRangeActionsRetrievingTest() {
+    void preventivePstRangeActionsRetrievingTest() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
         assertEquals(1, cracResultsHelper.getPreventivePstRangeActionIds().size());
         assertEquals("PST_cra_3_BBE2AA1  BBE3AA1  1", cracResultsHelper.getPreventivePstRangeActionIds().get(0));
     }
 
     @Test
-    void preventiveHvdcRangeActionsRetrievingTest() {
+    void preventiveHvdcRangeActionsRetrievingTest() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("hvdc/crac.xml", "hvdc/network.uct", "hvdc/raoResult.json");
         assertEquals(3, cracResultsHelper.getPreventiveHvdcRangeActionIds().size());
     }
 
     @Test
-    void preventiveNetworkActionsRetrievingTest() {
+    void preventiveNetworkActionsRetrievingTest() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
         assertEquals(1, cracResultsHelper.getPreventiveNetworkActionIds().size());
         assertEquals("ra_1", cracResultsHelper.getPreventiveNetworkActionIds().get(0));
     }
 
     @Test
-    void pstTapPositionRetrievingTest() {
+    void pstTapPositionRetrievingTest() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
         assertEquals(16, cracResultsHelper.getTapOfPstRangeActionInPreventive("PST_cra_3_BBE2AA1  BBE3AA1  1"));
     }
 
     @Test
-    void pstHvdcSetpointRetrievingTest() {
+    void pstHvdcSetpointRetrievingTest() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("hvdc/crac.xml", "hvdc/network.uct", "hvdc/raoResult.json");
         assertEquals(800, cracResultsHelper.getSetpointOfHvdcRangeActionInPreventive("PRA_HVDC"));
     }
 
     @Test
-    void checkMonitoredBranchesRetrievedCorrectly() {
+    void checkMonitoredBranchesRetrievedCorrectly() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
         String contingencyId = "outage_1";
         List<BranchCnecCreationContext> monitoredBranchesForContingency = cracResultsHelper.getMonitoredBranchesForOutage(contingencyId);
@@ -73,7 +71,7 @@ class CracResultsHelperTest {
     }
 
     @Test
-    void getPreventiveCnecsTest() {
+    void getPreventiveCnecsTest() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
         List<CnecPreventive> cnecPreventives = cracResultsHelper.getPreventiveCnecs();
         assertEquals(3, cnecPreventives.size());
@@ -88,7 +86,7 @@ class CracResultsHelperTest {
     }
 
     @Test
-    void geMergedCnecsTest() {
+    void geMergedCnecsTest() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
         Map<String, MergedCnec> mergedCnecs = cracResultsHelper.getMergedCnecs("outage_1");
         assertEquals(1, mergedCnecs.size());
@@ -107,14 +105,14 @@ class CracResultsHelperTest {
     }
 
     @Test
-    void geMergedCnecsXnodeTest() {
+    void geMergedCnecsXnodeTest() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
         Map<String, MergedCnec> mergedCnecs = cracResultsHelper.getMergedCnecs("outage_4_xnode");
         assertEquals(1, mergedCnecs.size());
 
-        MergedCnec xnodeMergedCnec = mergedCnecs.get("Xnode - XAA_AA11 - NNL2AA1 - outage_4_xnode");
+        MergedCnec xnodeMergedCnec = mergedCnecs.get("Xnode - XAA_AA11 - NNL2AA1  - outage_4_xnode");
         assertEquals("Xnode", xnodeMergedCnec.getCnecCommon().getName());
-        assertEquals("XAA_AA11 NNL2AA1 1", xnodeMergedCnec.getCnecCommon().getCode());
+        assertEquals("XAA_AA11 NNL2AA1  1", xnodeMergedCnec.getCnecCommon().getCode());
         assertEquals("FR", xnodeMergedCnec.getCnecCommon().getAreaFrom());
         assertEquals("NL", xnodeMergedCnec.getCnecCommon().getAreaTo());
         assertEquals(Double.NaN, xnodeMergedCnec.getiAfterOutage(), .1);
@@ -125,18 +123,13 @@ class CracResultsHelperTest {
         assertEquals(0, xnodeMergedCnec.getiMaxAfterSps(), .1);
     }
 
-    private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) {
+    private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) throws IOException {
         InputStream cracInputStream = getClass().getResourceAsStream(cracXmlFileName);
-        CseCracImporter importer = new CseCracImporter();
-        CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
-
         Network network = Network.read(networkFileName, getClass().getResourceAsStream(networkFileName));
-
-        CseCracCreator cseCracCreator = new CseCracCreator();
-        CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
+        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(cracXmlFileName, cracInputStream, network, null, new CracCreationParameters());
 
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
-        RaoResult raoResult = new RaoResultImporter().importRaoResult(raoResultInputStream, cseCracCreationContext.getCrac());
+        RaoResult raoResult = RaoResult.read(raoResultInputStream, cseCracCreationContext.getCrac());
 
         return new CracResultsHelper(cseCracCreationContext, raoResult, network);
     }

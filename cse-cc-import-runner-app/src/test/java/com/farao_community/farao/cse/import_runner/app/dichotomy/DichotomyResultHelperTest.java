@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +32,7 @@ class DichotomyResultHelperTest {
     DichotomyResultHelper dichotomyResultHelper;
 
     @Test
-    void testLimitingElement() throws IOException {
+    void testLimitingElement() {
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
         DichotomyStepResult<DichotomyRaoResponse> highestValidStep = Mockito.mock(DichotomyStepResult.class);
         DichotomyRaoResponse dichotomyRaoResponse = Mockito.mock(DichotomyRaoResponse.class);
@@ -56,7 +55,7 @@ class DichotomyResultHelperTest {
     }
 
     @Test
-    void testComputeLowestUnsecureItalianImport() throws IOException {
+    void testComputeLowestUnsecureItalianImport() {
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
         DichotomyStepResult<DichotomyRaoResponse> lowestInvalidStep = Mockito.mock(DichotomyStepResult.class);
         DichotomyRaoResponse dichotomyRaoResponse = Mockito.mock(DichotomyRaoResponse.class);
@@ -73,7 +72,7 @@ class DichotomyResultHelperTest {
     }
 
     @Test
-    void testComputeHighestSecureItalianImport() throws IOException {
+    void testComputeHighestSecureItalianImport() {
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
         DichotomyStepResult<DichotomyRaoResponse> highestValidStep = Mockito.mock(DichotomyStepResult.class);
         DichotomyRaoResponse dichotomyRaoResponse = Mockito.mock(DichotomyRaoResponse.class);

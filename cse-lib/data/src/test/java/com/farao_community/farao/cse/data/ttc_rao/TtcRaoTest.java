@@ -9,13 +9,11 @@ package com.farao_community.farao.cse.data.ttc_rao;
 
 import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.*;
-import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
+
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreator;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
-import com.powsybl.openrao.data.raoresultjson.RaoResultImporter;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
@@ -50,32 +48,30 @@ class TtcRaoTest {
         assertEquals(expectedTtcResultXml, bos.toString().trim());
     }
 
-    private CracResultsHelper getCracResultsHelper(String raoResultFileName) {
+    private CracResultsHelper getCracResultsHelper(String raoResultFileName) throws IOException {
         InputStream cracInputStream = getClass().getResourceAsStream("crac.xml");
-        CseCracImporter importer = new CseCracImporter();
-        CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
+
         Network network = Network.read("network.uct", getClass().getResourceAsStream("network.uct"));
-        CseCracCreator cseCracCreator = new CseCracCreator();
-        CseCracCreationContext cseCracCreationContext = cseCracCreator.createCrac(cseCrac, network, null, new CracCreationParameters());
+        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext("crac.xml", cracInputStream, network, null, new CracCreationParameters());
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
-        RaoResult raoResult = new RaoResultImporter().importRaoResult(raoResultInputStream, cseCracCreationContext.getCrac());
+        RaoResult raoResult = RaoResult.read(raoResultInputStream, cseCracCreationContext.getCrac());
         return new CracResultsHelper(cseCracCreationContext, raoResult, network);
     }
 
     @Test
-    void testSecureCseRaoResultGeneration() throws JAXBException {
+    void testSecureCseRaoResultGeneration() throws JAXBException, IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("raoResult-secure.json");
         checkGeneratedXmlMatchesExpectedXml(cracResultsHelper, "expected-simple-secure-cse-rao-result.xml");
     }
 
     @Test
-    void testUnsecureCseRaoResultGeneration() throws JAXBException {
+    void testUnsecureCseRaoResultGeneration() throws JAXBException, IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("raoResult-unsecure.json");
         checkGeneratedXmlMatchesExpectedXml(cracResultsHelper, "expected-simple-unsecure-cse-rao-result.xml");
     }
 
     @Test
-    void testSecureCseRaoResultGenerationWhenCostIsNull() throws JAXBException {
+    void testSecureCseRaoResultGenerationWhenCostIsNull() throws JAXBException, IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("raoResult-null-cost.json");
         checkGeneratedXmlMatchesExpectedXml(cracResultsHelper, "expected-simple-secure-cse-rao-result.xml");
     }
@@ -87,7 +83,7 @@ class TtcRaoTest {
     }
 
     @Test
-    void testPreprocessedPstsModifiedByRaoNotAddedToTtcRes() {
+    void testPreprocessedPstsModifiedByRaoNotAddedToTtcRes() throws IOException {
         Map<String, Integer> preprocessedPsts = new HashMap<>();
         preprocessedPsts.put("PST_cra_3_BBE2AA1  BBE3AA1  1", 2);
         CracResultsHelper cracResultsHelper = getCracResultsHelper("raoResult-secure.json");
@@ -98,7 +94,7 @@ class TtcRaoTest {
     }
 
     @Test
-    void testPreprocessedPstsNotModifiedByRaoCorrectlyAddedToTtcRes() {
+    void testPreprocessedPstsNotModifiedByRaoCorrectlyAddedToTtcRes() throws IOException {
         Map<String, Integer> preprocessedPsts = new HashMap<>();
         preprocessedPsts.put("PST_cra_7_BBE2AA1  BBE3AA1  1", 5);
         CracResultsHelper cracResultsHelper = getCracResultsHelper("raoResult-secure.json");

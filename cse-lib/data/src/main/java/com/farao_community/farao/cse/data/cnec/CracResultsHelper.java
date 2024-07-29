@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.data.cnec;
 
 import com.powsybl.contingency.ContingencyElement;
+import com.powsybl.iidm.network.TwoSides;
 import com.powsybl.openrao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
 
@@ -16,7 +17,6 @@ import com.powsybl.openrao.data.cracapi.Instant;
 import com.powsybl.openrao.data.cracapi.NetworkElement;
 import com.powsybl.contingency.Contingency;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
-import com.powsybl.openrao.data.cracapi.cnec.Side;
 import com.powsybl.openrao.data.cracapi.rangeaction.InjectionRangeAction;
 import com.powsybl.openrao.data.cracapi.rangeaction.PstRangeAction;
 import com.powsybl.openrao.data.craccreation.creator.api.ElementaryCreationContext;
@@ -224,7 +224,7 @@ public class CracResultsHelper {
     }
 
     public FlowCnecResult getFlowCnecResultInAmpere(FlowCnec flowCnec, Instant optimizedInstant) {
-        Side monitoredSide = flowCnec.getMonitoredSides().contains(Side.LEFT) ? Side.LEFT : Side.RIGHT;
+        TwoSides monitoredSide = flowCnec.getMonitoredSides().contains(TwoSides.ONE) ? TwoSides.ONE : TwoSides.TWO;
         Optional<Double> upperBound = flowCnec.getUpperBound(monitoredSide, Unit.AMPERE);
         Optional<Double> lowerBound = flowCnec.getLowerBound(monitoredSide, Unit.AMPERE);
         double flow;

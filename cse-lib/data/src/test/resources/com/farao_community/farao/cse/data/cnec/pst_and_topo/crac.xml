@@ -4,9 +4,9 @@
     <DocumentVersion v="12"/>
     <DocumentType v="Z03"/>
     <ProcessType v="Z03"/>
-    <SenderIdentification v="senderEIC" codingScheme="A01"/>
+    <SenderIdentification v="sender" codingScheme="A01"/>
     <SenderRole v="A04"/>
-    <ReceiverIdentification v="receiverEIC" codingScheme="A01"/>
+    <ReceiverIdentification v="receiver" codingScheme="A01"/>
     <ReceiverRole v="A36"/>
     <CreationDateTime v="2015-07-22T10:30:00Z"/>
     <TimeInterval v="2015-07-18T01:00Z/2020-01-01T01:00Z"/>
@@ -45,13 +45,13 @@
             <Outage>
                 <Name v="outage_4_xnode"/>
                 <Branch>
-                    <FromNode v="FFR3AA1"/>
+                    <FromNode v="FFR3AA1 "/>
                     <ToNode v="XAA_AA11"/>
                     <Order v="1"/>
                 </Branch>
                 <Branch>
                     <FromNode v="XAA_AA11"/>
-                    <ToNode v="NNL2AA1"/>
+                    <ToNode v="NNL2AA1 "/>
                     <Order v="1"/>
                 </Branch>
             </Outage>
@@ -59,7 +59,7 @@
         <RemedialActions>
             <RemedialAction>
                 <Name v="ra_1"/>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Operator v="FR"/>
                 <Application v="PREVENTIVE"/>
                 <SharedWith v="None"/>
@@ -80,7 +80,7 @@
             </RemedialAction>
             <RemedialAction>
                 <Name v="ra_2"/>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Operator v="FR"/>
                 <Application v="CURATIVE"/>
                 <SharedWith v="None"/>
@@ -94,7 +94,7 @@
             </RemedialAction>
             <RemedialAction>
                 <Name v="cra_3"/>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Operator v="IT"/>
                 <Application v="PREVENTIVE"/>
                 <SharedWith v="CSE"/>
@@ -111,7 +111,7 @@
             </RemedialAction>
             <RemedialAction>
                 <Name v="cra_4"/>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Operator v="IT"/>
                 <Application v="PREVENTIVE"/>
                 <SharedWith v="CSE"/>
@@ -128,7 +128,7 @@
             </RemedialAction>
             <RemedialAction>
                 <Name v="cra_5"/>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Operator v="FR"/>
                 <Application v="CURATIVE"/>
                 <SharedWith v="None"/>
@@ -141,7 +141,7 @@
                     </Branch>
                     <Branch>
                         <FromNode v="FFR2AA1 "/>
-                        <ToNode v="FFR3AA1"/>
+                        <ToNode v="FFR3AA1 "/>
                         <Order v="1"/>
                         <Status v="OPEN"/>
                     </Branch>
@@ -149,7 +149,7 @@
             </RemedialAction>
             <RemedialAction>
                 <Name v="cra_6"/>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Operator v="FR"/>
                 <Application v="CURATIVE"/>
                 <SharedWith v="None"/>
@@ -164,14 +164,14 @@
 
             <RemedialAction>
                 <Name v="cra_7"/>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Operator v="FR"/>
                 <Application v="CURATIVE"/>
                 <SharedWith v="None"/>
                 <Status>
                     <Branch>
-                        <FromNode v="FFR3AA1"/>
-                        <ToNode v="XAA_AA11*"/>
+                        <FromNode v="FFR3AA1 "/>
+                        <ToNode v="XAA_AA11"/>
                         <Order v="1"/>
                         <Status v="OPEN"/>
                     </Branch>
@@ -187,7 +187,7 @@
         </RemedialActions>
         <CriticalBranches>
             <BaseCaseBranches>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Branch>
                     <Name v="basecase_branch_1"/>
                     <FromNode v="NNL2AA1 "/>
@@ -214,7 +214,7 @@
                 </Branch>
             </BaseCaseBranches>
             <CriticalBranch>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Outage v="outage_1"/>
                 <Branch>
                     <Name v="French line 1"/>
@@ -227,27 +227,26 @@
                 </Branch>
             </CriticalBranch>
             <CriticalBranch>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Outage v="outage_2"/>
                 <Branch>
                     <Name v="French line 2"/>
-                    <FromNode v="FFRFAK2"/>
-                    <ToNode v="FFRFAK1"/>
+                    <FromNode v="FFRFAK2 "/>
+                    <ToNode v="FFRFAK1 "/>
                     <Order v="1"/>
                     <ImaxAfterOutage unit="A" v="3071"/>
-                    <ImaxAfterPRA unit="A" v="2590"/>
                     <ImaxAfterCRA unit="A" v="2585"/>
                     <Direction v="DIRECT"/>
                 </Branch>
             </CriticalBranch>
             <CriticalBranch>
-                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00ZZ"/>
+                <TimeInterval v="2021-04-30T22:00Z/2021-04-30T23:00Z"/>
                 <Outage v="outage_4_xnode"/>
                 <Branch>
                     <Name v="Xnode"/>
                     <AlwaysSelected v="true"/>
                     <FromNode v="XAA_AA11"/>
-                    <ToNode v="NNL2AA1"/>
+                    <ToNode v="NNL2AA1 "/>
                     <Order v="1"/>
                     <ImaxAfterOutage v="120" unit="Pct"/>
                     <ImaxAfterCRA v="100" unit="Pct"/>
