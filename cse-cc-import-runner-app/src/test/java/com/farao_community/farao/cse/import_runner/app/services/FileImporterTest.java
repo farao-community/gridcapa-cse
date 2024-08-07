@@ -149,6 +149,16 @@ class FileImporterTest {
     }
 
     @Test
+    void assertThrowsWhenImportSeriesIsMissing() {
+        OffsetDateTime time = OffsetDateTime.parse("2021-06-24T22:00Z");
+        String atFileUrl = getClass().getResource("NTC2_20210624_2D5_AT-IT1-no-import-test.xml").toString();
+        String chFileUrl = getClass().getResource("NTC2_20210624_2D5_CH-IT1-test.xml").toString();
+        String frFileUrl = getClass().getResource("NTC2_20210624_2D5_FR-IT1-test.xml").toString();
+        String siFileUrl = getClass().getResource("NTC2_20210624_2D5_SI-IT1-test.xml").toString();
+        assertThrows(CseDataException.class, () ->  fileImporter.importNtc2(time, atFileUrl, chFileUrl, frFileUrl, siFileUrl));
+    }
+
+    @Test
     void assertThrowsWhenTargetDateTimeOutOfBound() {
         OffsetDateTime time = OffsetDateTime.parse("2021-06-24T23:00Z");
         String atFileUrl = getClass().getResource("NTC2_20210624_2D5_AT-IT1-test.xml").toString();
