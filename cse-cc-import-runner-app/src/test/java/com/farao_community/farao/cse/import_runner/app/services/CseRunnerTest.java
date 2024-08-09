@@ -62,7 +62,7 @@ class CseRunnerTest {
     private TtcResultService ttcResultService;
 
     @Test
-    void testCracImportAndBusbarPreprocess() {
+    void testCracImportAndBusbarPreprocess() throws IOException {
         String cracUrl = Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1_busbar.xml")).toString();
         Network network = Network.read("20210901_2230_test_network.uct", getClass().getResourceAsStream("20210901_2230_test_network.uct"));
         // Initially only one bus in this voltage level ITALY111

@@ -35,6 +35,6 @@ public final class FlowEvaluator {
             .withSensitivityProviderName(SensitivityAnalysis.find().getName())
             .build();
         SystematicSensitivityResult sensitivityResult = systematicSensitivityInterface.run(network);
-        return new FlowResultImpl(sensitivityResult, null, null);
+        return new FlowResultImpl(sensitivityResult, (FlowResult) null, null);
     }
 }

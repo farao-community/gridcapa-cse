@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.stream.function.StreamBridge;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -43,7 +44,7 @@ class RequestServiceTest {
     private final JsonApiConverter jsonApiConverter = new JsonApiConverter();
 
     @Test
-    void testSuccessRequestService() {
+    void testSuccessRequestService() throws IOException {
         CseExportRequest cseRequest = new CseExportRequest(UUID.randomUUID().toString(), null, null, "", "");
         CseExportResponse cseResponse = new CseExportResponse(cseRequest.getId(), "", "", "",  false);
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseExportRequest.class);
@@ -62,7 +63,7 @@ class RequestServiceTest {
     }
 
     @Test
-    void testInterruptedRequestService() {
+    void testInterruptedRequestService() throws IOException {
         CseExportRequest cseRequest = new CseExportRequest(UUID.randomUUID().toString(), null, null, "", "");
         CseExportResponse cseResponse = new CseExportResponse(cseRequest.getId(), "", "", "", true);
         byte[] request = jsonApiConverter.toJsonMessage(cseRequest, CseExportRequest.class);

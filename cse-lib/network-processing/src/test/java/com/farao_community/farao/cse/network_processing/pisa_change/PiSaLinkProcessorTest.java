@@ -8,16 +8,13 @@
 package com.farao_community.farao.cse.network_processing.pisa_change;
 
 import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreator;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.OffsetDateTime;
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,14 +104,14 @@ class PiSaLinkProcessorTest {
     }
 
     @Test
-    void testForcingSetpointMode() {
+    void testForcingSetpointMode() throws IOException {
         String networkFilename = "20210901_2230_test_network_different_link_config_test.uct";
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
         // Need to align first or remedial actions will be excluded
         piSaLink2Processor.alignFictiveGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
-        CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
-        Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
+
+        Crac crac = Crac.read(cracFilename, Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)), network);
 
         piSaLink2Processor.setLinkInSetpointMode(network, crac);
         assertFalse(piSaLink2Processor.isLinkInACEmulation(network));
@@ -123,15 +120,14 @@ class PiSaLinkProcessorTest {
     }
 
     @Test
-    void testForcingSetpointModeWithDifferentLimitation() {
+    void testForcingSetpointModeWithDifferentLimitation() throws IOException {
         String networkFilename = "20210901_2230_test_network_both_emulation_test.uct";
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
         // Need to align first or remedial actions will be excluded
         piSaLink1Processor.alignFictiveGenerators(network);
         // Here we don't align link2 so that RAs for link2 are excluded
         String cracFilename = "cse_crac_with_hvdc.xml";
-        CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
-        Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
+        Crac crac = Crac.read(cracFilename, getClass().getResourceAsStream(cracFilename), network);
 
         piSaLink1Processor.setLinkInSetpointMode(network, crac);
         piSaLink2Processor.setLinkInSetpointMode(network, crac);

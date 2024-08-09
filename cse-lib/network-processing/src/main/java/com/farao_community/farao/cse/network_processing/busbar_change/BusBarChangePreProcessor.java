@@ -9,11 +9,9 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.commons.OpenRaoException;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreator;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
 import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
 import com.powsybl.openrao.data.craccreation.creator.cse.parameters.SwitchPairId;
+import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.craccreation.creator.cse.xsd.TCRACSeries;
 import com.powsybl.openrao.data.craccreation.creator.cse.xsd.TRemedialAction;
 import com.powsybl.openrao.data.craccreation.creator.cse.xsd.TRemedialActions;
@@ -23,6 +21,9 @@ import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzerProper
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,13 +43,35 @@ public final class BusBarChangePreProcessor {
         // utility class
     }
 
+    private static CRACDocumentType importNativeCrac(InputStream inputStream) {
+        CRACDocumentType cracDocumentType;
+        try {
+            cracDocumentType = JAXBContext.newInstance(CRACDocumentType.class)
+                    .createUnmarshaller()
+                    .unmarshal(new StreamSource(inputStream), CRACDocumentType.class)
+                    .getValue();
+        } catch (JAXBException e) {
+            throw new OpenRaoException(e);
+        }
+        return cracDocumentType;
+    }
+
     public static Set<BusBarChangeSwitches> process(Network network, InputStream cracInputStream) {
-        CseCracImporter importer = new CseCracImporter();
-        CseCrac cseCrac = importer.importNativeCrac(cracInputStream);
+        CRACDocumentType cseCrac = importNativeCrac(cracInputStream);
         return process(network, cseCrac);
     }
 
-    public static Set<BusBarChangeSwitches> process(Network network, CseCrac cseCrac) {
+    private static TCRACSeries getCracSeries(CRACDocumentType cracDocumentType) {
+        // Check that there is only one CRACSeries in the file, which defines the CRAC
+        // XSD enables several CRACSeries but without any further specification it doesn't make sense.
+        List<TCRACSeries> tcracSeriesList = cracDocumentType.getCRACSeries();
+        if (tcracSeriesList.size() != 1) {
+            throw new OpenRaoException("CRAC file contains no or more than one <CRACSeries> tag which is not handled.");
+        }
+        return tcracSeriesList.get(0);
+    }
+
+    public static Set<BusBarChangeSwitches> process(Network network, CRACDocumentType cseCrac) {
         UcteNetworkAnalyzer ucteNetworkAnalyzer = new UcteNetworkAnalyzer(network, new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         NetworkModifier networkModifier = new NetworkModifier(network);
 
@@ -56,7 +79,8 @@ public final class BusBarChangePreProcessor {
         SortedSet<BusToCreate> busesToCreate = new TreeSet<>();
         Map<String, NetworkHelper.BusBarEquivalentModel> createdSwitches = new HashMap<>();
 
-        TCRACSeries tcracSeries = CseCracCreator.getCracSeries(cseCrac.getCracDocument());
+        TCRACSeries tcracSeries = getCracSeries(cseCrac);
+
         List<TRemedialActions> tRemedialActionsList = tcracSeries.getRemedialActions();
 
         for (TRemedialActions tRemedialActions : tRemedialActionsList) {

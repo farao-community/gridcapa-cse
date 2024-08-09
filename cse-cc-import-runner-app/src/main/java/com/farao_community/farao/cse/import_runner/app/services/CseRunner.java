@@ -27,11 +27,10 @@ import com.powsybl.openrao.data.cracapi.Crac;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.openrao.data.craccreation.creator.api.CracCreators;
-import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
+import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
+import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -149,16 +148,18 @@ public class CseRunner {
         return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl, multipleDichotomyResult.isInterrupted());
     }
 
-    CracImportData importCracAndModifyNetworkForBusBars(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) {
+    CracImportData importCracAndModifyNetworkForBusBars(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
         // Create CRAC creation context
-        CseCrac nativeCseCrac = fileImporter.importCseCrac(cracUrl);
+        CRACDocumentType nativeCseCrac = fileImporter.importCseCrac(cracUrl);
         // Pre-treatment on network
         Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, nativeCseCrac);
         LOGGER.info("Importing Crac Creation Parameters file: {}", CRAC_CREATION_PARAMETERS_JSON);
         InputStream cracCreationParametersIs = getClass().getResourceAsStream(CRAC_CREATION_PARAMETERS_JSON);
         CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersIs, busBarChangeSwitchesSet);
-        CseCracCreationContext cracCreationContext = (CseCracCreationContext) CracCreators.createCrac(
-            nativeCseCrac, network, targetProcessDateTime, cracCreationParameters);
+        // input stream null and file name
+        CseCracCreationContext cracCreationContext = (CseCracCreationContext) Crac.readWithContext(FileUtil.getFilenameFromUrl(cracUrl), fileImporter.openUrlStream(cracUrl),
+                network, targetProcessDateTime, cracCreationParameters);
+
         return new CracImportData(cracCreationContext, busBarChangeSwitchesSet);
     }
 

@@ -67,10 +67,6 @@
             <artifactId>open-rao-crac-creation-util</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>open-rao-crac-io-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.farao-community.farao</groupId>
             <artifactId>farao-dichotomy-api</artifactId>
         </dependency>
