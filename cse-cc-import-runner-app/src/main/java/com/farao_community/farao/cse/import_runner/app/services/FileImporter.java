@@ -19,7 +19,6 @@ import com.farao_community.farao.cse.import_runner.app.configurations.UrlWhiteli
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.import_runner.app.util.Ntc2Util;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.powsybl.openrao.commons.OpenRaoException;
 import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
@@ -65,23 +64,19 @@ public class FileImporter {
     }
 
     public CRACDocumentType importCseCrac(String cracUrl) {
-        InputStream cracInputStream = openUrlStream(cracUrl);
 
-        CRACDocumentType cracDocumentType;
-        try {
-            cracDocumentType = JAXBContext.newInstance(CRACDocumentType.class)
+        try (InputStream cracInputStream = openUrlStream(cracUrl)) {
+            return JAXBContext.newInstance(CRACDocumentType.class)
                     .createUnmarshaller()
                     .unmarshal(new StreamSource(cracInputStream), CRACDocumentType.class)
                     .getValue();
-        } catch (JAXBException e) {
-            throw new OpenRaoException(e);
+        } catch (JAXBException | IOException e) {
+            throw new CseInvalidDataException(String.format("impossible to import Crac file from : %s", cracUrl), e);
         }
-        return cracDocumentType;
     }
 
     public Crac importCracFromJson(String cracUrl, Network network) {
-        try {
-            InputStream cracResultStream = openUrlStream(cracUrl);
+        try (InputStream cracResultStream = openUrlStream(cracUrl)) {
             return Crac.read(FileUtil.getFilenameFromUrl(cracUrl), cracResultStream, network);
         } catch (IOException e) {
             throw new CseInvalidDataException("impossible to import Crac from json file", e);

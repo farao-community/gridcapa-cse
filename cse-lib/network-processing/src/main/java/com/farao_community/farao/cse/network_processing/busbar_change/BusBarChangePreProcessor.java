@@ -44,16 +44,14 @@ public final class BusBarChangePreProcessor {
     }
 
     private static CRACDocumentType importNativeCrac(InputStream inputStream) {
-        CRACDocumentType cracDocumentType;
         try {
-            cracDocumentType = JAXBContext.newInstance(CRACDocumentType.class)
+            return JAXBContext.newInstance(CRACDocumentType.class)
                     .createUnmarshaller()
                     .unmarshal(new StreamSource(inputStream), CRACDocumentType.class)
                     .getValue();
         } catch (JAXBException e) {
             throw new OpenRaoException(e);
         }
-        return cracDocumentType;
     }
 
     public static Set<BusBarChangeSwitches> process(Network network, InputStream cracInputStream) {

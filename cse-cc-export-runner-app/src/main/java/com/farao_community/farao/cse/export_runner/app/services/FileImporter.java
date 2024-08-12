@@ -11,7 +11,6 @@ import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.UrlWhitelistConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 
-import com.powsybl.openrao.commons.OpenRaoException;
 import com.powsybl.openrao.data.cracapi.Crac;
 
 import com.powsybl.iidm.network.Network;
@@ -51,16 +50,14 @@ public class FileImporter {
     }
 
     CRACDocumentType importNativeCrac(InputStream inputStream) {
-        CRACDocumentType cracDocumentType;
         try {
-            cracDocumentType = JAXBContext.newInstance(CRACDocumentType.class)
+            return JAXBContext.newInstance(CRACDocumentType.class)
                     .createUnmarshaller()
                     .unmarshal(new StreamSource(inputStream), CRACDocumentType.class)
                     .getValue();
         } catch (JAXBException e) {
-            throw new OpenRaoException(e);
+            throw new CseDataException("Exception occurred during import of native crac", e);
         }
-        return cracDocumentType;
     }
 
     public RaoResult importRaoResult(String raoResultUrl, Crac crac) {
