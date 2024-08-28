@@ -1,10 +1,10 @@
 package com.farao_community.farao.cse.import_runner.app.util;
 
-import com.powsybl.openrao.commons.EICode;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.ntc2.CapacityDocument;
 import com.powsybl.iidm.network.Country;
+import com.powsybl.openrao.commons.EICode;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -23,6 +23,7 @@ public final class Ntc2Util {
     private static final String SWISS_TAG = "CH";
     private static final String FRENCH_TAG = "FR";
     private static final String SLOVENIAN_TAG = "SI";
+    private static final String IT_AREA_CODE = "10YIT-GRTN-----B";
 
     private Ntc2Util() {
 
@@ -33,10 +34,18 @@ public final class Ntc2Util {
         CapacityDocument capacityDocument = DataUtil.unmarshalFromInputStream(ntc2InputStream, CapacityDocument.class);
         checkTimeInterval(capacityDocument, targetDateTime);
         int position = targetDateTime.atZoneSameInstant(ZoneId.of("CET")).getHour() + 1;
-        capacityDocument.getCapacityTimeSeries().getPeriod().getInterval().forEach(interval -> {
-            int index = interval.getPos().getV().intValue();
-            qtyByPositionMap.put(index, interval.getQty().getV().doubleValue());
-        });
+        capacityDocument.getCapacityTimeSeries()
+                .stream()
+                .filter(ts -> IT_AREA_CODE.equalsIgnoreCase(ts.getInArea().getV()) && !ts.getPeriod().isEmpty())
+                .findFirst()
+                .orElseThrow(() -> new CseDataException("No import Timeseries in NTC2 file"))
+                .getPeriod()
+                .get(0)
+                .getInterval()
+                .forEach(interval -> {
+                    final int index = interval.getPos().getV();
+                    qtyByPositionMap.put(index, interval.getQty().getV().doubleValue());
+                });
         return Optional.ofNullable(qtyByPositionMap.get(position))
                 .orElseThrow(() -> new CseDataException(
                         String.format("Impossible to retrieve NTC2 position %d. It does not exist", position)));
