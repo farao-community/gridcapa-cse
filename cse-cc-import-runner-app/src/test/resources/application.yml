@@ -43,3 +43,4 @@ cse-cc-runner:
   whitelist:
     - http://localhost:9000
     - file:/
+  interrupt-server-url: http://testUrl/interrupted/

@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.cse.import_runner.app.configurations.UrlWhitelistConfiguration;
+import com.farao_community.farao.cse.import_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import org.springframework.stereotype.Component;
 
@@ -19,14 +19,14 @@ import java.net.URL;
  */
 @Component
 public class UrlValidationService {
-    private final UrlWhitelistConfiguration urlWhitelistConfiguration;
+    private final UrlConfiguration urlConfiguration;
 
-    public UrlValidationService(UrlWhitelistConfiguration urlWhitelistConfiguration) {
-        this.urlWhitelistConfiguration = urlWhitelistConfiguration;
+    public UrlValidationService(UrlConfiguration urlConfiguration) {
+        this.urlConfiguration = urlConfiguration;
     }
 
     public InputStream openUrlStream(String urlString) throws IOException {
-        if (urlWhitelistConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
+        if (urlConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
             throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelisted url's.", urlString));
         }
         URL url = new URL(urlString);

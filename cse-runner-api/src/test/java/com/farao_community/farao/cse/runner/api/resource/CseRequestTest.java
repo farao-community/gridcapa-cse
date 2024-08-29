@@ -22,6 +22,7 @@ class CseRequestTest {
     void checkCseRequestForD2ccProcess() {
         CseRequest cseRequest = CseRequest.d2ccProcess(
             "id",
+            "runId",
             OffsetDateTime.parse("2017-07-18T08:18Z"),
             "cgmUrl",
             "mergedCracUrl",
@@ -52,6 +53,7 @@ class CseRequestTest {
     void checkCseRequestForIdccProcess() {
         CseRequest cseRequest = CseRequest.idccProcess(
             "id",
+            "runId",
             OffsetDateTime.parse("2017-07-18T08:18Z"),
             "cgmUrl",
             "mergedCracUrl",
@@ -85,6 +87,7 @@ class CseRequestTest {
     void checkCseRequestForD2ccAdaptedProcess() {
         CseRequest cseRequest = CseRequest.d2ccProcess(
             "id",
+            "runId",
             OffsetDateTime.parse("2017-07-18T08:18Z"),
             "cgmUrl",
             "mergedCracUrl",
@@ -108,6 +111,7 @@ class CseRequestTest {
     void checkCseRequestForIdccAdaptedProcess() {
         CseRequest cseRequest = CseRequest.idccProcess(
             "id",
+            "runId",
             OffsetDateTime.parse("2017-07-18T08:18Z"),
             "cgmUrl",
             "mergedCracUrl",

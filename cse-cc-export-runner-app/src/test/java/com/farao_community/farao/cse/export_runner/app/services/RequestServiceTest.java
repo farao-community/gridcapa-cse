@@ -45,7 +45,7 @@ class RequestServiceTest {
 
     @Test
     void testSuccessRequestService() throws IOException {
-        CseExportRequest cseRequest = new CseExportRequest(UUID.randomUUID().toString(), null, null, "", "");
+        CseExportRequest cseRequest = new CseExportRequest(UUID.randomUUID().toString(), null, null, null, "", "");
         CseExportResponse cseResponse = new CseExportResponse(cseRequest.getId(), "", "", "",  false);
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseExportRequest.class);
         byte[] resp = jsonApiConverter.toJsonMessage(cseResponse, CseExportResponse.class);
@@ -64,7 +64,7 @@ class RequestServiceTest {
 
     @Test
     void testInterruptedRequestService() throws IOException {
-        CseExportRequest cseRequest = new CseExportRequest(UUID.randomUUID().toString(), null, null, "", "");
+        CseExportRequest cseRequest = new CseExportRequest(UUID.randomUUID().toString(), null, null, null, "", "");
         CseExportResponse cseResponse = new CseExportResponse(cseRequest.getId(), "", "", "", true);
         byte[] request = jsonApiConverter.toJsonMessage(cseRequest, CseExportRequest.class);
         byte[] expectedResponse = jsonApiConverter.toJsonMessage(cseResponse, CseExportResponse.class);

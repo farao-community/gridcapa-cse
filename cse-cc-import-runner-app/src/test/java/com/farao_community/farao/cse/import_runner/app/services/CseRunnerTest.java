@@ -24,6 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -60,6 +64,9 @@ class CseRunnerTest {
 
     @MockBean
     private TtcResultService ttcResultService;
+
+    @MockBean
+    private RestTemplateBuilder restTemplateBuilder;
 
     @Test
     void testCracImportAndBusbarPreprocess() throws IOException {
@@ -101,6 +108,13 @@ class CseRunnerTest {
             when(dichotomyResult.getBestDichotomyResult()).thenReturn(raoResponse);
             when(raoResponse.hasValidStep()).thenReturn(false);
 
+            RestTemplate restTemplate = mock(RestTemplate.class);
+            ResponseEntity<Boolean> responseEntity = mock(ResponseEntity.class);
+            when(restTemplateBuilder.build()).thenReturn(restTemplate);
+            when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(responseEntity);
+            when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+            when(responseEntity.getBody()).thenReturn(false);
+
             when(fileExporter.getFinalNetworkFilePath(any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("AnyString");
             when(fileExporter.exportAndUploadNetwork(any(Network.class), anyString(), any(GridcapaFileGroup.class), anyString(), anyString(), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyString/IMPORT_EC/test");
             when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("file:/AnyTTCfilepath/IMPORT_EC/test");
@@ -133,8 +147,39 @@ class CseRunnerTest {
                 any(Map.class)
         )).thenReturn(dichotomyResult);
 
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        ResponseEntity<Boolean> responseEntity = mock(ResponseEntity.class);
+        when(restTemplateBuilder.build()).thenReturn(restTemplate);
+        when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(responseEntity);
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+        when(responseEntity.getBody()).thenReturn(false);
+
         when(dichotomyResult.isInterrupted()).thenReturn(true);
         when(dichotomyResult.getBestDichotomyResult()).thenThrow(new IndexOutOfBoundsException());
+
+        when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("interruptedTTCFilePath");
+
+        // WHEN
+        CseResponse response = cseRunner.run(cseRequest);
+
+        // THEN
+        verify(ttcResultService, times(1)).saveFailedTtcResult(eq(cseRequest), any(), eq(TtcResult.FailedProcessData.FailedProcessReason.OTHER));
+        assertNotNull(response);
+        assertEquals("interruptedTTCFilePath", response.getTtcFileUrl());
+        assertTrue(response.isInterrupted());
+    }
+
+    @Test
+    void testRunPendingInterrupted() throws IOException, URISyntaxException {
+
+        CseRequest cseRequest = buildTestCseRequest();
+
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        ResponseEntity<Boolean> responseEntity = mock(ResponseEntity.class);
+        when(restTemplateBuilder.build()).thenReturn(restTemplate);
+        when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(responseEntity);
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+        when(responseEntity.getBody()).thenReturn(true);
 
         when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("interruptedTTCFilePath");
 
@@ -151,6 +196,7 @@ class CseRunnerTest {
     private CseRequest buildTestCseRequest() throws MalformedURLException, URISyntaxException {
         return new CseRequest(
                 "ID1",
+                "RUNID1",
                 ProcessType.IDCC,
                 OffsetDateTime.parse("2021-09-01T20:30Z"),
                 getClass().getResource("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct").toURI().toURL().toString(),
