@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 @Service
 public class RequestService {
@@ -41,14 +41,13 @@ public class RequestService {
     }
 
     @Bean
-    public Function<Flux<byte[]>, Flux<byte[]>> request(RequestService requestService) {
+    public Consumer<Flux<byte[]>> request() {
         return cseRequestFlux -> cseRequestFlux
-                .map(this::launchCseRequest)
-                .log();
+                .doOnNext(this::launchCseRequest)
+                .subscribe();
     }
 
-    public byte[] launchCseRequest(byte[] req) {
-        byte[] result;
+    public void launchCseRequest(byte[] req) {
         CseRequest cseRequest = jsonApiConverter.fromJsonMessage(req, CseRequest.class);
         // propagate in logs MDC the task id as an extra field to be able to match microservices logs with calculation tasks.
         // This should be done only once, as soon as the information to add in mdc is available.
@@ -57,38 +56,32 @@ public class RequestService {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
             CseResponse cseResponse = cseServer.run(cseRequest);
-            result = sendCseResponse(cseResponse);
+            updateTaskStatusBasedOnInterruption(cseResponse.isInterrupted(), cseResponse.getId());
             LOGGER.info("Cse response sent: {}", cseResponse);
         } catch (Exception e) {
-            result = handleError(e, cseRequest.getId());
+            handleError(e, cseRequest.getId());
         }
-        return result;
     }
 
-    private byte[] sendCseResponse(CseResponse cseResponse) {
-        if (cseResponse.isInterrupted()) {
+    private void updateTaskStatusBasedOnInterruption(final boolean isInterrupted,
+                                                     final String responseId) {
+        if (isInterrupted) {
             businessLogger.info("CSE run has been interrupted");
-            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.INTERRUPTED));
+            sendTaskStatusUpdate(responseId, TaskStatus.INTERRUPTED);
         } else {
-            streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseResponse.getId()), TaskStatus.SUCCESS));
+            sendTaskStatusUpdate(responseId, TaskStatus.SUCCESS);
         }
-        return jsonApiConverter.toJsonMessage(cseResponse, CseResponse.class);
     }
 
-    private byte[] handleError(Exception e, String requestId) {
+    private void handleError(Exception e, String requestId) {
         AbstractCseException cseException = new CseInternalException("CSE run failed", e);
         LOGGER.error(cseException.getDetails(), cseException);
         businessLogger.error(cseException.getDetails());
-        return sendErrorResponse(requestId, cseException);
+        sendTaskStatusUpdate(requestId, TaskStatus.ERROR);
     }
 
-    private byte[] sendErrorResponse(String requestId, AbstractCseException exception) {
-        streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), TaskStatus.ERROR));
-        return exceptionToJsonMessage(exception);
-    }
-
-    private byte[] exceptionToJsonMessage(AbstractCseException e) {
-        return jsonApiConverter.toJsonMessage(e);
+    private void sendTaskStatusUpdate(String requestId, TaskStatus targetStatus) {
+        streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(requestId), targetStatus));
     }
 
 }
