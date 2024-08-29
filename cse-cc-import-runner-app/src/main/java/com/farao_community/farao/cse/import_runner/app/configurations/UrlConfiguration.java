@@ -6,10 +6,7 @@
  */
 package com.farao_community.farao.cse.import_runner.app.configurations;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +14,15 @@ import java.util.List;
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
-@Configuration
-@EnableConfigurationProperties
 @ConfigurationProperties("cse-cc-runner")
 public class UrlConfiguration {
-    private final List<String> whitelist = new ArrayList<>();
+    private final List<String> whitelist;
+    private final String interruptServerUrl;
 
-    @Value("${cse-cc-runner.interrupt-server-url}")
-    private String interruptServerUrl;
+    public UrlConfiguration(List<String> whitelist, String interruptServerUrl) {
+        this.whitelist = whitelist == null ? new ArrayList<>() : whitelist;
+        this.interruptServerUrl = interruptServerUrl;
+    }
 
     public List<String> getWhitelist() {
         return whitelist;
