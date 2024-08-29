@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,7 +55,7 @@ class CseExportRunnerTest {
     }
 
     @Test
-    void runInterruptPendingCase() {
+    void runInterruptPendingCase() throws IOException {
         CseExportRequest request = Mockito.mock(CseExportRequest.class);
         Mockito.when(request.getId()).thenReturn("ID");
         Mockito.when(request.getCurrentRunId()).thenReturn("RUNID");
