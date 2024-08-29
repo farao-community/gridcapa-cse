@@ -12,15 +12,17 @@ import com.farao_community.farao.cse.export_runner.app.configurations.UrlWhiteli
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 
 import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
 
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
-import com.powsybl.openrao.data.raoresultjson.RaoResultImporter;
+import com.powsybl.openrao.data.raoresultjson.RaoResultJsonImporter;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -42,17 +44,27 @@ public class FileImporter {
         return Network.read(FileUtil.getFilenameFromUrl(cgmUrl), openUrlStream(cgmUrl));
     }
 
-    CseCrac importCseCrac(String cracUrl) {
+    CRACDocumentType importCseCrac(String cracUrl) {
         InputStream cracInputStream = openUrlStream(cracUrl);
-        CseCracImporter cseCracImporter = new CseCracImporter();
-        return cseCracImporter.importNativeCrac(cracInputStream);
+        return importNativeCrac(cracInputStream);
+    }
+
+    CRACDocumentType importNativeCrac(InputStream inputStream) {
+        try {
+            return JAXBContext.newInstance(CRACDocumentType.class)
+                    .createUnmarshaller()
+                    .unmarshal(new StreamSource(inputStream), CRACDocumentType.class)
+                    .getValue();
+        } catch (JAXBException e) {
+            throw new CseDataException("Exception occurred during import of native crac", e);
+        }
     }
 
     public RaoResult importRaoResult(String raoResultUrl, Crac crac) {
-        return new RaoResultImporter().importRaoResult(openUrlStream(raoResultUrl), crac);
+        return new RaoResultJsonImporter().importData(openUrlStream(raoResultUrl), crac);
     }
 
-    private InputStream openUrlStream(String urlString) {
+    InputStream openUrlStream(String urlString) {
         try {
             if (urlWhitelistConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
                 throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelisted url's.", urlString));

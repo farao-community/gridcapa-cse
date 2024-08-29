@@ -9,15 +9,13 @@ package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreator;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
+import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +31,7 @@ class PiSaServiceTest {
     private PiSaService piSaService;
 
     @Test
-    void testPiSaPreProcessInIdccWithOneLinkInSetpoint() {
+    void testPiSaPreProcessInIdccWithOneLinkInSetpoint() throws IOException {
         String networkFilename = "20210901_2230_test_network_pisa_test_one_link_connected_and_setpoint.uct";
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
@@ -47,8 +45,7 @@ class PiSaServiceTest {
 
         piSaService.alignGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
-        CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
-        Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
+        Crac crac = Crac.readWithContext(cracFilename, getClass().getResourceAsStream(cracFilename), network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
         // Already in set-point for the connected link so nothing is done
         piSaService.forceSetPoint(ProcessType.IDCC, network, crac);
 
@@ -64,7 +61,7 @@ class PiSaServiceTest {
     }
 
     @Test
-    void testPiSaPreProcessInIdccWithBothLinksSetpointAndACEmulation() {
+    void testPiSaPreProcessInIdccWithBothLinksSetpointAndACEmulation() throws IOException {
         String networkFilename = "20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation.uct";
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
@@ -79,8 +76,7 @@ class PiSaServiceTest {
 
         piSaService.alignGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
-        CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
-        Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
+        Crac crac = Crac.readWithContext(cracFilename, getClass().getResourceAsStream(cracFilename), network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
         // Link 1 already in set-point so nothing is done but link 2 is forced
         piSaService.forceSetPoint(ProcessType.IDCC, network, crac);
 
@@ -95,7 +91,7 @@ class PiSaServiceTest {
     }
 
     @Test
-    void testPiSaPreProcessInD2ccWithOneLinkInSetpoint() {
+    void testPiSaPreProcessInD2ccWithOneLinkInSetpoint() throws IOException {
         String networkFilename = "20210901_2230_test_network_pisa_test_one_link_connected_and_setpoint.uct";
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
@@ -109,8 +105,7 @@ class PiSaServiceTest {
 
         piSaService.alignGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
-        CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
-        Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
+        Crac crac = Crac.readWithContext(cracFilename, getClass().getResourceAsStream(cracFilename), network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
         // In D2CC nothing is done
         piSaService.forceSetPoint(ProcessType.D2CC, network, crac);
 
@@ -126,7 +121,7 @@ class PiSaServiceTest {
     }
 
     @Test
-    void testPiSaPreProcessInD2ccWithBothLinksSetpointAndACEmulation() {
+    void testPiSaPreProcessInD2ccWithBothLinksSetpointAndACEmulation() throws IOException {
         String networkFilename = "20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation.uct";
         Network network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
@@ -141,8 +136,7 @@ class PiSaServiceTest {
 
         piSaService.alignGenerators(network);
         String cracFilename = "cse_crac_with_hvdc.xml";
-        CseCrac cseCrac = new CseCracImporter().importNativeCrac(getClass().getResourceAsStream(cracFilename));
-        Crac crac = new CseCracCreator().createCrac(cseCrac, network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
+        Crac crac = Crac.readWithContext(cracFilename, getClass().getResourceAsStream(cracFilename), network, OffsetDateTime.parse("2021-09-01T22:30Z"), CracCreationParameters.load()).getCrac();
         // In D2CC nothing is done
         piSaService.forceSetPoint(ProcessType.D2CC, network, crac);
 

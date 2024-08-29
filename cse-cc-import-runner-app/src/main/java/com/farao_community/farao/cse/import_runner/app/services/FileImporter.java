@@ -20,22 +20,22 @@ import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.import_runner.app.util.Ntc2Util;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.powsybl.glsk.api.io.GlskDocumentImporters;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracImporter;
-import com.powsybl.openrao.data.cracioapi.CracImporters;
-import com.powsybl.openrao.data.raoresultjson.RaoResultImporter;
+import com.powsybl.openrao.data.raoresultjson.RaoResultJsonImporter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -63,15 +63,24 @@ public class FileImporter {
         return Network.read(FileUtil.getFilenameFromUrl(cgmUrl), openUrlStream(cgmUrl));
     }
 
-    public CseCrac importCseCrac(String cracUrl) {
-        InputStream cracInputStream = openUrlStream(cracUrl);
-        CseCracImporter cseCracImporter = new CseCracImporter();
-        return cseCracImporter.importNativeCrac(cracInputStream);
+    public CRACDocumentType importCseCrac(String cracUrl) {
+
+        try (InputStream cracInputStream = openUrlStream(cracUrl)) {
+            return JAXBContext.newInstance(CRACDocumentType.class)
+                    .createUnmarshaller()
+                    .unmarshal(new StreamSource(cracInputStream), CRACDocumentType.class)
+                    .getValue();
+        } catch (JAXBException | IOException e) {
+            throw new CseInvalidDataException(String.format("impossible to import Crac file from : %s", cracUrl), e);
+        }
     }
 
     public Crac importCracFromJson(String cracUrl, Network network) {
-        InputStream cracResultStream = openUrlStream(cracUrl);
-        return CracImporters.importCrac(FileUtil.getFilenameFromUrl(cracUrl), cracResultStream, network);
+        try (InputStream cracResultStream = openUrlStream(cracUrl)) {
+            return Crac.read(FileUtil.getFilenameFromUrl(cracUrl), cracResultStream, network);
+        } catch (IOException e) {
+            throw new CseInvalidDataException("impossible to import Crac from json file", e);
+        }
     }
 
     public ZonalData<Scalable> importGlsk(String glskUrl, Network network) {
@@ -79,7 +88,7 @@ public class FileImporter {
     }
 
     public RaoResult importRaoResult(String raoResultUrl, Crac crac) {
-        return new RaoResultImporter().importRaoResult(openUrlStream(raoResultUrl), crac);
+        return new RaoResultJsonImporter().importData(openUrlStream(raoResultUrl), crac);
     }
 
     public Ntc importNtc(OffsetDateTime targetProcessDateTime, String yearlyNtcUrl, String dailyNtcUrl, boolean isImportEc) {

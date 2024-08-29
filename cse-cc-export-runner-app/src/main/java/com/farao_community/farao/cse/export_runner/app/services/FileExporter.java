@@ -17,7 +17,6 @@ import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.cracioapi.CracExporters;
 import com.powsybl.openrao.raoapi.json.JsonRaoParameters;
 import com.powsybl.openrao.raoapi.parameters.RaoParameters;
 import org.apache.commons.lang3.NotImplementedException;
@@ -63,7 +62,7 @@ public class FileExporter {
     String saveCracInJsonFormat(Crac crac, ProcessType processType, OffsetDateTime processTargetDate) {
         MemDataSource memDataSource = new MemDataSource();
         try (OutputStream os = memDataSource.newOutputStream(JSON_CRAC_FILE_NAME, false)) {
-            CracExporters.exportCrac(crac, "Json", os);
+            crac.write("JSON", os);
         } catch (IOException e) {
             throw new CseInternalException("Error while trying to save converted CRAC file.", e);
         }

@@ -17,22 +17,23 @@ import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
-import com.powsybl.openrao.data.craccreation.creator.api.CracCreators;
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
-import com.powsybl.openrao.data.craccreation.creator.api.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCrac;
 import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
+import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.time.OffsetDateTime;
@@ -72,7 +73,7 @@ public class CseExportRunner {
         this.merchantLineService = merchantLineService;
     }
 
-    public CseExportResponse run(CseExportRequest cseExportRequest) {
+    public CseExportResponse run(CseExportRequest cseExportRequest) throws IOException {
         String logsFileUrl = ""; //TODO
 
         // Check on cgm file name
@@ -84,13 +85,13 @@ public class CseExportRunner {
         pisaService.alignGenerators(network);
 
         // Create CRAC creation context
-        CseCrac nativeCseCrac = fileImporter.importCseCrac(cseExportRequest.getMergedCracUrl());
+        CRACDocumentType nativeCseCrac = fileImporter.importCseCrac(cseExportRequest.getMergedCracUrl());
         Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, nativeCseCrac); // Pre-treatment on network
         LOGGER.info("Importing Crac Creation Parameters file: {}", CRAC_CREATION_PARAMETERS_JSON);
         InputStream cracCreationParametersInputStream = getClass().getResourceAsStream(CRAC_CREATION_PARAMETERS_JSON);
         CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersInputStream, busBarChangeSwitchesSet);
-        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) CracCreators.createCrac(nativeCseCrac,
-                network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);
+
+        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(FileUtil.getFilenameFromUrl(cseExportRequest.getMergedCracUrl()), fileImporter.openUrlStream(cseExportRequest.getMergedCracUrl()), network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);
 
         // Put all PSTs within their ranges to be able to optimize them
         Map<String, Integer> preprocessedPsts = PstInitializer.withLogger(businessLogger).initializePsts(network, cseCracCreationContext.getCrac());
