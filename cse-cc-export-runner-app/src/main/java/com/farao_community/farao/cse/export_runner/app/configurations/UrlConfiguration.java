@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.export_runner.app.configurations;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,10 @@ import java.util.List;
 @EnableConfigurationProperties
 @ConfigurationProperties("cse-cc-runner")
 public class UrlConfiguration {
+
     private final List<String> whitelist = new ArrayList<>();
+
+    @Value("${cse-cc-runner.interrupt-server-url}")
     private String interruptServerUrl;
 
     public List<String> getWhitelist() {
@@ -31,7 +35,4 @@ public class UrlConfiguration {
         return interruptServerUrl;
     }
 
-    public void setInterruptServerUrl(String interruptServerUrl) {
-        this.interruptServerUrl = interruptServerUrl;
-    }
 }
