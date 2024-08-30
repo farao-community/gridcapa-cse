@@ -115,7 +115,7 @@ class CseRunnerTest {
             when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
             when(responseEntity.getBody()).thenReturn(false);
 
-            when(fileExporter.getFinalNetworkFilePath(any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("AnyString");
+            when(fileExporter.getFinalNetworkFilePath(any(OffsetDateTime.class), any(ProcessType.class), anyString(), anyBoolean())).thenReturn("AnyString");
             when(fileExporter.exportAndUploadNetwork(any(Network.class), anyString(), any(GridcapaFileGroup.class), anyString(), anyString(), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyString/IMPORT_EC/test");
             when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("file:/AnyTTCfilepath/IMPORT_EC/test");
 
