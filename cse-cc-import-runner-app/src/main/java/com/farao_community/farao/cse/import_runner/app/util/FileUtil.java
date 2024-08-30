@@ -33,12 +33,17 @@ public final class FileUtil {
         }
     }
 
-    public static String getDayOfWeekAndDifferenceBetweenBusinessHourAndPublicationHourFromInputCgm(String cgmFilename) {
+    /**
+     * Returns three digits extracted from input Cgm filename
+     * TT are the difference between business hour and publication hour
+     * N is the day of week
+     */
+    public static String getTTNFromInputCgm(String cgmFilename) {
         Pattern fileNamePattern = Pattern.compile("^\\d{8}_\\d{4}(.*)_(\\d{3})_(.*)\\.(uct|UCT)");
         Matcher checkFileNameMatches = fileNamePattern.matcher(cgmFilename);
         if (checkFileNameMatches.matches()) {
             return checkFileNameMatches.group(2);
         }
-        throw new CseDataException(String.format("CGM file %s of  IDCC process is badly named", cgmFilename));
+        throw new CseDataException(String.format("CGM file %s of IDCC process is badly named", cgmFilename));
     }
 }

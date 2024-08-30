@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app.util;
 
+import com.farao_community.farao.cse.data.CseDataException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,9 +24,16 @@ class FileUtilTest {
     }
 
     @Test
-    void testGetDayOfWeekAndDifferenceBetweenBusinessHourAndPublicationHourFromInputCgm() {
-        assertEquals("153", FileUtil.getDayOfWeekAndDifferenceBetweenBusinessHourAndPublicationHourFromInputCgm("20240731_1430_153_UX0.uct"));
-        assertNotEquals("153", FileUtil.getDayOfWeekAndDifferenceBetweenBusinessHourAndPublicationHourFromInputCgm("20240731_1430_193_UX0.uct"));
-        assertEquals("112", FileUtil.getDayOfWeekAndDifferenceBetweenBusinessHourAndPublicationHourFromInputCgm("20240731_1430_INITIAL_112_UX0.uct"));
+    void testGetTTNFromInputCgm() {
+        assertEquals("153", FileUtil.getTTNFromInputCgm("20240731_1430_153_UX0.uct"));
+        assertNotEquals("153", FileUtil.getTTNFromInputCgm("20240731_1430_193_UX0.uct"));
+        assertEquals("112", FileUtil.getTTNFromInputCgm("20240731_1430_INITIAL_112_UX0.uct"));
     }
+
+    @Test
+    void testGetTTNFromInputCgmFails() {
+        Exception exception = assertThrows(CseDataException.class, () -> FileUtil.getTTNFromInputCgm("20240731_1430_UX0.uct"));
+        String expectedMessage = "CGM file 20240731_1430_UX0.uct of IDCC process is badly named";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));    }
 }

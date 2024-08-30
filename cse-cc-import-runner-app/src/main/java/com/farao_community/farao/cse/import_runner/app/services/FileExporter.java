@@ -195,7 +195,7 @@ public class FileExporter {
         if (processType == ProcessType.D2CC) {
             filename = dateAndTime + "_2D" + dayOfWeek + "_CO_Final_CSE1.uct";
         } else {
-            filename = dateAndTime + "_" + FileUtil.getDayOfWeekAndDifferenceBetweenBusinessHourAndPublicationHourFromInputCgm(inputcgmFilename) + "_CSE1.uct";
+            filename = dateAndTime + "_" + FileUtil.getTTNFromInputCgm(inputcgmFilename) + "_CSE1.uct";
         }
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
     }
@@ -213,7 +213,7 @@ public class FileExporter {
         if (processType == ProcessType.D2CC) {
             filename = dateAndTime + "_2D" + dayOfWeek + "_CO_CSE1.uct";
         } else {
-            filename = dateAndTime + "_" + FileUtil.getDayOfWeekAndDifferenceBetweenBusinessHourAndPublicationHourFromInputCgm(inputCgmFilename) + "_Initial_CSE1.uct";
+            filename = dateAndTime + "_" + FileUtil.getTTNFromInputCgm(inputCgmFilename) + "_Initial_CSE1.uct";
         }
         return filename;
     }
