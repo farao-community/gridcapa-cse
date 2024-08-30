@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
+import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
@@ -186,7 +187,7 @@ public class FileExporter {
         }
     }
 
-    String getFinalNetworkFilePath(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
+    String getFinalNetworkFilePath(OffsetDateTime processTargetDate, ProcessType processType, String inputcgmFilename, boolean isImportEc) {
         String filename;
         ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
@@ -194,17 +195,17 @@ public class FileExporter {
         if (processType == ProcessType.D2CC) {
             filename = dateAndTime + "_2D" + dayOfWeek + "_CO_Final_CSE1.uct";
         } else {
-            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_CSE1.uct";
+            filename = dateAndTime + "_" + FileUtil.getTTNFromInputCgm(inputcgmFilename) + "_CSE1.uct";
         }
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
     }
 
-    public String getFirstShiftNetworkPath(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
-        String filename = getFirstShiftNetworkName(processTargetDate, processType);
+    public String getFirstShiftNetworkPath(OffsetDateTime processTargetDate, String inputCgmFilename, ProcessType processType, boolean isImportEc) {
+        String filename = getFirstShiftNetworkName(processTargetDate, inputCgmFilename, processType);
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;
     }
 
-    String getFirstShiftNetworkName(OffsetDateTime processTargetDate, ProcessType processType) {
+    String getFirstShiftNetworkName(OffsetDateTime processTargetDate, String inputCgmFilename, ProcessType processType) {
         String filename;
         ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
@@ -212,7 +213,7 @@ public class FileExporter {
         if (processType == ProcessType.D2CC) {
             filename = dateAndTime + "_2D" + dayOfWeek + "_CO_CSE1.uct";
         } else {
-            filename = dateAndTime + "_" + processTargetDate.getHour() + dayOfWeek + "_Initial_CSE1.uct";
+            filename = dateAndTime + "_" + FileUtil.getTTNFromInputCgm(inputCgmFilename) + "_Initial_CSE1.uct";
         }
         return filename;
     }

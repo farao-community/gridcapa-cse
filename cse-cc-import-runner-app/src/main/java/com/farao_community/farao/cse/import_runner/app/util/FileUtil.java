@@ -7,11 +7,14 @@
 
 package com.farao_community.farao.cse.import_runner.app.util;
 
+import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import org.apache.commons.io.FilenameUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -28,5 +31,19 @@ public final class FileUtil {
         } catch (MalformedURLException e) {
             throw new CseInvalidDataException(String.format("URL is invalid: %s", url), e);
         }
+    }
+
+    /**
+     * Returns three digits extracted from input Cgm filename
+     * TT are the difference between business hour and publication hour
+     * N is the day of week
+     */
+    public static String getTTNFromInputCgm(String cgmFilename) {
+        Pattern fileNamePattern = Pattern.compile("^\\d{8}_\\d{4}(.*)_(\\d{3})_(.*)\\.(uct|UCT)");
+        Matcher checkFileNameMatches = fileNamePattern.matcher(cgmFilename);
+        if (checkFileNameMatches.matches()) {
+            return checkFileNameMatches.group(2);
+        }
+        throw new CseDataException(String.format("CGM file %s of IDCC process is badly named", cgmFilename));
     }
 }

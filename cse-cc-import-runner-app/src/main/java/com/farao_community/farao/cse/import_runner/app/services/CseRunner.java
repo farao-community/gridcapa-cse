@@ -84,7 +84,7 @@ public class CseRunner {
     }
 
     public CseResponse run(CseRequest cseRequest) throws IOException {
-        String firstShiftNetworkName = fileExporter.getFirstShiftNetworkName(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType());
+        String firstShiftNetworkName = fileExporter.getFirstShiftNetworkName(cseRequest.getTargetProcessDateTime(), FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()), cseRequest.getProcessType());
 
         if (checkIsInterrupted(cseRequest)) {
             businessLogger.warn("Computation has been interrupted for timestamp {}", cseRequest.getTargetProcessDateTime());
@@ -149,7 +149,7 @@ public class CseRunner {
         }
 
         if (dichotomyResult != null && dichotomyResult.hasValidStep() && dichotomyResult.getHighestValidStep().getValidationData() != null) {
-            String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), importEcProcess);
+            String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()), importEcProcess);
             Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
                 .getRaoResponse().getNetworkWithPraFileUrl());
             BusBarChangePostProcessor.process(finalNetwork, cracImportData.busBarChangeSwitchesSet);

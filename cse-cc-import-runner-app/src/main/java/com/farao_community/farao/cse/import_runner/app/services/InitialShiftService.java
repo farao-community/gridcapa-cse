@@ -1,6 +1,7 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.import_runner.app.dichotomy.ZonalScalableProvider;
+import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.openrao.commons.EICode;
 import com.farao_community.farao.cse.computation.BorderExchanges;
@@ -61,7 +62,7 @@ public class InitialShiftService {
             businessLogger.info("Summary : Net positions after initial shift : for area {} : net position is {}.", entry.getKey(), entry.getValue());
         }
 
-        String networkAfterInitialShiftPath = fileExporter.getFirstShiftNetworkPath(cseRequest.getTargetProcessDateTime(),
+        String networkAfterInitialShiftPath = fileExporter.getFirstShiftNetworkPath(cseRequest.getTargetProcessDateTime(), FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()),
             cseRequest.getProcessType(), cseRequest.isImportEcProcess());
 
         fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, networkAfterInitialShiftPath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());

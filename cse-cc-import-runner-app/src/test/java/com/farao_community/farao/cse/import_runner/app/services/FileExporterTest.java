@@ -57,28 +57,28 @@ class FileExporterTest {
 
     @Test
     void getFinalNetworkFilePathForD2ccProcesTest() {
-        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, false);
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, "", false);
         String expectedFilePath = "CSE/IMPORT/D2CC/2021/09/13/14_30/OUTPUTS/20210913_1430_2D1_CO_Final_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getFinalNetworkFilePathForIdccProcesTest() {
-        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC, false);
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC, "20210901_1930_173_UXO.uct", false);
         String expectedFilePath = "CSE/IMPORT/IDCC/2021/09/01/19_30/OUTPUTS/20210901_1930_173_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForIdccProcesTest() {
-        String actualFilePath = fileExporter.getFirstShiftNetworkPath(OffsetDateTime.parse("2021-01-01T15:30Z"), ProcessType.IDCC, false);
+        String actualFilePath = fileExporter.getFirstShiftNetworkPath(OffsetDateTime.parse("2021-01-01T15:30Z"), "20210101_1630_155_UX0.uct", ProcessType.IDCC, false);
         String expectedFilePath = "CSE/IMPORT/IDCC/2021/01/01/16_30/OUTPUTS/20210101_1630_155_Initial_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForD2ccProcesTest() {
-        String actualFilePath = fileExporter.getFirstShiftNetworkPath(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC, false);
+        String actualFilePath = fileExporter.getFirstShiftNetworkPath(OffsetDateTime.parse("2021-01-01T12:30Z"), "", ProcessType.D2CC, false);
         String expectedFilePath = "CSE/IMPORT/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_CO_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
@@ -126,28 +126,28 @@ class FileExporterTest {
 
     @Test
     void getFinalNetworkFilePathForD2ccAdaptedProcesTest() {
-        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, true);
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, "", true);
         String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/09/13/14_30/OUTPUTS/20210913_1430_2D1_CO_Final_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getFinalNetworkFilePathForIdccAdaptedProcesTest() {
-        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC, true);
+        String actualFilePath = fileExporter.getFinalNetworkFilePath(OffsetDateTime.parse("2021-09-01T17:30Z"), ProcessType.IDCC, "20210901_1930_173_UX0.uct", true);
         String expectedFilePath = "CSE/IMPORT_EC/IDCC/2021/09/01/19_30/OUTPUTS/20210901_1930_173_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForIdccAdaptedProcesTest() {
-        String actualFilePath = fileExporter.getFirstShiftNetworkPath(OffsetDateTime.parse("2021-01-01T15:30Z"), ProcessType.IDCC, true);
+        String actualFilePath = fileExporter.getFirstShiftNetworkPath(OffsetDateTime.parse("2021-01-01T15:30Z"), "20210101_1630_155_UXO.uct", ProcessType.IDCC, true);
         String expectedFilePath = "CSE/IMPORT_EC/IDCC/2021/01/01/16_30/OUTPUTS/20210101_1630_155_Initial_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
 
     @Test
     void getBaseCaseFilePathForD2ccAdaptedProcesTest() {
-        String actualFilePath = fileExporter.getFirstShiftNetworkPath(OffsetDateTime.parse("2021-01-01T12:30Z"), ProcessType.D2CC, true);
+        String actualFilePath = fileExporter.getFirstShiftNetworkPath(OffsetDateTime.parse("2021-01-01T12:30Z"), "", ProcessType.D2CC, true);
         String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/01/01/13_30/OUTPUTS/20210101_1330_2D5_CO_CSE1.uct";
         assertEquals(expectedFilePath, actualFilePath);
     }
