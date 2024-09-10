@@ -14,6 +14,7 @@ import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
+import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.openrao.commons.Unit;
 import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.networkaction.NetworkAction;
@@ -42,6 +43,9 @@ import java.util.Set;
 public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RaoRunnerValidator.class);
 
+    private static final String UCTE_EXTENSION = "uct";
+    private static final String UCTE_FORMAT = "UCTE";
+    private static final String XIIDM_EXTENSION = "xiidm";
     private final ProcessType processType;
     private final String requestId;
     private final String currentRunId;
@@ -82,9 +86,12 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
     @Override
     public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network, DichotomyStepResult lastDichotomyStepResult) throws ValidationException, RaoInterruptionException {
         String baseDirPathForCurrentStep = generateBaseDirPathFromScaledNetwork(network);
-        String scaledNetworkName = network.getNameOrId() + ".xiidm";
-        String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkName, "", processTargetDateTime, processType, isImportEcProcess);
-
+        String scaledNetworkName = network.getNameOrId();
+        String scaledNetworkInXiidmFormatName = scaledNetworkName + "." + XIIDM_EXTENSION;
+        String networkPresignedUrl = fileExporter.saveNetworkInArtifact(network, baseDirPathForCurrentStep + scaledNetworkInXiidmFormatName, "", processTargetDateTime, processType, isImportEcProcess);
+        // coreso request to export to Minio the intermediate network in the  UCTE format
+        String scaledNetworkInUcteFormatName = scaledNetworkName + "." + UCTE_EXTENSION;
+        fileExporter.exportAndUploadNetwork(network, UCTE_FORMAT, GridcapaFileGroup.ARTIFACT, baseDirPathForCurrentStep + scaledNetworkInUcteFormatName, "", processTargetDateTime, processType, isImportEcProcess);
         try {
             Crac crac = fileImporter.importCracFromJson(cracUrl, network);
             List<String> appliedRemedialActionInPreviousStep = lastDichotomyStepResult != null && lastDichotomyStepResult.getRaoResult() != null ? lastDichotomyStepResult.getRaoResult().getActivatedNetworkActionsDuringState(crac.getPreventiveState())
