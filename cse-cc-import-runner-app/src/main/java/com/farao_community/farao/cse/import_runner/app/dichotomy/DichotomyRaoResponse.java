@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
+import com.farao_community.farao.rao_runner.api.resource.RaoSuccessResponse;
 
 import java.util.Set;
 
@@ -16,15 +16,15 @@ import java.util.Set;
  */
 public class DichotomyRaoResponse {
 
-    private final RaoResponse raoResponse;
+    private final RaoSuccessResponse raoResponse;
     private final Set<String> forcedPrasIds;
 
-    public DichotomyRaoResponse(RaoResponse raoResponse, Set<String> forcedPrasIds) {
+    public DichotomyRaoResponse(RaoSuccessResponse raoResponse, Set<String> forcedPrasIds) {
         this.raoResponse = raoResponse;
         this.forcedPrasIds = forcedPrasIds;
     }
 
-    public RaoResponse getRaoResponse() {
+    public RaoSuccessResponse getRaoResponse() {
         return raoResponse;
     }
 

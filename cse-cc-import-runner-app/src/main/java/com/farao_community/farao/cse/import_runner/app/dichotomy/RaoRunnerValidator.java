@@ -13,20 +13,23 @@ import com.farao_community.farao.cse.import_runner.app.util.FlowEvaluator;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.dichotomy.api.NetworkValidator;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoFailureException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
+import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
+import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
+import com.farao_community.farao.rao_runner.api.resource.AbstractRaoResponse;
+import com.farao_community.farao.rao_runner.api.resource.RaoFailureResponse;
+import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
+import com.farao_community.farao.rao_runner.api.resource.RaoSuccessResponse;
+import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
+import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.commons.Unit;
 import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.networkaction.NetworkAction;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
-import com.farao_community.farao.dichotomy.api.NetworkValidator;
-import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
-import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
-import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
-import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
 import com.powsybl.openrao.searchtreerao.result.api.FlowResult;
-import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +45,8 @@ import java.util.Set;
  */
 public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RaoRunnerValidator.class);
+
+    private final Logger businessLogger;
 
     private static final String UCTE_EXTENSION = "uct";
     private static final String UCTE_FORMAT = "UCTE";
@@ -68,7 +73,8 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
                               FileImporter fileImporter,
                               ForcedPrasHandler forcedPrasHandler,
                               Set<String> forcedPrasIds,
-                              boolean isImportEcProcess) {
+                              boolean isImportEcProcess,
+                              Logger businessLogger) {
         this.processType = cseRequest.getProcessType();
         this.requestId = cseRequest.getId();
         this.currentRunId = cseRequest.getCurrentRunId();
@@ -81,10 +87,11 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         this.forcedPrasHandler = forcedPrasHandler;
         this.forcedPrasIds = forcedPrasIds;
         this.isImportEcProcess = isImportEcProcess;
+        this.businessLogger = businessLogger;
     }
 
     @Override
-    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network, DichotomyStepResult lastDichotomyStepResult) throws ValidationException, RaoInterruptionException {
+    public DichotomyStepResult<DichotomyRaoResponse> validateNetwork(Network network, DichotomyStepResult lastDichotomyStepResult) throws ValidationException, RaoInterruptionException, RaoFailureException {
         String baseDirPathForCurrentStep = generateBaseDirPathFromScaledNetwork(network);
         String scaledNetworkName = network.getNameOrId();
         String scaledNetworkInXiidmFormatName = scaledNetworkName + "." + XIIDM_EXTENSION;
@@ -105,8 +112,15 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
             Set<String> appliedForcedPras = applyForcedPras(crac, network);
 
             LOGGER.info("RAO request sent: {}", raoRequest);
-            RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
-            LOGGER.info("RAO response received: {}", raoResponse);
+            AbstractRaoResponse abstractRaoResponse = raoRunnerClient.runRao(raoRequest);
+            LOGGER.info("RAO response received: {}", abstractRaoResponse);
+            if (abstractRaoResponse.isRaoFailed()) {
+                RaoFailureResponse failureResponse = (RaoFailureResponse) abstractRaoResponse;
+                businessLogger.error("RAO computation failed: {}", failureResponse.getErrorMessage());
+                throw new RaoFailureException(failureResponse.getErrorMessage());
+            }
+
+            RaoSuccessResponse raoResponse = (RaoSuccessResponse) abstractRaoResponse;
             if (raoResponse.isInterrupted()) {
                 throw new RaoInterruptionException("RAO has been interrupted");
             }

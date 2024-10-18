@@ -95,7 +95,7 @@ public class CseRunner {
                     TtcResult.FailedProcessData.FailedProcessReason.OTHER);
             String interruptedCgm = firstShiftNetworkName;
 
-            return new CseResponse(cseRequest.getId(), interruptedTtc, interruptedCgm, true);
+            return new CseResponse(cseRequest.getId(), interruptedTtc, interruptedCgm, true, false);
         }
 
         final boolean importEcProcess = cseRequest.isImportEcProcess();
@@ -148,7 +148,10 @@ public class CseRunner {
             dichotomyResult = null;
         }
 
-        if (dichotomyResult != null && dichotomyResult.hasValidStep() && dichotomyResult.getHighestValidStep().getValidationData() != null) {
+        if (!multipleDichotomyResult.isRaoFailed()
+                && dichotomyResult != null
+                && dichotomyResult.hasValidStep()
+                && dichotomyResult.getHighestValidStep().getValidationData() != null) {
             String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()), importEcProcess);
             Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
                 .getRaoResponse().getNetworkWithPraFileUrl());
@@ -159,7 +162,8 @@ public class CseRunner {
                 dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
                 firstShiftNetworkName, FileUtil.getFilenameFromUrl(finalCgmUrl), preprocessedPsts, preprocessedPisaLinks);
         } else {
-            TtcResult.FailedProcessData.FailedProcessReason  failedProcessReason = multipleDichotomyResult.isInterrupted() ? TtcResult.FailedProcessData.FailedProcessReason.OTHER : TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC;
+            TtcResult.FailedProcessData.FailedProcessReason failedProcessReason =
+                    multipleDichotomyResult.isInterrupted() ? TtcResult.FailedProcessData.FailedProcessReason.OTHER : TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC;
             ttcResultUrl = ttcResultService.saveFailedTtcResult(
                 cseRequest,
                 firstShiftNetworkName,
@@ -167,7 +171,7 @@ public class CseRunner {
             finalCgmUrl = firstShiftNetworkName;
         }
 
-        return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl, multipleDichotomyResult.isInterrupted());
+        return new CseResponse(cseRequest.getId(), ttcResultUrl, finalCgmUrl, multipleDichotomyResult.isInterrupted(), multipleDichotomyResult.isRaoFailed());
     }
 
     CracImportData importCracAndModifyNetworkForBusBars(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {

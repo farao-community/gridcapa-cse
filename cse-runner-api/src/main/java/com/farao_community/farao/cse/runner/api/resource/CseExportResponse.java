@@ -15,15 +15,13 @@ public class CseExportResponse {
     private final String id;
     private final String ttcFileUrl;
     private final String finalCgmFileUrl;
-    private final String logsFileUrl;
     private final boolean interrupted;
 
     @JsonCreator
-    public CseExportResponse(@JsonProperty("id") String id, @JsonProperty("ttcFileUrl") String ttcFileUrl, @JsonProperty("finalCgmFileUrl") String finalCgmFileUrl, @JsonProperty("logsFileUrl") String logsFileUrl, @JsonProperty("interrupted") boolean interrupted) {
+    public CseExportResponse(@JsonProperty("id") String id, @JsonProperty("ttcFileUrl") String ttcFileUrl, @JsonProperty("finalCgmFileUrl") String finalCgmFileUrl, @JsonProperty("interrupted") boolean interrupted) {
         this.id = id;
         this.ttcFileUrl = ttcFileUrl;
         this.finalCgmFileUrl = finalCgmFileUrl;
-        this.logsFileUrl = logsFileUrl;
         this.interrupted = interrupted;
     }
 
@@ -37,10 +35,6 @@ public class CseExportResponse {
 
     public String getFinalCgmFileUrl() {
         return finalCgmFileUrl;
-    }
-
-    public String getLogsFileUrl() {
-        return logsFileUrl;
     }
 
     public boolean isInterrupted() {

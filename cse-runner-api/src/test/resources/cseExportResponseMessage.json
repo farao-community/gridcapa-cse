@@ -4,8 +4,7 @@
     "id": "id",
     "attributes": {
       "ttcFileUrl": "ttcFileUrl",
-      "finalCgmFileUrl": "finalCgmFileUrl",
-      "logsFileUrl": "logsFileUrl"
+      "finalCgmFileUrl": "finalCgmFileUrl"
     }
   }
 }

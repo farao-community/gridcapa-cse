@@ -17,15 +17,16 @@ import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseExportResponse;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoFailureException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
-import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
+import com.farao_community.farao.rao_runner.api.resource.RaoSuccessResponse;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.cracio.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.cracio.cse.parameters.BusBarChangeSwitches;
 import com.powsybl.openrao.data.cracio.cse.xsd.CRACDocumentType;
@@ -39,11 +40,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Set;
 
 import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.BUSINESS_WARNS;
@@ -82,12 +83,10 @@ public class CseExportRunner {
     }
 
     public CseExportResponse run(CseExportRequest cseExportRequest) throws IOException {
-        String logsFileUrl = ""; //TODO
-
         if (checkIsInterrupted(cseExportRequest)) {
             businessLogger.warn("Computation has been interrupted for timestamp {}", cseExportRequest.getTargetProcessDateTime());
             LOGGER.info("Response sent for timestamp {} : run has been interrupted", cseExportRequest.getTargetProcessDateTime());
-            return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", logsFileUrl, true);
+            return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", true);
         }
 
         // Check on cgm file name
@@ -117,7 +116,7 @@ public class CseExportRunner {
                 cseExportRequest.getTargetProcessDateTime());
         String artefactDestinationPath = fileExporter.getDestinationPath(cseExportRequest.getTargetProcessDateTime(), cseExportRequest.getProcessType(), GridcapaFileGroup.ARTIFACT);
         try {
-            RaoResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), cseExportRequest.getCurrentRunId(), initialNetworkUrl, cracInJsonFormatUrl, raoParametersUrl, artefactDestinationPath);
+            RaoSuccessResponse raoResponse = raoRunnerService.run(cseExportRequest.getId(), cseExportRequest.getCurrentRunId(), initialNetworkUrl, cracInJsonFormatUrl, raoParametersUrl, artefactDestinationPath);
 
             Network networkWithPra = fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl());
             BusBarChangePostProcessor.process(networkWithPra, busBarChangeSwitchesSet);
@@ -127,11 +126,11 @@ public class CseExportRunner {
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), cseCracCreationContext.getCrac());
             Network networkForTtc = fileImporter.importNetwork(raoResponse.getNetworkWithPraFileUrl());
             String ttcResultUrl = ttcRaoService.saveTtcRao(cseExportRequest, cseCracCreationContext, raoResult, networkForTtc, preprocessedPsts);
-            return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, networkWithPraUrl, logsFileUrl, false);
+            return new CseExportResponse(cseExportRequest.getId(), ttcResultUrl, networkWithPraUrl, false);
         } catch (RaoInterruptionException e) {
-            BUSINESS_WARNS.warn(String.format("RAO interrupted"));
-            return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", logsFileUrl, true);
-        } catch (CseInternalException e) {
+            BUSINESS_WARNS.warn("RAO interrupted");
+            return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", true);
+        } catch (CseInternalException | RaoFailureException e) {
             ttcRaoService.saveFailedTtcRao(cseExportRequest);
             throw new CseInternalException("RAO run failed", e);
         }

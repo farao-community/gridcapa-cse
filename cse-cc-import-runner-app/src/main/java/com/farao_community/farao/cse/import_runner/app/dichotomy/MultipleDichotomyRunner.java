@@ -68,6 +68,11 @@ public class MultipleDichotomyRunner {
         // Launch initial dichotomy and store result
         DichotomyResult<DichotomyRaoResponse> initialDichotomyResult =
             dichotomyRunner.runDichotomy(request, cseData, network, initialIndexValue, referenceExchanges, ntcsByEic, flattenPrasIds(forcedPrasIds));
+        if (initialDichotomyResult.isRaoFailed()) {
+            multipleDichotomyResult.setRaoFailed(true);
+            return multipleDichotomyResult;
+        }
+
         multipleDichotomyResult.addResult(initialDichotomyResult, flattenPrasIds(forcedPrasIds));
         if (initialDichotomyResult.isInterrupted()) {
             multipleDichotomyResult.setInterrupted(true);
@@ -128,6 +133,11 @@ public class MultipleDichotomyRunner {
                     referenceExchanges,
                     ntcsByEic,
                     flattenPrasIds(forcedPrasIds));
+
+                if (nextDichotomyResult.isRaoFailed()) {
+                    multipleDichotomyResult.setRaoFailed(true);
+                    return multipleDichotomyResult;
+                }
 
                 if (nextDichotomyResult.isInterrupted()) {
                     multipleDichotomyResult.addResult(nextDichotomyResult, flattenPrasIds(forcedPrasIds));
