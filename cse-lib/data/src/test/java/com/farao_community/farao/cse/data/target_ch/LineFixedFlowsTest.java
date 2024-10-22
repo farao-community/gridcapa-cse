@@ -7,8 +7,8 @@
 
 package com.farao_community.farao.cse.data.target_ch;
 
-import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzer;
-import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzerProperties;
+import com.powsybl.openrao.data.cracio.commons.ucte.UcteNetworkAnalyzer;
+import com.powsybl.openrao.data.cracio.commons.ucte.UcteNetworkAnalyzerProperties;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 

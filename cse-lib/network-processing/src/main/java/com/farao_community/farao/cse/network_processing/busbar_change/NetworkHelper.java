@@ -8,8 +8,8 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.powsybl.iidm.network.*;
 import com.powsybl.openrao.commons.OpenRaoException;
-import com.powsybl.openrao.data.craccreation.util.ucte.UcteFlowElementHelper;
-import com.powsybl.openrao.data.craccreation.util.ucte.UcteNetworkAnalyzer;
+import com.powsybl.openrao.data.cracio.commons.ucte.UcteFlowElementHelper;
+import com.powsybl.openrao.data.cracio.commons.ucte.UcteNetworkAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

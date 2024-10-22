@@ -19,12 +19,11 @@ import com.powsybl.contingency.Contingency;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
 import com.powsybl.openrao.data.cracapi.rangeaction.InjectionRangeAction;
 import com.powsybl.openrao.data.cracapi.rangeaction.PstRangeAction;
-import com.powsybl.openrao.data.craccreation.creator.api.ElementaryCreationContext;
-import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.BranchCnecCreationContext;
-import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.NativeBranch;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
-import com.powsybl.openrao.data.craccreation.creator.cse.criticalbranch.CseCriticalBranchCreationContext;
-import com.powsybl.openrao.data.craccreation.creator.cse.outage.CseOutageCreationContext;
+import com.powsybl.openrao.data.cracio.commons.api.ElementaryCreationContext;
+import com.powsybl.openrao.data.cracio.commons.api.stdcreationcontext.BranchCnecCreationContext;
+import com.powsybl.openrao.data.cracio.commons.api.stdcreationcontext.NativeBranch;
+import com.powsybl.openrao.data.cracio.cse.CseCracCreationContext;
+import com.powsybl.openrao.data.cracio.cse.criticalbranch.CseCriticalBranchCreationContext;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
@@ -143,7 +142,7 @@ public class CracResultsHelper {
         cseCracCreationContext.getBranchCnecCreationContexts().stream()
                 .filter(ElementaryCreationContext::isImported)
                 .filter(BranchCnecCreationContext::isBaseCase)
-                .sorted(Comparator.comparing(BranchCnecCreationContext::getNativeId))
+                .sorted(Comparator.comparing(BranchCnecCreationContext::getNativeObjectId))
                 .forEach(branchCnecCreationContext -> {
                     // Native ID is actually modified at import to be unique, the only way we can find back original
                     // CNEC name is in the FlowCnec name
@@ -160,7 +159,7 @@ public class CracResultsHelper {
                         cnecPrev.setiBeforeOptimisation(flowCnecResultBeforeOptim.getFlow());
                         cnecPreventives.add(cnecPrev);
                     } else {
-                        throw new CseDataException(String.format("No preventive cnec from the cnec creation context id %s", branchCnecCreationContext.getNativeId()));
+                        throw new CseDataException(String.format("No preventive cnec from the cnec creation context id %s", branchCnecCreationContext.getNativeObjectId()));
                     }
                 });
         return cnecPreventives;
@@ -199,14 +198,14 @@ public class CracResultsHelper {
                 }
             }
             if (flowCnec != null) {
-                mergedCnecs.put(branchCnecCreationContext.getNativeId(), mergedCnec);
+                mergedCnecs.put(branchCnecCreationContext.getNativeObjectId(), mergedCnec);
                 CnecCommon cnecCommon = makeCnecCommon(flowCnec, branchCnecCreationContext.getNativeBranch(),
                         ((CseCriticalBranchCreationContext) branchCnecCreationContext).isSelected(),
                         flowCnec.isMonitored());
                 mergedCnec.setCnecCommon(cnecCommon);
             } else {
                 businessLogger.warn("Couldn't find flowCnec with native id : {}",
-                        branchCnecCreationContext.getNativeId());
+                        branchCnecCreationContext.getNativeObjectId());
             }
         });
         return mergedCnecs;
@@ -382,7 +381,7 @@ public class CracResultsHelper {
         }
     }
 
-    public List<CseOutageCreationContext> getOutageCreationContext() {
+    public List<ElementaryCreationContext> getOutageCreationContext() {
         return cseCracCreationContext.getOutageCreationContexts().stream()
                 .filter(ElementaryCreationContext::isImported).collect(Collectors.toList());
     }

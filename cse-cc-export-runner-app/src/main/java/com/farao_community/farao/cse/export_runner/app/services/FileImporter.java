@@ -14,7 +14,7 @@ import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataExceptio
 import com.powsybl.openrao.data.cracapi.Crac;
 
 import com.powsybl.iidm.network.Network;
-import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
+import com.powsybl.openrao.data.cracio.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.powsybl.openrao.data.raoresultjson.RaoResultJsonImporter;
 import org.slf4j.Logger;

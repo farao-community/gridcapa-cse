@@ -9,8 +9,8 @@ package com.farao_community.farao.cse.data.cnec;
 import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
 import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.api.stdcreationcontext.BranchCnecCreationContext;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
+import com.powsybl.openrao.data.cracio.commons.api.stdcreationcontext.BranchCnecCreationContext;
+import com.powsybl.openrao.data.cracio.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import org.junit.jupiter.api.Assertions;
 import com.powsybl.iidm.network.Network;
@@ -140,7 +140,7 @@ class CracResultsHelperTest {
         final String contingencyId = "contingencyId";
         Mockito.when(branchCnecContext.getContingencyId()).thenReturn(Optional.of(contingencyId));
         Mockito.when(branchCnecContext.getCreatedCnecsIds()).thenReturn(Collections.emptyMap());
-        Mockito.when(branchCnecContext.getNativeId()).thenReturn("nativeId");
+        Mockito.when(branchCnecContext.getNativeObjectId()).thenReturn("nativeId");
         final List<BranchCnecCreationContext> mockedList = List.of(branchCnecContext);
 
         whenReturningBranchCnecCreationContexts(mockedContext, mockedList);
