@@ -8,8 +8,8 @@ package com.farao_community.farao.cse.network_processing;
 
 import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.cracapi.parameters.JsonCracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
-import com.powsybl.openrao.data.craccreation.creator.cse.parameters.CseCracCreationParameters;
+import com.powsybl.openrao.data.cracio.cse.parameters.BusBarChangeSwitches;
+import com.powsybl.openrao.data.cracio.cse.parameters.CseCracCreationParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

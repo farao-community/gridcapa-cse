@@ -11,7 +11,7 @@ import com.farao_community.farao.cse.data.ttc_rao.TtcRao;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.CseRaoResult;
 import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.CseExportRequest;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
+import com.powsybl.openrao.data.cracio.cse.CseCracCreationContext;
 
 import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;

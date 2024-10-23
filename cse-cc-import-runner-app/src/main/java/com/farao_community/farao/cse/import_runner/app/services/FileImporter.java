@@ -20,7 +20,7 @@ import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.import_runner.app.util.Ntc2Util;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.craccreation.creator.cse.xsd.CRACDocumentType;
+import com.powsybl.openrao.data.cracio.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 import com.powsybl.glsk.api.io.GlskDocumentImporters;

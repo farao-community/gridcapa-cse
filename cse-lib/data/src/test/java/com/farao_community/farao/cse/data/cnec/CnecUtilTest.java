@@ -11,7 +11,7 @@ import com.powsybl.openrao.data.cracapi.Crac;
 import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
 
 import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.craccreation.creator.cse.CseCracCreationContext;
+import com.powsybl.openrao.data.cracio.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;

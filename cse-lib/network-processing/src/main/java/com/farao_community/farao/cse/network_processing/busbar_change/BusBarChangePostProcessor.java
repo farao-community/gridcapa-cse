@@ -8,8 +8,8 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.powsybl.iidm.network.*;
 import com.powsybl.openrao.commons.OpenRaoException;
-import com.powsybl.openrao.data.craccreation.creator.cse.parameters.BusBarChangeSwitches;
-import com.powsybl.openrao.data.craccreation.creator.cse.parameters.SwitchPairId;
+import com.powsybl.openrao.data.cracio.cse.parameters.BusBarChangeSwitches;
+import com.powsybl.openrao.data.cracio.cse.parameters.SwitchPairId;
 
 import java.util.HashMap;
 import java.util.HashSet;

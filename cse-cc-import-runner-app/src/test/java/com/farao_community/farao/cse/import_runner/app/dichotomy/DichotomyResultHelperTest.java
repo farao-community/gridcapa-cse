@@ -10,9 +10,7 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
-import com.powsybl.iidm.network.Identifiable;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Objects;
 
+import static com.powsybl.iidm.network.IdentifiableType.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -38,10 +37,10 @@ class DichotomyResultHelperTest {
         DichotomyRaoResponse dichotomyRaoResponse = Mockito.mock(DichotomyRaoResponse.class);
         RaoResponse raoResponse = Mockito.mock(RaoResponse.class);
         Network network = Mockito.mock(Network.class);
-        Identifiable line = Mockito.mock(Line.class);
-
-        Mockito.when(line.getId()).thenReturn("anId");
-        Mockito.when(network.getIdentifiable(Mockito.anyString())).thenReturn(line);
+        Identifiable generator = Mockito.mock(Generator.class);
+        Mockito.when(generator.getId()).thenReturn("anId");
+        Mockito.when(network.getIdentifiable(Mockito.anyString())).thenReturn(generator);
+        Mockito.when(generator.getType()).thenReturn(GENERATOR);
 
         Mockito.when(dichotomyResult.getHighestValidStep()).thenReturn(highestValidStep);
         Mockito.when(highestValidStep.getValidationData()).thenReturn(dichotomyRaoResponse);
