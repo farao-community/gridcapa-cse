@@ -48,7 +48,7 @@ class RequestServiceTest {
         String id = UUID.randomUUID().toString();
         String runId = UUID.randomUUID().toString();
         CseRequest cseRequest = new CseRequest(id, runId, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0.0, 0.0, null, false);
-        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null", false);
+        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null", false, false);
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         when(cseServer.run(any())).thenReturn(cseResponse);
 
@@ -61,11 +61,28 @@ class RequestServiceTest {
     }
 
     @Test
+    void testRaoFailedRequestService() throws IOException {
+        String id = UUID.randomUUID().toString();
+        String runId = UUID.randomUUID().toString();
+        CseRequest cseRequest = new CseRequest(id, runId, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0.0, 0.0, null, false);
+        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null", false, true);
+        byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
+        when(cseServer.run(any())).thenReturn(cseResponse);
+
+        requestService.launchCseRequest(req);
+
+        ArgumentCaptor<TaskStatusUpdate> captor = ArgumentCaptor.forClass(TaskStatusUpdate.class);
+        verify(streamBridge, times(2)).send(any(), captor.capture());
+        assertEquals(TaskStatus.RUNNING, captor.getAllValues().get(0).getTaskStatus());
+        assertEquals(TaskStatus.ERROR, captor.getAllValues().get(1).getTaskStatus());
+    }
+
+    @Test
     void testInterruptedRequestService() throws IOException {
         String id = UUID.randomUUID().toString();
         String runId = UUID.randomUUID().toString();
         CseRequest cseRequest = new CseRequest(id, runId, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0.0, 0.0, null, false);
-        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null", true);
+        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null", true, false);
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         when(cseServer.run(any())).thenReturn(cseResponse);
 

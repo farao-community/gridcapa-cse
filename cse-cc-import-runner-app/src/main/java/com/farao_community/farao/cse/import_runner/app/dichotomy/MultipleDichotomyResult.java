@@ -19,6 +19,7 @@ import java.util.*;
 public class MultipleDichotomyResult<I> {
     List<Pair<Set<String>, DichotomyResult<I>>> dichotomyHistory = new ArrayList<>();
     private boolean interrupted = false;
+    private boolean raoFailed = false;
 
     // Stores a new increasing TTC dichotomy result alongside the set of forced PRAs to keep track of them
     public void addResult(DichotomyResult<I> initialDichotomyResult, Set<String> forcedPras) {
@@ -33,11 +34,19 @@ public class MultipleDichotomyResult<I> {
         return dichotomyHistory.get(dichotomyHistory.size() - 1).getLeft();
     }
 
+    public boolean isInterrupted() {
+        return interrupted;
+    }
+
     public void setInterrupted(boolean interrupted) {
         this.interrupted = interrupted;
     }
 
-    public boolean isInterrupted() {
-        return interrupted;
+    public boolean isRaoFailed() {
+        return raoFailed;
+    }
+
+    public void setRaoFailed(final boolean raoFailed) {
+        this.raoFailed = raoFailed;
     }
 }

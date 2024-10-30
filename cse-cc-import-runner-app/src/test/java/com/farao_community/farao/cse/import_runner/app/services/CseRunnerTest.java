@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -109,11 +108,8 @@ class CseRunnerTest {
             when(raoResponse.hasValidStep()).thenReturn(false);
 
             RestTemplate restTemplate = mock(RestTemplate.class);
-            ResponseEntity<Boolean> responseEntity = mock(ResponseEntity.class);
             when(restTemplateBuilder.build()).thenReturn(restTemplate);
-            when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(responseEntity);
-            when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
-            when(responseEntity.getBody()).thenReturn(false);
+            when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(ResponseEntity.ok(false));
 
             when(fileExporter.getFinalNetworkFilePath(any(OffsetDateTime.class), any(ProcessType.class), anyString(), anyBoolean())).thenReturn("AnyString");
             when(fileExporter.exportAndUploadNetwork(any(Network.class), anyString(), any(GridcapaFileGroup.class), anyString(), anyString(), any(OffsetDateTime.class), any(ProcessType.class), anyBoolean())).thenReturn("file:/AnyString/IMPORT_EC/test");
@@ -132,9 +128,7 @@ class CseRunnerTest {
 
     @Test
     void testRunInterrupted() throws IOException, URISyntaxException {
-
         CseRequest cseRequest = buildTestCseRequest();
-
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult = mock(MultipleDichotomyResult.class);
 
         when(multipleDichotomyRunner.runMultipleDichotomy(
@@ -148,11 +142,8 @@ class CseRunnerTest {
         )).thenReturn(dichotomyResult);
 
         RestTemplate restTemplate = mock(RestTemplate.class);
-        ResponseEntity<Boolean> responseEntity = mock(ResponseEntity.class);
         when(restTemplateBuilder.build()).thenReturn(restTemplate);
-        when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(responseEntity);
-        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
-        when(responseEntity.getBody()).thenReturn(false);
+        when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(ResponseEntity.ok(false));
 
         when(dichotomyResult.isInterrupted()).thenReturn(true);
         when(dichotomyResult.getBestDichotomyResult()).thenThrow(new IndexOutOfBoundsException());
@@ -171,15 +162,11 @@ class CseRunnerTest {
 
     @Test
     void testRunPendingInterrupted() throws IOException, URISyntaxException {
-
         CseRequest cseRequest = buildTestCseRequest();
 
         RestTemplate restTemplate = mock(RestTemplate.class);
-        ResponseEntity<Boolean> responseEntity = mock(ResponseEntity.class);
         when(restTemplateBuilder.build()).thenReturn(restTemplate);
-        when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(responseEntity);
-        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
-        when(responseEntity.getBody()).thenReturn(true);
+        when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(ResponseEntity.ok(true));
 
         when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("interruptedTTCFilePath");
 
@@ -191,6 +178,37 @@ class CseRunnerTest {
         assertNotNull(response);
         assertEquals("interruptedTTCFilePath", response.getTtcFileUrl());
         assertTrue(response.isInterrupted());
+    }
+
+    @Test
+    void testRaoFailure() throws IOException, URISyntaxException {
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        when(restTemplateBuilder.build()).thenReturn(restTemplate);
+        when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(ResponseEntity.ok(false));
+
+        CseRequest cseRequest = buildTestCseRequest();
+        MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult = new MultipleDichotomyResult<>();
+        dichotomyResult.setRaoFailed(true);
+        when(multipleDichotomyRunner.runMultipleDichotomy(
+                any(CseRequest.class),
+                any(CseData.class),
+                any(Network.class),
+                any(Crac.class),
+                anyDouble(),
+                any(Map.class),
+                any(Map.class)
+        )).thenReturn(dichotomyResult);
+
+        when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("failedRaoTTCFilePath");
+
+        // WHEN
+        CseResponse response = cseRunner.run(cseRequest);
+
+        // THEN
+        verify(ttcResultService, times(1)).saveFailedTtcResult(eq(cseRequest), any(), eq(TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC));
+        assertNotNull(response);
+        assertEquals("failedRaoTTCFilePath", response.getTtcFileUrl());
+        assertTrue(response.isRaoFailed());
     }
 
     private CseRequest buildTestCseRequest() throws MalformedURLException, URISyntaxException {

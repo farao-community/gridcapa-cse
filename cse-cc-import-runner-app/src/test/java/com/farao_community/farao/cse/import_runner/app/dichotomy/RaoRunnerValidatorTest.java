@@ -11,15 +11,18 @@ import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.farao_community.farao.cse.import_runner.app.services.ForcedPrasHandler;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoFailureException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
+import com.farao_community.farao.rao_runner.api.resource.RaoFailureResponse;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
+import com.farao_community.farao.rao_runner.api.resource.RaoSuccessResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VariantManager;
 import com.powsybl.openrao.data.cracapi.Crac;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -51,11 +54,14 @@ class RaoRunnerValidatorTest {
     @MockBean
     private FileImporter fileImporter;
 
+    @MockBean
+    private Logger businessLogger;
+
     @Test
     void buildRaoRequestWithEmptyPreviousActionsShouldNotSaveParameters() {
         List<String> previousActions = Collections.singletonList("Action1");
 
-        RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(getCseRequest(ProcessType.D2CC, null), CRAC_URL, RAO_PARAMETERS_URL, null, null, null, null, null, false);
+        RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(getCseRequest(ProcessType.D2CC, null), CRAC_URL, RAO_PARAMETERS_URL, null, null, null, null, null, false, businessLogger);
         RaoRequest result = raoRunnerValidator.buildRaoRequest(NETWORK_PRE_SIGNED_URL, BASE_DIR_PATH, previousActions);
 
         verify(fileExporter, never()).saveRaoParameters(anyString(), anyList(), any(), any(), anyBoolean());
@@ -81,7 +87,8 @@ class RaoRunnerValidatorTest {
                 fileImporter,
                 forcedPrasHandler,
                 forcedPrasIds,
-                false);
+                false,
+                businessLogger);
 
         when(fileExporter.getZoneId()).thenReturn("UTC");
         VariantManager variantManager = mock(VariantManager.class);
@@ -91,11 +98,47 @@ class RaoRunnerValidatorTest {
         when(fileExporter.saveNetworkInArtifact(any(), any(), any(), any(), any(), anyBoolean())).thenReturn(NETWORK_PRE_SIGNED_URL);
         Crac crac = mock(Crac.class);
         when(fileImporter.importCracFromJson(CRAC_URL, network)).thenReturn(crac);
-        RaoResponse raoResponse = mock(RaoResponse.class);
+        RaoSuccessResponse raoResponse = mock(RaoSuccessResponse.class);
         when(raoRunnerClient.runRao(any())).thenReturn(raoResponse);
         when(raoResponse.isInterrupted()).thenReturn(true);
 
         assertThrows(RaoInterruptionException.class, () -> raoRunnerValidator.validateNetwork(network, null));
+    }
+
+    @Test
+    void validateNetworkRaoFailureException() {
+        ProcessType processType = ProcessType.IDCC;
+        OffsetDateTime processTargetDateTime = OffsetDateTime.now();
+        RaoRunnerClient raoRunnerClient = mock(RaoRunnerClient.class);
+        ForcedPrasHandler forcedPrasHandler = mock(ForcedPrasHandler.class);
+        Set<String> forcedPrasIds = Set.of();
+        Network network = mock(Network.class);
+
+        RaoRunnerValidator raoRunnerValidator = new RaoRunnerValidator(
+                getCseRequest(processType, processTargetDateTime),
+                CRAC_URL,
+                RAO_PARAMETERS_URL,
+                raoRunnerClient,
+                fileExporter,
+                fileImporter,
+                forcedPrasHandler,
+                forcedPrasIds,
+                false,
+                businessLogger);
+
+        when(fileExporter.getZoneId()).thenReturn("UTC");
+        VariantManager variantManager = mock(VariantManager.class);
+        when(network.getVariantManager()).thenReturn(variantManager);
+        when(variantManager.getWorkingVariantId()).thenReturn("variantId");
+        when(network.getNameOrId()).thenReturn("networkName");
+        when(fileExporter.saveNetworkInArtifact(any(), any(), any(), any(), any(), anyBoolean())).thenReturn(NETWORK_PRE_SIGNED_URL);
+        Crac crac = mock(Crac.class);
+        when(fileImporter.importCracFromJson(CRAC_URL, network)).thenReturn(crac);
+        RaoFailureResponse raoResponse = new RaoFailureResponse.Builder().withErrorMessage("error").build();
+        when(raoRunnerClient.runRao(any())).thenReturn(raoResponse);
+
+        final RaoFailureException exception = assertThrows(RaoFailureException.class, () -> raoRunnerValidator.validateNetwork(network, null));
+        assertEquals("error", exception.getMessage());
     }
 
     @Test
@@ -116,7 +159,8 @@ class RaoRunnerValidatorTest {
                 fileImporter,
                 forcedPrasHandler,
                 forcedPrasIds,
-                false);
+                false,
+                businessLogger);
 
         when(fileExporter.getZoneId()).thenReturn("UTC");
         VariantManager variantManager = mock(VariantManager.class);

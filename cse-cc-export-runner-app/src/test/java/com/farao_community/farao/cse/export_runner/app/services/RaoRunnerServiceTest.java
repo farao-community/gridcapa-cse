@@ -7,16 +7,21 @@
 package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoFailureException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
+import com.farao_community.farao.rao_runner.api.resource.RaoFailureResponse;
 import com.farao_community.farao.rao_runner.api.resource.RaoRequest;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
+import com.farao_community.farao.rao_runner.api.resource.RaoSuccessResponse;
 import com.farao_community.farao.rao_runner.starter.RaoRunnerClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.slf4j.Logger;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +33,8 @@ class RaoRunnerServiceTest {
 
     @Mock
     private RaoRunnerClient raoRunnerClient;
+    @Mock
+    private Logger businessLogger;
 
     @InjectMocks
     private RaoRunnerService raoRunnerService;
@@ -40,23 +47,43 @@ class RaoRunnerServiceTest {
     private final String artifactDestinationPath = "/path/to/artifact";
 
     @Test
-    void testRunSuccessful() throws CseInternalException, RaoInterruptionException {
-        RaoResponse expectedResponse = new RaoResponse.RaoResponseBuilder().withId("id").build(); // Assuming RaoResponse is a valid response type
-
+    void testRunSuccessful() throws CseInternalException, RaoInterruptionException, RaoFailureException {
+        final RaoSuccessResponse expectedResponse = new RaoSuccessResponse.Builder().withId("id").build();
         when(raoRunnerClient.runRao(any(RaoRequest.class))).thenReturn(expectedResponse);
 
-        RaoResponse actualResponse = raoRunnerService.run(id, runId, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
+        RaoSuccessResponse actualResponse = raoRunnerService.run(id, runId, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
 
         assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    void testRunThrowsRaoFailureException() {
+        final RaoFailureResponse failureResponse = new RaoFailureResponse.Builder().withErrorMessage("Test message").build();
+        when(raoRunnerClient.runRao(any(RaoRequest.class))).thenReturn(failureResponse);
+
+        Exception exception = assertThrows(RaoFailureException.class, () ->
+            raoRunnerService.run(id, runId, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath));
+
+        assertEquals("Test message", exception.getMessage());
+    }
+
+    @Test
+    void testRunThrowsRaoInterruptionException() {
+        final RaoSuccessResponse failureResponse = new RaoSuccessResponse.Builder().withInterrupted(true).build();
+        when(raoRunnerClient.runRao(any(RaoRequest.class))).thenReturn(failureResponse);
+
+        Exception exception = assertThrows(RaoInterruptionException.class, () ->
+            raoRunnerService.run(id, runId, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath));
+
+        assertEquals("RAO has been interrupted", exception.getMessage());
     }
 
     @Test
     void testRunThrowsCseInternalException() {
         when(raoRunnerClient.runRao(any())).thenThrow(new RuntimeException("Test exception"));
 
-        Exception exception = assertThrows(CseInternalException.class, () -> {
-            raoRunnerService.run(id, runId, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath);
-        });
+        Exception exception = assertThrows(CseInternalException.class, () ->
+            raoRunnerService.run(id, runId, networkPresignedUrl, cracInJsonFormatUrl, raoParametersUrl, artifactDestinationPath));
 
         String expectedMessage = "RAO run failed";
         String actualMessage = exception.getMessage();

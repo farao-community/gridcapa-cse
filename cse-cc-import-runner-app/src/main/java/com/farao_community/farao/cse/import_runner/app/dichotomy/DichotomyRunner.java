@@ -39,16 +39,16 @@ public class DichotomyRunner {
     private final NetworkShifterProvider networkShifterProvider;
     private final ForcedPrasHandler forcedPrasHandler;
     private final RaoRunnerClient raoRunnerClient;
-    private final Logger logger;
+    private final Logger businessLogger;
     private final InterruptionService interruptionService;
 
-    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, Logger logger, InterruptionService interruptionService) {
+    public DichotomyRunner(FileExporter fileExporter, FileImporter fileImporter, NetworkShifterProvider networkShifterProvider, ForcedPrasHandler forcedPrasHandler, RaoRunnerClient raoRunnerClient, Logger businessLogger, InterruptionService interruptionService) {
         this.fileExporter = fileExporter;
         this.fileImporter = fileImporter;
         this.networkShifterProvider = networkShifterProvider;
         this.forcedPrasHandler = forcedPrasHandler;
         this.raoRunnerClient = raoRunnerClient;
-        this.logger = logger;
+        this.businessLogger = businessLogger;
         this.interruptionService = interruptionService;
     }
 
@@ -72,29 +72,30 @@ public class DichotomyRunner {
                                                               Set<String> forcedPrasIds) throws IOException {
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
-        logger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) minImportValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
+        businessLogger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) minImportValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
         Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
         DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
-            index,
-            new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, NetworkShifterUtil.getReferenceItalianImport(referenceExchanges)),
-            interruptionService,
-            networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges, ntcsByEic),
-            getNetworkValidator(cseRequest, cseData, forcedPrasIds),
-            cseRequest.getId());
+                index,
+                new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, NetworkShifterUtil.getReferenceItalianImport(referenceExchanges)),
+                interruptionService,
+                networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges, ntcsByEic),
+                getNetworkValidator(cseRequest, cseData, forcedPrasIds),
+                cseRequest.getId());
         return engine.run(network);
     }
 
     private NetworkValidator<DichotomyRaoResponse> getNetworkValidator(CseRequest request, CseData cseData, Set<String> forcedPrasIds) {
         final boolean isImportEcProcess = request.isImportEcProcess();
         return new RaoRunnerValidator(
-            request,
-            cseData.getJsonCracUrl(),
-            fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType(), isImportEcProcess),
-            raoRunnerClient,
-            fileExporter,
-            fileImporter,
-            forcedPrasHandler,
-            forcedPrasIds,
-            isImportEcProcess);
+                request,
+                cseData.getJsonCracUrl(),
+                fileExporter.saveRaoParameters(request.getTargetProcessDateTime(), request.getProcessType(), isImportEcProcess),
+                raoRunnerClient,
+                fileExporter,
+                fileImporter,
+                forcedPrasHandler,
+                forcedPrasIds,
+                isImportEcProcess,
+                businessLogger);
     }
 }

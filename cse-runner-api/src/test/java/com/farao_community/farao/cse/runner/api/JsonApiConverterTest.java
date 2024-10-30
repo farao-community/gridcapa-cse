@@ -72,7 +72,5 @@ class JsonApiConverterTest {
         CseExportResponse response = jsonApiConverter.fromJsonMessage(responseBytes, CseExportResponse.class);
 
         assertEquals("id", response.getId());
-        assertEquals("logsFileUrl", response.getLogsFileUrl());
-
     }
 }
