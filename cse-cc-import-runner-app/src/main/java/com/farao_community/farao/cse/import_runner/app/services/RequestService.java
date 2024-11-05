@@ -56,16 +56,18 @@ public class RequestService {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseRequest);
             CseResponse cseResponse = cseServer.run(cseRequest);
-            updateTaskStatusBasedOnInterruption(cseResponse.isInterrupted(), cseResponse.getId());
+            updateTaskStatus(cseResponse);
             LOGGER.info("Cse response sent: {}", cseResponse);
         } catch (Exception e) {
             handleError(e, cseRequest.getId());
         }
     }
 
-    private void updateTaskStatusBasedOnInterruption(final boolean isInterrupted,
-                                                     final String responseId) {
-        if (isInterrupted) {
+    private void updateTaskStatus(final CseResponse cseResponse) {
+        final String responseId = cseResponse.getId();
+        if (cseResponse.isRaoFailed()) {
+            sendTaskStatusUpdate(responseId, TaskStatus.ERROR);
+        } else if (cseResponse.isInterrupted()) {
             businessLogger.info("CSE run has been interrupted");
             sendTaskStatusUpdate(responseId, TaskStatus.INTERRUPTED);
         } else {

@@ -9,8 +9,10 @@ package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
-import com.farao_community.farao.rao_runner.api.resource.RaoResponse;
-import com.powsybl.iidm.network.*;
+import com.farao_community.farao.rao_runner.api.resource.RaoSuccessResponse;
+import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.Identifiable;
+import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Objects;
 
 import static com.powsybl.iidm.network.IdentifiableType.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -35,7 +37,7 @@ class DichotomyResultHelperTest {
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
         DichotomyStepResult<DichotomyRaoResponse> highestValidStep = Mockito.mock(DichotomyStepResult.class);
         DichotomyRaoResponse dichotomyRaoResponse = Mockito.mock(DichotomyRaoResponse.class);
-        RaoResponse raoResponse = Mockito.mock(RaoResponse.class);
+        RaoSuccessResponse raoResponse = Mockito.mock(RaoSuccessResponse.class);
         Network network = Mockito.mock(Network.class);
         Identifiable generator = Mockito.mock(Generator.class);
         Mockito.when(generator.getId()).thenReturn("anId");
@@ -58,7 +60,7 @@ class DichotomyResultHelperTest {
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
         DichotomyStepResult<DichotomyRaoResponse> lowestInvalidStep = Mockito.mock(DichotomyStepResult.class);
         DichotomyRaoResponse dichotomyRaoResponse = Mockito.mock(DichotomyRaoResponse.class);
-        RaoResponse raoResponse = Mockito.mock(RaoResponse.class);
+        RaoSuccessResponse raoResponse = Mockito.mock(RaoSuccessResponse.class);
 
         Mockito.when(dichotomyResult.getLowestInvalidStep()).thenReturn(lowestInvalidStep);
         Mockito.when(lowestInvalidStep.getValidationData()).thenReturn(dichotomyRaoResponse);
@@ -75,7 +77,7 @@ class DichotomyResultHelperTest {
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
         DichotomyStepResult<DichotomyRaoResponse> highestValidStep = Mockito.mock(DichotomyStepResult.class);
         DichotomyRaoResponse dichotomyRaoResponse = Mockito.mock(DichotomyRaoResponse.class);
-        RaoResponse raoResponse = Mockito.mock(RaoResponse.class);
+        RaoSuccessResponse raoResponse = Mockito.mock(RaoSuccessResponse.class);
 
         Mockito.when(dichotomyResult.getHighestValidStep()).thenReturn(highestValidStep);
         Mockito.when(highestValidStep.getValidationData()).thenReturn(dichotomyRaoResponse);
