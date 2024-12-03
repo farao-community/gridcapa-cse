@@ -50,6 +50,9 @@ public final class Ntc2Util {
         int position;
         ZonedDateTime targetDateInCETZone = targetDateTime.atZoneSameInstant(ZoneId.of("CET"));
         if (qtyByPositionMap.size() == 96) {
+            if (targetDateInCETZone.getMinute() % 15 != 0) {
+                throw new CseDataException("Minutes must be a multiple of 15 for 96 intervals");
+            }
             position = 1 + (4 * targetDateInCETZone.getHour()) + (targetDateInCETZone.getMinute() / 15);
         } else if (qtyByPositionMap.size() == 24) {
             position = targetDateInCETZone.getHour() + 1;
