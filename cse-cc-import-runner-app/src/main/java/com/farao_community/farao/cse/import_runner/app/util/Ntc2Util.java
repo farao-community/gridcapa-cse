@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public final class Ntc2Util {
         Map<Integer, Double> qtyByPositionMap = new HashMap<>();
         CapacityDocument capacityDocument = DataUtil.unmarshalFromInputStream(ntc2InputStream, CapacityDocument.class);
         checkTimeInterval(capacityDocument, targetDateTime);
-        int position = targetDateTime.atZoneSameInstant(ZoneId.of("CET")).getHour() + 1;
+
         capacityDocument.getCapacityTimeSeries()
                 .stream()
                 .filter(ts -> IT_AREA_CODE.equalsIgnoreCase(ts.getInArea().getV()) && !ts.getPeriod().isEmpty())
@@ -46,9 +47,17 @@ public final class Ntc2Util {
                     final int index = interval.getPos().getV();
                     qtyByPositionMap.put(index, interval.getQty().getV().doubleValue());
                 });
-        return Optional.ofNullable(qtyByPositionMap.get(position))
-                .orElseThrow(() -> new CseDataException(
-                        String.format("Impossible to retrieve NTC2 position %d. It does not exist", position)));
+        int position;
+        ZonedDateTime targetDateInCETZone = targetDateTime.atZoneSameInstant(ZoneId.of("CET"));
+        if (qtyByPositionMap.size() == 96) {
+            position = 1 + (4 * targetDateInCETZone.getHour()) + (targetDateInCETZone.getMinute() / 15);
+        } else if (qtyByPositionMap.size() == 24) {
+            position = targetDateInCETZone.getHour() + 1;
+        } else {
+            throw new CseDataException(String.format("CapacityTimeSeries contains %s intervals which is different to 24 or 96", qtyByPositionMap.size()));
+        }
+
+        return qtyByPositionMap.get(position);
     }
 
     private static void checkTimeInterval(CapacityDocument capacityDocument, OffsetDateTime targetDateTime) {
