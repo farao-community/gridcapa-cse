@@ -16,7 +16,7 @@
 		<BusinessType v="A27" />
 		<Product v="8716867000016"/>
 		<InArea v="10YIT-GRTN-----B" codingScheme="A01"/>
-		<OutArea v="10YFR-RTE------C" codingScheme="A01"/>
+		<OutArea v="10YCH-SWISSGRIDZ" codingScheme="A01"/>
 		<MeasureUnit v="MAW" />
 		<Period>
 			<TimeInterval v="2021-06-23T23:00Z/2021-06-24T01:00Z" />
@@ -27,11 +27,11 @@
 			</Interval>
 			<Interval>
 				<Pos v="2" />
-				<Qty v="557" />
+				<Qty v="223" />
 			</Interval>
 			<Interval>
 				<Pos v="3" />
-				<Qty v="4096" />
+				<Qty v="2048" />
 			</Interval>
 			<Interval>
 				<Pos v="4" />
@@ -97,26 +97,7 @@
 				<Pos v="19" />
 				<Qty v="99" />
 			</Interval>
-			<Interval>
-				<Pos v="20" />
-				<Qty v="99" />
-			</Interval>
-			<Interval>
-				<Pos v="21" />
-				<Qty v="99" />
-			</Interval>
-			<Interval>
-				<Pos v="22" />
-				<Qty v="99" />
-			</Interval>
-			<Interval>
-				<Pos v="23" />
-				<Qty v="99" />
-			</Interval>
-			<Interval>
-				<Pos v="24" />
-				<Qty v="99" />
-			</Interval>
+
 		</Period>
 	</CapacityTimeSeries>
 </CapacityDocument>

@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
+ * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @SpringBootTest
@@ -138,6 +139,26 @@ class FileImporterTest {
     }
 
     @Test
+    void testImportNtc296TSAllPresent() {
+        Ntc2 ntc2 = fileImporter.importNtc2(OffsetDateTime.parse("2021-06-24T00:30Z"), // 02:30 in CET zone
+                getClass().getResource("NTC2_20210624_2D5_AT-IT1-test-96.xml").toString(),
+                getClass().getResource("NTC2_20210624_2D5_CH-IT1-test-96.xml").toString(),
+                getClass().getResource("NTC2_20210624_2D5_FR-IT1-test-96.xml").toString(),
+                getClass().getResource("NTC2_20210624_2D5_SI-IT1-test-96.xml").toString());
+        assertNotNull(ntc2);
+        assertNotNull(ntc2.getExchanges());
+        assertEquals(4, ntc2.getExchanges().size());
+        assertNotNull(ntc2.getExchanges().get("10YAT-APG------L"));
+        assertEquals(990, ntc2.getExchanges().get("10YAT-APG------L"));
+        assertNotNull(ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
+        assertEquals(150, ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
+        assertNotNull(ntc2.getExchanges().get("10YFR-RTE------C"));
+        assertEquals(1199, ntc2.getExchanges().get("10YFR-RTE------C"));
+        assertNotNull(ntc2.getExchanges().get("10YSI-ELES-----O"));
+        assertEquals(15, ntc2.getExchanges().get("10YSI-ELES-----O"));
+    }
+
+    @Test
     void assertThrowsWhenDataIsMissing() {
         OffsetDateTime time = OffsetDateTime.parse("2021-06-23T22:00Z");
         String atFileUrl = getClass().getResource("NTC2_20210624_2D5_AT-IT1-test.xml").toString();
@@ -170,14 +191,14 @@ class FileImporterTest {
     @Test
     void testImportFailsWithMissingPositions() {
         OffsetDateTime time = OffsetDateTime.parse("2021-06-24T15:00Z");
-        String atFileUrl = getClass().getResource("NTC2_20210624_2D5_AT-IT1-test.xml").toString();
-        String chFileUrl = getClass().getResource("NTC2_20210624_2D5_CH-IT1-test.xml").toString();
-        String frFileUrl = getClass().getResource("NTC2_20210624_2D5_FR-IT1-test.xml").toString();
-        String siFileUrl = getClass().getResource("NTC2_20210624_2D5_SI-IT1-test.xml").toString();
+        String atFileUrl = getClass().getResource("NTC2_20210624_2D5_AT-IT1-test-missing-intervals.xml").toString();
+        String chFileUrl = getClass().getResource("NTC2_20210624_2D5_CH-IT1-test-missing-intervals.xml").toString();
+        String frFileUrl = getClass().getResource("NTC2_20210624_2D5_FR-IT1-test-missing-intervals.xml").toString();
+        String siFileUrl = getClass().getResource("NTC2_20210624_2D5_SI-IT1-test-missing-intervals.xml").toString();
         Throwable e =  assertThrows(CseDataException.class, () ->  fileImporter.importNtc2(time, atFileUrl, chFileUrl, frFileUrl, siFileUrl));
         assertEquals("Impossible to import NTC2 file for area: 10YAT-APG------L", e.getMessage());
         Throwable nestedE = e.getCause();
-        assertEquals("Impossible to retrieve NTC2 position 18. It does not exist", nestedE.getMessage());
+        assertEquals("CapacityTimeSeries contains 7 intervals which is different to 24 or 96", nestedE.getMessage());
     }
 
     @Test
