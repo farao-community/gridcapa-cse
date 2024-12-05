@@ -95,9 +95,9 @@ public class InitialShiftService {
 
         network.getVariantManager().cloneVariant(initialVariantId, newVariant, true);
         network.getVariantManager().setWorkingVariant(newVariant);
-        ScalingParameters scalingParameters = new ScalingParameters();
-        scalingParameters.setIterative(true);
-        scalingParameters.setReconnect(true);
+        ScalingParameters scalingParameters = new ScalingParameters()
+                .setPriority(ScalingParameters.Priority.RESPECT_OF_VOLUME_ASKED)
+                .setReconnect(true);
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
