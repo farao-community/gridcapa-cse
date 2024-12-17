@@ -12,11 +12,9 @@ import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
-import com.farao_community.farao.cse.import_runner.app.dichotomy.NetworkShifterUtil;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import com.powsybl.iidm.network.Network;
@@ -58,14 +56,10 @@ public class TtcResultService {
         Network networkWithPra = fileImporter.importNetwork(networkWithPraUrl);
         double finalItalianImport = BorderExchanges.computeItalianImport(networkWithPra);
 
-        Map<String, Double> ntcsByEic = cseRequest.getProcessType().equals(ProcessType.IDCC) ?
-            cseData.getNtc2().getExchanges() :
-            NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry());
-
         TtcResult.ProcessData processData = new TtcResult.ProcessData(
             highestSecureStepRaoResponse.getForcedPrasIds(),
             BorderExchanges.computeCseBordersExchanges(networkWithPra),
-            cseData.getReducedSplittingFactors(ntcsByEic),
+            cseData.getReducedSplittingFactors(),
             BorderExchanges.computeCseCountriesBalances(networkWithPra),
             limitingCause,
             finalItalianImport,
