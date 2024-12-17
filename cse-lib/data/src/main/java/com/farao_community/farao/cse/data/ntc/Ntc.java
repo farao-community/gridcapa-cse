@@ -8,7 +8,6 @@
 package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.xsd.TLine;
-import com.powsybl.glsk.commons.CountryEICode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,17 +51,12 @@ public final class Ntc {
             getFlowPerCountry(TLine::isMerchantLine);
     }
 
-    public Map<String, Double> computeReducedSplittingFactors(Map<String, Double> ntcsByEic) {
-        Map<String, Double> ntcsByCountry = new HashMap<>();
-        ntcsByEic.forEach((k, v) -> ntcsByCountry.put(toCountry(k), v));
+    public Map<String, Double> computeReducedSplittingFactors() {
+        Map<String, Double> ntcsByCountry = getNtcPerCountry();
         Map<String, Double> flowOnMerchantLinesPerCountry = getFlowPerCountryOnMerchantLines();
         Double totalNtc = ntcsByCountry.values().stream().reduce(0., Double::sum);
         Double totalFlowOnMerchantLines = flowOnMerchantLinesPerCountry.values().stream().reduce(0., Double::sum);
         return getReducedSplittingFactors(ntcsByCountry, flowOnMerchantLinesPerCountry, totalNtc, totalFlowOnMerchantLines);
-    }
-
-    private String toCountry(String eic) {
-        return new CountryEICode(eic).getCountry().toString();
     }
 
     public Map<String, Double> getFlowOnFixedFlowLines() {

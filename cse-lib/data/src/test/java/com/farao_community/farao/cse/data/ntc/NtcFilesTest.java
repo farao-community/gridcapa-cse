@@ -6,8 +6,6 @@
  */
 package com.farao_community.farao.cse.data.ntc;
 
-import com.powsybl.glsk.commons.CountryEICode;
-import com.powsybl.iidm.network.Country;
 import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.NTCAnnualDocument;
 import com.farao_community.farao.cse.data.xsd.NTCReductionsDocument;
@@ -19,7 +17,6 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +28,7 @@ class NtcFilesTest {
     private Ntc ntc;
 
     @BeforeEach
-    void setUp() throws JAXBException {
+    void setUp() {
         OffsetDateTime targetDateTime = OffsetDateTime.parse("2021-06-24T16:30Z");
         try (InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1.xml");
              InputStream dailyData = getClass().getResourceAsStream("20210624_2D4_NTC_reductions_CSE1.xml")
@@ -58,22 +55,16 @@ class NtcFilesTest {
 
     @Test
     void computeReducedSplittingFactors() {
-        Map<String, Double> ntcsByEic = new HashMap<>();
-        ntcsByEic.put(new CountryEICode(Country.FR).getCode(), 2000.);
-        ntcsByEic.put(new CountryEICode(Country.CH).getCode(), 1000.);
-        ntcsByEic.put(new CountryEICode(Country.SI).getCode(), 200.);
-        ntcsByEic.put(new CountryEICode(Country.AT).getCode(), 100.);
-
-        Map<String, Double> splittingFactors = ntc.computeReducedSplittingFactors(ntcsByEic);
+        Map<String, Double> splittingFactors = ntc.computeReducedSplittingFactors();
         assertEquals(4, splittingFactors.size());
-        assertEquals(0.648, splittingFactors.get("FR"), DOUBLE_PRECISION);
-        assertEquals(0.275, splittingFactors.get("CH"), DOUBLE_PRECISION);
-        assertEquals(0.011, splittingFactors.get("AT"), DOUBLE_PRECISION);
-        assertEquals(0.064, splittingFactors.get("SI"), DOUBLE_PRECISION);
+        assertEquals(0.466, splittingFactors.get("FR"), DOUBLE_PRECISION);
+        assertEquals(0.409, splittingFactors.get("CH"), DOUBLE_PRECISION);
+        assertEquals(0.035, splittingFactors.get("AT"), DOUBLE_PRECISION);
+        assertEquals(0.089, splittingFactors.get("SI"), DOUBLE_PRECISION);
     }
 
     @Test
-    void checkDefaultFlowForMendrisioCagno() throws JAXBException {
+    void checkDefaultFlowForMendrisioCagno() {
 
         OffsetDateTime targetDateTime = OffsetDateTime.parse("2021-09-13T12:30Z");
         try (InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1.xml");

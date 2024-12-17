@@ -42,9 +42,9 @@ public class CseData {
         this.fileImporter = fileImporter;
     }
 
-    public Map<String, Double> getReducedSplittingFactors(Map<String, Double> ntcsByEic) {
+    public Map<String, Double> getReducedSplittingFactors() {
         if (reducedSplittingFactors == null) {
-            reducedSplittingFactors = getNtc().computeReducedSplittingFactors(ntcsByEic);
+            reducedSplittingFactors = getNtc().computeReducedSplittingFactors();
         }
         return reducedSplittingFactors;
     }

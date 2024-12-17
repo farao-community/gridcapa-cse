@@ -50,7 +50,7 @@ public class NetworkShifterProvider {
     }
 
     private ShiftDispatcher getShiftDispatcher(ProcessType processType, CseData cseData, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) {
-        Map<String, Double> splittingFactors = NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors(ntcsByEic));
+        Map<String, Double> splittingFactors = NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getReducedSplittingFactors());
 
         if (processType.equals(ProcessType.D2CC)) {
             return new CseD2ccShiftDispatcher(
