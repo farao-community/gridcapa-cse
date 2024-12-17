@@ -184,11 +184,11 @@ public class NetworkModifier {
         String newId = replaceSimpleBranchNode(transformer, side, bus.getId());
         TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(transformer, newId);
         setBranchAdderProperties(adder, transformer, side, bus);
-        removeFromNetworkAndAliasesMap(transformer);
         TwoWindingsTransformer newTransformer = adder.add();
         copyCurrentLimits(transformer, newTransformer);
         copyProperties(transformer, newTransformer);
         copyTapChanger(transformer, newTransformer);
+        removeFromNetworkAndAliasesMap(transformer);
         LOGGER.debug("TwoWindingsTransformer '{}' has been removed, new transformer '{}' has been created", transformer.getId(), newTransformer.getId());
         addAliasesFromOldToNew(transformer, newTransformer);
     }
