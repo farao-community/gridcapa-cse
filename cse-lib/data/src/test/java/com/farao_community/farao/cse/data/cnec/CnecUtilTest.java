@@ -7,12 +7,12 @@
 
 package com.farao_community.farao.cse.data.cnec;
 
-import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
+import com.powsybl.openrao.data.crac.api.Crac;
+import com.powsybl.openrao.data.crac.api.cnec.FlowCnec;
 
-import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.cracio.cse.CseCracCreationContext;
-import com.powsybl.openrao.data.raoresultapi.RaoResult;
+import com.powsybl.openrao.data.crac.api.parameters.CracCreationParameters;
+import com.powsybl.openrao.data.crac.io.cse.CseCracCreationContext;
+import com.powsybl.openrao.data.raoresult.api.RaoResult;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 

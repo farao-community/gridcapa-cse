@@ -8,10 +8,10 @@ package com.farao_community.farao.cse.data.cnec;
 
 import com.powsybl.openrao.commons.Unit;
 import com.farao_community.farao.cse.data.CseDataException;
-import com.powsybl.openrao.data.cracapi.Crac;
-import com.powsybl.openrao.data.cracapi.cnec.Cnec;
-import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
-import com.powsybl.openrao.data.raoresultapi.RaoResult;
+import com.powsybl.openrao.data.crac.api.Crac;
+import com.powsybl.openrao.data.crac.api.cnec.Cnec;
+import com.powsybl.openrao.data.crac.api.cnec.FlowCnec;
+import com.powsybl.openrao.data.raoresult.api.RaoResult;
 
 import java.util.Optional;
 import java.util.Set;

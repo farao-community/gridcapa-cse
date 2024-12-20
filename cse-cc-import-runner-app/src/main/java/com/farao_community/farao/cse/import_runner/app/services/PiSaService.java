@@ -11,7 +11,7 @@ import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkConf
 import com.farao_community.farao.cse.network_processing.pisa_change.PiSaLinkProcessor;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.crac.api.Crac;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

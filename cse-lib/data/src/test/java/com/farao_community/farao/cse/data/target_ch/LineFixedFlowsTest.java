@@ -7,12 +7,12 @@
 
 package com.farao_community.farao.cse.data.target_ch;
 
-import com.powsybl.openrao.data.cracio.commons.ucte.UcteNetworkAnalyzer;
-import com.powsybl.openrao.data.cracio.commons.ucte.UcteNetworkAnalyzerProperties;
+import com.powsybl.openrao.data.crac.io.commons.ucte.UcteNetworkAnalyzer;
+import com.powsybl.openrao.data.crac.io.commons.ucte.UcteNetworkAnalyzerProperties;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 

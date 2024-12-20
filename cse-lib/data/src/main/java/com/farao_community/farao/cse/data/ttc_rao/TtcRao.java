@@ -24,9 +24,9 @@ import com.farao_community.farao.cse.data.xsd.ttc_rao.PreventiveResult;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.Status;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.StringValue;
 import com.powsybl.contingency.Contingency;
-import com.powsybl.openrao.data.cracio.commons.api.ElementaryCreationContext;
-import com.powsybl.openrao.data.cracio.cse.remedialaction.CseHvdcCreationContext;
-import com.powsybl.openrao.data.cracio.cse.remedialaction.CsePstCreationContext;
+import com.powsybl.openrao.data.crac.io.commons.api.ElementaryCreationContext;
+import com.powsybl.openrao.data.crac.io.cse.remedialaction.CseHvdcCreationContext;
+import com.powsybl.openrao.data.crac.io.cse.remedialaction.CsePstCreationContext;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;

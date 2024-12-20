@@ -15,10 +15,10 @@ import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoRes
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.import_runner.app.CseData;
-import com.powsybl.openrao.data.raoresultapi.RaoResult;
+import com.powsybl.openrao.data.raoresult.api.RaoResult;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.openrao.data.cracio.cse.CseCracCreationContext;
+import com.powsybl.openrao.data.crac.io.cse.CseCracCreationContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
