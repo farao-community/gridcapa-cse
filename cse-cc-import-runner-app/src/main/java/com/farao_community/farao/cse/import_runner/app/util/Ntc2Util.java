@@ -6,7 +6,7 @@ import com.farao_community.farao.cse.data.xsd.ntc2.CapacityDocument;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.openrao.commons.EICode;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;

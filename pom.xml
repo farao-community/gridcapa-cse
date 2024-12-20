@@ -37,33 +37,31 @@
         <commons.io.version>2.15.1</commons.io.version>
         <jackson.databind.version>2.14.0</jackson.databind.version>
         <jackson.datatype.version>2.17.0</jackson.datatype.version>
-        <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
-        <jaxb-runtime.version>2.4.0-b180830.0438</jaxb-runtime.version>
+        <jaxb-runtime.version>4.0.5</jaxb-runtime.version>
         <jaxb-impl.version>4.0.0</jaxb-impl.version>
-        <jakarta.xml.bind.version>4.0.0</jakarta.xml.bind.version>
+        <jakarta.xml.bind.version>4.0.2</jakarta.xml.bind.version>
         <jakarta.activation.api.version>2.0.1</jakarta.activation.api.version>
         <jsonapi.converter.version>0.10</jsonapi.converter.version>
-        <maven.jaxb2.version>0.14.0</maven.jaxb2.version>
-        <maven.jvnet.jaxb2-basics.version>1.11.1</maven.jvnet.jaxb2-basics.version>
+        <maven.jaxb.version>4.0.8</maven.jaxb.version>
         <mockito.core.version>5.14.2</mockito.core.version>
-        <logstash.version>7.0.1</logstash.version>
+        <logstash.version>7.4</logstash.version>
         <awaitility.version>3.0.0</awaitility.version>
 
         <!-- BUSINESS DEPENDENCIES -->
-        <farao.dependencies.version>1.37.0</farao.dependencies.version>
-        <farao.dichotomy.version>4.22.1</farao.dichotomy.version>
-        <gridcapa.rao.runner.version>1.30.0</gridcapa.rao.runner.version>
-        <gridcapa.task-manager.version>1.33.0</gridcapa.task-manager.version>
-        <gridcapa.starter.minio.adapter.version>1.3.0</gridcapa.starter.minio.adapter.version>
+        <farao.dependencies.version>1.38.1</farao.dependencies.version>
+        <farao.dichotomy.version>4.24.0</farao.dichotomy.version>
+        <gridcapa.rao.runner.version>1.33.0</gridcapa.rao.runner.version>
+        <gridcapa.task-manager.version>1.34.0</gridcapa.task-manager.version>
+        <gridcapa.starter.minio.adapter.version>1.4.0</gridcapa.starter.minio.adapter.version>
     </properties>
 
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.jvnet.jaxb2.maven2</groupId>
-                    <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>${maven.jaxb2.version}</version>
+                    <groupId>org.jvnet.jaxb</groupId>
+                    <artifactId>jaxb-maven-plugin</artifactId>
+                    <version>${maven.jaxb.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -126,11 +124,6 @@
                 <groupId>jakarta.activation</groupId>
                 <artifactId>jakarta.activation-api</artifactId>
                 <version>${jakarta.activation.api.version}</version>
-            </dependency>
-              <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${jaxb-api.version}</version>
             </dependency>
              <dependency>
                 <groupId>org.apache.poi</groupId>

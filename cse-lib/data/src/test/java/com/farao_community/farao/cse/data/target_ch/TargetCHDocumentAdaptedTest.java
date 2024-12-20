@@ -8,7 +8,7 @@ package com.farao_community.farao.cse.data.target_ch;
 
 import org.junit.jupiter.api.Test;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.List;

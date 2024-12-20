@@ -11,17 +11,17 @@ import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
 
-import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.crac.api.Crac;
 
 import com.powsybl.iidm.network.Network;
-import com.powsybl.openrao.data.cracio.cse.xsd.CRACDocumentType;
-import com.powsybl.openrao.data.raoresultapi.RaoResult;
-import com.powsybl.openrao.data.raoresultjson.RaoResultJsonImporter;
+import com.powsybl.openrao.data.crac.io.cse.xsd.CRACDocumentType;
+import com.powsybl.openrao.data.raoresult.api.RaoResult;
+import com.powsybl.openrao.data.raoresult.io.json.RaoResultJsonImporter;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
