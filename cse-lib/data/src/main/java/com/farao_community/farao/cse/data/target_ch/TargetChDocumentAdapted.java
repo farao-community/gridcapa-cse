@@ -11,7 +11,7 @@ import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.DateTimeUtil;
 import com.farao_community.farao.cse.data.xsd.target_ch_adapted.*;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;

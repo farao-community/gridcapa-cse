@@ -8,7 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.util;
 
 import com.powsybl.openrao.commons.Unit;
-import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.searchtreerao.result.api.FlowResult;
 import com.powsybl.openrao.searchtreerao.result.impl.FlowResultImpl;

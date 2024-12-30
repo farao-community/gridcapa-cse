@@ -6,11 +6,11 @@
  */
 package com.farao_community.farao.cse.network_processing;
 
-import com.powsybl.openrao.data.cracapi.RaUsageLimits;
-import com.powsybl.openrao.data.cracapi.parameters.CracCreationParameters;
-import com.powsybl.openrao.data.cracio.cse.parameters.BusBarChangeSwitches;
-import com.powsybl.openrao.data.cracio.cse.parameters.CseCracCreationParameters;
-import com.powsybl.openrao.data.cracio.cse.parameters.SwitchPairId;
+import com.powsybl.openrao.data.crac.api.RaUsageLimits;
+import com.powsybl.openrao.data.crac.api.parameters.CracCreationParameters;
+import com.powsybl.openrao.data.crac.io.cse.parameters.BusBarChangeSwitches;
+import com.powsybl.openrao.data.crac.io.cse.parameters.CseCracCreationParameters;
+import com.powsybl.openrao.data.crac.io.cse.parameters.SwitchPairId;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;

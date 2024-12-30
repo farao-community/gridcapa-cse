@@ -10,7 +10,7 @@ package com.farao_community.farao.cse.export_runner.app.services;
 import com.farao_community.farao.cse.data.xsd.ttc_rao.CseRaoResult;
 import com.farao_community.farao.cse.export_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.powsybl.openrao.data.cracapi.Crac;
+import com.powsybl.openrao.data.crac.api.Crac;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.powsybl.iidm.network.Network;

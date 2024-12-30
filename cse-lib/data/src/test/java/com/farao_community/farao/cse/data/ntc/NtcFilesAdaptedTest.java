@@ -13,7 +13,7 @@ import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataExceptio
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;

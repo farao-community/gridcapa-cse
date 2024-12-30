@@ -10,7 +10,7 @@ package com.farao_community.farao.cse.data.target_ch;
 import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.target_ch.*;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;
