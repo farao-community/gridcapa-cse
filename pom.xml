@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.farao-community.farao</groupId>
         <artifactId>farao-parent-ws</artifactId>
-        <version>1.10.1</version>
+        <version>1.11.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>gridcapa-cse</artifactId>
@@ -44,7 +44,6 @@
         <jsonapi.converter.version>0.10</jsonapi.converter.version>
         <maven.jaxb.version>4.0.8</maven.jaxb.version>
         <mockito.core.version>5.14.2</mockito.core.version>
-        <logstash.version>7.4</logstash.version>
         <awaitility.version>3.0.0</awaitility.version>
 
         <!-- BUSINESS DEPENDENCIES -->
@@ -132,12 +131,6 @@
             </dependency>
 
             <!-- RUNTIME DEPENDENCIES -->
-            <dependency>
-                <groupId>net.logstash.logback</groupId>
-                <artifactId>logstash-logback-encoder</artifactId>
-                <version>${logstash.version}</version>
-                <scope>runtime</scope>
-            </dependency>
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
