@@ -10,21 +10,21 @@ import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.export_runner.app.FileUtil;
 import com.farao_community.farao.cse.export_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
-
-import com.powsybl.openrao.data.crac.api.Crac;
-
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.io.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.raoresult.api.RaoResult;
 import com.powsybl.openrao.data.raoresult.io.json.RaoResultJsonImporter;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -69,9 +69,9 @@ public class FileImporter {
             if (urlConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
                 throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelisted url's.", urlString));
             }
-            URL url = new URL(urlString);
+            URL url = new URI(urlString).toURL();
             return url.openStream(); // NOSONAR Usage of whitelist not triggered by Sonar quality assessment, even if listed as a solution to the vulnerability
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException | IllegalArgumentException e) {
             businessLogger.error("Error while retrieving content of file \"{}\", link may have expired.", FileUtil.getFilenameFromUrl(urlString));
             throw new CseDataException(String.format("Exception occurred while retrieving file content from %s", urlString), e);
         }

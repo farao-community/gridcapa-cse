@@ -6,14 +6,35 @@
  */
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
-import com.powsybl.openrao.commons.OpenRaoException;
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Branch;
+import com.powsybl.iidm.network.BranchAdder;
+import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.Connectable;
+import com.powsybl.iidm.network.DanglingLine;
+import com.powsybl.iidm.network.Identifiable;
+import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.network.LineAdder;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.PhaseTapChanger;
+import com.powsybl.iidm.network.PhaseTapChangerAdder;
+import com.powsybl.iidm.network.Switch;
+import com.powsybl.iidm.network.TieLine;
+import com.powsybl.iidm.network.TwoSides;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.TwoWindingsTransformerAdder;
+import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.openrao.commons.OpenRaoException;
 import com.powsybl.ucte.converter.util.UcteConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class exposes useful methods to modify a network
@@ -133,14 +154,12 @@ public class NetworkModifier {
         // RA2 moves side 2 : then the line "FBUS1 NODE2" should be replaced with "FBUS1 FBUS2"
         // (instead of replacing "NODE1 NODE2" with "NODE1 FBUS2")
         try {
-            if (branch instanceof TwoWindingsTransformer) {
-                moveTwoWindingsTransformer((TwoWindingsTransformer) branch, side, bus);
-            } else if (branch instanceof TieLine) {
-                moveTieLine((TieLine) branch, side, bus);
-            } else if (branch instanceof Line) {
-                moveLine((Line) branch, side, bus);
-            } else {
-                throw new OpenRaoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
+            switch (branch) {
+                case TwoWindingsTransformer twoWindingsTransformer ->
+                        moveTwoWindingsTransformer(twoWindingsTransformer, side, bus);
+                case TieLine tieLine -> moveTieLine(tieLine, side, bus);
+                case Line line -> moveLine(line, side, bus);
+                default -> throw new OpenRaoException(String.format("Cannot move %s of type %s", branch.getId(), branch.getClass()));
             }
         } catch (PowsyblException e) {
             throw new OpenRaoException(String.format("Could not move line %s", branch.getId()), e);
@@ -386,7 +405,7 @@ public class NetworkModifier {
      * Returns the connected branches to a given bus, and the side they're connected to it
      * If the branch has been moved, the move shall be taken into account
      */
-    public Map<Branch<?>, TwoSides> getBranchesStillConnectedToBus(Bus bus) {
+    public Map<Branch<?>, TwoSides> getBranchesStillConnectedToBus(Bus bus) { // NOSONAR because network.getBranchStream() method returns Map<Branch, TwoSides> with no more type indication
         Map<Branch<?>, TwoSides> connectedBranches = new HashMap<>();
         network.getBranchStream()
             .forEach(branch -> {

@@ -7,11 +7,11 @@
 
 package com.farao_community.farao.cse.network_processing.pisa_change;
 
-import com.powsybl.openrao.data.crac.api.Crac;
-import com.powsybl.openrao.data.crac.api.Identifiable;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.crac.api.Crac;
+import com.powsybl.openrao.data.crac.api.Identifiable;
 import com.powsybl.openrao.data.crac.api.rangeaction.InjectionRangeAction;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class PiSaLinkProcessor {
         elementsPresence.addAll(
             piSaLinkConfiguration.getPiSaLinkFictiveLines().stream()
                 .map(lineId -> network.getLine(lineId) != null)
-                .collect(Collectors.toList()));
+                .toList());
         if (elementsPresence.stream().allMatch(presence -> presence)) {
             return true;
         } else if (elementsPresence.stream().noneMatch(presence -> presence)) {
@@ -83,7 +83,7 @@ public class PiSaLinkProcessor {
     public boolean isLinkInACEmulation(Network network) {
         List<Line> fictiveLines = piSaLinkConfiguration.getPiSaLinkFictiveLines().stream()
             .map(network::getLine)
-            .collect(Collectors.toList());
+            .toList();
         if (fictiveLines.stream().allMatch(line -> !line.getTerminal1().isConnected() && !line.getTerminal2().isConnected())) {
             return false;
         }
@@ -98,7 +98,7 @@ public class PiSaLinkProcessor {
     public void setLinkInSetpointMode(Network network, Crac crac) {
         List<Line> connectingLines = piSaLinkConfiguration.getPiSaLinkFictiveLines().stream()
             .map(network::getLine)
-            .collect(Collectors.toList());
+            .toList();
         Generator generatorFr = getFrFictiveGenerator(network);
         Generator generatorIt = getItFictiveGenerator(network);
 

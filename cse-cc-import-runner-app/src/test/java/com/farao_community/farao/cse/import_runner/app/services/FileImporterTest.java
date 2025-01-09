@@ -13,14 +13,18 @@ import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.powsybl.openrao.data.crac.io.cse.xsd.CRACDocumentType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -35,7 +39,7 @@ class FileImporterTest {
     @Test
     void testCseCracImport() {
         CRACDocumentType cseCrac = fileImporter.importCseCrac(Objects.requireNonNull(getClass().getResource("20210901_2230_213_CRAC_CO_CSE1.xml")).toString());
-        assertEquals(2, cseCrac.getCRACSeries().get(0).getCriticalBranches().getBaseCaseBranches().getBranch().size());
+        assertEquals(2, cseCrac.getCRACSeries().getFirst().getCriticalBranches().getBaseCaseBranches().getBranch().size());
     }
 
     @Test
@@ -158,30 +162,15 @@ class FileImporterTest {
         assertEquals(15, ntc2.getExchanges().get("10YSI-ELES-----O"));
     }
 
-    @Test
-    void assertThrowsWhenDataIsMissing() {
-        OffsetDateTime time = OffsetDateTime.parse("2021-06-23T22:00Z");
-        String atFileUrl = getClass().getResource("NTC2_20210624_2D5_AT-IT1-test.xml").toString();
-        String chFileUrl = getClass().getResource("NTC2_20210624_2D5_CH-IT1-test.xml").toString();
-        String frFileUrl = getClass().getResource("NTC2_20210624_2D5_FR-IT1-test.xml").toString();
-        String siFileUrl = getClass().getResource("NTC2_20210624_2D5_SI-IT1-test.xml").toString();
-        assertThrows(CseDataException.class, () ->  fileImporter.importNtc2(time, atFileUrl, chFileUrl, frFileUrl, siFileUrl));
-    }
-
-    @Test
-    void assertThrowsWhenImportSeriesIsMissing() {
-        OffsetDateTime time = OffsetDateTime.parse("2021-06-24T22:00Z");
-        String atFileUrl = getClass().getResource("NTC2_20210624_2D5_AT-IT1-no-import-test.xml").toString();
-        String chFileUrl = getClass().getResource("NTC2_20210624_2D5_CH-IT1-test.xml").toString();
-        String frFileUrl = getClass().getResource("NTC2_20210624_2D5_FR-IT1-test.xml").toString();
-        String siFileUrl = getClass().getResource("NTC2_20210624_2D5_SI-IT1-test.xml").toString();
-        assertThrows(CseDataException.class, () ->  fileImporter.importNtc2(time, atFileUrl, chFileUrl, frFileUrl, siFileUrl));
-    }
-
-    @Test
-    void assertThrowsWhenTargetDateTimeOutOfBound() {
-        OffsetDateTime time = OffsetDateTime.parse("2021-06-24T23:00Z");
-        String atFileUrl = getClass().getResource("NTC2_20210624_2D5_AT-IT1-test.xml").toString();
+    @ParameterizedTest
+    @CsvSource({
+        "2021-06-23T22:00Z, NTC2_20210624_2D5_AT-IT1-test.xml",
+        "2021-06-24T22:00Z, NTC2_20210624_2D5_AT-IT1-no-import-test.xml",
+        "2021-06-24T23:00Z, NTC2_20210624_2D5_AT-IT1-test.xml"
+    })
+    void assertThrowsWhenDataIsMissing(String timeStr, String atFileUrlStr) {
+        OffsetDateTime time = OffsetDateTime.parse(timeStr);
+        String atFileUrl = getClass().getResource(atFileUrlStr).toString();
         String chFileUrl = getClass().getResource("NTC2_20210624_2D5_CH-IT1-test.xml").toString();
         String frFileUrl = getClass().getResource("NTC2_20210624_2D5_FR-IT1-test.xml").toString();
         String siFileUrl = getClass().getResource("NTC2_20210624_2D5_SI-IT1-test.xml").toString();

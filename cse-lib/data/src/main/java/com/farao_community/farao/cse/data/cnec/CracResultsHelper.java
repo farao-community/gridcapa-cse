@@ -6,16 +6,18 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import com.farao_community.farao.cse.data.CseDataException;
+import com.powsybl.contingency.Contingency;
 import com.powsybl.contingency.ContingencyElement;
+import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.TwoSides;
 import com.powsybl.openrao.commons.Unit;
-import com.farao_community.farao.cse.data.CseDataException;
-
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.api.Identifiable;
 import com.powsybl.openrao.data.crac.api.Instant;
 import com.powsybl.openrao.data.crac.api.NetworkElement;
-import com.powsybl.contingency.Contingency;
 import com.powsybl.openrao.data.crac.api.cnec.FlowCnec;
 import com.powsybl.openrao.data.crac.api.rangeaction.InjectionRangeAction;
 import com.powsybl.openrao.data.crac.api.rangeaction.PstRangeAction;
@@ -25,9 +27,6 @@ import com.powsybl.openrao.data.crac.io.commons.api.stdcreationcontext.NativeBra
 import com.powsybl.openrao.data.crac.io.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.crac.io.cse.criticalbranch.CseCriticalBranchCreationContext;
 import com.powsybl.openrao.data.raoresult.api.RaoResult;
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.Substation;
 import com.powsybl.ucte.network.UcteCountryCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Mohamed BenRejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
@@ -129,11 +127,11 @@ public class CracResultsHelper {
         return (int) raoResult.getOptimizedSetPointOnState(crac.getState(contingencyId, crac.getLastInstant()), crac.getInjectionRangeAction(hvdcRangeActionId));
     }
 
-    public List<BranchCnecCreationContext> getMonitoredBranchesForOutage(String contingencyId) {
+    public List<? extends BranchCnecCreationContext> getMonitoredBranchesForOutage(String contingencyId) {
         return cseCracCreationContext.getBranchCnecCreationContexts().stream()
                 .filter(ElementaryCreationContext::isImported)
                 .filter(branchCCC -> branchCCC.getContingencyId().orElse("").equals(contingencyId))
-                .collect(Collectors.toList());
+                .toList();
 
     }
 
@@ -167,7 +165,7 @@ public class CracResultsHelper {
 
     public Map<String, MergedCnec> getMergedCnecs(String contingencyId) {
         Map<String, MergedCnec> mergedCnecs = new HashMap<>();
-        List<BranchCnecCreationContext> branchCnecCreationContexts = getMonitoredBranchesForOutage(contingencyId);
+        List<? extends BranchCnecCreationContext> branchCnecCreationContexts = getMonitoredBranchesForOutage(contingencyId);
         branchCnecCreationContexts.forEach(branchCnecCreationContext -> {
             MergedCnec mergedCnec = new MergedCnec();
             FlowCnec flowCnec = null;
@@ -236,23 +234,27 @@ public class CracResultsHelper {
         Optional<Double> lowerBound = flowCnec.getLowerBound(monitoredSide, Unit.AMPERE);
         double flow;
         double iMax;
-        if (upperBound.isPresent() && lowerBound.isEmpty()) {
-            flow = raoResult.getFlow(optimizedInstant, flowCnec, monitoredSide, Unit.AMPERE);
-            iMax = upperBound.get();
-        } else if (upperBound.isEmpty() && lowerBound.isPresent()) {
-            // Case where it is limited in opposite direction so the flow is inverted
-            flow = -raoResult.getFlow(optimizedInstant, flowCnec, monitoredSide, Unit.AMPERE);
-            iMax = Math.abs(lowerBound.get());
-        } else if (upperBound.isPresent() && lowerBound.isPresent()) {
-            double flowTemp = raoResult.getFlow(optimizedInstant, flowCnec, monitoredSide, Unit.AMPERE);
-            flow = Math.abs(flowTemp);
-            if (flowTemp >= 0) {
-                iMax = upperBound.get();
+        if (upperBound.isPresent()) {
+            if (lowerBound.isPresent()) {
+                double flowTemp = raoResult.getFlow(optimizedInstant, flowCnec, monitoredSide, Unit.AMPERE);
+                flow = Math.abs(flowTemp);
+                if (flowTemp >= 0) {
+                    iMax = upperBound.get();
+                } else {
+                    iMax = Math.abs(lowerBound.get());
+                }
             } else {
-                iMax = Math.abs(lowerBound.get());
+                flow = raoResult.getFlow(optimizedInstant, flowCnec, monitoredSide, Unit.AMPERE);
+                iMax = upperBound.get();
             }
         } else {
-            throw new CseDataException(String.format("Cnec %s is defined with no thresholds", flowCnec.getName()));
+            if (lowerBound.isPresent()) {
+                // Case where it is limited in opposite direction so the flow is inverted
+                flow = -raoResult.getFlow(optimizedInstant, flowCnec, monitoredSide, Unit.AMPERE);
+                iMax = Math.abs(lowerBound.get());
+            } else {
+                throw new CseDataException(String.format("Cnec %s is defined with no thresholds", flowCnec.getName()));
+            }
         }
         return new FlowCnecResult(flow, iMax);
     }
@@ -317,29 +319,26 @@ public class CracResultsHelper {
 
     private String getCountrySide1(String elementId) {
         Optional<Substation> substationOpt = network.getBranch(elementId).getTerminal1().getVoltageLevel().getSubstation();
-        if (substationOpt.isPresent()) {
-            Optional<Country> country = substationOpt.get().getCountry();
-            if (country.isPresent()) {
-                return country.get().toString();
-            } else {
-                throw new CseDataException("NetworkElement " + elementId + " has no country on side 1");
-            }
-        } else {
-            throw new CseDataException("NetworkElement " + elementId + " has no country on side 1");
-        }
+        final String errorMessage = "NetworkElement " + elementId + " has no country on side 1";
+        return getCountryFromSubstation(substationOpt, errorMessage);
     }
 
     private String getCountrySide2(String elementId) {
         Optional<Substation> substationOpt = network.getBranch(elementId).getTerminal2().getVoltageLevel().getSubstation();
+        final String errorMessage = "NetworkElement " + elementId + " has no country on side 2";
+        return getCountryFromSubstation(substationOpt, errorMessage);
+    }
+
+    private static String getCountryFromSubstation(final Optional<Substation> substationOpt, final String errorMessage) {
         if (substationOpt.isPresent()) {
             Optional<Country> country = substationOpt.get().getCountry();
             if (country.isPresent()) {
                 return country.get().toString();
             } else {
-                throw new CseDataException("NetworkElement " + elementId + " has no country on side 2");
+                throw new CseDataException(errorMessage);
             }
         } else {
-            throw new CseDataException("NetworkElement " + elementId + " has no country on side 2");
+            throw new CseDataException(errorMessage);
         }
     }
 
@@ -383,6 +382,7 @@ public class CracResultsHelper {
 
     public List<ElementaryCreationContext> getOutageCreationContext() {
         return cseCracCreationContext.getOutageCreationContexts().stream()
-                .filter(ElementaryCreationContext::isImported).collect(Collectors.toList());
+                .filter(ElementaryCreationContext::isImported)
+                .toList();
     }
 }

@@ -9,23 +9,30 @@ package com.farao_community.farao.cse.network_processing.busbar_change;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.commons.OpenRaoException;
+import com.powsybl.openrao.data.crac.io.commons.ucte.UcteBusHelper;
+import com.powsybl.openrao.data.crac.io.commons.ucte.UcteNetworkAnalyzer;
+import com.powsybl.openrao.data.crac.io.commons.ucte.UcteNetworkAnalyzerProperties;
 import com.powsybl.openrao.data.crac.io.cse.parameters.BusBarChangeSwitches;
 import com.powsybl.openrao.data.crac.io.cse.parameters.SwitchPairId;
 import com.powsybl.openrao.data.crac.io.cse.xsd.CRACDocumentType;
 import com.powsybl.openrao.data.crac.io.cse.xsd.TCRACSeries;
 import com.powsybl.openrao.data.crac.io.cse.xsd.TRemedialAction;
 import com.powsybl.openrao.data.crac.io.cse.xsd.TRemedialActions;
-import com.powsybl.openrao.data.crac.io.commons.ucte.UcteBusHelper;
-import com.powsybl.openrao.data.crac.io.commons.ucte.UcteNetworkAnalyzer;
-import com.powsybl.openrao.data.crac.io.commons.ucte.UcteNetworkAnalyzerProperties;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static com.farao_community.farao.cse.network_processing.busbar_change.NetworkHelper.SwitchPairToCreate;
@@ -66,7 +73,7 @@ public final class BusBarChangePreProcessor {
         if (tcracSeriesList.size() != 1) {
             throw new OpenRaoException("CRAC file contains no or more than one <CRACSeries> tag which is not handled.");
         }
-        return tcracSeriesList.get(0);
+        return tcracSeriesList.getFirst();
     }
 
     public static Set<BusBarChangeSwitches> process(Network network, CRACDocumentType cseCrac) {
@@ -154,7 +161,7 @@ public final class BusBarChangePreProcessor {
      */
     private static void createSwitches(Map<String, Set<SwitchPairToCreate>> switchesToCreatePerRa, Map<String, NetworkHelper.BusBarEquivalentModel> createdSwitches, NetworkModifier networkModifier) {
         // Get a list of all switch pairs to create, some of them may be in common for different RAs
-        List<SwitchPairToCreate> uniqueSwitchPairsToCreate = switchesToCreatePerRa.values().stream().flatMap(Set::stream).sorted().collect(Collectors.toList());
+        List<SwitchPairToCreate> uniqueSwitchPairsToCreate = switchesToCreatePerRa.values().stream().flatMap(Set::stream).sorted().toList();
         // Store information about created fictitious buses for moving branches
         Map<String, String> fictitiousBusIdPerBranchAndSide = new HashMap<>();
         for (SwitchPairToCreate switchPairToCreate: uniqueSwitchPairsToCreate) {

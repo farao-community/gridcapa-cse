@@ -11,6 +11,7 @@ import com.powsybl.iidm.network.Country;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -28,29 +29,35 @@ class CseReferenceExchangesTest {
     private CseReferenceExchanges cseReferenceExchanges;
 
     @Test
-    void creationThrowsExceptionWhenMinutesNotAMultipleOf15() {
-        assertThrows(
-            CseDataException.class,
-            () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
-                OffsetDateTime.parse("2019-12-28T14:05Z"),
-                getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
+    void creationThrowsExceptionWhenMinutesNotAMultipleOf15() throws IOException {
+        final OffsetDateTime dateTime = OffsetDateTime.parse("2019-12-28T14:05Z");
+        try (final InputStream vulcanusFile = getClass().getResourceAsStream("vulcanus_28122019_96.xls")) {
+            assertThrows(
+                CseDataException.class,
+                () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
+                    dateTime,
+                    vulcanusFile,
                     "vulcanus_28122019_96.xls",
-                ProcessType.IDCC
-            )
-        );
+                    ProcessType.IDCC
+                )
+            );
+        }
     }
 
     @Test
-    void creationThrowsExceptionWhenTargetDateTimeDifferentFromFileDate() {
-        assertThrows(
-            CseDataException.class,
-            () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
-                OffsetDateTime.parse("2019-12-29T14:30Z"),
-                getClass().getResourceAsStream("vulcanus_28122019_96.xls"),
-                    "vulcanus_28122019_96.xls",
-                ProcessType.IDCC
-            )
-        );
+    void creationThrowsExceptionWhenTargetDateTimeDifferentFromFileDate() throws IOException {
+        final OffsetDateTime dateTime = OffsetDateTime.parse("2019-12-29T14:30Z");
+        try (final InputStream vulcanusFile = getClass().getResourceAsStream("vulcanus_28122019_96.xls")) {
+            assertThrows(
+                CseDataException.class,
+                () -> cseReferenceExchanges = CseReferenceExchanges.fromVulcanusFile(
+                    dateTime,
+                        vulcanusFile,
+                        "vulcanus_28122019_96.xls",
+                    ProcessType.IDCC
+                )
+            );
+        }
     }
 
     @Test

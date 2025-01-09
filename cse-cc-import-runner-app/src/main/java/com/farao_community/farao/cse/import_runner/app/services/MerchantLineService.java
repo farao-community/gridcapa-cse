@@ -40,12 +40,10 @@ public class MerchantLineService {
     }
 
     public void activateMerchantLine(ProcessType processType, Network network, CseData cseData) {
-        if (processType == ProcessType.IDCC) {
-            activateMerchantLineForIdcc(network, cseData);
-        } else if (processType == ProcessType.D2CC) {
-            activateMerchantLineForD2cc(network, cseData);
-        } else {
-            throw new CseInternalException(String.format("Process type %s is not handled", processType));
+        switch (processType) {
+            case IDCC -> activateMerchantLineForIdcc(network, cseData);
+            case D2CC -> activateMerchantLineForD2cc(network, cseData);
+            default -> throw new CseInternalException(String.format("Process type %s is not handled", processType));
         }
     }
 
@@ -74,7 +72,7 @@ public class MerchantLineService {
             mendrisioConfiguration.getMendrisioCagnoTargetChId(),
             network,
             ucteNetworkHelper);
-        double mendrisioCagnoTargetFlow = reducedFlow.isEmpty() ? defaultFlow : Math.min(defaultFlow, reducedFlow.get());
+        final double mendrisioCagnoTargetFlow = reducedFlow.map(aDouble -> Math.min(defaultFlow, aDouble)).orElse(defaultFlow);
 
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("Target flow for Mendrisio-Cagno is %.0f MW", mendrisioCagnoTargetFlow));

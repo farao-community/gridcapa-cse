@@ -5,8 +5,8 @@ import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.ntc2.CapacityDocument;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.openrao.commons.EICode;
-
 import jakarta.xml.bind.JAXBException;
+
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class Ntc2Util {
@@ -66,7 +65,7 @@ public final class Ntc2Util {
     private static void checkTimeInterval(CapacityDocument capacityDocument, OffsetDateTime targetDateTime) {
         List<OffsetDateTime> interval = Stream.of(capacityDocument.getCapacityTimeInterval().getV().split("/"))
                 .map(OffsetDateTime::parse)
-                .collect(Collectors.toList());
+                .toList();
         if (targetDateTime.isBefore(interval.get(0)) || targetDateTime.isAfter(interval.get(1)) || targetDateTime.equals(interval.get(1))) {
             throw new CseDataException("Target date time is out of bound for NTC2 archive");
         }
