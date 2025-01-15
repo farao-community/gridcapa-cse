@@ -155,7 +155,7 @@ public class CseExportRunner {
 
     private void runLoadFlow(Network network) {
         LoadFlowResult result = LoadFlow.run(network, LoadFlowParameters.load());
-        if (!result.isOk()) {
+        if (result.isFailed()) {
             LOGGER.error("Loadflow computation diverged on network '{}'", network.getId());
             throw new CseInternalException(String.format("Loadflow computation diverged on network %s", network.getId()));
         }

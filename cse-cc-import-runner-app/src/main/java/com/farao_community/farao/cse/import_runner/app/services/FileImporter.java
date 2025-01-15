@@ -10,7 +10,11 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.CseReferenceExchanges;
 import com.farao_community.farao.cse.data.DataUtil;
-import com.farao_community.farao.cse.data.ntc.*;
+import com.farao_community.farao.cse.data.ntc.DailyNtcDocument;
+import com.farao_community.farao.cse.data.ntc.DailyNtcDocumentAdapted;
+import com.farao_community.farao.cse.data.ntc.Ntc;
+import com.farao_community.farao.cse.data.ntc.YearlyNtcDocument;
+import com.farao_community.farao.cse.data.ntc.YearlyNtcDocumentAdapted;
 import com.farao_community.farao.cse.data.ntc2.Ntc2;
 import com.farao_community.farao.cse.data.target_ch.LineFixedFlows;
 import com.farao_community.farao.cse.data.xsd.NTCAnnualDocument;
@@ -18,26 +22,28 @@ import com.farao_community.farao.cse.data.xsd.NTCReductionsDocument;
 import com.farao_community.farao.cse.import_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.import_runner.app.util.Ntc2Util;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.powsybl.openrao.data.crac.api.Crac;
-import com.powsybl.openrao.data.crac.io.cse.xsd.CRACDocumentType;
-import com.powsybl.openrao.data.raoresult.api.RaoResult;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.glsk.api.io.GlskDocumentImporters;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.crac.api.Crac;
+import com.powsybl.openrao.data.crac.io.cse.xsd.CRACDocumentType;
+import com.powsybl.openrao.data.raoresult.api.RaoResult;
 import com.powsybl.openrao.data.raoresult.io.json.RaoResultJsonImporter;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -172,9 +178,9 @@ public class FileImporter {
             if (urlConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
                 throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelisted url's.", urlString));
             }
-            URL url = new URL(urlString);
+            URL url = new URI(urlString).toURL();
             return url.openStream(); // NOSONAR Usage of whitelist not triggered by Sonar quality assessment, even if listed as a solution to the vulnerability
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException | IllegalArgumentException e) {
             businessLogger.error("Error while retrieving content of file \"{}\", link may have expired.", getFileNameFromUrl(urlString));
             throw new CseDataException(String.format("Exception occurred while retrieving file content from %s", urlString), e);
         }
@@ -182,9 +188,9 @@ public class FileImporter {
 
     private String getFileNameFromUrl(String stringUrl) {
         try {
-            URL url = new URL(stringUrl);
+            URL url = new URI(stringUrl).toURL();
             return FilenameUtils.getName(url.getPath());
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException | IllegalArgumentException e) {
             throw new CseDataException(String.format("Exception occurred while retrieving file name from : %s", stringUrl), e);
         }
     }

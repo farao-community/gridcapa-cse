@@ -12,7 +12,8 @@ import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataExceptio
 import org.apache.commons.io.FilenameUtils;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,8 +28,8 @@ public final class FileUtil {
 
     public static String getFilenameFromUrl(String url) {
         try {
-            return FilenameUtils.getName(new URL(url).getPath());
-        } catch (MalformedURLException e) {
+            return FilenameUtils.getName(new URI(url).toURL().getPath());
+        } catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
             throw new CseInvalidDataException(String.format("URL is invalid: %s", url), e);
         }
     }

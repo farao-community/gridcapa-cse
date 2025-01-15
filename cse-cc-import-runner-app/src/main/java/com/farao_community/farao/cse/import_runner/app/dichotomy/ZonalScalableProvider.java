@@ -17,7 +17,6 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +33,7 @@ public class ZonalScalableProvider {
         this.fileImporter = fileImporter;
     }
 
-    public ZonalData<Scalable> get(String glskUrl, Network network, ProcessType processType) throws IOException {
+    public ZonalData<Scalable> get(String glskUrl, Network network, ProcessType processType) {
         ZonalData<Scalable> zonalScalable = fileImporter.importGlsk(glskUrl, network);
         Arrays.stream(CseCountry.values()).forEach(country -> checkCseCountryInGlsk(zonalScalable, country));
         stackScalableOnLoads(network, zonalScalable, processType);

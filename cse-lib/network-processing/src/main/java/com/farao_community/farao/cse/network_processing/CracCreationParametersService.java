@@ -10,8 +10,6 @@ import com.powsybl.openrao.data.crac.api.parameters.CracCreationParameters;
 import com.powsybl.openrao.data.crac.api.parameters.JsonCracCreationParameters;
 import com.powsybl.openrao.data.crac.io.cse.parameters.BusBarChangeSwitches;
 import com.powsybl.openrao.data.crac.io.cse.parameters.CseCracCreationParameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.Set;
@@ -20,8 +18,6 @@ import java.util.Set;
  * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public final class CracCreationParametersService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CracCreationParametersService.class);
-
     private CracCreationParametersService() {
         // utility class
     }

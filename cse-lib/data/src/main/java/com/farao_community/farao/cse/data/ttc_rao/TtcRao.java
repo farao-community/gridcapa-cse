@@ -32,7 +32,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -157,11 +156,11 @@ public final class TtcRao {
 
     private static List<Action> getPreventiveActions(CracResultsHelper cracResultsHelper, Map<String, Integer> preprocessedPsts) {
         List<Action> preventiveActions = new ArrayList<>();
-        List<ElementaryCreationContext> importedRemedialActionCreationContext = cracResultsHelper.getCseCracCreationContext()
+        List<? extends ElementaryCreationContext> importedRemedialActionCreationContext = cracResultsHelper.getCseCracCreationContext()
                 .getRemedialActionCreationContexts()
                 .stream()
                 .filter(ElementaryCreationContext::isImported)
-                .collect(Collectors.toList());
+                .toList();
 
         importedRemedialActionCreationContext.stream()
                 .filter(remedialActionCreationContext -> cracResultsHelper.getPreventiveNetworkActionIds().contains(remedialActionCreationContext.getCreatedObjectId()))
@@ -183,11 +182,11 @@ public final class TtcRao {
 
     private static List<Action> getCurativeActions(String contingencyId, CracResultsHelper cracResultsHelper) {
         List<Action> curativeActions = new ArrayList<>();
-        List<ElementaryCreationContext> importedRemedialActionCreationContext = cracResultsHelper.getCseCracCreationContext()
+        List<? extends ElementaryCreationContext> importedRemedialActionCreationContext = cracResultsHelper.getCseCracCreationContext()
                 .getRemedialActionCreationContexts()
                 .stream()
                 .filter(ElementaryCreationContext::isImported)
-                .collect(Collectors.toList());
+                .toList();
 
         importedRemedialActionCreationContext.stream()
                 .filter(remedialActionCreationContext -> cracResultsHelper.getCurativeNetworkActionIds(contingencyId).contains(remedialActionCreationContext.getCreatedObjectId()))
@@ -196,13 +195,13 @@ public final class TtcRao {
         importedRemedialActionCreationContext.stream()
                 .filter(CsePstCreationContext.class::isInstance)
                 .map(CsePstCreationContext.class::cast)
-                .filter(csePstCreationContext -> cracResultsHelper.getCurativePstRangeActionIds(contingencyId).contains(((CsePstCreationContext) csePstCreationContext).getCreatedObjectId()))
+                .filter(csePstCreationContext -> cracResultsHelper.getCurativePstRangeActionIds(contingencyId).contains(csePstCreationContext.getCreatedObjectId()))
                 .forEach(csePstCreationContext -> addPstAction(curativeActions, csePstCreationContext, raId -> cracResultsHelper.getTapOfPstRangeActionInCurative(contingencyId, raId)));
 
         importedRemedialActionCreationContext.stream()
                 .filter(CseHvdcCreationContext.class::isInstance)
                 .map(CseHvdcCreationContext.class::cast)
-                .filter(csePstCreationContext -> cracResultsHelper.getCurativeHvdcRangeActionIds(contingencyId).contains(((CseHvdcCreationContext) csePstCreationContext).getCreatedObjectId()))
+                .filter(csePstCreationContext -> cracResultsHelper.getCurativeHvdcRangeActionIds(contingencyId).contains(csePstCreationContext.getCreatedObjectId()))
                 .forEach(cseHvdcCreationContext -> addHvdcAction(curativeActions, cseHvdcCreationContext, raId -> cracResultsHelper.getSetpointOfHvdcRangeActionInCurative(contingencyId, raId)));
 
         return curativeActions;
@@ -236,7 +235,7 @@ public final class TtcRao {
         int findSetPoint(String raId);
     }
 
-    private static void addPstsActionsModifiedByPreprocessingAndNotByRao(List<ElementaryCreationContext> importedRemedialActionCreationContext, Map<String, Integer> preprocessedPsts, CracResultsHelper cracResultsHelper, List<Action> actions) {
+    private static void addPstsActionsModifiedByPreprocessingAndNotByRao(List<? extends ElementaryCreationContext> importedRemedialActionCreationContext, Map<String, Integer> preprocessedPsts, CracResultsHelper cracResultsHelper, List<Action> actions) {
         importedRemedialActionCreationContext.stream()
                 .filter(CsePstCreationContext.class::isInstance)
                 .map(CsePstCreationContext.class::cast)
