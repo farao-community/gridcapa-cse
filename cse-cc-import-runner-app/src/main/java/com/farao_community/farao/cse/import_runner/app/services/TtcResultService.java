@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.computation.BorderExchanges;
+import com.farao_community.farao.cse.computation.LoadflowComputationException;
 import com.farao_community.farao.cse.data.cnec.CracResultsHelper;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
@@ -50,7 +51,7 @@ public class TtcResultService {
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
     }
 
-    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String firstShiftNetworkName, String finalNetworkName, Map<String, Integer> preprocessedPsts, Map<String, Double> preprocessedPisaLinks) {
+    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String firstShiftNetworkName, String finalNetworkName, Map<String, Integer> preprocessedPsts, Map<String, Double> preprocessedPisaLinks) throws LoadflowComputationException {
         TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, firstShiftNetworkName, finalNetworkName);
         String networkWithPraUrl = highestSecureStepRaoResponse.getRaoResponse().getNetworkWithPraFileUrl();
         Network networkWithPra = fileImporter.importNetwork(networkWithPraUrl);

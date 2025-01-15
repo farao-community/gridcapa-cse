@@ -94,7 +94,7 @@ public final class TtcResult {
         public enum FailedProcessReason {
             NO_SECURE_TTC("A98", "No secure TTC found"),
             INVALID_FILES("A94", "Some input files are invalid: "),
-            LOAD_FLOW_FAILURE("A42", "Load flow divergence"),
+            LOAD_FLOW_FAILURE("A42", "Load flow divergence during calculation"),
             IT_ISSUE("A93", ""),
             OTHER("B18", "");
 

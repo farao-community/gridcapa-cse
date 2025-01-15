@@ -40,7 +40,7 @@ public final class BorderExchanges {
         // Should not be instantiated
     }
 
-    public static double computeItalianImport(Network network) {
+    public static double computeItalianImport(Network network) throws LoadflowComputationException {
         runLoadFlow(network);
         CountryArea itArea = new CountryAreaFactory(Country.IT).create(network);
         return Stream.of(Country.FR, Country.AT, Country.CH, Country.SI)
@@ -48,11 +48,11 @@ public final class BorderExchanges {
             .reduce(0., Double::sum);
     }
 
-    public static Map<String, Double> computeCseBordersExchanges(Network network) {
+    public static Map<String, Double> computeCseBordersExchanges(Network network) throws LoadflowComputationException {
         return computeCseBordersExchanges(network, true);
     }
 
-    public static Map<String, Double> computeCseBordersExchanges(Network network, boolean withLoadflow) {
+    public static Map<String, Double> computeCseBordersExchanges(Network network, boolean withLoadflow) throws LoadflowComputationException {
         if (withLoadflow) {
             runLoadFlow(network);
         }
@@ -76,7 +76,7 @@ public final class BorderExchanges {
         return countryAreaPerCountry.get(fromCountry).getLeavingFlowToCountry(countryAreaPerCountry.get(toCountry));
     }
 
-    public static Map<String, Double> computeCseCountriesBalances(Network network) {
+    public static Map<String, Double> computeCseCountriesBalances(Network network) throws LoadflowComputationException {
         runLoadFlow(network);
         Map<String, Double> countriesBalances = new HashMap<>();
         countriesBalances.put("AT", new CountryAreaFactory(Country.AT).create(network).getNetPosition());
@@ -92,7 +92,7 @@ public final class BorderExchanges {
         LoadFlowResult result = LoadFlow.run(network, LoadFlowParameters.load());
         if (!result.isOk()) {
             LOGGER.error("Loadflow computation diverged on network '{}'", network.getId());
-            throw new CseComputationException(String.format("Loadflow computation diverged on network %s", network.getId()));
+            throw new LoadflowComputationException(String.format("Loadflow computation diverged on network %s", network.getId()));
         }
     }
 }

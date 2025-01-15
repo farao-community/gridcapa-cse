@@ -10,13 +10,13 @@ package com.farao_community.farao.cse.computation;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class CseComputationException extends RuntimeException {
+public class LoadflowComputationException extends RuntimeException {
 
-    public CseComputationException(String message) {
+    public LoadflowComputationException(String message) {
         super(message);
     }
 
-    public CseComputationException(String message, Throwable throwable) {
+    public LoadflowComputationException(String message, Throwable throwable) {
         super(message, throwable);
     }
 }
