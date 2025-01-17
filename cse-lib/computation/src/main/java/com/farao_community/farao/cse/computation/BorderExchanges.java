@@ -90,7 +90,7 @@ public final class BorderExchanges {
 
     private static void runLoadFlow(Network network) {
         LoadFlowResult result = LoadFlow.run(network, LoadFlowParameters.load());
-        if (!result.isOk()) {
+        if (result.isFailed()) {
             LOGGER.error("Loadflow computation diverged on network '{}'", network.getId());
             throw new LoadflowComputationException(String.format("Loadflow computation diverged on network %s", network.getId()));
         }

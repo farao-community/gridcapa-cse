@@ -1,16 +1,15 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.computation.LoadflowComputationException;
-import com.farao_community.farao.cse.import_runner.app.dichotomy.ZonalScalableProvider;
-import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.powsybl.openrao.commons.EICode;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.CseCountry;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.NetworkShifterUtil;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.ZonalScalableProvider;
+import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.glsk.api.io.GlskDocumentImporters;
 import com.powsybl.glsk.commons.ZonalData;
@@ -18,10 +17,10 @@ import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.modification.scalable.ScalingParameters;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.commons.EICode;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +44,7 @@ public class InitialShiftService {
         this.zonalScalableProvider = zonalScalableProvider;
     }
 
-    void performInitialShiftFromVulcanusLevelToNtcLevel(Network network, CseData cseData, CseRequest cseRequest, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) throws IOException, LoadflowComputationException {
+    void performInitialShiftFromVulcanusLevelToNtcLevel(Network network, CseData cseData, CseRequest cseRequest, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) throws LoadflowComputationException {
         Map<String, Double> preprocessedNetworkNps = BorderExchanges.computeCseCountriesBalances(network);
         for (Map.Entry<String, Double> entry : preprocessedNetworkNps.entrySet()) {
             businessLogger.info("Summary : Net positions on preprocessed network : for area {} : net position is {}.", entry.getKey(), entry.getValue());
@@ -88,7 +87,7 @@ public class InitialShiftService {
         return initialShifts;
     }
 
-    private void shiftNetwork(Map<String, Double> scalingValuesByCountry, CseRequest cseRequest, Network network) throws IOException {
+    private void shiftNetwork(Map<String, Double> scalingValuesByCountry, CseRequest cseRequest, Network network) {
         ZonalData<Scalable> zonalScalable = getZonalScalableForProcess(cseRequest, network);
         String initialVariantId = network.getVariantManager().getWorkingVariantId();
          // SecureRandom used to be compliant with sonar
@@ -103,11 +102,12 @@ public class InitialShiftService {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
             double done = zonalScalable.getData(zoneId).scale(network, asked, scalingParameters);
-            businessLogger.info(String.format("Applying variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done));
+            final String message = String.format("Applying variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done);
+            businessLogger.info(message);
 
             if (Math.abs(done - asked) > 1e-2) {
-                businessLogger.warn(String.format("Glsk limitation : Incomplete variation on zone %s (target: %.3f, done: %.3f)",
-                    zoneId, asked, done));
+                final String warningMessage = String.format("Glsk limitation : Incomplete variation on zone %s (target: %.3f, done: %.3f)", zoneId, asked, done);
+                businessLogger.warn(warningMessage);
                 if (zoneId.equals(new EICode(Country.IT).getAreaCode())) {
                     double italyGlskLimitationSplittingFactor = done / asked;
                     businessLogger.warn("Glsk limitation is reached for italy, shifts will be updated proportionally to coefficient: {}", italyGlskLimitationSplittingFactor);
@@ -125,7 +125,7 @@ public class InitialShiftService {
 
     }
 
-    private ZonalData<Scalable> getZonalScalableForProcess(CseRequest cseRequest, Network network) throws IOException {
+    private ZonalData<Scalable> getZonalScalableForProcess(CseRequest cseRequest, Network network) {
         return cseRequest.getProcessType().equals(ProcessType.D2CC) ?
             zonalScalableProvider.get(cseRequest.getMergedGlskUrl(), network, ProcessType.D2CC) :
             GlskDocumentImporters.importGlsk(fileImporter.openUrlStream(cseRequest.getMergedGlskUrl())).getZonalScalable(network);

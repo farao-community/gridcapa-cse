@@ -260,7 +260,7 @@ public class MultipleDichotomyRunner {
     private List<String> getActivatedRangeActionInPreventive(Crac crac, DichotomyResult<DichotomyRaoResponse> dichotomyResult) {
         if (dichotomyResult.hasValidStep() && dichotomyResult.getHighestValidStep().getRaoResult() != null) {
             List<String> prasNames = dichotomyResult.getHighestValidStep().getRaoResult().getActivatedNetworkActionsDuringState(crac.getPreventiveState()).stream().map(NetworkAction::getName).collect(Collectors.toList());
-            prasNames.addAll(dichotomyResult.getHighestValidStep().getRaoResult().getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream().map(RangeAction::getName).collect(Collectors.toList()));
+            prasNames.addAll(dichotomyResult.getHighestValidStep().getRaoResult().getActivatedRangeActionsDuringState(crac.getPreventiveState()).stream().map(RangeAction::getName).toList());
             return prasNames;
         } else {
             return Collections.emptyList();

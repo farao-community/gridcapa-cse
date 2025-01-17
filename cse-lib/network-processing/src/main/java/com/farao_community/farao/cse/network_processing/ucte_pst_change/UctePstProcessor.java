@@ -28,11 +28,13 @@ public final class UctePstProcessor {
     private final Logger businessLogger;
     private final String voltageLevel;
     private final String nodeId;
+    private final String warnMessageNoPstAtVoltageLevel;
 
     public UctePstProcessor(Logger businessLogger, String voltageLevel, String nodeId) {
         this.businessLogger = businessLogger;
         this.voltageLevel = voltageLevel;
         this.nodeId = nodeId;
+        this.warnMessageNoPstAtVoltageLevel = String.format("No PST at voltage level (%s) has been found.", voltageLevel);
     }
 
     public void forcePhaseTapChangerInActivePowerRegulationForIdcc(Network network, double defaultRegulationValue) {
@@ -45,7 +47,7 @@ public final class UctePstProcessor {
             }
             setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
         } else {
-            businessLogger.warn(String.format("No PST at voltage level (%s) has been found.", voltageLevel));
+            businessLogger.warn(warnMessageNoPstAtVoltageLevel);
         }
     }
 
@@ -56,7 +58,7 @@ public final class UctePstProcessor {
             phaseTapChanger.setRegulationValue(regulationValue);
             setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
         } else {
-            businessLogger.warn(String.format("No PST at voltage level (%s) has been found.", voltageLevel));
+            businessLogger.warn(warnMessageNoPstAtVoltageLevel);
         }
     }
 
@@ -84,7 +86,7 @@ public final class UctePstProcessor {
             PhaseTapChanger phaseTapChanger = transformer.getPhaseTapChanger();
             setTransformerInActivePowerRegulation(transformer, phaseTapChanger);
         } else {
-            businessLogger.warn(String.format("No PST at voltage level (%s) has been found.", voltageLevel));
+            businessLogger.warn(warnMessageNoPstAtVoltageLevel);
         }
     }
 

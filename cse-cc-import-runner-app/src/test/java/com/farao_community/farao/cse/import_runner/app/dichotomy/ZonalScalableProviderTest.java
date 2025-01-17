@@ -16,10 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -35,7 +34,7 @@ class ZonalScalableProviderTest {
     private ZonalScalableProvider zonalScalableProvider;
 
     @Test
-    void testHandleLskD2CC() throws IOException {
+    void testHandleLskD2CC() {
         Network network = fileImporter.importNetwork(Objects.requireNonNull(getClass().getResource("CSE_no_normal_glsk_variation.uct")).toString());
         ZonalData<Scalable> zonalScalable = zonalScalableProvider.get(Objects.requireNonNull(getClass().getResource("EmptyGlsk.xml")).toString(), network, ProcessType.D2CC);
         assertEquals(500, zonalScalable.getData("10YAT-APG------L").scale(network, 1000), DOUBLE_TOLERANCE);
@@ -47,7 +46,7 @@ class ZonalScalableProviderTest {
     }
 
     @Test
-    void testHandleLskIDCC() throws IOException {
+    void testHandleLskIDCC() {
         Network network = fileImporter.importNetwork(Objects.requireNonNull(getClass().getResource("CSE_no_normal_glsk_variation.uct")).toString());
         ZonalData<Scalable> zonalScalable = zonalScalableProvider.get(Objects.requireNonNull(getClass().getResource("EmptyGlsk.xml")).toString(), network, ProcessType.IDCC);
         assertEquals(500, zonalScalable.getData("10YAT-APG------L").scale(network, 1000), DOUBLE_TOLERANCE);

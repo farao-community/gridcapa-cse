@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.data.cnec;
 
+import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.api.cnec.FlowCnec;
 import com.powsybl.openrao.data.crac.api.parameters.CracCreationParameters;
@@ -13,7 +14,6 @@ import com.powsybl.openrao.data.crac.io.commons.api.stdcreationcontext.BranchCne
 import com.powsybl.openrao.data.crac.io.cse.CseCracCreationContext;
 import com.powsybl.openrao.data.raoresult.api.RaoResult;
 import org.junit.jupiter.api.Assertions;
-import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ class CracResultsHelperTest {
     void checkMonitoredBranchesRetrievedCorrectly() throws IOException {
         CracResultsHelper cracResultsHelper = getCracResultsHelper("pst_and_topo/crac.xml", "pst_and_topo/network.uct", "pst_and_topo/raoResult.json");
         String contingencyId = "outage_1";
-        List<BranchCnecCreationContext> monitoredBranchesForContingency = cracResultsHelper.getMonitoredBranchesForOutage(contingencyId);
+        List<? extends BranchCnecCreationContext> monitoredBranchesForContingency = cracResultsHelper.getMonitoredBranchesForOutage(contingencyId);
         assertEquals(1, monitoredBranchesForContingency.size());
 
         FlowCnec branchCnec = cracResultsHelper.getCrac().getFlowCnec("French line 1 - FFR1AA1 ->FFR2AA1   - outage_1 - outage");

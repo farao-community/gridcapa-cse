@@ -9,28 +9,24 @@ package com.farao_community.farao.cse.data.ntc2;
 import com.powsybl.iidm.network.Country;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 class Ntc2Test {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Ntc2Test.class);
-
     private Map<String, Double> test1Nt2Files;
     private Map<String, Double> test2Nt2Files;
     private Map<String, Double> test3Nt2Files;
 
     @BeforeEach
-    void setUp() throws IOException, URISyntaxException {
+    void setUp() {
         test1Nt2Files = new HashMap<>();
         test1Nt2Files.put("10YSI-ELES-----O", 111.);
         test1Nt2Files.put("10YFR-RTE------C", 222.);

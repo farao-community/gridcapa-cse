@@ -12,6 +12,8 @@ import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,9 +29,9 @@ public final class FileUtil {
 
     public static String getFilenameFromUrl(String stringUrl) {
         try {
-            URL url = new URL(stringUrl);
+            URL url = new URI(stringUrl).toURL();
             return FilenameUtils.getName(url.getPath());
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException | IllegalArgumentException e) {
             throw new CseDataException(String.format("Exception occurred while retrieving file name from : %s", stringUrl), e);
         }
     }
@@ -48,16 +50,18 @@ public final class FileUtil {
 
     public static void checkCgmFileName(String cgmFileUrl, ProcessType processType) {
         String cgmFilename = getFilenameFromUrl(cgmFileUrl);
-        if (processType == ProcessType.IDCC) {
-            if (!Pattern.matches("\\d{8}_\\d{4}_\\d{3}_Transit_CSE\\d+.(uct|UCT)", cgmFilename)) {
-                throw new CseDataException(String.format("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name()));
+        switch (processType) {
+            case IDCC -> {
+                if (!Pattern.matches("\\d{8}_\\d{4}_\\d{3}_Transit_CSE\\d+.(uct|UCT)", cgmFilename)) {
+                    throw new CseDataException(String.format("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name()));
+                }
             }
-        } else if (processType == ProcessType.D2CC) {
-            if (!Pattern.matches("\\d{8}_\\d{4}_2D\\d_CO_Transit_CSE\\d+.(uct|UCT)", cgmFilename)) {
-                throw new CseDataException(String.format("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name()));
+            case D2CC -> {
+                if (!Pattern.matches("\\d{8}_\\d{4}_2D\\d_CO_Transit_CSE\\d+.(uct|UCT)", cgmFilename)) {
+                    throw new CseDataException(String.format("CGM file name %s is incorrect for process %s.", cgmFilename, processType.name()));
+                }
             }
-        } else {
-            throw new CseInternalException(String.format("Process type %s is not handled", processType));
+            case null, default -> throw new CseInternalException(String.format("Process type %s is not handled", processType));
         }
     }
 }

@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -47,9 +46,9 @@ public final class TestUtils {
 
     private static void compareTxt(InputStream expected, InputStream actual, List<Integer> excludedLines) {
         BufferedReader expectedReader = new BufferedReader(new InputStreamReader(expected));
-        List<String> expectedLines = expectedReader.lines().collect(Collectors.toList());
+        List<String> expectedLines = expectedReader.lines().toList();
         BufferedReader actualReader = new BufferedReader(new InputStreamReader(actual));
-        List<String> actualLines = actualReader.lines().collect(Collectors.toList());
+        List<String> actualLines = actualReader.lines().toList();
 
         for (int i = 0; i < expectedLines.size(); i++) {
             if (!excludedLines.contains(i)) {

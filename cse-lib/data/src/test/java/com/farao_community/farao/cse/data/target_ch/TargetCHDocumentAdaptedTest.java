@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TargetCHDocumentAdaptedTest {
+class TargetCHDocumentAdaptedTest {
 
     @Test
     void testImport() throws JAXBException {

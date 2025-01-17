@@ -137,7 +137,7 @@ class MultipleDichotomyRunnerTest {
         Mockito.when(crac.getNetworkAction("ra5")).thenReturn(ra5);
     }
 
-    private DichotomyResult<DichotomyRaoResponse> mockDichotomyResult(String limitingElement, double lowestUnsecureItalianImport) throws IOException {
+    private DichotomyResult<DichotomyRaoResponse> mockDichotomyResult(String limitingElement, double lowestUnsecureItalianImport) {
         DichotomyStepResult<DichotomyRaoResponse> highestValidStep = Mockito.mock(DichotomyStepResult.class);
         DichotomyResult<DichotomyRaoResponse> dichotomyResult = Mockito.mock(DichotomyResult.class);
 
