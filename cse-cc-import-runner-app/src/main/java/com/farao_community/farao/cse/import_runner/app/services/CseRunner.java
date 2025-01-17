@@ -144,12 +144,7 @@ public class CseRunner {
 
             String ttcResultUrl;
             String finalCgmUrl;
-            DichotomyResult<DichotomyRaoResponse> dichotomyResult;
-            try {
-                dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
-            } catch (IndexOutOfBoundsException ioobe) {
-                dichotomyResult = null;
-            }
+            DichotomyResult<DichotomyRaoResponse> dichotomyResult = getDichotomyResult(multipleDichotomyResult);
 
             if (!multipleDichotomyResult.isRaoFailed()
                     && dichotomyResult != null
@@ -184,6 +179,16 @@ public class CseRunner {
             throw new CseInternalException(e.getMessage());
         }
 
+    }
+
+    private DichotomyResult<DichotomyRaoResponse> getDichotomyResult(MultipleDichotomyResult<DichotomyRaoResponse> multipleDichotomyResult) {
+        DichotomyResult<DichotomyRaoResponse> dichotomyResult;
+        try {
+            dichotomyResult = multipleDichotomyResult.getBestDichotomyResult();
+        } catch (IndexOutOfBoundsException ioobe) {
+            dichotomyResult = null;
+        }
+        return dichotomyResult;
     }
 
     CracImportData importCracAndModifyNetworkForBusBars(String cracUrl, OffsetDateTime targetProcessDateTime, Network network) throws IOException {
