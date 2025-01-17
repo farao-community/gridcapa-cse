@@ -8,6 +8,7 @@
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
 import com.farao_community.farao.cse.computation.BorderExchanges;
+import com.farao_community.farao.cse.computation.LoadflowComputationException;
 import com.farao_community.farao.cse.data.cnec.CnecUtil;
 import com.farao_community.farao.cse.import_runner.app.services.FileImporter;
 import com.powsybl.openrao.data.crac.api.Crac;
@@ -40,13 +41,13 @@ public final class DichotomyResultHelper {
         return worstCnec.getName();
     }
 
-    public double computeLowestUnsecureItalianImport(DichotomyResult<DichotomyRaoResponse> dichotomyResult) {
+    public double computeLowestUnsecureItalianImport(DichotomyResult<DichotomyRaoResponse> dichotomyResult) throws LoadflowComputationException {
         Network network = fileImporter.importNetwork(dichotomyResult.getLowestInvalidStep().getValidationData()
             .getRaoResponse().getNetworkWithPraFileUrl());
         return BorderExchanges.computeItalianImport(network);
     }
 
-    public double computeHighestSecureItalianImport(DichotomyResult<DichotomyRaoResponse> dichotomyResult) {
+    public double computeHighestSecureItalianImport(DichotomyResult<DichotomyRaoResponse> dichotomyResult) throws LoadflowComputationException {
         Network network = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
             .getRaoResponse().getNetworkWithPraFileUrl());
         return BorderExchanges.computeItalianImport(network);

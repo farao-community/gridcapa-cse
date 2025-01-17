@@ -7,11 +7,13 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.farao_community.farao.cse.computation.LoadflowComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyResult;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.MultipleDichotomyRunner;
+import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.runner.api.resource.CseResponse;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
@@ -37,10 +39,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -209,6 +208,21 @@ class CseRunnerTest {
         assertNotNull(response);
         assertEquals("failedRaoTTCFilePath", response.getTtcFileUrl());
         assertTrue(response.isRaoFailed());
+    }
+
+    @Test
+    void testLoadflowComputationDiverged() throws IOException, URISyntaxException {
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        when(restTemplateBuilder.build()).thenReturn(restTemplate);
+        when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(ResponseEntity.ok(false));
+
+        CseRequest cseRequest = buildTestCseRequest();
+
+        doThrow(LoadflowComputationException.class).when(initialShiftService).performInitialShiftFromVulcanusLevelToNtcLevel(any(Network.class), any(CseData.class), any(CseRequest.class), any(Map.class), any(Map.class));
+
+        assertThrows(CseInternalException.class, () -> cseRunner.run(cseRequest));
+        verify(ttcResultService, times(1)).saveFailedTtcResult(eq(cseRequest), any(), eq(TtcResult.FailedProcessData.FailedProcessReason.LOAD_FLOW_FAILURE));
+
     }
 
     private CseRequest buildTestCseRequest() throws MalformedURLException, URISyntaxException {
