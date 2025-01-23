@@ -7,6 +7,7 @@
 
 package com.farao_community.farao.cse.import_runner.app.dichotomy;
 
+import com.farao_community.farao.cse.computation.LoadflowComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
@@ -57,7 +58,7 @@ public class MultipleDichotomyRunner {
                                                                               Crac crac,
                                                                               double initialIndexValue,
                                                                               Map<String, Double> referenceExchanges,
-                                                                              Map<String, Double> ntcsByEic) throws IOException {
+                                                                              Map<String, Double> ntcsByEic) throws IOException, LoadflowComputationException {
 
         int maximumDichotomiesNumber = Optional.ofNullable(request.getMaximumDichotomiesNumber()).orElse(processConfiguration.getDefaultMaxDichotomiesNumber());
         Map<String, List<Set<String>>> automatedForcedPrasIds = request.getAutomatedForcedPrasIds();

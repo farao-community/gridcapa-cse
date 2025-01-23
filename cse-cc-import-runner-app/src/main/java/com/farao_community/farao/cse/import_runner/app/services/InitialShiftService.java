@@ -1,5 +1,6 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.farao_community.farao.cse.computation.LoadflowComputationException;
 import com.farao_community.farao.cse.computation.BorderExchanges;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
@@ -43,7 +44,7 @@ public class InitialShiftService {
         this.zonalScalableProvider = zonalScalableProvider;
     }
 
-    void performInitialShiftFromVulcanusLevelToNtcLevel(Network network, CseData cseData, CseRequest cseRequest, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) {
+    void performInitialShiftFromVulcanusLevelToNtcLevel(Network network, CseData cseData, CseRequest cseRequest, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) throws LoadflowComputationException {
         Map<String, Double> preprocessedNetworkNps = BorderExchanges.computeCseCountriesBalances(network);
         for (Map.Entry<String, Double> entry : preprocessedNetworkNps.entrySet()) {
             businessLogger.info("Summary : Net positions on preprocessed network : for area {} : net position is {}.", entry.getKey(), entry.getValue());
