@@ -31,7 +31,7 @@ public final class YearlyNtcDocument {
                     .collect(Collectors.toMap(
                         TLine::getCode,
                         tLine -> {
-                            TNTC tNtc = NtcUtil.getTNtcFromLine(targetDateTime, tLine);
+                            TNTC tNtc = NtcUtil.getTNtcFromLineFromYearlyNtc(targetDateTime, tLine);
                             if (tNtc.getType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
                                 return new LineInformation(tLine.getCNtc().value(), tNtc.getType(), tNtc.getV().doubleValue());
                             }

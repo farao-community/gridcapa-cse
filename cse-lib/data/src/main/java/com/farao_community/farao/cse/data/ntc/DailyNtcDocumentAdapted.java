@@ -11,10 +11,7 @@ import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.xsd.ntc_adapted.*;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -27,7 +24,7 @@ public final class DailyNtcDocumentAdapted {
         this.ntcReductionsDocument = ntcReductionsDocument;
     }
 
-    Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
+    Map<String, Optional<LineInformation>> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
         TSpecialLines tSpecialLines = ntcReductionsDocument.getSpecialLinesImport();
         if (tSpecialLines == null || tSpecialLines.getLine() == null || tSpecialLines.getLine().isEmpty()) {
             return Collections.emptyMap();
@@ -37,8 +34,12 @@ public final class DailyNtcDocumentAdapted {
                 .collect(Collectors.toMap(
                     TLine::getCode,
                     tLine -> {
-                        TNTC tNtc = NtcUtilAdapted.getTNtcFromLine(targetDateTime, tLine);
-                        return new LineInformation(tLine.getCNtc().value(), tNtc.getType(), tNtc.getV().doubleValue());
+                        Optional<TNTC> optionalTntc = NtcUtilAdapted.getTNtcFromLineFromNtcRedFile(targetDateTime, tLine);
+                        if (optionalTntc.isPresent()) {
+                            return Optional.of(new LineInformation(tLine.getCNtc().value(), optionalTntc.get().getType(), optionalTntc.get().getV().doubleValue()));
+                        } else {
+                            return Optional.empty();
+                        }
                     }
                 ));
     }

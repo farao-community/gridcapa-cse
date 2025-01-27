@@ -24,7 +24,13 @@ final class NtcUtilAdapted {
         // Should not be instantiated
     }
 
-    static TNTC getTNtcFromLine(OffsetDateTime targetDateTime, TLine tLine) {
+    static Optional<TNTC> getTNtcFromLineFromNtcRedFile(OffsetDateTime targetDateTime, TLine tLine) {
+        return getTNtcFromPeriods(targetDateTime, tLine.getPeriod())
+                .stream()
+                .collect(toOptional());
+    }
+
+    static TNTC getTNtcFromLineFromYearlyNtc(OffsetDateTime targetDateTime, TLine tLine) {
         return getTNtcFromPeriods(targetDateTime, tLine.getPeriod()).stream()
                 .collect(toOptional())
                 .orElseThrow(() -> new CseDataException(String.format("No NTC definition for line %s", tLine.getCode())));
