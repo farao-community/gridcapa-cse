@@ -166,10 +166,10 @@ public final class Ntc {
         dailyLinePerId.forEach((lineId, lineInformation) ->
             lineInformation.ifPresent(line -> {
                 if (line.getVariationType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
-                    flowPerLine.put(lineId, lineInformation.get().getFlow());
+                    flowPerLine.put(lineId, line.getFlow());
                 } else {
                     double initialFlow = Optional.ofNullable(flowPerLine.get(lineId)).orElse(0.);
-                    flowPerLine.put(lineId, initialFlow + lineInformation.get().getFlow());
+                    flowPerLine.put(lineId, initialFlow + line.getFlow());
                 }
             })
         );
