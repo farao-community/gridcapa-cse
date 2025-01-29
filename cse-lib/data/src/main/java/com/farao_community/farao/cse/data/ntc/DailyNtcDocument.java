@@ -7,15 +7,19 @@
 
 package com.farao_community.farao.cse.data.ntc;
 
-import com.farao_community.farao.cse.data.*;
-import com.farao_community.farao.cse.data.xsd.*;
+import com.farao_community.farao.cse.data.CseDataException;
+import com.farao_community.farao.cse.data.xsd.NTCReductionsDocument;
+import com.farao_community.farao.cse.data.xsd.TLine;
+import com.farao_community.farao.cse.data.xsd.TNTC;
+import com.farao_community.farao.cse.data.xsd.TNTCreductions;
+import com.farao_community.farao.cse.data.xsd.TSpecialLines;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -28,24 +32,19 @@ public final class DailyNtcDocument {
         this.ntcReductionsDocument = ntcReductionsDocument;
     }
 
-    Map<String, Optional<LineInformation>> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
+    Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
         List<TSpecialLines> tSpecialLines = ntcReductionsDocument.getSpecialLines();
         if (tSpecialLines.isEmpty()) {
             return Collections.emptyMap();
         }
         if (tSpecialLines.size() == 1) {
-            return tSpecialLines.get(0).getLine().stream()
+            return tSpecialLines.getFirst().getLine().stream()
                     .filter(lineSelector)
+                    .map(tLine -> Pair.of(tLine, NtcUtil.getTNtcFromLine(targetDateTime, tLine)))
+                    .filter(p -> p.getValue().isPresent())
                     .collect(Collectors.toMap(
-                        TLine::getCode,
-                        tLine -> {
-                            Optional<TNTC> optionalTntc = NtcUtil.getTNtcFromLine(targetDateTime, tLine);
-                            if (optionalTntc.isPresent()) {
-                                return Optional.of(new LineInformation(tLine.getCNtc().value(), optionalTntc.get().getType(), optionalTntc.get().getV().doubleValue()));
-                            } else {
-                                return Optional.empty();
-                            }
-                        }
+                            p -> p.getKey().getCode(),
+                            p -> new LineInformation(p.getKey().getCNtc().value(), p.getValue().get().getType(), p.getValue().get().getV().doubleValue())
                     ));
         }
         throw new CseDataException("Several special lines sections have been defined");
@@ -68,7 +67,7 @@ public final class DailyNtcDocument {
 
     private TNTCreductions getTNtcReductions() {
         if (ntcReductionsDocument.getNTCreductions().size() == 1) {
-            return ntcReductionsDocument.getNTCreductions().get(0);
+            return ntcReductionsDocument.getNTCreductions().getFirst();
         } else {
             throw new CseDataException("Daily NTC document should contain exactly 1 \"NTCReductions\" tag.");
         }

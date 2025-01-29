@@ -64,12 +64,12 @@ public final class Ntc {
         if (isImportEcProcess) {
             Predicate<com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine> fixedFlowLines = tLine -> tLine.isFixedFlow() && tLine.isModelized();
             Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocumentAdapted.getLineInformationPerLineId(fixedFlowLines);
-            Map<String, Optional<LineInformation>> dailyLineInformationPerLineId = dailyNtcDocumentAdapted != null ? dailyNtcDocumentAdapted.getLineInformationPerLineId(fixedFlowLines) : Map.of();
+            Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocumentAdapted != null ? dailyNtcDocumentAdapted.getLineInformationPerLineId(fixedFlowLines) : Map.of();
             return getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
         } else {
             Predicate<TLine> fixedFlowLines = tLine -> tLine.isFixedFlow() && tLine.isModelized();
             Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocument.getLineInformationPerLineId(fixedFlowLines);
-            Map<String, Optional<LineInformation>> dailyLineInformationPerLineId = dailyNtcDocument != null ? dailyNtcDocument.getLineInformationPerLineId(fixedFlowLines) : Map.of();
+            Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocument != null ? dailyNtcDocument.getLineInformationPerLineId(fixedFlowLines) : Map.of();
             return getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
         }
     }
@@ -82,7 +82,7 @@ public final class Ntc {
 
     Map<String, Double> getFlowPerCountry(Predicate<TLine> lineSelector) {
         Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocument.getLineInformationPerLineId(lineSelector);
-        Map<String, Optional<LineInformation>> dailyLineInformationPerLineId = dailyNtcDocument != null ? dailyNtcDocument.getLineInformationPerLineId(lineSelector) : Map.of();
+        Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocument != null ? dailyNtcDocument.getLineInformationPerLineId(lineSelector) : Map.of();
         Map<String, Double> flowPerLineId = getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
 
         Map<String, Double> flowPerCountry = new HashMap<>();
@@ -98,7 +98,7 @@ public final class Ntc {
 
     Map<String, Double> getFlowPerCountryAdapted(Predicate<com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine> lineSelector) {
         Map<String, LineInformation> yearlyLineInformationPerLineId = yearlyNtcDocumentAdapted.getLineInformationPerLineId(lineSelector);
-        Map<String, Optional<LineInformation>> dailyLineInformationPerLineId = dailyNtcDocumentAdapted != null ? dailyNtcDocumentAdapted.getLineInformationPerLineId(lineSelector) : Map.of();
+        Map<String, LineInformation> dailyLineInformationPerLineId = dailyNtcDocumentAdapted != null ? dailyNtcDocumentAdapted.getLineInformationPerLineId(lineSelector) : Map.of();
         Map<String, Double> flowPerLineId = getFlowPerLineId(yearlyLineInformationPerLineId, dailyLineInformationPerLineId);
 
         Map<String, Double> flowPerCountry = new HashMap<>();
@@ -112,9 +112,12 @@ public final class Ntc {
         return flowPerCountry;
     }
 
-    private String getCountryFromDailyLineInformation(Map<String, Optional<LineInformation>> dailyLineInformationPerLineId, String lineId) {
-        return dailyLineInformationPerLineId.get(lineId).map(LineInformation::getCountry)
-                .orElseThrow(() -> new CseInternalException(String.format("No information available for line %s", lineId)));
+    private String getCountryFromDailyLineInformation(Map<String, LineInformation> dailyLineInformationPerLineId, String lineId) {
+        if (dailyLineInformationPerLineId.containsKey(lineId)) {
+            return dailyLineInformationPerLineId.get(lineId).getCountry();
+        } else {
+            throw new CseInternalException(String.format("No information available for line %s", lineId));
+        }
     }
 
     public Map<String, Double> getNtcPerCountry() {
@@ -157,22 +160,20 @@ public final class Ntc {
         return ntcPerCountry;
     }
 
-    private static Map<String, Double> getFlowPerLineId(Map<String, LineInformation> yearlyLinePerId, Map<String, Optional<LineInformation>> dailyLinePerId) {
+    private static Map<String, Double> getFlowPerLineId(Map<String, LineInformation> yearlyLinePerId, Map<String, LineInformation> dailyLinePerId) {
         Map<String, Double> flowPerLine = yearlyLinePerId.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> entry.getValue().getFlow()
                 ));
-        dailyLinePerId.forEach((lineId, lineInformation) ->
-            lineInformation.ifPresent(line -> {
-                if (line.getVariationType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
-                    flowPerLine.put(lineId, line.getFlow());
-                } else {
-                    double initialFlow = Optional.ofNullable(flowPerLine.get(lineId)).orElse(0.);
-                    flowPerLine.put(lineId, initialFlow + line.getFlow());
-                }
-            })
-        );
+        dailyLinePerId.forEach((lineId, lineInformation) -> {
+            if (lineInformation.getVariationType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
+                flowPerLine.put(lineId, lineInformation.getFlow());
+            } else {
+                double initialFlow = Optional.ofNullable(flowPerLine.get(lineId)).orElse(0.);
+                flowPerLine.put(lineId, initialFlow + lineInformation.getFlow());
+            }
+        });
         return flowPerLine;
     }
 
