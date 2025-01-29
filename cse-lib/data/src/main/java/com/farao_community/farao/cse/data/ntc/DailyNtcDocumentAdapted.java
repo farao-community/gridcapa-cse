@@ -38,7 +38,7 @@ public final class DailyNtcDocumentAdapted {
                 .collect(Collectors.toMap(
                     TLine::getCode,
                     tLine -> {
-                        Optional<TNTC> optionalTntc = NtcUtilAdapted.getTNtcFromLineFromNtcRedFile(targetDateTime, tLine);
+                        Optional<TNTC> optionalTntc = NtcUtilAdapted.getTNtcFromLine(targetDateTime, tLine);
                         if (optionalTntc.isPresent()) {
                             return Optional.of(new LineInformation(tLine.getCNtc().value(), optionalTntc.get().getType(), optionalTntc.get().getV().doubleValue()));
                         } else {

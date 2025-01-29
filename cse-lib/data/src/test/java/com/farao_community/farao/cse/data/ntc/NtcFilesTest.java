@@ -81,7 +81,6 @@ class NtcFilesTest {
 
     @Test
     void testFixedFlowWhenPeriodIsMissingInTheNTcRedFile() {
-
         OffsetDateTime targetDateTime = OffsetDateTime.parse("2021-06-24T16:30Z");
         try (InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1.xml");
              InputStream dailyData = getClass().getResourceAsStream("20210624_2D4_NTC_reductions_CSE1_missingPeriodForSpecialLine.xml")
