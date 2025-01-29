@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.data.ntc;
 
+import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.NTCAnnualDocument;
 import com.farao_community.farao.cse.data.xsd.NTCReductionsDocument;
@@ -73,6 +74,36 @@ class NtcFilesTest {
             Map<String, Double> fixedFlowLines = new Ntc(new YearlyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
                     new DailyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)), false).getFlowOnFixedFlowLines();
             assertEquals(75, fixedFlowLines.get(MENDRISIO_CAGNO_ID), DOUBLE_PRECISION);
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException("Impossible to create NTC", e);
+        }
+    }
+
+    @Test
+    void testFixedFlowWhenPeriodIsMissingInTheNTcRedFile() {
+        OffsetDateTime targetDateTime = OffsetDateTime.parse("2021-06-24T16:30Z");
+        try (InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1.xml");
+             InputStream dailyData = getClass().getResourceAsStream("20210624_2D4_NTC_reductions_CSE1_missingPeriodForSpecialLine.xml")
+        ) {
+            Map<String, Double> fixedFlowLines = new Ntc(new YearlyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
+                    new DailyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)), false).getFlowOnFixedFlowLines();
+            assertEquals(150, fixedFlowLines.get(MENDRISIO_CAGNO_ID), DOUBLE_PRECISION);
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException("Impossible to create NTC", e);
+        }
+    }
+
+    @Test
+    void testFixedFlowThrowsExceptionWhenPeriodIsMissingInTheNTcAnnualFile() {
+        OffsetDateTime targetDateTime = OffsetDateTime.parse("2021-06-24T16:30Z");
+        try (InputStream yearlyData = getClass().getResourceAsStream("2021_2Dp_NTC_annual_CSE1_missingPeriodsForSpecialLine.xml");
+             InputStream dailyData = getClass().getResourceAsStream("20210624_2D4_NTC_reductions_CSE1.xml")
+        ) {
+            Ntc ntc1 =  new Ntc(new YearlyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
+                    new DailyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)), false);
+            Exception exception = assertThrows(CseDataException.class,
+                    () -> ntc1.getFlowOnFixedFlowLines());
+            assertEquals("No NTC definition for line ml_mendrisio-cagno", exception.getMessage());
         } catch (IOException | JAXBException e) {
             throw new CseInvalidDataException("Impossible to create NTC", e);
         }

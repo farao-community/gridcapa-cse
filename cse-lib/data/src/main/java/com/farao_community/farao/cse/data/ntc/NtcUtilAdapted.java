@@ -6,7 +6,6 @@
  */
 package com.farao_community.farao.cse.data.ntc;
 
-import com.farao_community.farao.cse.data.CseDataException;
 import com.farao_community.farao.cse.data.DateTimeUtil;
 import com.farao_community.farao.cse.data.xsd.ntc_adapted.*;
 
@@ -24,10 +23,10 @@ final class NtcUtilAdapted {
         // Should not be instantiated
     }
 
-    static TNTC getTNtcFromLine(OffsetDateTime targetDateTime, TLine tLine) {
-        return getTNtcFromPeriods(targetDateTime, tLine.getPeriod()).stream()
-                .collect(toOptional())
-                .orElseThrow(() -> new CseDataException(String.format("No NTC definition for line %s", tLine.getCode())));
+    static Optional<TNTC> getTNtcFromLine(OffsetDateTime targetDateTime, TLine tLine) {
+        return getTNtcFromPeriods(targetDateTime, tLine.getPeriod())
+                .stream()
+                .collect(toOptional());
     }
 
     static List<TNTC> getTNtcFromDays(OffsetDateTime targetDateTime, List<TDay> tDays) {
