@@ -7,7 +7,12 @@
 package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.DateTimeUtil;
-import com.farao_community.farao.cse.data.xsd.ntc_adapted.*;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TDay;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TDayOfWeek;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TNTC;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TPeriod;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TTimeInterval;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -65,20 +70,6 @@ final class NtcUtilAdapted {
     }
 
     static boolean isTargetDayOfWeekMatchWithDayNum(int daynum, int targetDayZOfWeek) {
-        DayOfWeek dayOfWeek = DayOfWeek.getInstance(daynum);
-        switch (dayOfWeek) {
-            case EVERYDAY:
-                return true;
-            case SATURDAY:
-                return targetDayZOfWeek == DayOfWeek.SATURDAY.getDaynum();
-            case SUNDAY:
-                return targetDayZOfWeek == DayOfWeek.SUNDAY.getDaynum();
-            case MONTOFRI:
-                return targetDayZOfWeek != DayOfWeek.SATURDAY.getDaynum() && targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
-            case MONTOSAT:
-                return targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
-            default:
-                return false;
-        }
+        return NtcUtil.isTargetDayOfWeekMatchWithDayNum(daynum, targetDayZOfWeek);
     }
 }
