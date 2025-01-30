@@ -18,7 +18,6 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -42,7 +41,7 @@ public class NetworkShifterProvider {
                               CseData cseData,
                               Network network,
                               Map<String, Double> referenceExchanges,
-                              Map<String, Double> ntcsByEic) throws IOException {
+                              Map<String, Double> ntcsByEic) {
         return new LinearScaler(
             zonalScalableProvider.get(request.getMergedGlskUrl(), network, request.getProcessType()),
             getShiftDispatcher(request.getProcessType(), cseData, referenceExchanges, ntcsByEic),

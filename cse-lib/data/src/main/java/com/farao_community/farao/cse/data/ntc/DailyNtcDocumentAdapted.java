@@ -8,14 +8,18 @@
 package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.CseDataException;
-import com.farao_community.farao.cse.data.xsd.ntc_adapted.*;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCReductionsDocument;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TNTC;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TNTCreductionsImport;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TSpecialLines;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -28,23 +32,18 @@ public final class DailyNtcDocumentAdapted {
         this.ntcReductionsDocument = ntcReductionsDocument;
     }
 
-    Map<String, Optional<LineInformation>> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
+    Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
         TSpecialLines tSpecialLines = ntcReductionsDocument.getSpecialLinesImport();
         if (tSpecialLines == null || tSpecialLines.getLine() == null || tSpecialLines.getLine().isEmpty()) {
             return Collections.emptyMap();
         }
         return tSpecialLines.getLine().stream()
                 .filter(lineSelector)
+                .map(tLine -> Pair.of(tLine, NtcUtilAdapted.getTNtcFromLine(targetDateTime, tLine)))
+                .filter(p -> p.getValue().isPresent())
                 .collect(Collectors.toMap(
-                    TLine::getCode,
-                    tLine -> {
-                        Optional<TNTC> optionalTntc = NtcUtilAdapted.getTNtcFromLine(targetDateTime, tLine);
-                        if (optionalTntc.isPresent()) {
-                            return Optional.of(new LineInformation(tLine.getCNtc().value(), optionalTntc.get().getType(), optionalTntc.get().getV().doubleValue()));
-                        } else {
-                            return Optional.empty();
-                        }
-                    }
+                        p -> p.getKey().getCode(),
+                        p -> new LineInformation(p.getKey().getCNtc().value(), p.getValue().get().getType(), p.getValue().get().getV().doubleValue())
                 ));
     }
 

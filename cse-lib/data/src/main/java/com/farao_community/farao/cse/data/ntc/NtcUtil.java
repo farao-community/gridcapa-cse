@@ -6,11 +6,18 @@
  */
 package com.farao_community.farao.cse.data.ntc;
 
-import com.farao_community.farao.cse.data.*;
-import com.farao_community.farao.cse.data.xsd.*;
+import com.farao_community.farao.cse.data.DateTimeUtil;
+import com.farao_community.farao.cse.data.xsd.TDay;
+import com.farao_community.farao.cse.data.xsd.TDayOfWeek;
+import com.farao_community.farao.cse.data.xsd.TLine;
+import com.farao_community.farao.cse.data.xsd.TNTC;
+import com.farao_community.farao.cse.data.xsd.TPeriod;
+import com.farao_community.farao.cse.data.xsd.TTimeInterval;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static com.farao_community.farao.cse.data.DataUtil.toOptional;
 
@@ -22,7 +29,8 @@ final class NtcUtil {
     }
 
     static Optional<TNTC> getTNtcFromLine(OffsetDateTime targetDateTime, TLine tLine) {
-        return getTNtcFromPeriods(targetDateTime, tLine.getPeriod()).stream()
+        return getTNtcFromPeriods(targetDateTime, tLine.getPeriod())
+                .stream()
                 .collect(toOptional());
     }
 
@@ -63,19 +71,13 @@ final class NtcUtil {
 
     static boolean isTargetDayOfWeekMatchWithDayNum(int daynum, int targetDayZOfWeek) {
         DayOfWeek dayOfWeek = DayOfWeek.getInstance(daynum);
-        switch (dayOfWeek) {
-            case EVERYDAY:
-                return true;
-            case SATURDAY:
-                return targetDayZOfWeek == DayOfWeek.SATURDAY.getDaynum();
-            case SUNDAY:
-                return targetDayZOfWeek == DayOfWeek.SUNDAY.getDaynum();
-            case MONTOFRI:
-                return targetDayZOfWeek != DayOfWeek.SATURDAY.getDaynum() && targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
-            case MONTOSAT:
-                return targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
-            default:
-                return false;
-        }
+        return switch (dayOfWeek) {
+            case EVERYDAY -> true;
+            case SATURDAY -> targetDayZOfWeek == DayOfWeek.SATURDAY.getDaynum();
+            case SUNDAY -> targetDayZOfWeek == DayOfWeek.SUNDAY.getDaynum();
+            case MONTOFRI -> targetDayZOfWeek != DayOfWeek.SATURDAY.getDaynum() && targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
+            case MONTOSAT -> targetDayZOfWeek != DayOfWeek.SUNDAY.getDaynum();
+            default -> false;
+        };
     }
 }

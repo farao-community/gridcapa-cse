@@ -101,8 +101,7 @@ class NtcFilesTest {
         ) {
             Ntc ntc1 =  new Ntc(new YearlyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
                     new DailyNtcDocument(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)), false);
-            Exception exception = assertThrows(CseDataException.class,
-                    () -> ntc1.getFlowOnFixedFlowLines());
+            Exception exception = assertThrows(CseDataException.class, ntc1::getFlowOnFixedFlowLines);
             assertEquals("No NTC definition for line ml_mendrisio-cagno", exception.getMessage());
         } catch (IOException | JAXBException e) {
             throw new CseInvalidDataException("Impossible to create NTC", e);
