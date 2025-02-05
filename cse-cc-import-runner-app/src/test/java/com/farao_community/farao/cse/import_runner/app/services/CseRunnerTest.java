@@ -204,7 +204,7 @@ class CseRunnerTest {
         CseResponse response = cseRunner.run(cseRequest);
 
         // THEN
-        verify(ttcResultService, times(1)).saveFailedTtcResult(eq(cseRequest), any(), eq(TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC));
+        verify(ttcResultService, times(1)).saveFailedTtcResult(eq(cseRequest), any(), eq(TtcResult.FailedProcessData.FailedProcessReason.IT_ISSUE));
         assertNotNull(response);
         assertEquals("failedRaoTTCFilePath", response.getTtcFileUrl());
         assertTrue(response.isRaoFailed());
