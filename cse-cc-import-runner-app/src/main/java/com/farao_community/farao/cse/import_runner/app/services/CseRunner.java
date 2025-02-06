@@ -159,6 +159,13 @@ public class CseRunner {
                 ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, cracImportData.cseCracCreationContext,
                         dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
                         firstShiftNetworkName, FileUtil.getFilenameFromUrl(finalCgmUrl), preprocessedPsts, preprocessedPisaLinks);
+            } else if (multipleDichotomyResult.isRaoFailed()) {
+                TtcResult.FailedProcessData.FailedProcessReason failedProcessReason = TtcResult.FailedProcessData.FailedProcessReason.IT_ISSUE;
+                ttcResultUrl = ttcResultService.saveFailedTtcResult(
+                        cseRequest,
+                        firstShiftNetworkName,
+                        failedProcessReason);
+                finalCgmUrl = firstShiftNetworkName;
             } else {
                 TtcResult.FailedProcessData.FailedProcessReason failedProcessReason =
                         multipleDichotomyResult.isInterrupted() ? TtcResult.FailedProcessData.FailedProcessReason.OTHER : TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC;
