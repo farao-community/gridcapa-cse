@@ -8,27 +8,33 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
-import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
-import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
+import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
 import com.farao_community.farao.cse.import_runner.app.util.MinioStorageHelper;
-import com.powsybl.openrao.data.crac.api.Crac;
 import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
+import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.powsybl.commons.datasource.MemDataSource;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.raoapi.json.JsonRaoParameters;
 import com.powsybl.openrao.raoapi.parameters.RaoParameters;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
+import com.powsybl.openrao.raoapi.parameters.extensions.OpenRaoSearchTreeParameters;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
 import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -105,11 +111,14 @@ public class FileExporter {
         return !StringUtils.isBlank(basePath) ? basePath + RAO_PARAMETERS_FILE_NAME : MinioStorageHelper.makeDestinationMinioPath(offsetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + RAO_PARAMETERS_FILE_NAME;
     }
 
-    RaoParameters getRaoParameters(List<String> remedialActionsAppliedInPreviousStep) {
-        RaoParameters raoParameters = loadRaoParameters();
-        List<List<String>> combinedRas = raoParameters.getTopoOptimizationParameters().getPredefinedCombinations();
-        if (!remedialActionsAppliedInPreviousStep.isEmpty()) {
-            combinedRas.add(remedialActionsAppliedInPreviousStep);
+    RaoParameters getRaoParameters(final List<String> remedialActionsAppliedInPreviousStep) {
+        final RaoParameters raoParameters = loadRaoParameters();
+        if (raoParameters.hasExtension(OpenRaoSearchTreeParameters.class)) {
+            final OpenRaoSearchTreeParameters parameters = raoParameters.getExtension(OpenRaoSearchTreeParameters.class);
+            final List<List<String>> combinedRas = parameters.getTopoOptimizationParameters().getPredefinedCombinations();
+            if (!remedialActionsAppliedInPreviousStep.isEmpty()) {
+                combinedRas.add(remedialActionsAppliedInPreviousStep);
+            }
         }
         return raoParameters;
     }
