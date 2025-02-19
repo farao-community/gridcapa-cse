@@ -118,10 +118,6 @@ public class InitialShiftService {
                 }
             }
         }
-        //Save shift in the initial variant
-        network.getVariantManager().cloneVariant(newVariant, initialVariantId, true);
-        network.getVariantManager().setWorkingVariant(initialVariantId);
-        network.getVariantManager().removeVariant(newVariant);
 
     }
 

@@ -14,6 +14,7 @@ import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
+import com.farao_community.farao.cse.runner.api.exception.CseInternalException;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.powsybl.openrao.data.raoresult.api.RaoResult;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
+ * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 @Service
@@ -51,28 +53,35 @@ public class TtcResultService {
         return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
     }
 
-    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String firstShiftNetworkName, String finalNetworkName, Map<String, Integer> preprocessedPsts, Map<String, Double> preprocessedPisaLinks) throws LoadflowComputationException {
-        TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, firstShiftNetworkName, finalNetworkName);
-        String networkWithPraUrl = highestSecureStepRaoResponse.getRaoResponse().getNetworkWithPraFileUrl();
-        Network networkWithPra = fileImporter.importNetwork(networkWithPraUrl);
-        double finalItalianImport = BorderExchanges.computeItalianImport(networkWithPra);
+    public String saveTtcResult(CseRequest cseRequest, CseData cseData, CseCracCreationContext cseCracCreationContext, DichotomyRaoResponse highestSecureStepRaoResponse, LimitingCause limitingCause, String firstShiftNetworkName, String finalNetworkName, Map<String, Integer> preprocessedPsts, Map<String, Double> preprocessedPisaLinks) {
+        try {
+            TtcResult.TtcFiles ttcFiles = createTtcFiles(cseRequest, firstShiftNetworkName, finalNetworkName);
+            String networkWithPraUrl = highestSecureStepRaoResponse.getRaoResponse().getNetworkWithPraFileUrl();
+            Network networkWithPra = fileImporter.importNetwork(networkWithPraUrl);
+            double finalItalianImport = BorderExchanges.computeItalianImport(networkWithPra);
+            TtcResult.ProcessData processData = new TtcResult.ProcessData(
+                    highestSecureStepRaoResponse.getForcedPrasIds(),
+                    BorderExchanges.computeCseBordersExchanges(networkWithPra),
+                    cseData.getReducedSplittingFactors(),
+                    BorderExchanges.computeCseCountriesBalances(networkWithPra),
+                    limitingCause,
+                    finalItalianImport,
+                    cseData.getMniiOffset(),
+                    cseRequest.getTargetProcessDateTime().toString()
+            );
 
-        TtcResult.ProcessData processData = new TtcResult.ProcessData(
-            highestSecureStepRaoResponse.getForcedPrasIds(),
-            BorderExchanges.computeCseBordersExchanges(networkWithPra),
-            cseData.getReducedSplittingFactors(),
-            BorderExchanges.computeCseCountriesBalances(networkWithPra),
-            limitingCause,
-            finalItalianImport,
-            cseData.getMniiOffset(),
-            cseRequest.getTargetProcessDateTime().toString()
-        );
-
-        RaoResult raoResult = fileImporter.importRaoResult(highestSecureStepRaoResponse.getRaoResponse().getRaoResultFileUrl(), cseCracCreationContext.getCrac());
-        CracResultsHelper cracResultsHelper = new CracResultsHelper(
-            cseCracCreationContext, raoResult, networkWithPra, businessLogger);
-        Timestamp timestamp = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, preprocessedPisaLinks);
-        return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
+            RaoResult raoResult = fileImporter.importRaoResult(highestSecureStepRaoResponse.getRaoResponse().getRaoResultFileUrl(), cseCracCreationContext.getCrac());
+            CracResultsHelper cracResultsHelper = new CracResultsHelper(
+                    cseCracCreationContext, raoResult, networkWithPra, businessLogger);
+            Timestamp timestamp = TtcResult.generate(ttcFiles, processData, cracResultsHelper, preprocessedPsts, preprocessedPisaLinks);
+            return fileExporter.saveTtcResult(timestamp, cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
+        } catch (LoadflowComputationException e) {
+            saveFailedTtcResult(
+                    cseRequest,
+                    firstShiftNetworkName,
+                    TtcResult.FailedProcessData.FailedProcessReason.IT_ISSUE);
+            throw new CseInternalException(e.getMessage());
+        }
     }
 
     private static TtcResult.TtcFiles createTtcFiles(CseRequest cseRequest, String firstShiftNetworkName, String finalNetworkName) {
