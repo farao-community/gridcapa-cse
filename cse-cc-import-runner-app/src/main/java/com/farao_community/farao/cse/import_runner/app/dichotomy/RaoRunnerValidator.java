@@ -102,7 +102,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
         try {
             Crac crac = fileImporter.importCracFromJson(cracUrl, network);
             List<String> appliedRemedialActionInPreviousStep = lastDichotomyStepResult != null && lastDichotomyStepResult.getRaoResult() != null ? lastDichotomyStepResult.getRaoResult().getActivatedNetworkActionsDuringState(crac.getPreventiveState())
-                     .stream().map(NetworkAction::getId).toList() : Collections.emptyList();
+                    .stream().map(NetworkAction::getId).toList() : Collections.emptyList();
             RaoRequest raoRequest = buildRaoRequest(networkPresignedUrl, baseDirPathForCurrentStep, appliedRemedialActionInPreviousStep);
             // We don't stop computation even if there are no applied RAs, because we cannot be sure in the case where
             // the RAs are applicable on constraint, that it won't be applicable later on in the dichotomy (higher index)
@@ -137,7 +137,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
 
     private Set<String> applyForcedPras(Crac crac, Network network) {
         if (!forcedPrasIds.isEmpty()) {
-            Unit unit = fileExporter.loadRaoParameters().getObjectiveFunctionParameters().getType().getUnit();
+            Unit unit = fileExporter.loadRaoParameters().getObjectiveFunctionParameters().getUnit();
             // It computes reference flows on the network to be able to evaluate PRAs availability
             FlowResult flowResult = FlowEvaluator.evaluate(crac, network, unit);
 

@@ -8,12 +8,13 @@ package com.farao_community.farao.cse.import_runner.app.services;
 
 import com.farao_community.farao.cse.data.xsd.ttc_res.Timestamp;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
-import com.powsybl.openrao.data.crac.impl.CracImpl;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
-import com.powsybl.openrao.raoapi.parameters.RaoParameters;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.NetworkFactory;
+import com.powsybl.openrao.data.crac.impl.CracImpl;
+import com.powsybl.openrao.raoapi.parameters.RaoParameters;
+import com.powsybl.openrao.raoapi.parameters.extensions.OpenRaoSearchTreeParameters;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,7 +27,9 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -86,8 +89,10 @@ class FileExporterTest {
     @Test
     void getRaoParametersTest() {
         RaoParameters raoParameters = fileExporter.getRaoParameters(Collections.emptyList());
-        assertEquals(1, raoParameters.getTopoOptimizationParameters().getPredefinedCombinations().size());
-        List<String> raCombination = raoParameters.getTopoOptimizationParameters().getPredefinedCombinations().get(0);
+        final OpenRaoSearchTreeParameters parameters = raoParameters.getExtension(OpenRaoSearchTreeParameters.class);
+
+        assertEquals(1, parameters.getTopoOptimizationParameters().getPredefinedCombinations().size());
+        List<String> raCombination = parameters.getTopoOptimizationParameters().getPredefinedCombinations().get(0);
         assertEquals(2, raCombination.size());
         assertTrue(raCombination.contains("PRA_2N_VALPELLINE"));
         assertTrue(raCombination.contains("PRA_2N_AVISE"));
@@ -97,7 +102,8 @@ class FileExporterTest {
     void getRaoParametersTestWhenRemedialActionsAppliedInPreviousStepIsNotEmpty() {
         List<String> networkActionIds = List.of("PRA_XX", "PRA_YY");
         RaoParameters raoParameters = fileExporter.getRaoParameters(networkActionIds);
-        assertEquals(2, raoParameters.getTopoOptimizationParameters().getPredefinedCombinations().size());
+        final OpenRaoSearchTreeParameters parameters = raoParameters.getExtension(OpenRaoSearchTreeParameters.class);
+        assertEquals(2, parameters.getTopoOptimizationParameters().getPredefinedCombinations().size());
     }
 
     @Test
