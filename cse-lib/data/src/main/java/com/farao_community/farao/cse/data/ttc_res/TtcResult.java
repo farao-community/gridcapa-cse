@@ -290,13 +290,17 @@ public final class TtcResult {
         Valid valid = new Valid();
         valid.setV(BigInteger.ZERO);
         ttcResults.setValid(valid);
-        ReasonType reasonType = new ReasonType();
-        String reasonText = failedProcessData.additionalFailureMessage
+        Reason reason = new Reason();
+        Reason.ReasonText reasonText = new Reason.ReasonText();
+        Reason.ReasonCode reasonCode = new Reason.ReasonCode();
+        String reasonTextValue = failedProcessData.additionalFailureMessage
             .map(s -> failedProcessData.failedProcessReason.getReasonText() + s)
             .orElseGet(failedProcessData.failedProcessReason::getReasonText);
-        reasonType.setReason(reasonText);
-        reasonType.setReasonCode(failedProcessData.failedProcessReason.getReasonCode());
-        ttcResults.setReasonType(reasonType);
+        reasonText.setV(reasonTextValue);
+        reasonCode.setV(failedProcessData.failedProcessReason.getReasonCode());
+        reason.setReasonText(reasonText);
+        reason.setReasonCode(reasonCode);
+        ttcResults.setReason(reason);
     }
 
     private static void fillLimitingElement(CracResultsHelper cracResultsHelper, Timestamp ttcResults) {
