@@ -22,7 +22,6 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -58,7 +57,7 @@ public class DichotomyRunner {
                                                               double initialIndexValue,
                                                               Map<String, Double> referenceExchanges,
                                                               Map<String, Double> ntcsByEic,
-                                                              Set<String> forcedPrasIds) throws IOException {
+                                                              Set<String> forcedPrasIds) {
         return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, referenceExchanges, ntcsByEic, forcedPrasIds);
     }
 
@@ -69,7 +68,7 @@ public class DichotomyRunner {
                                                               double minImportValue,
                                                               Map<String, Double> referenceExchanges,
                                                               Map<String, Double> ntcsByEic,
-                                                              Set<String> forcedPrasIds) throws IOException {
+                                                              Set<String> forcedPrasIds) {
         double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
         double dichotomyPrecision = cseRequest.getDichotomyPrecision();
         businessLogger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) minImportValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
@@ -80,7 +79,7 @@ public class DichotomyRunner {
                 interruptionService,
                 networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges, ntcsByEic),
                 getNetworkValidator(cseRequest, cseData, forcedPrasIds),
-                cseRequest.getId());
+                cseRequest.getCurrentRunId());
         return engine.run(network);
     }
 

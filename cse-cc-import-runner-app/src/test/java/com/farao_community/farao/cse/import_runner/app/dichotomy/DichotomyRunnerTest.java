@@ -88,6 +88,6 @@ class DichotomyRunnerTest {
 
         when(fileExporter.saveRaoParameters(time, ProcessType.IDCC, false)).thenReturn("raoParametersUrl");
         when(networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges, ntcsByEic)).thenReturn(networkShifter);
-        when(interruptionService.shouldTaskBeInterruptedSoftly(any())).thenReturn(true);
+        when(interruptionService.shouldRunBeInterruptedSoftly(any())).thenReturn(true);
     }
 }
