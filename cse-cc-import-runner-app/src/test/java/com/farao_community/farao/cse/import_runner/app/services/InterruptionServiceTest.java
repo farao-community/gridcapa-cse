@@ -38,7 +38,7 @@ class InterruptionServiceTest {
     }
 
     @Test
-    void shouldMarkTaskForSoftInterruption() {
+    void shouldMarkRunForSoftInterruption() {
         interruptionService.softInterrupt().accept(TASK_ID);
 
         assertTrue(interruptionService.shouldRunBeInterruptedSoftly(TASK_ID));
@@ -46,7 +46,7 @@ class InterruptionServiceTest {
     }
 
     @Test
-    void shouldNotInterruptTaskThatWasNotMarked() {
+    void shouldNotInterruptRunThatWasNotMarked() {
         assertFalse(interruptionService.shouldRunBeInterruptedSoftly(TASK_ID));
     }
 }
