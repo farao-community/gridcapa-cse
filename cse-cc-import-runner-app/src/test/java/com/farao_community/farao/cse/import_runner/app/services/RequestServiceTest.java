@@ -82,7 +82,7 @@ class RequestServiceTest {
         String id = UUID.randomUUID().toString();
         String runId = UUID.randomUUID().toString();
         CseRequest cseRequest = new CseRequest(id, runId, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0.0, 0.0, null, false);
-        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null", true, false);
+        CseResponse cseResponse = new CseResponse(cseRequest.getId(), "null", "null", true, true);
         byte[] req = jsonApiConverter.toJsonMessage(cseRequest, CseRequest.class);
         when(cseServer.run(any())).thenReturn(cseResponse);
 

@@ -65,11 +65,11 @@ public class RequestService {
 
     private void updateTaskStatus(final CseResponse cseResponse) {
         final String responseId = cseResponse.getId();
-        if (cseResponse.isRaoFailed()) {
-            sendTaskStatusUpdate(responseId, TaskStatus.ERROR);
-        } else if (cseResponse.isInterrupted()) {
+        if (cseResponse.isInterrupted()) {
             businessLogger.info("CSE run has been interrupted");
             sendTaskStatusUpdate(responseId, TaskStatus.INTERRUPTED);
+        } else if (cseResponse.isRaoFailed()) {
+            sendTaskStatusUpdate(responseId, TaskStatus.ERROR);
         } else {
             sendTaskStatusUpdate(responseId, TaskStatus.SUCCESS);
         }
