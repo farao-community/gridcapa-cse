@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -55,6 +57,7 @@ public class RequestService {
         // propagate in logs MDC the task id as an extra field to be able to match microservices logs with calculation tasks.
         // This should be done only once, as soon as the information to add in mdc is available.
         MDC.put("gridcapa-task-id", cseExportRequest.getId());
+        final OffsetDateTime startTime = OffsetDateTime.now();
         try {
             streamBridge.send(TASK_STATUS_UPDATE, new TaskStatusUpdate(UUID.fromString(cseExportRequest.getId()), TaskStatus.RUNNING));
             LOGGER.info("Cse request received : {}", cseExportRequest);
@@ -63,8 +66,18 @@ public class RequestService {
             LOGGER.info("Cse response sent: {}", cseExportResponse);
         } catch (Exception e) {
             result = handleError(e, cseExportRequest.getId());
+        } finally {
+            logComputationTime(startTime);
         }
         return result;
+    }
+
+    private void logComputationTime(final OffsetDateTime startTime) {
+        final Duration difference = Duration.between(startTime, OffsetDateTime.now());
+        businessLogger.info("Summary : computation time: {}h {}min {}s since the task switched to RUNNING.",
+                difference.toHours(),
+                difference.toMinutesPart(),
+                difference.toSecondsPart());
     }
 
     private byte[] sendCseResponse(CseExportResponse cseResponse) {
