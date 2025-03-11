@@ -60,7 +60,6 @@ public class RequestService {
             LOGGER.info("Cse request received : {}", cseRequest);
             CseResponse cseResponse = cseServer.run(cseRequest);
             updateTaskStatus(cseResponse);
-            logComputationTime(startTime);
             LOGGER.info("Cse response sent: {}", cseResponse);
         } catch (Exception e) {
             handleError(e, cseRequest.getId());
