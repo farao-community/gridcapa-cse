@@ -25,7 +25,7 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformerAdder;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.openrao.commons.OpenRaoException;
-import com.powsybl.ucte.converter.util.UcteConstants;
+import com.powsybl.ucte.converter.util.UcteConverterConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +122,7 @@ public class NetworkModifier {
                 .setEnsureIdUnicity(true)
                 .add();
             if (currentLimit != null) {
-                newSwitch.setProperty(UcteConstants.CURRENT_LIMIT_PROPERTY_KEY, String.valueOf((int) currentLimit.doubleValue()));
+                newSwitch.setProperty(UcteConverterConstants.CURRENT_LIMIT_PROPERTY_KEY, String.valueOf((int) currentLimit.doubleValue()));
             }
             LOGGER.debug("New switch '{}' has been created", newSwitch.getId());
             return newSwitch;
@@ -172,16 +172,16 @@ public class NetworkModifier {
 
     private static void findAndSetGeographicalName(Bus bus, VoltageLevel voltageLevel) {
         for (Bus otherBus : voltageLevel.getBusBreakerView().getBuses()) {
-            if (otherBus.hasProperty(UcteConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY)) {
-                bus.setProperty(UcteConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY, otherBus.getProperty(UcteConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY));
+            if (otherBus.hasProperty(UcteConverterConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY)) {
+                bus.setProperty(UcteConverterConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY, otherBus.getProperty(UcteConverterConstants.GEOGRAPHICAL_NAME_PROPERTY_KEY));
                 break;
             }
         }
     }
 
     private static String getOrderCode(Branch<?> branch) {
-        if (branch.hasProperty(UcteConstants.ORDER_CODE)) {
-            return branch.getProperty(UcteConstants.ORDER_CODE);
+        if (branch.hasProperty(UcteConverterConstants.ORDER_CODE)) {
+            return branch.getProperty(UcteConverterConstants.ORDER_CODE);
         } else {
             return branch.getId().substring(branch.getId().length() - 1);
         }

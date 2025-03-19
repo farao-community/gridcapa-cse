@@ -11,7 +11,7 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
-import com.powsybl.ucte.converter.util.UcteConstants;
+import com.powsybl.ucte.converter.util.UcteConverterConstants;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -72,7 +72,7 @@ class NetworkModifierTest {
         Switch createdSwitch = network.getSwitch("BBE1AA12 BBE1AA11 1");
         assertNotNull(createdSwitch);
         assertTrue(createdSwitch.isOpen());
-        assertEquals(1350., Double.parseDouble(createdSwitch.getProperty(UcteConstants.CURRENT_LIMIT_PROPERTY_KEY)), DOUBLE_TOLERANCE);
+        assertEquals(1350., Double.parseDouble(createdSwitch.getProperty(UcteConverterConstants.CURRENT_LIMIT_PROPERTY_KEY)), DOUBLE_TOLERANCE);
     }
 
     @Test
@@ -83,7 +83,7 @@ class NetworkModifierTest {
         Switch createdSwitch = network.getSwitch("BBE1AA12 BBE1AA11 1");
         assertNotNull(createdSwitch);
         assertFalse(createdSwitch.isOpen());
-        assertNull(createdSwitch.getProperty(UcteConstants.CURRENT_LIMIT_PROPERTY_KEY));
+        assertNull(createdSwitch.getProperty(UcteConverterConstants.CURRENT_LIMIT_PROPERTY_KEY));
     }
 
     @Test
