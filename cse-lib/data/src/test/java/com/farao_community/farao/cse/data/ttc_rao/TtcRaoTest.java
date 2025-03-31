@@ -54,7 +54,7 @@ class TtcRaoTest {
         InputStream cracInputStream = getClass().getResourceAsStream("crac.xml");
 
         Network network = Network.read("network.uct", getClass().getResourceAsStream("network.uct"));
-        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext("crac.xml", cracInputStream, network, null, new CracCreationParameters());
+        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext("crac.xml", cracInputStream, network,  new CracCreationParameters());
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
         RaoResult raoResult = RaoResult.read(raoResultInputStream, cseCracCreationContext.getCrac());
         return new CracResultsHelper(cseCracCreationContext, raoResult, network, Mockito.mock(Logger.class));
