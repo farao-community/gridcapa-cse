@@ -104,7 +104,7 @@ public class CseExportRunner {
         InputStream cracCreationParametersInputStream = getClass().getResourceAsStream(CRAC_CREATION_PARAMETERS_JSON);
         CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersInputStream, busBarChangeSwitchesSet);
 
-        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(FileUtil.getFilenameFromUrl(cseExportRequest.getMergedCracUrl()), fileImporter.openUrlStream(cseExportRequest.getMergedCracUrl()), network, cseExportRequest.getTargetProcessDateTime(), cracCreationParameters);
+        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(FileUtil.getFilenameFromUrl(cseExportRequest.getMergedCracUrl()), fileImporter.openUrlStream(cseExportRequest.getMergedCracUrl()), network, cracCreationParameters);
 
         // Put all PSTs within their ranges to be able to optimize them
         Map<String, Integer> preprocessedPsts = PstInitializer.withLogger(businessLogger).initializePsts(network, cseCracCreationContext.getCrac());

@@ -6,10 +6,10 @@
  */
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.raoapi.parameters.RaoParameters;
 import com.powsybl.openrao.searchtreerao.result.api.FlowResult;
-import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -24,7 +24,10 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class ForcedPraHandlerTest {
@@ -47,7 +50,6 @@ class ForcedPraHandlerTest {
     void checkCracAndForcedPrasAreConsistent() throws IOException {
         Network network = Network.read("network-for-forced-pras.xiidm", getClass().getResourceAsStream("network-for-forced-pras.xiidm"));
         Crac crac = Crac.readWithContext("crac-for-forced-pras.json", Objects.requireNonNull(getClass().getResourceAsStream("crac-for-forced-pras.json")), network).getCrac();
-
         Set<String> manualForcedPrasIds = Set.of("Open line NL1-NL2", "Open line BE2-FR3", "PRA_PST_BE");
 
         assertNull(crac.getNetworkAction("PRA_PST_BE"));

@@ -30,7 +30,7 @@ class CnecUtilTest {
     void checkThatWorstCnecIsFoundedCorrectly() throws IOException {
         InputStream cracInputStream = getClass().getResourceAsStream("pst_and_topo/crac.xml");
         Network network = Network.read("pst_and_topo/network.uct", getClass().getResourceAsStream("pst_and_topo/network.uct"));
-        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext("crac.xml", cracInputStream, network, null, new CracCreationParameters());
+        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext("crac.xml", cracInputStream, network, new CracCreationParameters());
         InputStream raoResultInputStream = getClass().getResourceAsStream("pst_and_topo/raoResult.json");
         RaoResult raoResult = RaoResult.read(raoResultInputStream, cseCracCreationContext.getCrac());
 

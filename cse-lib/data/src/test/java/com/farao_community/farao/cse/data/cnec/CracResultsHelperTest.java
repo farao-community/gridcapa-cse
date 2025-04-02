@@ -159,7 +159,7 @@ class CracResultsHelperTest {
     private CracResultsHelper getCracResultsHelper(String cracXmlFileName, String networkFileName, String raoResultFileName) throws IOException {
         InputStream cracInputStream = getClass().getResourceAsStream(cracXmlFileName);
         Network network = Network.read(networkFileName, getClass().getResourceAsStream(networkFileName));
-        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(cracXmlFileName, cracInputStream, network, null, new CracCreationParameters());
+        CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(cracXmlFileName, cracInputStream, network, new CracCreationParameters());
 
         InputStream raoResultInputStream = getClass().getResourceAsStream(raoResultFileName);
         RaoResult raoResult = RaoResult.read(raoResultInputStream, cseCracCreationContext.getCrac());
