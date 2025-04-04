@@ -204,7 +204,7 @@
       <xs:sequence>
         <xs:element ref="Name"/>
         <xs:element minOccurs="0" ref="PSTtap"/>
-        <xs:element minOccurs="0" ref="HVDCsetpoint"/>
+        <xs:element minOccurs="0" ref="Setpoint"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -213,7 +213,7 @@
       <xs:attribute name="v" use="required" type="xs:integer"/>
     </xs:complexType>
   </xs:element>
-  <xs:element name="HVDCsetpoint">
+  <xs:element name="Setpoint">
     <xs:complexType>
       <xs:attribute name="v" use="required" type="xs:integer"/>
     </xs:complexType>
