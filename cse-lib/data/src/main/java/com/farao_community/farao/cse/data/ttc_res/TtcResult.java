@@ -634,9 +634,9 @@ public final class TtcResult {
         Action action = new Action();
         Name name = new Name();
         name.setV(nativeId);
-        HVDCsetpoint hvdcSetpoint = new HVDCsetpoint();
-        hvdcSetpoint.setV(BigInteger.valueOf(setPoint));
-        action.setHVDCsetpoint(hvdcSetpoint);
+        Setpoint setpoint = new Setpoint();
+        setpoint.setV(BigInteger.valueOf(setPoint));
+        action.setSetpoint(setpoint);
         action.setName(name);
         actions.add(action);
     }
