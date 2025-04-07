@@ -113,6 +113,7 @@ public class InitialShiftService {
                     businessLogger.warn("Glsk limitation is reached for italy, shifts will be updated proportionally to coefficient: {}", italyGlskLimitationSplittingFactor);
                     scalingValuesByCountry.forEach((key, value) -> scalingValuesByCountry.put(key, value * italyGlskLimitationSplittingFactor));
                     network.getVariantManager().setWorkingVariant(initialVariantId);
+                    network.getVariantManager().removeVariant(newVariant);
                     shiftNetwork(scalingValuesByCountry, cseRequest, network);
                     break;
                 }
