@@ -18,6 +18,7 @@ import com.farao_community.farao.dichotomy.api.exceptions.RaoFailureException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import com.farao_community.farao.dichotomy.api.utils.ContingenciesLoggerUtil;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.rao_runner.api.resource.AbstractRaoResponse;
 import com.farao_community.farao.rao_runner.api.resource.RaoFailureResponse;
@@ -125,6 +126,8 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
                 throw new RaoInterruptionException("RAO has been interrupted");
             }
             RaoResult raoResult = fileImporter.importRaoResult(raoResponse.getRaoResultFileUrl(), crac);
+
+            ContingenciesLoggerUtil.logContingencies(raoResponse.getRaoResultFileUrl(), businessLogger);
 
             DichotomyRaoResponse dichotomyRaoResponse = new DichotomyRaoResponse(raoResponse, appliedForcedPras);
             return DichotomyStepResult.fromNetworkValidationResult(raoResult, dichotomyRaoResponse);
