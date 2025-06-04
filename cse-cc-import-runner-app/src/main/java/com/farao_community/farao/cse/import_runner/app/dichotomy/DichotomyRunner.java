@@ -22,7 +22,8 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -79,6 +80,7 @@ public class DichotomyRunner {
                 interruptionService,
                 networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges, ntcsByEic),
                 getNetworkValidator(cseRequest, cseData, forcedPrasIds),
+                new CseNetworkExporter(cseRequest, fileExporter),
                 cseRequest.getCurrentRunId());
         return engine.run(network);
     }
