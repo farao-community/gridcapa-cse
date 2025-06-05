@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.io.ByteArrayInputStream;
@@ -37,7 +37,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 @SpringBootTest
 class FileExporterTest {
 
-    @MockBean
+    @MockitoBean
     MinioAdapter minioAdapter;
 
     private MinioMock minioMock;

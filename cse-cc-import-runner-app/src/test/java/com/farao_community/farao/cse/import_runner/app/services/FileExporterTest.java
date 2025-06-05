@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.io.InputStream;
 import java.time.OffsetDateTime;
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 class FileExporterTest {
 
-    @MockBean
+    @MockitoBean
     MinioAdapter minioAdapter;
 
     @Autowired

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,10 +38,10 @@ public class TtcResultatServiceTest {
     @Autowired
     private TtcResultService ttcResultService;
 
-    @MockBean
+    @MockitoBean
     private FileImporter fileImporter;
 
-    @MockBean
+    @MockitoBean
     private FileExporter fileExporter;
 
     @Test
