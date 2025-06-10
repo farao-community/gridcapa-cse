@@ -13,6 +13,8 @@ import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.dichotomy.api.NetworkExporter;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.powsybl.iidm.network.Network;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -20,6 +22,8 @@ import java.time.ZoneId;
 public class CseNetworkExporter implements NetworkExporter {
     private final CseRequest cseRequest;
     private final FileExporter fileExporter;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CseNetworkExporter.class);
 
     public CseNetworkExporter(final CseRequest cseRequest, final FileExporter fileExporter) {
         this.cseRequest = cseRequest;
@@ -39,8 +43,10 @@ public class CseNetworkExporter implements NetworkExporter {
         final String scaledNetworkInUcteFormatName = network.getNameOrId() + "-test.uct"; // TODO Remove this "test" in the name, which is only added for testing purpose
         final String filePath = baseDirPathForCurrentStep + scaledNetworkInUcteFormatName;
 
-        fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.ARTIFACT,
+        LOGGER.info("[TEST] Exporting network at: {}", filePath);
+        final String exportResult = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.ARTIFACT,
                 filePath,
                 "", processTargetDateTime, processType, isImportEcProcess);
+        LOGGER.info("[TEST] Export result: {}", exportResult);
     }
 }
