@@ -40,13 +40,12 @@ public class CseNetworkExporter implements NetworkExporter {
         final String variantName = network.getVariantManager().getWorkingVariantId();
         final String baseDirPathForCurrentStep = String.format("%s/%s/", basePath, variantName);
 
-        final String scaledNetworkInUcteFormatName = network.getNameOrId() + "-test.uct"; // TODO Remove this "test" in the name, which is only added for testing purpose
+        final String scaledNetworkInUcteFormatName = network.getNameOrId() + ".uct";
         final String filePath = baseDirPathForCurrentStep + scaledNetworkInUcteFormatName;
 
-        LOGGER.info("[TEST] Exporting network at: {}", filePath);
-        final String exportResult = fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.ARTIFACT,
+        LOGGER.info("Exporting network at: {}", filePath);
+        fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.ARTIFACT,
                 filePath,
                 "", processTargetDateTime, processType, isImportEcProcess);
-        LOGGER.info("[TEST] Export result: {}", exportResult);
     }
 }
