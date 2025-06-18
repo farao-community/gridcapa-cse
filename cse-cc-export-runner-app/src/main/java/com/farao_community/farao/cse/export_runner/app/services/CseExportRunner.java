@@ -86,7 +86,7 @@ public class CseExportRunner {
         if (checkIsInterrupted(cseExportRequest)) {
             businessLogger.warn("Computation has been interrupted for timestamp {}", cseExportRequest.getTargetProcessDateTime());
             LOGGER.info("Response sent for timestamp {} : run has been interrupted", cseExportRequest.getTargetProcessDateTime());
-            return new CseExportResponse(cseExportRequest.getId(), ttcRaoService.saveFailedTtcRao(cseExportRequest), "", true);
+            return new CseExportResponse(cseExportRequest.getId(), "", "", true);
         }
 
         // Check on cgm file name

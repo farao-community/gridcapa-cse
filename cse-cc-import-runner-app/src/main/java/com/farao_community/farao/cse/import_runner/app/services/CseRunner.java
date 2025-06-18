@@ -90,13 +90,7 @@ public class CseRunner {
             if (checkIsInterrupted(cseRequest)) {
                 businessLogger.warn("Computation has been interrupted for timestamp {}", cseRequest.getTargetProcessDateTime());
                 LOGGER.info("Response sent for timestamp {} : run has been interrupted", cseRequest.getTargetProcessDateTime());
-                String interruptedTtc = ttcResultService.saveFailedTtcResult(
-                        cseRequest,
-                        firstShiftNetworkName,
-                        TtcResult.FailedProcessData.FailedProcessReason.OTHER);
-                String interruptedCgm = firstShiftNetworkName;
-
-                return new CseResponse(cseRequest.getId(), interruptedTtc, interruptedCgm, true, false);
+                return new CseResponse(cseRequest.getId(), "", "", true, false);
             }
 
             final boolean importEcProcess = cseRequest.isImportEcProcess();
@@ -144,10 +138,14 @@ public class CseRunner {
             String finalCgmUrl;
             DichotomyResult<DichotomyRaoResponse> dichotomyResult = getDichotomyResult(multipleDichotomyResult);
 
-            if (!multipleDichotomyResult.isRaoFailed()
-                    && dichotomyResult != null
+            boolean isInterrupted = multipleDichotomyResult.isInterrupted();
+            boolean isRaoFailed = multipleDichotomyResult.isRaoFailed();
+            boolean isValidDichotomy = dichotomyResult != null
+                    && !isInterrupted
+                    && !isRaoFailed
                     && dichotomyResult.hasValidStep()
-                    && dichotomyResult.getHighestValidStep().getValidationData() != null) {
+                    && dichotomyResult.getHighestValidStep().getValidationData() != null;
+            if (isValidDichotomy) {
                 String finalCgmPath = fileExporter.getFinalNetworkFilePath(cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), FileUtil.getFilenameFromUrl(cseRequest.getCgmUrl()), importEcProcess);
                 Network finalNetwork = fileImporter.importNetwork(dichotomyResult.getHighestValidStep().getValidationData()
                         .getRaoResponse().getNetworkWithPraFileUrl());
@@ -157,13 +155,16 @@ public class CseRunner {
                 ttcResultUrl = ttcResultService.saveTtcResult(cseRequest, cseData, cracImportData.cseCracCreationContext,
                         dichotomyResult.getHighestValidStep().getValidationData(), dichotomyResult.getLimitingCause(),
                         firstShiftNetworkName, FileUtil.getFilenameFromUrl(finalCgmUrl), preprocessedPsts, preprocessedPisaLinks);
-            } else if (multipleDichotomyResult.isRaoFailed()) {
+            } else if (isRaoFailed) {
                 TtcResult.FailedProcessData.FailedProcessReason failedProcessReason = TtcResult.FailedProcessData.FailedProcessReason.IT_ISSUE;
                 ttcResultUrl = ttcResultService.saveFailedTtcResult(
                         cseRequest,
                         firstShiftNetworkName,
                         failedProcessReason);
                 finalCgmUrl = firstShiftNetworkName;
+            } else if (isInterrupted) {
+                ttcResultUrl = "";
+                finalCgmUrl = "";
             } else {
                 TtcResult.FailedProcessData.FailedProcessReason failedProcessReason =
                         multipleDichotomyResult.isInterrupted() ? TtcResult.FailedProcessData.FailedProcessReason.OTHER : TtcResult.FailedProcessData.FailedProcessReason.NO_SECURE_TTC;
