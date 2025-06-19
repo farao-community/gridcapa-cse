@@ -147,15 +147,12 @@ class CseRunnerTest {
         when(dichotomyResult.isInterrupted()).thenReturn(true);
         when(dichotomyResult.getBestDichotomyResult()).thenThrow(new IndexOutOfBoundsException());
 
-        when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("interruptedTTCFilePath");
-
         // WHEN
         CseResponse response = cseRunner.run(cseRequest);
 
         // THEN
-        verify(ttcResultService, times(1)).saveFailedTtcResult(eq(cseRequest), any(), eq(TtcResult.FailedProcessData.FailedProcessReason.OTHER));
         assertNotNull(response);
-        assertEquals("interruptedTTCFilePath", response.getTtcFileUrl());
+        assertEquals("", response.getTtcFileUrl());
         assertTrue(response.isInterrupted());
     }
 
@@ -167,15 +164,12 @@ class CseRunnerTest {
         when(restTemplateBuilder.build()).thenReturn(restTemplate);
         when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(ResponseEntity.ok(true));
 
-        when(ttcResultService.saveFailedTtcResult(any(), any(), any())).thenReturn("interruptedTTCFilePath");
-
         // WHEN
         CseResponse response = cseRunner.run(cseRequest);
 
         // THEN
-        verify(ttcResultService, times(1)).saveFailedTtcResult(eq(cseRequest), any(), eq(TtcResult.FailedProcessData.FailedProcessReason.OTHER));
         assertNotNull(response);
-        assertEquals("interruptedTTCFilePath", response.getTtcFileUrl());
+        assertEquals("", response.getTtcFileUrl());
         assertTrue(response.isInterrupted());
     }
 
@@ -187,6 +181,7 @@ class CseRunnerTest {
 
         CseRequest cseRequest = buildTestCseRequest();
         MultipleDichotomyResult<DichotomyRaoResponse> dichotomyResult = new MultipleDichotomyResult<>();
+        dichotomyResult.setInterrupted(false);
         dichotomyResult.setRaoFailed(true);
         when(multipleDichotomyRunner.runMultipleDichotomy(
                 any(CseRequest.class),
