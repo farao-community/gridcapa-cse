@@ -22,7 +22,8 @@ import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -51,35 +52,37 @@ public class DichotomyRunner {
         this.interruptionService = interruptionService;
     }
 
-    public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
-                                                              CseData cseData,
-                                                              Network network,
-                                                              double initialIndexValue,
-                                                              Map<String, Double> referenceExchanges,
-                                                              Map<String, Double> ntcsByEic,
-                                                              Set<String> forcedPrasIds) {
+    public DichotomyResult<DichotomyRaoResponse> runDichotomy(final CseRequest cseRequest,
+                                                              final CseData cseData,
+                                                              final Network network,
+                                                              final double initialIndexValue,
+                                                              final Map<String, Double> referenceExchanges,
+                                                              final Map<String, Double> ntcsByEic,
+                                                              final Set<String> forcedPrasIds) {
         return runDichotomy(cseRequest, cseData, network, initialIndexValue, MIN_IMPORT_VALUE, referenceExchanges, ntcsByEic, forcedPrasIds);
     }
 
-    public DichotomyResult<DichotomyRaoResponse> runDichotomy(CseRequest cseRequest,
-                                                              CseData cseData,
-                                                              Network network,
-                                                              double initialIndexValue,
-                                                              double minImportValue,
-                                                              Map<String, Double> referenceExchanges,
-                                                              Map<String, Double> ntcsByEic,
-                                                              Set<String> forcedPrasIds) {
-        double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
-        double dichotomyPrecision = cseRequest.getDichotomyPrecision();
+    public DichotomyResult<DichotomyRaoResponse> runDichotomy(final CseRequest cseRequest,
+                                                              final CseData cseData,
+                                                              final Network network,
+                                                              final double initialIndexValue,
+                                                              final double minImportValue,
+                                                              final Map<String, Double> referenceExchanges,
+                                                              final Map<String, Double> ntcsByEic,
+                                                              final Set<String> forcedPrasIds) {
+        final double initialDichotomyStep = cseRequest.getInitialDichotomyStep();
+        final double dichotomyPrecision = cseRequest.getDichotomyPrecision();
         businessLogger.info(DICHOTOMY_PARAMETERS_MSG, (int) initialIndexValue, (int) minImportValue, (int) MAX_IMPORT_VALUE, (int) initialDichotomyStep, (int) dichotomyPrecision);
-        Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
-        DichotomyEngine<DichotomyRaoResponse> engine = new DichotomyEngine<>(
-                index,
-                new BiDirectionalStepsWithReferenceIndexStrategy(initialIndexValue, initialDichotomyStep, NetworkShifterUtil.getReferenceItalianImport(referenceExchanges)),
-                interruptionService,
-                networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges, ntcsByEic),
-                getNetworkValidator(cseRequest, cseData, forcedPrasIds),
-                cseRequest.getCurrentRunId());
+        final Index<DichotomyRaoResponse> index = new Index<>(minImportValue, MAX_IMPORT_VALUE, dichotomyPrecision);
+        final DichotomyEngine<DichotomyRaoResponse> engine = DichotomyEngine.<DichotomyRaoResponse>builder()
+                .withIndex(index)
+                .withIndexStrategy(new BiDirectionalStepsWithReferenceIndexStrategy<>(initialIndexValue, initialDichotomyStep, NetworkShifterUtil.getReferenceItalianImport(referenceExchanges)))
+                .withInterruptionStrategy(interruptionService)
+                .withNetworkShifter(networkShifterProvider.get(cseRequest, cseData, network, referenceExchanges, ntcsByEic))
+                .withNetworkValidator(getNetworkValidator(cseRequest, cseData, forcedPrasIds))
+                .withNetworkExporter(new CseNetworkExporter(cseRequest, fileExporter))
+                .withRunId(cseRequest.getCurrentRunId())
+                .build();
         return engine.run(network);
     }
 
