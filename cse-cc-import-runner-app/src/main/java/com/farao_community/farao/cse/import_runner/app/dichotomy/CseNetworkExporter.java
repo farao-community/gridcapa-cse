@@ -38,7 +38,8 @@ public class CseNetworkExporter implements NetworkExporter {
 
         final String basePath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(fileExporter.getZoneId()), isImportEcProcess);
         final String variantName = network.getVariantManager().getWorkingVariantId();
-        final String baseDirPathForCurrentStep = String.format("%s/%s/", basePath, variantName);
+        final String separator = basePath.endsWith("/") ? "" : "/";
+        final String baseDirPathForCurrentStep = String.format("%s%s%s/", basePath, separator, variantName);
 
         final String scaledNetworkInUcteFormatName = network.getNameOrId() + ".uct";
         final String filePath = baseDirPathForCurrentStep + scaledNetworkInUcteFormatName;
