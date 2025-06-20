@@ -16,7 +16,6 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.PhaseTapChanger;
 import com.powsybl.iidm.network.PhaseTapChangerStep;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +79,7 @@ class DichotomyResultHelperTest {
         Mockito.when(pstChanger2.getAllSteps()).thenReturn(mockedSteps);
         String limitingElement = dichotomyResultHelper.getLimitingElement(dichotomyResult, network);
 
-        Assertions.assertThat(limitingElement).isIn("cnec1prevId", "cnec1outageId");
+        assertEquals("cnec1prevId", limitingElement);
     }
 
     private static void mockPhaseTapChangerStep(final Map<Integer, PhaseTapChangerStep> mockedSteps,
