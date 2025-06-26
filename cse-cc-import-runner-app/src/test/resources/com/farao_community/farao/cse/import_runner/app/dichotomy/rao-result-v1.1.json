@@ -91,14 +91,14 @@
     "afterPRA" : {
       "megawatt" : {
         "flow" : 1210.0,
-        "margin" : 1211.0,
+        "margin" : 1111.0,
         "relativeMargin" : 1212.0,
         "loopFlow" : 1213.0,
         "commercialFlow" : 1214.0
       },
       "ampere" : {
         "flow" : 1220.0,
-        "margin" : 1221.0,
+        "margin" : 1121.0,
         "relativeMargin" : 1222.0,
         "loopFlow" : 1223.0,
         "commercialFlow" : 1224.0
