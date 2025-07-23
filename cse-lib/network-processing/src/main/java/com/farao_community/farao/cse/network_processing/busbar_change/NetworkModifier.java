@@ -187,21 +187,21 @@ public class NetworkModifier {
         }
     }
 
-    private void moveLine(Line line, TwoSides side, Bus bus) {
-        String newLineId = replaceSimpleBranchNode(line, side, bus.getId());
-        LineAdder adder = initializeLineAdderToMove(line, newLineId);
+    private void moveLine(final Line line, final TwoSides side, final Bus bus) {
+        final String newLineId = replaceSimpleBranchNode(line, side, bus.getId());
+        final LineAdder adder = initializeLineAdderToMove(line, newLineId);
         setBranchAdderProperties(adder, line, side, bus);
         removeFromNetworkAndAliasesMap(line);
-        Line newLine = adder.add();
+        final Line newLine = adder.add();
         copyCurrentLimits(line, newLine);
         copyProperties(line, newLine);
         LOGGER.debug("Line '{}' has been removed, new Line '{}' has been created", line.getId(), newLine.getId());
         addAliasesFromOldToNew(line, newLine);
     }
 
-    private void moveTwoWindingsTransformer(TwoWindingsTransformer transformer, TwoSides side, Bus bus) {
-        String newId = replaceSimpleBranchNode(transformer, side, bus.getId());
-        TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(transformer, newId);
+    private void moveTwoWindingsTransformer(final TwoWindingsTransformer transformer, final TwoSides side, final Bus bus) {
+        final String newId = replaceSimpleBranchNode(transformer, side, bus.getId());
+        final TwoWindingsTransformerAdder adder = initializeTwoWindingsTransformerAdderToMove(transformer, newId);
         setBranchAdderProperties(adder, transformer, side, bus);
         TwoWindingsTransformer newTransformer = adder.add();
         copyCurrentLimits(transformer, newTransformer);
@@ -265,17 +265,12 @@ public class NetworkModifier {
         );
     }
 
-    private LineAdder initializeLineAdderToMove(Line line, String newId) {
-        return network.newLine()
-            .setId(newId)
-            .setR(line.getR())
-            .setX(line.getX())
-            .setG1(line.getG1())
-            .setB1(line.getB1())
-            .setG2(line.getG2())
-            .setB2(line.getB2())
-            .setFictitious(line.isFictitious())
-            .setName(newId);
+    private LineAdder initializeLineAdderToMove(final Line line, final String newId) {
+        final LineAdder lineAdder = network.newLine(line);
+        lineAdder.setId(newId);
+        lineAdder.setName(newId);
+        lineAdder.setFictitious(line.isFictitious());
+        return LineAdder.fillLineAdder(lineAdder, line);
     }
 
     /**
@@ -375,17 +370,13 @@ public class NetworkModifier {
         identifiableAliases.remove(tieLine.getId());
     }
 
-    private TwoWindingsTransformerAdder initializeTwoWindingsTransformerAdderToMove(TwoWindingsTransformer twoWindingsTransformer, String newId) {
-        return twoWindingsTransformer.getSubstation().orElseThrow(OpenRaoException::new).newTwoWindingsTransformer()
-            .setEnsureIdUnicity(true)
-            .setId(newId)
-            .setRatedU1(twoWindingsTransformer.getRatedU1())
-            .setRatedU2(twoWindingsTransformer.getRatedU2())
-            .setR(twoWindingsTransformer.getR())
-            .setX(twoWindingsTransformer.getX())
-            .setG(twoWindingsTransformer.getG())
-            .setB(twoWindingsTransformer.getB())
-            .setFictitious(twoWindingsTransformer.isFictitious());
+    private TwoWindingsTransformerAdder initializeTwoWindingsTransformerAdderToMove(final TwoWindingsTransformer twoWindingsTransformer, final String newId) {
+        final TwoWindingsTransformerAdder twoWindingsTransformerAdder = twoWindingsTransformer.getSubstation().orElseThrow(OpenRaoException::new).newTwoWindingsTransformer();
+        return TwoWindingsTransformerAdder.fillTwoWindingsTransformerAdder(twoWindingsTransformerAdder, twoWindingsTransformer)
+                .setEnsureIdUnicity(true)
+                .setId(newId)
+                .setR(twoWindingsTransformer.getR())
+                .setFictitious(twoWindingsTransformer.isFictitious());
     }
 
     private static void copyCurrentLimits(Branch<?> branchFrom, Branch<?> branchTo) {
