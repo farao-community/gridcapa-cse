@@ -266,11 +266,10 @@ public class NetworkModifier {
     }
 
     private LineAdder initializeLineAdderToMove(final Line line, final String newId) {
-        final LineAdder lineAdder = network.newLine(line);
-        lineAdder.setId(newId);
-        lineAdder.setName(newId);
-        lineAdder.setFictitious(line.isFictitious());
-        return LineAdder.fillLineAdder(lineAdder, line);
+        return network.newLine(line)
+                .setId(newId)
+                .setName(newId)
+                .setFictitious(line.isFictitious());
     }
 
     /**
@@ -371,8 +370,9 @@ public class NetworkModifier {
     }
 
     private TwoWindingsTransformerAdder initializeTwoWindingsTransformerAdderToMove(final TwoWindingsTransformer twoWindingsTransformer, final String newId) {
-        final TwoWindingsTransformerAdder twoWindingsTransformerAdder = twoWindingsTransformer.getSubstation().orElseThrow(OpenRaoException::new).newTwoWindingsTransformer();
-        return TwoWindingsTransformerAdder.fillTwoWindingsTransformerAdder(twoWindingsTransformerAdder, twoWindingsTransformer)
+        return twoWindingsTransformer.getSubstation()
+                .orElseThrow(OpenRaoException::new)
+                .newTwoWindingsTransformer(twoWindingsTransformer)
                 .setEnsureIdUnicity(true)
                 .setId(newId)
                 .setR(twoWindingsTransformer.getR())
