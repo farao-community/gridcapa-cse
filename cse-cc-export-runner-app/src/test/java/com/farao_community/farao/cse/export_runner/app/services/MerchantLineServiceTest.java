@@ -34,7 +34,7 @@ class MerchantLineServiceTest {
         merchantLineService.setTransformerInActivePowerRegulation(network);
         TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer("SMENDR3T SMENDR32 1");
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
-        assertEquals(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL, phaseTapChanger.getRegulationMode());
+        assertEquals(PhaseTapChanger.RegulationMode.CURRENT_LIMITER, phaseTapChanger.getRegulationMode());
         assertFalse(phaseTapChanger.isRegulating());
     }
 }

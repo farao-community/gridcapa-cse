@@ -90,7 +90,7 @@ class MerchantLineServiceTest {
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertEquals(0, phaseTapChanger.getTapPosition());
         LoadFlow.run(network, LoadFlowParameters.load());
-        assertEquals(16, phaseTapChanger.getTapPosition());
+        assertEquals(16, phaseTapChanger.getSolvedTapPosition());
         assertEquals(-300, twoWindingsTransformer.getTerminal1().getP(), DOUBLE_PRECISION_FOR_REGULATED_FLOW);
     }
 
