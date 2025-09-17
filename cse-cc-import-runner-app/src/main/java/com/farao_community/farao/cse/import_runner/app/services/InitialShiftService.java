@@ -1,10 +1,11 @@
 package com.farao_community.farao.cse.import_runner.app.services;
 
-import com.farao_community.farao.cse.computation.LoadflowComputationException;
 import com.farao_community.farao.cse.computation.BorderExchanges;
+import com.farao_community.farao.cse.computation.LoadflowComputationException;
 import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.CseCountry;
+import com.farao_community.farao.cse.import_runner.app.dichotomy.CseNetworkExporter;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.NetworkShifterUtil;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.ZonalScalableProvider;
 import com.farao_community.farao.cse.import_runner.app.util.FileUtil;
@@ -45,7 +46,7 @@ public class InitialShiftService {
     }
 
     void performInitialShiftFromVulcanusLevelToNtcLevel(Network network, CseData cseData, CseRequest cseRequest, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) throws LoadflowComputationException {
-        Map<String, Double> preprocessedNetworkNps = BorderExchanges.computeCseCountriesBalances(network);
+        Map<String, Double> preprocessedNetworkNps = computeCseCountriesBalances(network, cseRequest, "beforeInitialShift");
         for (Map.Entry<String, Double> entry : preprocessedNetworkNps.entrySet()) {
             businessLogger.info("Summary : Net positions on preprocessed network : for area {} : net position is {}.", entry.getKey(), entry.getValue());
         }
@@ -57,7 +58,7 @@ public class InitialShiftService {
         }
 
         shiftNetwork(initialShifts, cseRequest, network);
-        Map<String, Double> netPositionsAfterInitialShift = BorderExchanges.computeCseCountriesBalances(network);
+        Map<String, Double> netPositionsAfterInitialShift = computeCseCountriesBalances(network, cseRequest, "afterInitialShift");
         for (Map.Entry<String, Double> entry : netPositionsAfterInitialShift.entrySet()) {
             businessLogger.info("Summary : Net positions after initial shift : for area {} : net position is {}.", entry.getKey(), entry.getValue());
         }
@@ -67,6 +68,15 @@ public class InitialShiftService {
 
         fileExporter.exportAndUploadNetwork(network, "UCTE", GridcapaFileGroup.OUTPUT, networkAfterInitialShiftPath, processConfiguration.getInitialCgm(), cseRequest.getTargetProcessDateTime(), cseRequest.getProcessType(), cseRequest.isImportEcProcess());
         businessLogger.info("Summary : Initial shift is finished, network is updated and initial model is exported to outputs.");
+    }
+
+    private Map<String, Double> computeCseCountriesBalances(final Network network, final CseRequest cseRequest, final String stepSuffix) throws LoadflowComputationException {
+        try {
+            return BorderExchanges.computeCseCountriesBalances(network);
+        } catch (LoadflowComputationException e) {
+            new CseNetworkExporter(cseRequest, fileExporter).export(network, stepSuffix);
+            throw e;
+        }
     }
 
     public Map<String, Double> getInitialShiftValues(CseData cseData, Map<String, Double> referenceExchanges, Map<String, Double> ntcsByEic) {
@@ -90,7 +100,7 @@ public class InitialShiftService {
     private void shiftNetwork(Map<String, Double> scalingValuesByCountry, CseRequest cseRequest, Network network) {
         ZonalData<Scalable> zonalScalable = getZonalScalableForProcess(cseRequest, network);
         String initialVariantId = network.getVariantManager().getWorkingVariantId();
-         // SecureRandom used to be compliant with sonar
+        // SecureRandom used to be compliant with sonar
         String newVariant = "temporary-working-variant" + new SecureRandom().nextInt(100);
 
         network.getVariantManager().cloneVariant(initialVariantId, newVariant, true);

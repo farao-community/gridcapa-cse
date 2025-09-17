@@ -32,16 +32,20 @@ public class CseNetworkExporter implements NetworkExporter {
 
     @Override
     public void export(final Network network) {
+        final String variantName = network.getVariantManager().getWorkingVariantId();
+        export(network, variantName);
+    }
+
+    public void export(final Network network, String step) {
         final OffsetDateTime processTargetDateTime = cseRequest.getTargetProcessDateTime();
         final ProcessType processType = cseRequest.getProcessType();
         final boolean isImportEcProcess = cseRequest.isImportEcProcess();
 
         final String basePath = MinioStorageHelper.makeDestinationMinioPath(processTargetDateTime, processType, MinioStorageHelper.FileKind.ARTIFACTS, ZoneId.of(fileExporter.getZoneId()), isImportEcProcess);
-        final String variantName = network.getVariantManager().getWorkingVariantId();
         final String separator = basePath.endsWith("/") ? "" : "/";
-        final String baseDirPathForCurrentStep = String.format("%s%s%s/", basePath, separator, variantName);
+        final String baseDirPathForCurrentStep = String.format("%s%s%s/", basePath, separator, step);
 
-        final String scaledNetworkInUcteFormatName = network.getNameOrId() + ".uct";
+        final String scaledNetworkInUcteFormatName = network.getNameOrId() + "-diverged.uct";
         final String filePath = baseDirPathForCurrentStep + scaledNetworkInUcteFormatName;
 
         LOGGER.info("Exporting network at: {}", filePath);
