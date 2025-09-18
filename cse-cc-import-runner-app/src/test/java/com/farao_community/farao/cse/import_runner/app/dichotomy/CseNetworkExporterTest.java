@@ -58,6 +58,6 @@ class CseNetworkExporterTest {
                 Mockito.eq(ProcessType.D2CC),
                 Mockito.eq(true));
 
-        Assertions.assertThat(captor.getValue()).isEqualTo("CSE/IMPORT_EC/D2CC/2025/06/20/15_30/ARTIFACTS/variantId/testId.uct");
+        Assertions.assertThat(captor.getValue()).isEqualTo("CSE/IMPORT_EC/D2CC/2025/06/20/15_30/ARTIFACTS/variantId/testId-diverged.uct");
     }
 }

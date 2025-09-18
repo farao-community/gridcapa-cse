@@ -210,6 +210,7 @@ class CseRunnerTest {
         RestTemplate restTemplate = mock(RestTemplate.class);
         when(restTemplateBuilder.build()).thenReturn(restTemplate);
         when(restTemplate.getForEntity(anyString(), eq(Boolean.class))).thenReturn(ResponseEntity.ok(false));
+        when(fileExporter.getZoneId()).thenReturn("UTC+2");
 
         CseRequest cseRequest = buildTestCseRequest();
 
