@@ -74,7 +74,11 @@ public class InitialShiftService {
         try {
             return BorderExchanges.computeCseCountriesBalances(network);
         } catch (LoadflowComputationException e) {
-            new CseNetworkExporter(cseRequest, fileExporter).export(network, stepSuffix);
+            try {
+                new CseNetworkExporter(cseRequest, fileExporter).export(network, stepSuffix);
+            } catch (Exception ex) {
+                businessLogger.error("Could not export network: {}", ex.getMessage());
+            }
             throw e;
         }
     }
