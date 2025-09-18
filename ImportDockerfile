@@ -1,5 +1,5 @@
 FROM farao/farao-computation-base:1.9.0 as BUILDER
-ARG JAR_FILE=cse-cc-import-runner-app/target/*-exec.jar
+ARG JAR_FILE=cse-cc-import-runner-app/target/*.jar
 COPY ${JAR_FILE} app.jar
 RUN mkdir -p /tmp/app  \
     && java -Djarmode=tools  \
