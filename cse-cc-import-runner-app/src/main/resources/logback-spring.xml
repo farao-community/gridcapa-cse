@@ -62,6 +62,14 @@
     <logger name="com.farao_community.farao.dichotomy.api.logging.TechnicalLogs" level="OFF">
         <appender-ref ref="amqp-business-events"/>
     </logger>
+    <logger name="com.powsybl.openloadflow.ac.AcloadFlowEngine" level="INFO">
+        <appender-ref ref="amqp-business-events"/>
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="com.powsybl.openloadflow.dc.DcLoadFlowEngine" level="INFO">
+        <appender-ref ref="amqp-business-events"/>
+        <appender-ref ref="STDOUT" />
+    </logger>
 
 
     <root level="info">
