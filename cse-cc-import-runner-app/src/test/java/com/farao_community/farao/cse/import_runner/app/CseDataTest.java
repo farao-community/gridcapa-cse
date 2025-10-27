@@ -181,9 +181,9 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(1024, exchanges.get(AT_EIC_CODE));
-        assertEquals(2048, exchanges.get(CH_EIC_CODE));
-        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(488, exchanges.get(AT_EIC_CODE));
+        assertEquals(223, exchanges.get(CH_EIC_CODE));
+        assertEquals(557, exchanges.get(FR_EIC_CODE));
         assertEquals(475, exchanges.get(SI_EIC_CODE));
     }
 
@@ -206,9 +206,9 @@ class CseDataTest {
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
         assertEquals(315, exchanges.get(AT_EIC_CODE));
-        assertEquals(2048, exchanges.get(CH_EIC_CODE));
-        assertEquals(4096, exchanges.get(FR_EIC_CODE));
-        assertEquals(8192, exchanges.get(SI_EIC_CODE));
+        assertEquals(223, exchanges.get(CH_EIC_CODE));
+        assertEquals(557, exchanges.get(FR_EIC_CODE));
+        assertEquals(669, exchanges.get(SI_EIC_CODE));
     }
 
     @Test
@@ -273,9 +273,9 @@ class CseDataTest {
         Map<String, Double> exchanges = ntc2.getExchanges();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
-        assertEquals(1024, exchanges.get(AT_EIC_CODE));
-        assertEquals(2048, exchanges.get(CH_EIC_CODE));
-        assertEquals(4096, exchanges.get(FR_EIC_CODE));
+        assertEquals(488, exchanges.get(AT_EIC_CODE));
+        assertEquals(223, exchanges.get(CH_EIC_CODE));
+        assertEquals(557, exchanges.get(FR_EIC_CODE));
         assertEquals(475, exchanges.get(SI_EIC_CODE));
     }
 
@@ -298,9 +298,9 @@ class CseDataTest {
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
         assertEquals(315, exchanges.get(AT_EIC_CODE));
-        assertEquals(2048, exchanges.get(CH_EIC_CODE));
-        assertEquals(4096, exchanges.get(FR_EIC_CODE));
-        assertEquals(8192, exchanges.get(SI_EIC_CODE));
+        assertEquals(223, exchanges.get(CH_EIC_CODE));
+        assertEquals(557, exchanges.get(FR_EIC_CODE));
+        assertEquals(669, exchanges.get(SI_EIC_CODE));
     }
 
     @Test

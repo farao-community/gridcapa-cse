@@ -89,7 +89,7 @@ class FileImporterTest {
         assertNotNull(ntc2.getExchanges());
         assertEquals(1, ntc2.getExchanges().size());
         assertNotNull(ntc2.getExchanges().get("10YAT-APG------L"));
-        assertEquals(1024, ntc2.getExchanges().get("10YAT-APG------L"));
+        assertEquals(488, ntc2.getExchanges().get("10YAT-APG------L"));
     }
 
     @Test
@@ -99,7 +99,7 @@ class FileImporterTest {
         assertNotNull(ntc2.getExchanges());
         assertEquals(1, ntc2.getExchanges().size());
         assertNotNull(ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
-        assertEquals(2048, ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
+        assertEquals(223, ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
     }
 
     @Test
@@ -109,7 +109,7 @@ class FileImporterTest {
         assertNotNull(ntc2.getExchanges());
         assertEquals(1, ntc2.getExchanges().size());
         assertNotNull(ntc2.getExchanges().get("10YFR-RTE------C"));
-        assertEquals(4096, ntc2.getExchanges().get("10YFR-RTE------C"));
+        assertEquals(557, ntc2.getExchanges().get("10YFR-RTE------C"));
     }
 
     @Test
@@ -119,7 +119,7 @@ class FileImporterTest {
         assertNotNull(ntc2.getExchanges());
         assertEquals(1, ntc2.getExchanges().size());
         assertNotNull(ntc2.getExchanges().get("10YSI-ELES-----O"));
-        assertEquals(8192, ntc2.getExchanges().get("10YSI-ELES-----O"));
+        assertEquals(669, ntc2.getExchanges().get("10YSI-ELES-----O"));
     }
 
     @Test
@@ -133,13 +133,13 @@ class FileImporterTest {
         assertNotNull(ntc2.getExchanges());
         assertEquals(4, ntc2.getExchanges().size());
         assertNotNull(ntc2.getExchanges().get("10YAT-APG------L"));
-        assertEquals(1024, ntc2.getExchanges().get("10YAT-APG------L"));
+        assertEquals(488, ntc2.getExchanges().get("10YAT-APG------L"));
         assertNotNull(ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
-        assertEquals(2048, ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
+        assertEquals(223, ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
         assertNotNull(ntc2.getExchanges().get("10YFR-RTE------C"));
-        assertEquals(4096, ntc2.getExchanges().get("10YFR-RTE------C"));
+        assertEquals(557, ntc2.getExchanges().get("10YFR-RTE------C"));
         assertNotNull(ntc2.getExchanges().get("10YSI-ELES-----O"));
-        assertEquals(8192, ntc2.getExchanges().get("10YSI-ELES-----O"));
+        assertEquals(669, ntc2.getExchanges().get("10YSI-ELES-----O"));
     }
 
     @Test
@@ -153,13 +153,13 @@ class FileImporterTest {
         assertNotNull(ntc2.getExchanges());
         assertEquals(4, ntc2.getExchanges().size());
         assertNotNull(ntc2.getExchanges().get("10YAT-APG------L"));
-        assertEquals(990, ntc2.getExchanges().get("10YAT-APG------L"));
+        assertEquals(333, ntc2.getExchanges().get("10YAT-APG------L"));
         assertNotNull(ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
-        assertEquals(150, ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
+        assertEquals(222, ntc2.getExchanges().get("10YCH-SWISSGRIDZ"));
         assertNotNull(ntc2.getExchanges().get("10YFR-RTE------C"));
-        assertEquals(1199, ntc2.getExchanges().get("10YFR-RTE------C"));
+        assertEquals(555, ntc2.getExchanges().get("10YFR-RTE------C"));
         assertNotNull(ntc2.getExchanges().get("10YSI-ELES-----O"));
-        assertEquals(15, ntc2.getExchanges().get("10YSI-ELES-----O"));
+        assertEquals(666, ntc2.getExchanges().get("10YSI-ELES-----O"));
     }
 
     @ParameterizedTest
@@ -187,7 +187,7 @@ class FileImporterTest {
         Throwable e =  assertThrows(CseDataException.class, () ->  fileImporter.importNtc2(time, atFileUrl, chFileUrl, frFileUrl, siFileUrl));
         assertEquals("Impossible to import NTC2 file for area: 10YAT-APG------L", e.getMessage());
         Throwable nestedE = e.getCause();
-        assertEquals("CapacityTimeSeries contains 7 intervals which is different to 24 or 96", nestedE.getMessage());
+        assertEquals("CapacityTimeSeries contains 7 intervals which is different to 24 or 96 (or 23/94 or 25/100 on daysaving time changes)", nestedE.getMessage());
     }
 
     @Test

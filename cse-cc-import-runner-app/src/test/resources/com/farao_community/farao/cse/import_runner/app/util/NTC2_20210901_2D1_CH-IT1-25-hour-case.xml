@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CapacityDocument DtdVersion="4" DtdRelease="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="capacity-document.xsd">
+    <DocumentIdentification v="NTC2_20170601_2D4_CH-IT"/>
+    <DocumentVersion v="1"/>
+    <DocumentType v="A31"/>
+    <ProcessType v="A01"/>
+    <SenderIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
+    <SenderRole v="A04"/>
+    <ReceiverIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
+    <ReceiverRole v="A04"/>
+    <CreationDateTime v="2017-05-31T05:04:22Z"/>
+    <CapacityTimeInterval v="2021-09-01T22:00Z/2021-09-02T23:00Z"/>
+    <Domain v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
+    <CapacityTimeSeries>
+        <TimeSeriesIdentification v="20170601-0001"/>
+        <BusinessType v="A27"/>
+        <Product v="8716867000016"/>
+        <InArea v="10YIT-GRTN-----B" codingScheme="A01"/>
+        <OutArea v="10YCH-SWISSGRIDZ" codingScheme="A01"/>
+        <MeasureUnit v="MAW"/>
+        <Period>
+            <TimeInterval v="2021-09-01T22:00Z/2021-09-02T23:00Z"/>
+            <Resolution v="PT60M"/>
+            <Interval>
+                <Pos v="1"/>
+                <Qty v="2222"/>
+            </Interval>
+            <Interval>
+                <Pos v="2"/>
+                <Qty v="2777"/>
+            </Interval>
+            <Interval>
+                <Pos v="3"/>
+                <Qty v="2767"/>
+            </Interval>
+            <Interval>
+                <Pos v="4"/>
+                <Qty v="8888"/>
+            </Interval>
+            <Interval>
+                <Pos v="5"/>
+                <Qty v="2975"/>
+            </Interval>
+            <Interval>
+                <Pos v="6"/>
+                <Qty v="2975"/>
+            </Interval>
+            <Interval>
+                <Pos v="7"/>
+                <Qty v="2721"/>
+            </Interval>
+            <Interval>
+                <Pos v="8"/>
+                <Qty v="1683"/>
+            </Interval>
+            <Interval>
+                <Pos v="9"/>
+                <Qty v="1683"/>
+            </Interval>
+            <Interval>
+                <Pos v="10"/>
+                <Qty v="1683"/>
+            </Interval>
+            <Interval>
+                <Pos v="11"/>
+                <Qty v="1683"/>
+            </Interval>
+            <Interval>
+                <Pos v="12"/>
+                <Qty v="1683"/>
+            </Interval>
+            <Interval>
+                <Pos v="13"/>
+                <Qty v="1683"/>
+            </Interval>
+            <Interval>
+                <Pos v="14"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="15"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="16"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="17"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="18"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="19"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="20"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="21"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="22"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="23"/>
+                <Qty v="1582"/>
+            </Interval>
+            <Interval>
+                <Pos v="24"/>
+                <Qty v="1633"/>
+            </Interval>
+            <Interval>
+                <Pos v="25"/>
+                <Qty v="1789"/>
+            </Interval>
+        </Period>
+    </CapacityTimeSeries>
+</CapacityDocument>
