@@ -63,7 +63,7 @@ public final class Ntc2Util {
         } else if (Arrays.stream(NUMBER_OF_HOURS_IN_DAY).anyMatch(numberOfHours -> numberOfHours == positionMapSize)) {
             position = positionHour + 1;
         } else {
-            throw new CseDataException(String.format("CapacityTimeSeries contains %s intervals which is different to 24 or 96 (or 23/94 or 25/100 on daysaving time changes)", qtyByPositionMap.size()));
+            throw new CseDataException(String.format("CapacityTimeSeries contains %s intervals which is different to 24 or 96 (or 23/92 or 25/100 on daysaving time changes)", qtyByPositionMap.size()));
         }
 
         return qtyByPositionMap.get(position);

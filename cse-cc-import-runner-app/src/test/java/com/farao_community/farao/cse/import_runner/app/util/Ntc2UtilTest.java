@@ -1,5 +1,6 @@
 package com.farao_community.farao.cse.import_runner.app.util;
 
+import com.farao_community.farao.cse.data.CseDataException;
 import jakarta.xml.bind.JAXBException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,16 +17,18 @@ class Ntc2UtilTest {
 
     @Test
     void getD2ExchangeByOffsetDateTimeAfter() throws JAXBException, IOException {
-        final OffsetDateTime targetDate = OffsetDateTime.parse("2021-09-03T00:00+01:00");
+        final OffsetDateTime targetDate = OffsetDateTime.parse("2021-09-03T01:00+01:00");
         final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20210901_2D1_CH-IT1-25-hour-case.xml")).openStream();
-        Assertions.assertThat(Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate)).withFailMessage("Target date time is out of bound for NTC2 archive");
+        Assertions.assertThatExceptionOfType(CseDataException.class).isThrownBy(() -> Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate))
+                .withMessage("Target date time is out of bound for NTC2 archive");
     }
 
     @Test
     void getD2ExchangeByOffsetDateTimeBefore() throws JAXBException, IOException {
-        final OffsetDateTime targetDate = OffsetDateTime.parse("2021-09-01T23:00+01:00");
+        final OffsetDateTime targetDate = OffsetDateTime.parse("2021-09-01T22:00+01:00");
         final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20210901_2D1_CH-IT1-25-hour-case.xml")).openStream();
-        Assertions.assertThat(Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate)).withFailMessage("Target date time is out of bound for NTC2 archive");
+        Assertions.assertThatExceptionOfType(CseDataException.class).isThrownBy(() -> Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate))
+                .withMessage("Target date time is out of bound for NTC2 archive");
     }
 
     @Test
@@ -92,5 +95,27 @@ class Ntc2UtilTest {
         final OffsetDateTime targetDate = OffsetDateTime.parse("2021-09-02T03:00+02:00");
         final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20210901_2D1_CH-IT1-23-hour-case.xml")).openStream();
         Assertions.assertThat(Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate)).isEqualTo(8888);
+    }
+
+    @Test
+    void getD2ExchangeByOffsetDateTimeOnSummerTimeChange100() throws JAXBException, IOException {
+        final OffsetDateTime targetDate = OffsetDateTime.parse("2021-06-24T23:30+01:00");
+        final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20210624_2D5_CH-IT1-test-100.xml")).openStream();
+        Assertions.assertThat(Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate)).isEqualTo(4321);
+    }
+
+    @Test
+    void getD2ExchangeByOffsetDateTimeOnSummerTimeChange94() throws JAXBException, IOException {
+        final OffsetDateTime targetDate = OffsetDateTime.parse("2021-06-24T23:30+02:00");
+        final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20210624_2D5_CH-IT1-test-92.xml")).openStream();
+        Assertions.assertThat(Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate)).isEqualTo(4321);
+    }
+
+    @Test
+    void getD2ExchangeByOffsetDateTimeWrongintervals() throws IOException {
+        final OffsetDateTime targetDate = OffsetDateTime.parse("2021-09-02T03:00+02:00");
+        final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20210901_2D1_CH-IT1-bad-case.xml")).openStream();
+        Assertions.assertThatExceptionOfType(CseDataException.class).isThrownBy(() -> Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate))
+                .withMessage("CapacityTimeSeries contains 21 intervals which is different to 24 or 96 (or 23/92 or 25/100 on daysaving time changes)");
     }
 }

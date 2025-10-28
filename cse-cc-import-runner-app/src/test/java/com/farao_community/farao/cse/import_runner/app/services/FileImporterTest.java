@@ -187,7 +187,7 @@ class FileImporterTest {
         Throwable e =  assertThrows(CseDataException.class, () ->  fileImporter.importNtc2(time, atFileUrl, chFileUrl, frFileUrl, siFileUrl));
         assertEquals("Impossible to import NTC2 file for area: 10YAT-APG------L", e.getMessage());
         Throwable nestedE = e.getCause();
-        assertEquals("CapacityTimeSeries contains 7 intervals which is different to 24 or 96 (or 23/94 or 25/100 on daysaving time changes)", nestedE.getMessage());
+        assertEquals("CapacityTimeSeries contains 7 intervals which is different to 24 or 96 (or 23/92 or 25/100 on daysaving time changes)", nestedE.getMessage());
     }
 
     @Test
