@@ -11,12 +11,10 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class Ntc2UtilTest {
 
     @Test
-    void getD2ExchangeByOffsetDateTimeAfter() throws JAXBException, IOException {
+    void getD2ExchangeByOffsetDateTimeAfter() throws IOException {
         final OffsetDateTime targetDate = OffsetDateTime.parse("2021-09-03T01:00+01:00");
         final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20210901_2D1_CH-IT1-25-hour-case.xml")).openStream();
         Assertions.assertThatExceptionOfType(CseDataException.class).isThrownBy(() -> Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate))
@@ -24,7 +22,7 @@ class Ntc2UtilTest {
     }
 
     @Test
-    void getD2ExchangeByOffsetDateTimeBefore() throws JAXBException, IOException {
+    void getD2ExchangeByOffsetDateTimeBefore() throws IOException {
         final OffsetDateTime targetDate = OffsetDateTime.parse("2021-09-01T22:00+01:00");
         final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20210901_2D1_CH-IT1-25-hour-case.xml")).openStream();
         Assertions.assertThatExceptionOfType(CseDataException.class).isThrownBy(() -> Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate))
@@ -61,7 +59,7 @@ class Ntc2UtilTest {
 
     @Test
     void getAreaCodeFromFilenameDoesntExist() {
-        Assertions.assertThat(Ntc2Util.getAreaCodeFromFilename("tweet")).isEqualTo(Optional.empty());
+        Assertions.assertThat(Ntc2Util.getAreaCodeFromFilename("tweet")).isEmpty();
     }
 
     @Test
