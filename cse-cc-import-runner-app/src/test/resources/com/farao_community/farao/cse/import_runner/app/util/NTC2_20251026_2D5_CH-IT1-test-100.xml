@@ -9,7 +9,7 @@
 	<ReceiverIdentification v="testrecceiver" codingScheme="A01" />
 	<ReceiverRole v="A04" />
 	<CreationDateTime v="2022-12-01T06:07:03Z" />
-	<CapacityTimeInterval v="2021-06-23T22:00Z/2021-06-24T23:00Z" />
+	<CapacityTimeInterval v="2025-10-25T22:00Z/2025-10-26T23:00Z" />
 	<Domain v="testdomain" codingScheme="A01" />
 	<CapacityTimeSeries>
 		<TimeSeriesIdentification v="20221202-0001" />
