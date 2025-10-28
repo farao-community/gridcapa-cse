@@ -57,7 +57,7 @@ public final class Ntc2Util {
         final int positionMapSize = qtyByPositionMap.size();
         if (Arrays.stream(NUMBER_OF_QUARTERHOURS_IN_DAY).anyMatch(numberOfQuarters -> numberOfQuarters == positionMapSize)) {
             if (targetDateInCETZone.getMinute() % 15 != 0) {
-                throw new CseDataException("Minutes must be a multiple of 15 for 96 intervals (or 94 or 100 on daysaving time changes)");
+                throw new CseDataException("Minutes must be a multiple of 15 for 96 intervals (or 92 or 100 on daysaving time changes)");
             }
             position = 1 + (4 * positionHour) + (targetDateInCETZone.getMinute() / 15);
         } else if (Arrays.stream(NUMBER_OF_HOURS_IN_DAY).anyMatch(numberOfHours -> numberOfHours == positionMapSize)) {

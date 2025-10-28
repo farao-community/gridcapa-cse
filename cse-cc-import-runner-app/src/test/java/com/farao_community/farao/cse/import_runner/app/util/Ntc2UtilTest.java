@@ -116,4 +116,12 @@ class Ntc2UtilTest {
         Assertions.assertThatExceptionOfType(CseDataException.class).isThrownBy(() -> Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate))
                 .withMessage("CapacityTimeSeries contains 21 intervals which is different to 24 or 96 (or 23/92 or 25/100 on daysaving time changes)");
     }
+
+    @Test
+    void getD2ExchangeByOffsetDateTimeWrongTargetDate() throws IOException {
+        final OffsetDateTime targetDate = OffsetDateTime.parse("2021-06-24T23:11+02:00");
+        final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20210624_2D5_CH-IT1-test-100.xml")).openStream();
+        Assertions.assertThatExceptionOfType(CseDataException.class).isThrownBy(() -> Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate))
+                .withMessage("Minutes must be a multiple of 15 for 96 intervals (or 92 or 100 on daysaving time changes)");
+    }
 }
