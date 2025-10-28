@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CapacityDocument DtdVersion="4" DtdRelease="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:noNamespaceSchemaLocation="capacity-document.xsd">
-    <DocumentIdentification v="NTC2_20170601_2D4_CH-IT"/>
+    <DocumentIdentification v="NTC2_20251026_2D1_CH-IT"/>
     <DocumentVersion v="1"/>
     <DocumentType v="A31"/>
     <ProcessType v="A01"/>
