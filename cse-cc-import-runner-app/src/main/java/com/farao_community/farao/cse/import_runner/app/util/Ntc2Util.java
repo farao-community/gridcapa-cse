@@ -89,11 +89,11 @@ public final class Ntc2Util {
 
     private static int calculateHourPositionFromOffsets(final ZonedDateTime targetDateTime, final CapacityDocument capacityDocument) {
         final OffsetDateTime beginDateTime = getDocumentInterval(capacityDocument).getFirst();
-        return (int) Duration.between(beginDateTime, targetDateTime).getSeconds() / 3600;
+        return (int) Duration.between(beginDateTime, targetDateTime).toHours();
     }
 
     private static boolean hasCorrectNbOfQuarterHoursInDay(List<OffsetDateTime> interval, int inputQuarterHoursInDay) {
-        return hasCorrectNbOfHoursInDay(interval, inputQuarterHoursInDay / 4);
+        return inputQuarterHoursInDay % 4 == 0 && hasCorrectNbOfHoursInDay(interval, inputQuarterHoursInDay / 4);
     }
 
     private static boolean hasCorrectNbOfHoursInDay(List<OffsetDateTime> interval, int inputHoursInDay) {
