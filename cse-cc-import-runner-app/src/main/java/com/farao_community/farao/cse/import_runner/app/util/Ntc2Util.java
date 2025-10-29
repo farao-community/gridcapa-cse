@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.farao_community.farao.cse.import_runner.app.util;
 
 import com.farao_community.farao.cse.data.CseDataException;
@@ -13,7 +19,6 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.zone.ZoneRules;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,16 +99,8 @@ public final class Ntc2Util {
     private static boolean hasCorrectNbOfHoursInDay(List<OffsetDateTime> interval, int inputHoursInDay) {
         final ZonedDateTime intervalBegin = interval.get(0).atZoneSameInstant(ZoneId.of(CET_ZONE_ID));
         final ZonedDateTime intervalEnd = interval.get(1).atZoneSameInstant(ZoneId.of(CET_ZONE_ID));
-        final ZoneRules rules = intervalBegin.getZone().getRules();
-        final boolean isBeginningInDST = rules.isDaylightSavings(intervalBegin.toInstant());
-        final boolean isEndInDST = rules.isDaylightSavings(intervalEnd.toInstant());
-        if (isBeginningInDST == isEndInDST) {
-            return inputHoursInDay == 24;
-        } else if (isBeginningInDST) {
-            return inputHoursInDay == 25;
-        } else {
-            return inputHoursInDay == 23;
-        }
+        final long hoursBetween = Duration.between(intervalBegin, intervalEnd).toHours();
+        return hoursBetween == inputHoursInDay;
     }
 
     public static Optional<String> getAreaCodeFromFilename(String fileName) {
