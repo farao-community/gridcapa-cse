@@ -94,7 +94,7 @@ public final class Ntc2Util {
     private static boolean checkNbrHoursInDay(List<OffsetDateTime> interval, int inputHoursInDay) {
         final ZonedDateTime intervalBegin = interval.get(0).atZoneSameInstant(ZoneId.of(CET_ZONE_ID));
         final ZonedDateTime intervalEnd = interval.get(1).atZoneSameInstant(ZoneId.of(CET_ZONE_ID));
-        ZoneRules rules = intervalBegin.getZone().getRules();
+        final ZoneRules rules = intervalBegin.getZone().getRules();
         final boolean isBeginInDST = rules.isDaylightSavings(intervalBegin.toInstant());
         final boolean isEndInDST = rules.isDaylightSavings(intervalEnd.toInstant());
         if (isBeginInDST == isEndInDST) {
