@@ -18,7 +18,7 @@ class Ntc2UtilTest {
         final OffsetDateTime targetDate = OffsetDateTime.parse("2025-10-27T01:00+01:00");
         final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20251026_2D1_CH-IT1-25-hour-case.xml")).openStream();
         Assertions.assertThatExceptionOfType(CseDataException.class).isThrownBy(() -> Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate))
-                .withMessage("Target date time is out of bound for NTC2 archive");
+                .withMessage("Target date time is out of bounds for NTC2 archive");
     }
 
     @Test
@@ -26,7 +26,7 @@ class Ntc2UtilTest {
         final OffsetDateTime targetDate = OffsetDateTime.parse("2025-10-25T22:00+01:00");
         final InputStream inputStream = Objects.requireNonNull(getClass().getResource("NTC2_20251026_2D1_CH-IT1-25-hour-case.xml")).openStream();
         Assertions.assertThatExceptionOfType(CseDataException.class).isThrownBy(() -> Ntc2Util.getD2ExchangeByOffsetDateTime(inputStream, targetDate))
-                .withMessage("Target date time is out of bound for NTC2 archive");
+                .withMessage("Target date time is out of bounds for NTC2 archive");
     }
 
     @Test

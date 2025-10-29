@@ -56,12 +56,12 @@ public final class Ntc2Util {
 
         final int positionHour = calculateHourPositionFromOffsets(targetDateInCETZone, capacityDocument);
         final int positionMapSize = qtyByPositionMap.size();
-        if (checkNbrQuarterHoursInDay(documentInterval, positionMapSize)) {
+        if (hasCorrectNbOfQuarterHoursInDay(documentInterval, positionMapSize)) {
             if (targetDateInCETZone.getMinute() % 15 != 0) {
                 throw new CseDataException("Minutes must be a multiple of 15 for 96 intervals (or 92 or 100 on daylight saving time changes)");
             }
             position = 1 + (4 * positionHour) + (targetDateInCETZone.getMinute() / 15);
-        } else if (checkNbrHoursInDay(documentInterval, positionMapSize)) {
+        } else if (hasCorrectNbOfHoursInDay(documentInterval, positionMapSize)) {
             position = positionHour + 1;
         } else {
             throw new CseDataException(String.format("CapacityTimeSeries contains %s intervals which is different to 24 or 96 (or 23/92 or 25/100 on daylight saving time changes)", qtyByPositionMap.size()));
@@ -72,7 +72,7 @@ public final class Ntc2Util {
 
     private static void checkTimeInterval(List<OffsetDateTime> interval, OffsetDateTime targetDateTime) {
         if (targetDateTime.isBefore(interval.get(0)) || !targetDateTime.isBefore(interval.get(1))) {
-            throw new CseDataException("Target date time is out of bound for NTC2 archive");
+            throw new CseDataException("Target date time is out of bounds for NTC2 archive");
         }
     }
 
@@ -83,23 +83,23 @@ public final class Ntc2Util {
     }
 
     private static int calculateHourPositionFromOffsets(final ZonedDateTime targetDateTime, final CapacityDocument capacityDocument) {
-        final OffsetDateTime beginDateTIme = getDocumentInterval(capacityDocument).getFirst();
-        return (int) Duration.between(beginDateTIme, targetDateTime).getSeconds() / 3600;
+        final OffsetDateTime beginDateTime = getDocumentInterval(capacityDocument).getFirst();
+        return (int) Duration.between(beginDateTime, targetDateTime).getSeconds() / 3600;
     }
 
-    private static boolean checkNbrQuarterHoursInDay(List<OffsetDateTime> interval, int inputQuarterHoursInDay) {
-        return checkNbrHoursInDay(interval, inputQuarterHoursInDay / 4);
+    private static boolean hasCorrectNbOfQuarterHoursInDay(List<OffsetDateTime> interval, int inputQuarterHoursInDay) {
+        return hasCorrectNbOfHoursInDay(interval, inputQuarterHoursInDay / 4);
     }
 
-    private static boolean checkNbrHoursInDay(List<OffsetDateTime> interval, int inputHoursInDay) {
+    private static boolean hasCorrectNbOfHoursInDay(List<OffsetDateTime> interval, int inputHoursInDay) {
         final ZonedDateTime intervalBegin = interval.get(0).atZoneSameInstant(ZoneId.of(CET_ZONE_ID));
         final ZonedDateTime intervalEnd = interval.get(1).atZoneSameInstant(ZoneId.of(CET_ZONE_ID));
         final ZoneRules rules = intervalBegin.getZone().getRules();
-        final boolean isBeginInDST = rules.isDaylightSavings(intervalBegin.toInstant());
+        final boolean isBeginningInDST = rules.isDaylightSavings(intervalBegin.toInstant());
         final boolean isEndInDST = rules.isDaylightSavings(intervalEnd.toInstant());
-        if (isBeginInDST == isEndInDST) {
+        if (isBeginningInDST == isEndInDST) {
             return inputHoursInDay == 24;
-        } else if (isBeginInDST) {
+        } else if (isBeginningInDST) {
             return inputHoursInDay == 25;
         } else {
             return inputHoursInDay == 23;
