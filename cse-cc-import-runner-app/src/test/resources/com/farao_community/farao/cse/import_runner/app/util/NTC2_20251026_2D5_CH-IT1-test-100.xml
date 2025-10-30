@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CapacityDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="capacity-document.xsd" DtdVersion="4" DtdRelease="0">
+	<DocumentIdentification v="NTC2_20251026_2D1_CH-IT" />
+	<DocumentVersion v="1" />
+	<DocumentType v="A31" />
+	<ProcessType v="A01" />
+	<SenderIdentification v="testsender" codingScheme="A01" />
+	<SenderRole v="A04" />
+	<ReceiverIdentification v="testrecceiver" codingScheme="A01" />
+	<ReceiverRole v="A04" />
+	<CreationDateTime v="2022-12-01T06:07:03Z" />
+	<CapacityTimeInterval v="2025-10-25T22:00Z/2025-10-26T23:00Z" />
+	<Domain v="testdomain" codingScheme="A01" />
+	<CapacityTimeSeries>
+		<TimeSeriesIdentification v="20221202-0001" />
+		<BusinessType v="A27" />
+		<Product v="8716867000016"/>
+		<InArea v="10YIT-GRTN-----B" codingScheme="A01"/>
+		<OutArea v="10YCH-SWISSGRIDZ" codingScheme="A01"/>
+		<MeasureUnit v="MAW" />
+		<Period>
+			<TimeInterval v="2021-06-23T23:00Z/2021-06-24T01:00Z" />
+			<Resolution v="PT60M" />
+			<Interval>
+				<Pos v="1" />
+				<Qty v="111" />
+			</Interval>
+			<Interval>
+				<Pos v="2" />
+				<Qty v="223" />
+			</Interval>
+			<Interval>
+				<Pos v="3" />
+				<Qty v="2048" />
+			</Interval>
+			<Interval>
+				<Pos v="4" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="5" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="6" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="7" />
+				<Qty v="222" />
+			</Interval>
+			<Interval>
+				<Pos v="8" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="9" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="10" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="11" />
+				<Qty v="150" />
+			</Interval>
+			<Interval>
+				<Pos v="12" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="13" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="14" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="15" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="16" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="17" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="18" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="19" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="20" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="21" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="22" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="23" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="24" />
+				<Qty v="99" />
+			</Interval>
+			<Interval>
+				<Pos v="25"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="26"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="27"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="28"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="29"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="30"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="31"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="32"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="33"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="34"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="35"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="36"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="37"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="38"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="39"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="40"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="41"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="42"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="43"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="44"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="45"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="46"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="47"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="48"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="49"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="50"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="51"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="52"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="53"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="54"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="55"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="56"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="57"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="58"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="59"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="60"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="61"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="62"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="63"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="64"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="65"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="66"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="67"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="68"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="69"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="70"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="71"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="72"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="73"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="74"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="75"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="76"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="77"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="78"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="79"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="80"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="81"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="82"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="83"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="84"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="85"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="86"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="87"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="88"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="89"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="90"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="91"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="92"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="93"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="94"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="95"/>
+				<Qty v="0"/>
+			</Interval>
+			<Interval>
+				<Pos v="96"/>
+				<Qty v="0"/>
+			</Interval>
+            <Interval>
+                <Pos v="97"/>
+                <Qty v="0"/>
+            </Interval>
+            <Interval>
+                <Pos v="98"/>
+                <Qty v="0"/>
+            </Interval>
+            <Interval>
+                <Pos v="99"/>
+                <Qty v="4321"/>
+            </Interval>
+            <Interval>
+                <Pos v="100"/>
+                <Qty v="0"/>
+            </Interval>
+		</Period>
+	</CapacityTimeSeries>
+</CapacityDocument>
