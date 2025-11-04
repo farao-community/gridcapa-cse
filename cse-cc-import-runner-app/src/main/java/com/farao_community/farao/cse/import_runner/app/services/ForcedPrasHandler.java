@@ -56,7 +56,7 @@ public class ForcedPrasHandler {
             })
             .map(crac::getNetworkAction)
             .filter(na -> {
-                if (!RaoUtil.isRemedialActionAvailable(na,
+                if (!RaoUtil.canRemedialActionBeUsed(na,
                         crac.getPreventiveState(),
                         flowResult,
                         crac.getFlowCnecs(crac.getPreventiveState()),
