@@ -11,7 +11,7 @@ import com.farao_community.farao.cse.import_runner.app.CseData;
 import com.farao_community.farao.cse.runner.api.resource.CseRequest;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.api.networkaction.NetworkAction;
-import com.powsybl.openrao.data.crac.api.usagerule.UsageMethod;
+
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.dichotomy.api.results.LimitingCause;
@@ -108,31 +108,26 @@ class MultipleDichotomyRunnerTest {
 
         // RA1 is available and has impact on the network
         NetworkAction ra1 = Mockito.mock(NetworkAction.class);
-        Mockito.when(ra1.getUsageMethod(any())).thenReturn(UsageMethod.AVAILABLE);
         Mockito.when(ra1.hasImpactOnNetwork(network)).thenReturn(true);
         Mockito.when(crac.getNetworkAction("ra1")).thenReturn(ra1);
 
         // RA2 is available but has no impact on the network
         NetworkAction ra2 = Mockito.mock(NetworkAction.class);
-        Mockito.when(ra2.getUsageMethod(any())).thenReturn(UsageMethod.AVAILABLE);
         Mockito.when(ra2.hasImpactOnNetwork(network)).thenReturn(false);
         Mockito.when(crac.getNetworkAction("ra2")).thenReturn(ra2);
 
         // RA3 is not available and has no impact on the network
         NetworkAction ra3 = Mockito.mock(NetworkAction.class);
-        Mockito.when(ra3.getUsageMethod(any())).thenReturn(UsageMethod.UNAVAILABLE);
         Mockito.when(ra3.hasImpactOnNetwork(network)).thenReturn(false);
         Mockito.when(crac.getNetworkAction("ra3")).thenReturn(ra3);
 
         // RA4 is available and has impact on the network
         NetworkAction ra4 = Mockito.mock(NetworkAction.class);
-        Mockito.when(ra4.getUsageMethod(any())).thenReturn(UsageMethod.AVAILABLE);
         Mockito.when(ra4.hasImpactOnNetwork(network)).thenReturn(true);
         Mockito.when(crac.getNetworkAction("ra4")).thenReturn(ra4);
 
         // RA5 is available and has impact on the network
         NetworkAction ra5 = Mockito.mock(NetworkAction.class);
-        Mockito.when(ra5.getUsageMethod(any())).thenReturn(UsageMethod.AVAILABLE);
         Mockito.when(ra5.hasImpactOnNetwork(network)).thenReturn(true);
         Mockito.when(crac.getNetworkAction("ra5")).thenReturn(ra5);
     }

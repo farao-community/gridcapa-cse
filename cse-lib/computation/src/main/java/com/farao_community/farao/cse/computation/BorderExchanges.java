@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.computation;
 
-import com.powsybl.balances_adjustment.util.CountryArea;
+import com.powsybl.balances_adjustment.util.BorderBasedCountryArea;
 import com.powsybl.balances_adjustment.util.CountryAreaFactory;
 import com.powsybl.computation.ComputationManager;
 import com.powsybl.iidm.network.Country;
@@ -43,9 +43,9 @@ public final class BorderExchanges {
 
     public static double computeItalianImport(Network network) throws LoadflowComputationException {
         runLoadFlow(network);
-        CountryArea itArea = new CountryAreaFactory(Country.IT).create(network);
+        BorderBasedCountryArea itArea = (BorderBasedCountryArea) new CountryAreaFactory(Country.IT).create(network);
         return Stream.of(Country.FR, Country.AT, Country.CH, Country.SI)
-            .map(country -> new CountryAreaFactory(country).create(network).getLeavingFlowToCountry(itArea))
+            .map(country -> ((BorderBasedCountryArea) new CountryAreaFactory(country).create(network)).getLeavingFlowToCountry(itArea))
             .reduce(0., Double::sum);
     }
 
@@ -58,10 +58,10 @@ public final class BorderExchanges {
             runLoadFlow(network);
         }
         Map<String, Double> borderExchanges = new HashMap<>();
-        Map<Country, CountryArea> countryAreaPerCountry = Stream.of(Country.FR, Country.AT, Country.CH, Country.SI, Country.IT, Country.DE)
+        Map<Country, BorderBasedCountryArea> countryAreaPerCountry = Stream.of(Country.FR, Country.AT, Country.CH, Country.SI, Country.IT, Country.DE)
             .collect(Collectors.toMap(
                 Function.identity(),
-                country -> new CountryAreaFactory(country).create(network)
+                country -> (BorderBasedCountryArea) new CountryAreaFactory(country).create(network)
             ));
         borderExchanges.put(IT_CH, getBorderExchange(Country.IT, Country.CH, countryAreaPerCountry));
         borderExchanges.put(IT_FR, getBorderExchange(Country.IT, Country.FR, countryAreaPerCountry));
@@ -73,7 +73,7 @@ public final class BorderExchanges {
         return borderExchanges;
     }
 
-    private static double getBorderExchange(Country fromCountry, Country toCountry, Map<Country, CountryArea> countryAreaPerCountry) {
+    private static double getBorderExchange(Country fromCountry, Country toCountry, Map<Country, BorderBasedCountryArea> countryAreaPerCountry) {
         return countryAreaPerCountry.get(fromCountry).getLeavingFlowToCountry(countryAreaPerCountry.get(toCountry));
     }
 

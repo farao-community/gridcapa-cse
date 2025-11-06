@@ -11,7 +11,6 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.PhaseTapChanger;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.api.rangeaction.PstRangeAction;
-import com.powsybl.openrao.data.crac.api.usagerule.UsageMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,7 @@ public final class PstInitializer {
 
     public Map<String, Integer> initializePsts(Network network, Crac crac) {
         Map<String, Integer> preprocessedPsts =  new HashMap<>();
-        crac.getRangeActions(crac.getPreventiveState(), UsageMethod.AVAILABLE).stream()
+        crac.getRangeActions(crac.getPreventiveState()).stream()
             .filter(PstRangeAction.class::isInstance)
             .map(PstRangeAction.class::cast)
             .forEach(pstRangeAction -> {
