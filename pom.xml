@@ -52,7 +52,7 @@
         <farao.dichotomy.version>4.34.0</farao.dichotomy.version>
         <gridcapa.rao.runner.version>1.42.0</gridcapa.rao.runner.version>
         <gridcapa.task-manager.version>1.38.0</gridcapa.task-manager.version>
-        <gridcapa.starter.minio.adapter.version>1.6.0</gridcapa.starter.minio.adapter.version>
+        <gridcapa.starter.minio.adapter.version>1.8.0</gridcapa.starter.minio.adapter.version>
     </properties>
 
     <build>
