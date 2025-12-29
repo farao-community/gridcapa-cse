@@ -42,7 +42,7 @@
         <jaxb-impl.version>4.0.0</jaxb-impl.version>
         <jakarta.xml.bind.version>4.0.2</jakarta.xml.bind.version>
         <jakarta.activation.api.version>2.0.1</jakarta.activation.api.version>
-        <jsonapi.converter.version>0.10</jsonapi.converter.version>
+        <jsonapi.converter.version>0.13</jsonapi.converter.version>
         <maven.jaxb.version>4.0.8</maven.jaxb.version>
         <mockito.core.version>5.14.2</mockito.core.version>
         <awaitility.version>3.0.0</awaitility.version>
