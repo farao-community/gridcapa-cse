@@ -7,10 +7,14 @@
 
 package com.farao_community.farao.cse.import_runner.app.services;
 
+import com.farao_community.farao.cse.computation.LoadFlowUtil;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
+import com.powsybl.iidm.network.Generator;
+import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.api.parameters.CracCreationParameters;
 import com.powsybl.iidm.network.Network;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -147,5 +151,24 @@ class PiSaServiceTest {
         assertFalse(piSaService.getPiSaLink1Processor().isLinkInACEmulation(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkConnected(network));
         assertTrue(piSaService.getPiSaLink2Processor().isLinkInACEmulation(network));
+    }
+
+    @Test
+    void generatorPandTargetPAreEqualAfterLoadflow() {
+
+        // Given
+        final Network network = Network.read("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct",
+                                             getClass().getResourceAsStream("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct"));
+        piSaService.alignGenerators(network);
+        //when
+        LoadFlowUtil.runLoadFlowWithMdc(network, network.getVariantManager().getWorkingVariantId(), LoadFlowParameters.load());
+        final Generator frFictiveGenerator = piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network);
+        //then
+        Assertions.assertThat(Math.abs(frFictiveGenerator.getTerminal().getP()))
+                .isEqualTo(Math.abs(frFictiveGenerator.getTargetP()));
+        final Generator itFictiveGenerator = piSaService.getPiSaLink1Processor().getItFictiveGenerator(network);
+        Assertions.assertThat(Math.abs(itFictiveGenerator.getTerminal().getP()))
+                .isEqualTo(Math.abs(itFictiveGenerator.getTargetP()));
+
     }
 }
