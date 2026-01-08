@@ -154,7 +154,7 @@ class PiSaServiceTest {
     }
 
     @Test
-    void generatorPAndTargetPAreEqualAfterLoadflow() {
+    void generatorPowerEqualsTargetPowerAfterLoadflow() {
 
         // Given
         final Network network = Network.read("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct",
