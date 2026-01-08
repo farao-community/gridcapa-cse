@@ -10,6 +10,8 @@ package com.farao_community.farao.cse.network_processing.pisa_change;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.extensions.ActivePowerControl;
+import com.powsybl.iidm.network.impl.extensions.ActivePowerControlImpl;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.api.Identifiable;
 import com.powsybl.openrao.data.crac.api.rangeaction.InjectionRangeAction;
@@ -162,11 +164,14 @@ public class PiSaLinkProcessor {
     /**
      * Put both generators at same absolute value of target P but opposite sign. It is aligned on the highest
      * absolute value of target P.
+     * Also initiate generator configuration to set activePowerControl participation to false
      *
      * @param generator1: First generator to align.
      * @param generator2: Second generator to align.
      */
     static void alignGenerators(Generator generator1, Generator generator2) {
+        generator1.addExtension(ActivePowerControl.class, new ActivePowerControlImpl<>(generator1, false, Double.NaN, Double.NaN));
+        generator2.addExtension(ActivePowerControl.class, new ActivePowerControlImpl<>(generator2, false, Double.NaN, Double.NaN));
         if (Math.abs(generator1.getTargetP()) > Math.abs(generator2.getTargetP())) {
             generator2.setTargetP(-generator1.getTargetP());
         } else {
