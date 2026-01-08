@@ -11,6 +11,7 @@ import com.farao_community.farao.cse.computation.LoadFlowUtil;
 import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.loadflow.LoadFlowParameters;
+import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.api.parameters.CracCreationParameters;
 import com.powsybl.iidm.network.Network;
@@ -161,8 +162,9 @@ class PiSaServiceTest {
                                              getClass().getResourceAsStream("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct"));
         piSaService.alignGenerators(network);
         //when
-        LoadFlowUtil.runLoadFlowWithMdc(network, network.getVariantManager().getWorkingVariantId(), LoadFlowParameters.load());
+        LoadFlowResult result = LoadFlowUtil.runLoadFlowWithMdc(network, network.getVariantManager().getWorkingVariantId(), LoadFlowParameters.load());
         //then
+        Assertions.assertThat(result.isFailed()).isFalse();
         final Generator frFictiveGenerator = piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network);
         Assertions.assertThat(Math.abs(frFictiveGenerator.getTerminal().getP()))
                 .isEqualTo(Math.abs(frFictiveGenerator.getTargetP()));
