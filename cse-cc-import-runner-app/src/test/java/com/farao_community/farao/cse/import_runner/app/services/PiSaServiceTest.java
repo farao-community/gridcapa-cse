@@ -154,7 +154,7 @@ class PiSaServiceTest {
     }
 
     @Test
-    void generatorPandTargetPAreEqualAfterLoadflow() {
+    void generatorPAndTargetPAreEqualAfterLoadflow() {
 
         // Given
         final Network network = Network.read("20210901_2230_test_network_pisa_test_both_links_connected_setpoint_and_emulation_ok_for_run.uct",
@@ -162,8 +162,8 @@ class PiSaServiceTest {
         piSaService.alignGenerators(network);
         //when
         LoadFlowUtil.runLoadFlowWithMdc(network, network.getVariantManager().getWorkingVariantId(), LoadFlowParameters.load());
-        final Generator frFictiveGenerator = piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network);
         //then
+        final Generator frFictiveGenerator = piSaService.getPiSaLink1Processor().getFrFictiveGenerator(network);
         Assertions.assertThat(Math.abs(frFictiveGenerator.getTerminal().getP()))
                 .isEqualTo(Math.abs(frFictiveGenerator.getTargetP()));
         final Generator itFictiveGenerator = piSaService.getPiSaLink1Processor().getItFictiveGenerator(network);
