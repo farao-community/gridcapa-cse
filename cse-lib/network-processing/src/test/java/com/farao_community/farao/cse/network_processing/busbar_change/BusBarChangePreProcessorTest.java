@@ -101,7 +101,7 @@ class BusBarChangePreProcessorTest {
 
     @Test
     void testWithTieLine() {
-        // Create a switch on a dangling line
+        // Create a switch on a boundary line
         setUp("BaseNetwork_tieline.uct", "BusBarChange_tieline.xml");
         TestUtils.assertNetworksAreEqual(network, "ModifiedNetwork_tieline.uct", getClass());
         assertEquals(1, busBarChangeSwitchesSet.size());

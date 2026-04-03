@@ -30,6 +30,7 @@ import com.powsybl.openrao.commons.Unit;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.api.networkaction.NetworkAction;
 import com.powsybl.openrao.data.raoresult.api.RaoResult;
+import com.powsybl.openrao.searchtreerao.commons.RaoUtil;
 import com.powsybl.openrao.searchtreerao.result.api.FlowResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +141,7 @@ public class RaoRunnerValidator implements NetworkValidator<DichotomyRaoResponse
 
     private Set<String> applyForcedPras(Crac crac, Network network) {
         if (!forcedPrasIds.isEmpty()) {
-            Unit unit = fileExporter.loadRaoParameters().getObjectiveFunctionParameters().getUnit();
+            Unit unit = RaoUtil.getFlowUnit(fileExporter.loadRaoParameters());
             // It computes reference flows on the network to be able to evaluate PRAs availability
             FlowResult flowResult = FlowEvaluator.evaluate(crac, network, unit);
 

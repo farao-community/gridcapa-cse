@@ -7,11 +7,11 @@
 package com.farao_community.farao.cse.network_processing.busbar_change;
 
 import com.powsybl.commons.PowsyblException;
+import com.powsybl.iidm.network.BoundaryLine;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.BranchAdder;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Connectable;
-import com.powsybl.iidm.network.DanglingLine;
 import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.LineAdder;
@@ -213,9 +213,9 @@ public class NetworkModifier {
     }
 
     private void moveTieLine(TieLine tieLine, TwoSides side, Bus bus) {
-        DanglingLine danglingLineToReplace = (side == TwoSides.ONE) ? tieLine.getDanglingLine1() : tieLine.getDanglingLine2();
-        String newTieLineId = replaceTieLineNodeInTieLineId(tieLine, danglingLineToReplace, bus.getId());
-        TieLine newTieLine = replaceTieLine(tieLine, newTieLineId, danglingLineToReplace, bus);
+        BoundaryLine boundaryLineToReplace = (side == TwoSides.ONE) ? tieLine.getBoundaryLine1() : tieLine.getBoundaryLine2();
+        String newTieLineId = replaceTieLineNodeInTieLineId(tieLine, boundaryLineToReplace, bus.getId());
+        TieLine newTieLine = replaceTieLine(tieLine, newTieLineId, boundaryLineToReplace, bus);
         copyCurrentLimits(tieLine, newTieLine);
         copyProperties(tieLine, newTieLine);
         LOGGER.debug("TieLine '{}' has been removed, new TieLine '{}' has been created", tieLine.getId(), newTieLine.getId());
@@ -313,46 +313,46 @@ public class NetworkModifier {
         }
     }
 
-    private static String replaceTieLineNodeInTieLineId(TieLine tieLine, DanglingLine danglingLineToReplace, String newNodeId) {
-        String nodeToReplace = getTieLineNodeToReplace(tieLine, danglingLineToReplace);
+    private static String replaceTieLineNodeInTieLineId(TieLine tieLine, BoundaryLine boundaryLineToReplace, String newNodeId) {
+        String nodeToReplace = getTieLineNodeToReplace(tieLine, boundaryLineToReplace);
         return tieLine.getId().replace(nodeToReplace, newNodeId);
     }
 
-    private static DanglingLine replaceDanglingLineAtSide(TieLine tieLine, DanglingLine danglingLineToReplace, String newNodeId) {
-        VoltageLevel voltageLevel = danglingLineToReplace.getTerminal().getVoltageLevel();
-        danglingLineToReplace.remove();
-        String nodeToReplace = getTieLineNodeToReplace(tieLine, danglingLineToReplace);
-        return voltageLevel.newDanglingLine()
-                .setId(danglingLineToReplace.getId().replace(nodeToReplace, newNodeId))
-                .setFictitious(danglingLineToReplace.isFictitious())
-                .setPairingKey(danglingLineToReplace.getPairingKey())
-                .setR(danglingLineToReplace.getR())
-                .setX(danglingLineToReplace.getX())
-                .setG(danglingLineToReplace.getG())
-                .setB(danglingLineToReplace.getB())
+    private static BoundaryLine replaceBoundaryLineAtSide(TieLine tieLine, BoundaryLine boundaryLineToReplace, String newNodeId) {
+        VoltageLevel voltageLevel = boundaryLineToReplace.getTerminal().getVoltageLevel();
+        boundaryLineToReplace.remove();
+        String nodeToReplace = getTieLineNodeToReplace(tieLine, boundaryLineToReplace);
+        return voltageLevel.newBoundaryLine()
+                .setId(boundaryLineToReplace.getId().replace(nodeToReplace, newNodeId))
+                .setFictitious(boundaryLineToReplace.isFictitious())
+                .setPairingKey(boundaryLineToReplace.getPairingKey())
+                .setR(boundaryLineToReplace.getR())
+                .setX(boundaryLineToReplace.getX())
+                .setG(boundaryLineToReplace.getG())
+                .setB(boundaryLineToReplace.getB())
                 .setConnectableBus(newNodeId)
                 .setBus(newNodeId)
-                .setP0(danglingLineToReplace.getP0())
-                .setQ0(danglingLineToReplace.getQ0())
+                .setP0(boundaryLineToReplace.getP0())
+                .setQ0(boundaryLineToReplace.getQ0())
                 .add();
     }
 
-    private static String getTieLineNodeToReplace(TieLine tieLine, DanglingLine danglingLineToReplace) {
-        String node1 = danglingLineToReplace.getId().substring(0, 8);
-        String node2 = danglingLineToReplace.getId().substring(9, 17);
+    private static String getTieLineNodeToReplace(TieLine tieLine, BoundaryLine boundaryLineToReplace) {
+        String node1 = boundaryLineToReplace.getId().substring(0, 8);
+        String node2 = boundaryLineToReplace.getId().substring(9, 17);
         return node1.equals(tieLine.getPairingKey()) ? node2 : node1;
     }
 
-    private TieLine replaceTieLine(TieLine tieLine, String newId, DanglingLine danglingLineToReplace, Bus bus) {
-        DanglingLine half1 = tieLine.getDanglingLine1();
-        DanglingLine half2 = tieLine.getDanglingLine2();
+    private TieLine replaceTieLine(TieLine tieLine, String newId, BoundaryLine boundaryLineToReplace, Bus bus) {
+        BoundaryLine half1 = tieLine.getBoundaryLine1();
+        BoundaryLine half2 = tieLine.getBoundaryLine2();
         removeFromNetworkAndAliasesMap(tieLine);
-        DanglingLine newHalf1 = (half1 == danglingLineToReplace) ? replaceDanglingLineAtSide(tieLine, danglingLineToReplace, bus.getId()) : half1;
-        DanglingLine newHalf2 = (half2 == danglingLineToReplace) ? replaceDanglingLineAtSide(tieLine, danglingLineToReplace, bus.getId()) : half2;
+        BoundaryLine newHalf1 = (half1 == boundaryLineToReplace) ? replaceBoundaryLineAtSide(tieLine, boundaryLineToReplace, bus.getId()) : half1;
+        BoundaryLine newHalf2 = (half2 == boundaryLineToReplace) ? replaceBoundaryLineAtSide(tieLine, boundaryLineToReplace, bus.getId()) : half2;
         return network.newTieLine()
             .setId(newId)
-            .setDanglingLine1(newHalf1.getId())
-            .setDanglingLine2(newHalf2.getId())
+            .setBoundaryLine1(newHalf1.getId())
+            .setBoundaryLine2(newHalf2.getId())
             .add();
     }
 
