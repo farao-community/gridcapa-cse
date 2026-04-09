@@ -29,7 +29,7 @@
         <BusBar>
           <InitialNode v="DDE3AA1 "/>
           <FinalNode v="DDE3AA12"/>
-          <Branch> <!-- this is a dangling line -->
+          <Branch> <!-- this is a boundary line -->
             <FromNode v="DDE3AA1 "/>
             <ToNode v="X_DEFR1 "/>
             <Order v="1"/>

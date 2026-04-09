@@ -35,7 +35,7 @@
         <argLine /> <!-- required for java agent declaration, do not remove -->
         <!-- TECHNICAL DEPENDENCIES -->
         <apache.poi.version>5.1.0</apache.poi.version>
-        <commons.io.version>2.15.1</commons.io.version>
+        <commons.io.version>2.19.0</commons.io.version>
         <jackson.databind.version>2.14.0</jackson.databind.version>
         <jackson.datatype.version>2.17.0</jackson.datatype.version>
         <jaxb-runtime.version>4.0.5</jaxb-runtime.version>
@@ -48,9 +48,9 @@
         <awaitility.version>3.0.0</awaitility.version>
 
         <!-- BUSINESS DEPENDENCIES -->
-        <farao.dependencies.version>1.46.0</farao.dependencies.version>
-        <farao.dichotomy.version>4.34.0</farao.dichotomy.version>
-        <gridcapa.rao.runner.version>1.42.0</gridcapa.rao.runner.version>
+        <farao.dependencies.version>1.47.0</farao.dependencies.version>
+        <farao.dichotomy.version>4.35.0</farao.dichotomy.version>
+        <gridcapa.rao.runner.version>1.43.0</gridcapa.rao.runner.version>
         <gridcapa.task-manager.version>1.38.0</gridcapa.task-manager.version>
         <gridcapa.starter.minio.adapter.version>1.8.0</gridcapa.starter.minio.adapter.version>
     </properties>
