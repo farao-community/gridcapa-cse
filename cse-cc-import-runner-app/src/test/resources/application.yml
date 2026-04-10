@@ -24,6 +24,9 @@ cse-cc-runner:
     mendrisio-voltage-level: SMENDR3
     mendrisio-node-id: SMENDR3T
   pisa:
+    aligned-ra-names:
+      - PRA_HVDC_GILE_PIOSSASCO_1 + PRA_HVDC_GILE_PIOSSASCO_2
+      - PRA_HVDC_Link1 + PRA_HVDC_Link2
     link1:
       node-fr: SWISS111
       node-it: SWISS211

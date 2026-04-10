@@ -12,6 +12,7 @@ import com.powsybl.openrao.data.crac.io.cse.parameters.BusBarChangeSwitches;
 import com.powsybl.openrao.data.crac.io.cse.parameters.CseCracCreationParameters;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,17 +23,27 @@ public final class CracCreationParametersService {
         // utility class
     }
 
-    public static CracCreationParameters getCracCreationParameters(InputStream cracCreationParamsInputStream, Set<BusBarChangeSwitches> busBarChangeSwitches) {
-        CracCreationParameters cracCreationParameters = JsonCracCreationParameters.read(cracCreationParamsInputStream);
+    public static CracCreationParameters getCracCreationParameters(final InputStream cracCreationParamsInputStream,
+                                                                   final Set<BusBarChangeSwitches> busBarChangeSwitches,
+                                                                   final List<String> alignedRaNames) {
+        final CracCreationParameters cracCreationParameters = JsonCracCreationParameters.read(cracCreationParamsInputStream);
         CseCracCreationParameters cseCracCreationParameters = cracCreationParameters.getExtension(CseCracCreationParameters.class);
         if (cseCracCreationParameters != null) {
-            cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitches);
+            setParameters(busBarChangeSwitches, cseCracCreationParameters, alignedRaNames);
         } else {
             cseCracCreationParameters = new CseCracCreationParameters();
-            cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitches);
+            setParameters(busBarChangeSwitches, cseCracCreationParameters, alignedRaNames);
             cracCreationParameters.addExtension(CseCracCreationParameters.class, cseCracCreationParameters);
         }
         return cracCreationParameters;
     }
 
+    private static void setParameters(final Set<BusBarChangeSwitches> busBarChangeSwitches,
+                                      final CseCracCreationParameters cseCracCreationParameters,
+                                      final List<String> alignedRaNames) {
+        cseCracCreationParameters.setBusBarChangeSwitchesSet(busBarChangeSwitches);
+        if (alignedRaNames != null && !alignedRaNames.isEmpty()) {
+            cseCracCreationParameters.setRangeActionGroupsAsString(alignedRaNames);
+        }
+    }
 }

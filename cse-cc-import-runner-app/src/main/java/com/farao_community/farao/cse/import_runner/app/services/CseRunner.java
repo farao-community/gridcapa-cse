@@ -10,6 +10,7 @@ package com.farao_community.farao.cse.import_runner.app.services;
 import com.farao_community.farao.cse.computation.LoadflowComputationException;
 import com.farao_community.farao.cse.data.ttc_res.TtcResult;
 import com.farao_community.farao.cse.import_runner.app.CseData;
+import com.farao_community.farao.cse.import_runner.app.configurations.PiSaConfiguration;
 import com.farao_community.farao.cse.import_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.import_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.import_runner.app.dichotomy.DichotomyRaoResponse;
@@ -65,11 +66,20 @@ public class CseRunner {
     private final RestTemplateBuilder restTemplateBuilder;
     private final UrlConfiguration urlConfiguration;
     private static final String CRAC_CREATION_PARAMETERS_JSON = "/crac/cseCracCreationParameters.json";
+    private final PiSaConfiguration piSaConfiguration;
 
-    public CseRunner(FileImporter fileImporter, FileExporter fileExporter, MultipleDichotomyRunner multipleDichotomyRunner,
-                     TtcResultService ttcResultService, PiSaService piSaService, MerchantLineService merchantLineService,
-                     ProcessConfiguration processConfiguration, Logger businessLogger, InitialShiftService initialShiftService,
-                     RestTemplateBuilder restTemplateBuilder, UrlConfiguration urlConfiguration) {
+    public CseRunner(final FileImporter fileImporter,
+                     final FileExporter fileExporter,
+                     final MultipleDichotomyRunner multipleDichotomyRunner,
+                     final TtcResultService ttcResultService,
+                     final PiSaService piSaService,
+                     final MerchantLineService merchantLineService,
+                     final ProcessConfiguration processConfiguration,
+                     final Logger businessLogger,
+                     final InitialShiftService initialShiftService,
+                     final RestTemplateBuilder restTemplateBuilder,
+                     final UrlConfiguration urlConfiguration,
+                     final PiSaConfiguration piSaConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.multipleDichotomyRunner = multipleDichotomyRunner;
@@ -81,6 +91,7 @@ public class CseRunner {
         this.initialShiftService = initialShiftService;
         this.restTemplateBuilder = restTemplateBuilder;
         this.urlConfiguration = urlConfiguration;
+        this.piSaConfiguration = piSaConfiguration;
     }
 
     public CseResponse run(CseRequest cseRequest) throws IOException {
@@ -204,10 +215,11 @@ public class CseRunner {
         Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, nativeCseCrac);
         LOGGER.info("Importing Crac Creation Parameters file: {}", CRAC_CREATION_PARAMETERS_JSON);
         InputStream cracCreationParametersIs = getClass().getResourceAsStream(CRAC_CREATION_PARAMETERS_JSON);
-        CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersIs, busBarChangeSwitchesSet);
+        CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersIs, busBarChangeSwitchesSet, piSaConfiguration.getAlignedRaNames());
         // input stream null and file name
-        CseCracCreationContext cracCreationContext = (CseCracCreationContext) Crac.readWithContext(FileUtil.getFilenameFromUrl(cracUrl), fileImporter.openUrlStream(cracUrl),
-                network, cracCreationParameters);
+        CseCracCreationContext cracCreationContext = (CseCracCreationContext) Crac.readWithContext(
+            FileUtil.getFilenameFromUrl(cracUrl), fileImporter.openUrlStream(cracUrl), network, cracCreationParameters
+        );
 
         return new CracImportData(cracCreationContext, busBarChangeSwitchesSet);
     }

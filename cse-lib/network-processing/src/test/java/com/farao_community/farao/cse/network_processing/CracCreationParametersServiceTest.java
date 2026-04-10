@@ -14,6 +14,7 @@ import com.powsybl.openrao.data.crac.io.cse.parameters.SwitchPairId;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ class CracCreationParametersServiceTest {
     void getCracCreationParametersTest() {
         InputStream cracCreationParametersJsonPath = Objects.requireNonNull(getClass().getResourceAsStream("cseCracCreationParameters.json"));
         Set<BusBarChangeSwitches> busBarChangesSwitches = Set.of(new BusBarChangeSwitches("ra-id", Set.of(new SwitchPairId("switch-to-open", "switch-to-close"))));
-        CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersJsonPath, busBarChangesSwitches);
+        CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersJsonPath, busBarChangesSwitches, List.of("LINK_1 + LINK_2"));
         RaUsageLimits raUsageLimits = cracCreationParameters.getRaUsageLimitsPerInstant().get("curative");
         assertTrue(raUsageLimits.getMaxTopoPerTso().isEmpty());
         assertTrue(raUsageLimits.getMaxTopoPerTso().isEmpty());
@@ -37,6 +38,7 @@ class CracCreationParametersServiceTest {
         assertEquals(3, raUsageLimits.getMaxRaPerTso().get("AT"));
         assertEquals(3, raUsageLimits.getMaxRaPerTso().get("SI"));
         CseCracCreationParameters cseCracCreationParameters = cracCreationParameters.getExtension(CseCracCreationParameters.class);
+        assertEquals("LINK_1 + LINK_2", cseCracCreationParameters.getRangeActionGroupsAsString().getFirst());
         assertEquals(1, cseCracCreationParameters.getBusBarChangeSwitches("ra-id").getSwitchPairs().size());
     }
 }
