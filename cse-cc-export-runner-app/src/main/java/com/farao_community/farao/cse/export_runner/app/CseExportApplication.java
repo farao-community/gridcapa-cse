@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.cse.export_runner.app;
 
+import com.farao_community.farao.cse.export_runner.app.configurations.MendrisioConfiguration;
 import com.farao_community.farao.cse.export_runner.app.configurations.PiSaConfiguration;
 import com.farao_community.farao.cse.export_runner.app.configurations.UrlConfiguration;
 import org.springframework.boot.SpringApplication;
@@ -17,7 +18,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  */
 @SuppressWarnings("HideUtilityClassConstructor")
 @SpringBootApplication
-@EnableConfigurationProperties({PiSaConfiguration.class, UrlConfiguration.class})
+@EnableConfigurationProperties({MendrisioConfiguration.class, PiSaConfiguration.class, UrlConfiguration.class})
 public class CseExportApplication {
     public static void main(String[] args) {
         SpringApplication.run(CseExportApplication.class, args);

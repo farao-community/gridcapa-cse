@@ -175,7 +175,7 @@ public class FileImporter {
 
     InputStream openUrlStream(String urlString) {
         try {
-            if (urlConfiguration.getWhitelist().stream().noneMatch(urlString::startsWith)) {
+            if (urlConfiguration.whitelist().stream().noneMatch(urlString::startsWith)) {
                 throw new CseInvalidDataException(String.format("URL '%s' is not part of application's whitelisted url's.", urlString));
             }
             URL url = new URI(urlString).toURL();

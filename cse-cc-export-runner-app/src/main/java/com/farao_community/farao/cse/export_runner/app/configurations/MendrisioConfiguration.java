@@ -6,24 +6,12 @@
  */
 package com.farao_community.farao.cse.export_runner.app.configurations;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
-@Configuration
-public class MendrisioConfiguration {
-    @Value("${cse-cc-runner.mendrisio.mendrisio-voltage-level}")
-    private String mendrisioVoltageLevel;
-    @Value("${cse-cc-runner.mendrisio.mendrisio-node-id}")
-    private String mendrisioNodeId;
-
-    public String getMendrisioVoltageLevel() {
-        return mendrisioVoltageLevel;
-    }
-
-    public String getMendrisioNodeId() {
-        return mendrisioNodeId;
-    }
+@ConfigurationProperties(prefix = "cse-cc-runner.mendrisio")
+public record MendrisioConfiguration(String mendrisioVoltageLevel,
+                                     String mendrisioNodeId) {
 }

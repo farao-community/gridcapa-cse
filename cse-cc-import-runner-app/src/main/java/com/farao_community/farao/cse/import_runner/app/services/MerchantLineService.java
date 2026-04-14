@@ -35,8 +35,8 @@ public class MerchantLineService {
     public MerchantLineService(MendrisioConfiguration mendrisioConfiguration, Logger businessLogger) {
         this.mendrisioConfiguration = mendrisioConfiguration;
         this.uctePstProcessor = new UctePstProcessor(businessLogger,
-                mendrisioConfiguration.getMendrisioVoltageLevel(),
-                mendrisioConfiguration.getMendrisioNodeId());
+                mendrisioConfiguration.mendrisioVoltageLevel(),
+                mendrisioConfiguration.mendrisioNodeId());
     }
 
     public void activateMerchantLine(ProcessType processType, Network network, CseData cseData) {
@@ -53,7 +53,7 @@ public class MerchantLineService {
     }
 
     private void activateMerchantLineForD2cc(Network network, CseData cseData) {
-        double offset = Optional.ofNullable(network.getLoad(mendrisioConfiguration.getMendrisioNodeId() + "_load"))
+        double offset = Optional.ofNullable(network.getLoad(mendrisioConfiguration.mendrisioNodeId() + "_load"))
             .map(Load::getP0)
             .orElse(0.);
 
@@ -64,12 +64,12 @@ public class MerchantLineService {
     }
 
     private double getMendrisioTargetFlowForD2cc(Network network, CseData cseData) {
-        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(mendrisioConfiguration.getMendrisioCagnoNtcId());
+        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(mendrisioConfiguration.mendrisioCagnoLine().ntcId());
         UcteNetworkAnalyzer ucteNetworkHelper = new UcteNetworkAnalyzer(
             network,
             new UcteNetworkAnalyzerProperties(UcteNetworkAnalyzerProperties.BusIdMatchPolicy.COMPLETE_WITH_WILDCARDS));
         Optional<Double> reducedFlow = cseData.getLineFixedFlows().getFixedFlow(
-            mendrisioConfiguration.getMendrisioCagnoTargetChId(),
+            mendrisioConfiguration.mendrisioCagnoLine().targetChId(),
             network,
             ucteNetworkHelper);
         final double mendrisioCagnoTargetFlow = reducedFlow.map(aDouble -> Math.min(defaultFlow, aDouble)).orElse(defaultFlow);
@@ -81,7 +81,7 @@ public class MerchantLineService {
     }
 
     private double getMendrisioTargetFlowForIdcc(CseData cseData) {
-        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(mendrisioConfiguration.getMendrisioCagnoNtcId());
+        double defaultFlow = cseData.getNtc().getFlowOnFixedFlowLines().get(mendrisioConfiguration.mendrisioCagnoLine().ntcId());
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(String.format("Target default flow for Mendrisio-Cagno is %.0f MW", defaultFlow));
         }

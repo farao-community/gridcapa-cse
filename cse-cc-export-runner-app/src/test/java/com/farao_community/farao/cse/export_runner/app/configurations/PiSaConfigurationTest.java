@@ -23,14 +23,14 @@ class PiSaConfigurationTest {
 
     @Test
     void checkPisaConfigurationIsRetrievedCorrectly() {
-        assertEquals(2, piSaConfiguration.getLink1().getFictiveLines().size());
-        assertEquals(2, piSaConfiguration.getLink2().getFictiveLines().size());
-        assertEquals("FFG.IL12", piSaConfiguration.getLink1().getNodeFr());
-        assertEquals("FFG.IL11", piSaConfiguration.getLink1().getNodeIt());
-        assertEquals("FFG.IL14", piSaConfiguration.getLink2().getNodeFr());
-        assertEquals("FFG.IL13", piSaConfiguration.getLink2().getNodeIt());
-        assertEquals("FFG.IL12 FFG.IL11 1", piSaConfiguration.getLink1().getFictiveLines().get(0));
-        assertEquals("FFG.IL14 FFG.IL13 1", piSaConfiguration.getLink2().getFictiveLines().get(0));
+        assertEquals(2, piSaConfiguration.link1().fictiveLines().size());
+        assertEquals(2, piSaConfiguration.link2().fictiveLines().size());
+        assertEquals("FFG.IL12", piSaConfiguration.link1().nodeFr());
+        assertEquals("FFG.IL11", piSaConfiguration.link1().nodeIt());
+        assertEquals("FFG.IL14", piSaConfiguration.link2().nodeFr());
+        assertEquals("FFG.IL13", piSaConfiguration.link2().nodeIt());
+        assertEquals("FFG.IL12 FFG.IL11 1", piSaConfiguration.link1().fictiveLines().get(0));
+        assertEquals("FFG.IL14 FFG.IL13 1", piSaConfiguration.link2().fictiveLines().get(0));
 
     }
 }

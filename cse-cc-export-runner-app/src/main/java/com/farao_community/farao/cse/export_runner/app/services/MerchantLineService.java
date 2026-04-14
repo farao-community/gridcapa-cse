@@ -29,10 +29,10 @@ public class MerchantLineService {
 
     public MerchantLineService(MendrisioConfiguration mendrisioConfiguration, Logger businessLogger) {
         this.businessLogger = businessLogger;
-        this.mendrisioVoltageLevel = mendrisioConfiguration.getMendrisioVoltageLevel();
+        this.mendrisioVoltageLevel = mendrisioConfiguration.mendrisioVoltageLevel();
         this.uctePstProcessor = new UctePstProcessor(businessLogger,
-                mendrisioConfiguration.getMendrisioVoltageLevel(),
-                mendrisioConfiguration.getMendrisioNodeId());
+                mendrisioConfiguration.mendrisioVoltageLevel(),
+                mendrisioConfiguration.mendrisioNodeId());
     }
 
     public void setTransformerInActivePowerRegulation(Network network) {

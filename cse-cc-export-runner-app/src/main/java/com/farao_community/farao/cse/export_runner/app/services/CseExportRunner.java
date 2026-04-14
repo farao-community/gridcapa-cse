@@ -7,6 +7,7 @@
 package com.farao_community.farao.cse.export_runner.app.services;
 
 import com.farao_community.farao.cse.export_runner.app.FileUtil;
+import com.farao_community.farao.cse.export_runner.app.configurations.PiSaConfiguration;
 import com.farao_community.farao.cse.export_runner.app.configurations.ProcessConfiguration;
 import com.farao_community.farao.cse.export_runner.app.configurations.UrlConfiguration;
 import com.farao_community.farao.cse.network_processing.CracCreationParametersService;
@@ -68,8 +69,19 @@ public class CseExportRunner {
     private final MerchantLineService merchantLineService;
     private final RestTemplateBuilder restTemplateBuilder;
     private final UrlConfiguration urlConfiguration;
+    private final PiSaConfiguration piSaConfiguration;
 
-    public CseExportRunner(FileImporter fileImporter, FileExporter fileExporter, PiSaService pisaService, RaoRunnerService raoRunnerService, TtcRaoService ttcRaoService, Logger businessLogger, ProcessConfiguration processConfiguration, MerchantLineService merchantLineService, RestTemplateBuilder restTemplateBuilder, UrlConfiguration urlConfiguration) {
+    public CseExportRunner(final FileImporter fileImporter,
+                           final FileExporter fileExporter,
+                           final PiSaService pisaService,
+                           final RaoRunnerService raoRunnerService,
+                           final TtcRaoService ttcRaoService,
+                           final Logger businessLogger,
+                           final ProcessConfiguration processConfiguration,
+                           final MerchantLineService merchantLineService,
+                           final RestTemplateBuilder restTemplateBuilder,
+                           final UrlConfiguration urlConfiguration,
+                           final PiSaConfiguration piSaConfiguration) {
         this.fileImporter = fileImporter;
         this.fileExporter = fileExporter;
         this.pisaService = pisaService;
@@ -80,6 +92,7 @@ public class CseExportRunner {
         this.merchantLineService = merchantLineService;
         this.restTemplateBuilder = restTemplateBuilder;
         this.urlConfiguration = urlConfiguration;
+        this.piSaConfiguration = piSaConfiguration;
     }
 
     public CseExportResponse run(CseExportRequest cseExportRequest) throws IOException {
@@ -102,7 +115,7 @@ public class CseExportRunner {
         Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, nativeCseCrac); // Pre-treatment on network
         LOGGER.info("Importing Crac Creation Parameters file: {}", CRAC_CREATION_PARAMETERS_JSON);
         InputStream cracCreationParametersInputStream = getClass().getResourceAsStream(CRAC_CREATION_PARAMETERS_JSON);
-        CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersInputStream, busBarChangeSwitchesSet);
+        CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersInputStream, busBarChangeSwitchesSet, piSaConfiguration.alignedRaNames());
 
         CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(FileUtil.getFilenameFromUrl(cseExportRequest.getMergedCracUrl()), fileImporter.openUrlStream(cseExportRequest.getMergedCracUrl()), network, cracCreationParameters);
 
@@ -167,6 +180,6 @@ public class CseExportRunner {
     }
 
     private String getInterruptedUrl(String runId) {
-        return urlConfiguration.getInterruptServerUrl() + runId;
+        return urlConfiguration.interruptServerUrl() + runId;
     }
 }
