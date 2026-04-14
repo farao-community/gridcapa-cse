@@ -10,20 +10,6 @@ package com.farao_community.farao.cse.import_runner.app.configurations;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class MendrisioCagnoLineProperties {
-    private final String targetChId;
-    private final String ntcId;
-
-    public MendrisioCagnoLineProperties(String targetChId, String ntcId) {
-        this.targetChId = targetChId;
-        this.ntcId = ntcId;
-    }
-
-    public String getTargetChId() {
-        return targetChId;
-    }
-
-    public String getNtcId() {
-        return ntcId;
-    }
+public record MendrisioCagnoLineProperties(String targetChId,
+                                           String ntcId) {
 }

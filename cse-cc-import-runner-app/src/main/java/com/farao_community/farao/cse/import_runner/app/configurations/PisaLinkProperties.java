@@ -12,32 +12,8 @@ import java.util.List;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class PisaLinkProperties {
-    private final String nodeFr;
-    private final String nodeIt;
-    private final List<String> fictiveLines;
-    private final String praName;
-
-    public PisaLinkProperties(String nodeFr, String nodeIt, List<String> fictiveLines, String praName) {
-        this.nodeFr = nodeFr;
-        this.nodeIt = nodeIt;
-        this.fictiveLines = fictiveLines;
-        this.praName = praName;
-    }
-
-    public String getNodeFr() {
-        return nodeFr;
-    }
-
-    public String getNodeIt() {
-        return nodeIt;
-    }
-
-    public List<String> getFictiveLines() {
-        return fictiveLines;
-    }
-
-    public String getPraName() {
-        return praName;
-    }
+public record PisaLinkProperties(String nodeFr,
+                                 String nodeIt,
+                                 List<String> fictiveLines,
+                                 String praName) {
 }

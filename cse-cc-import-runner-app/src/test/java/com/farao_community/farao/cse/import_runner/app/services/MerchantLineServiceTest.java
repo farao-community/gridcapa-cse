@@ -63,7 +63,7 @@ class MerchantLineServiceTest {
         network = Network.read(filename, getClass().getResourceAsStream(filename));
         networkWithMendrisioCagnoLine = Network.read(filenameNetworkWithMendrisioCagnoLine, getClass().getResourceAsStream(filenameNetworkWithMendrisioCagnoLine));
         Map<String, Double> fixedFlowLines = Map.of(
-                mendrisioConfiguration.getMendrisioCagnoNtcId(), 75.
+                mendrisioConfiguration.mendrisioCagnoLine().ntcId(), 75.
         );
         Ntc ntc = mock(Ntc.class);
         LineFixedFlows lineFixedFlows = mock(LineFixedFlows.class);
@@ -124,7 +124,7 @@ class MerchantLineServiceTest {
     }
 
     private TwoWindingsTransformer getTwoWindingsTransformer(final Network network) {
-        return network.getVoltageLevel(mendrisioConfiguration.getMendrisioVoltageLevel())
+        return network.getVoltageLevel(mendrisioConfiguration.mendrisioVoltageLevel())
                 .getTwoWindingsTransformerStream()
                 .filter(PhaseTapChangerHolder::hasPhaseTapChanger)
                 .findAny()

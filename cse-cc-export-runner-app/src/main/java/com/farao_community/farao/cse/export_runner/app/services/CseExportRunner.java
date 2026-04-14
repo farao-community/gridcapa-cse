@@ -115,7 +115,7 @@ public class CseExportRunner {
         Set<BusBarChangeSwitches> busBarChangeSwitchesSet = BusBarChangePreProcessor.process(network, nativeCseCrac); // Pre-treatment on network
         LOGGER.info("Importing Crac Creation Parameters file: {}", CRAC_CREATION_PARAMETERS_JSON);
         InputStream cracCreationParametersInputStream = getClass().getResourceAsStream(CRAC_CREATION_PARAMETERS_JSON);
-        CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersInputStream, busBarChangeSwitchesSet, piSaConfiguration.getAlignedRaNames());
+        CracCreationParameters cracCreationParameters = CracCreationParametersService.getCracCreationParameters(cracCreationParametersInputStream, busBarChangeSwitchesSet, piSaConfiguration.alignedRaNames());
 
         CseCracCreationContext cseCracCreationContext = (CseCracCreationContext) Crac.readWithContext(FileUtil.getFilenameFromUrl(cseExportRequest.getMergedCracUrl()), fileImporter.openUrlStream(cseExportRequest.getMergedCracUrl()), network, cracCreationParameters);
 
@@ -180,6 +180,6 @@ public class CseExportRunner {
     }
 
     private String getInterruptedUrl(String runId) {
-        return urlConfiguration.getInterruptServerUrl() + runId;
+        return urlConfiguration.interruptServerUrl() + runId;
     }
 }

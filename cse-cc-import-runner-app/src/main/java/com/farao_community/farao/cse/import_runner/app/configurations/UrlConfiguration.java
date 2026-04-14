@@ -15,20 +15,10 @@ import java.util.List;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @ConfigurationProperties("cse-cc-runner")
-public class UrlConfiguration {
-    private final List<String> whitelist;
-    private final String interruptServerUrl;
-
+public record UrlConfiguration(List<String> whitelist,
+                               String interruptServerUrl) {
     public UrlConfiguration(List<String> whitelist, String interruptServerUrl) {
         this.whitelist = whitelist == null ? new ArrayList<>() : whitelist;
         this.interruptServerUrl = interruptServerUrl;
-    }
-
-    public List<String> getWhitelist() {
-        return whitelist;
-    }
-
-    public String getInterruptServerUrl() {
-        return interruptServerUrl;
     }
 }

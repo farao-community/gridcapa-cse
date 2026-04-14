@@ -22,7 +22,7 @@ class UrlConfigurationTest {
 
     @Test
     void checkUrlWhiteListIsRetrievedCorrectly() {
-        Assertions.assertEquals(2, urlConfiguration.getWhitelist().size());
-        Assertions.assertEquals("http://localhost:9000", urlConfiguration.getWhitelist().get(0));
+        Assertions.assertEquals(2, urlConfiguration.whitelist().size());
+        Assertions.assertEquals("http://localhost:9000", urlConfiguration.whitelist().get(0));
     }
 }
