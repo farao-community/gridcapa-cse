@@ -7,64 +7,82 @@
 package com.farao_community.farao.cse.data.ntc;
 
 import com.farao_community.farao.cse.data.CseDataException;
-import com.farao_community.farao.cse.data.xsd.ntc_adapted.*;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCAnnualDocument;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TLine;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TNTC;
+import com.farao_community.farao.cse.data.xsd.ntc_adapted.TNTCvaluesImport;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+
+import static com.farao_community.farao.cse.data.ntc.NtcUtil.ABSOLUTE;
+import static com.farao_community.farao.cse.data.ntc.NtcUtilAdapted.getTNtcFromDays;
+import static com.farao_community.farao.cse.data.ntc.NtcUtilAdapted.getTNtcFromLine;
+import static com.farao_community.farao.cse.data.ntc.NtcUtilAdapted.getTNtcFromPeriods;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.toMap;
 
 public final class YearlyNtcDocumentAdapted {
     private final OffsetDateTime targetDateTime;
     private final NTCAnnualDocument ntcAnnualDocument;
 
-    public YearlyNtcDocumentAdapted(OffsetDateTime targetDateTime, NTCAnnualDocument ntcAnnualDocument) {
+    public YearlyNtcDocumentAdapted(final OffsetDateTime targetDateTime, final NTCAnnualDocument ntcAnnualDocument) {
         this.targetDateTime = targetDateTime;
         this.ntcAnnualDocument = ntcAnnualDocument;
     }
 
-    Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
-        TSpecialLines tSpecialLines = getTNtcValues().getSpecialLines();
-        if (tSpecialLines != null) {
-            return tSpecialLines.getLine().stream()
-                    .filter(lineSelector)
-                    .collect(Collectors.toMap(
-                        TLine::getCode,
-                        tLine -> {
-                            TNTC tNtc = NtcUtilAdapted.getTNtcFromLine(targetDateTime, tLine).orElseThrow(() -> new CseDataException(String.format("No NTC definition for line %s", tLine.getCode())));
-                            if (tNtc.getType() == null || tNtc.getType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
-                                return new LineInformation(tLine.getCNtc().value(), NtcUtil.ABSOLUTE, tNtc.getV().doubleValue());
-                            }
-                            throw new CseDataException("Flow for yearly value must be absolute");
-                        }
-                    ));
-        }
-        return Collections.emptyMap();
+    Map<String, LineInformation> getLineInformationById(Predicate<TLine> lineSelector) {
+        return Optional.ofNullable(getTNtcValues().getSpecialLines())
+            .map(sl -> sl.getLine()
+                .stream()
+                .filter(lineSelector)
+                .collect(toMap(TLine::getCode, getLineInformation(targetDateTime))))
+            .orElse(emptyMap());
     }
 
-    Map<String, NtcInformation> getNtcInformationPerCountry() {
-        List<TNTC> ntcValues = getNtcValues();
-        Map<String, NtcInformation> ntcPerCountry = new HashMap<>();
-        ntcValues.forEach(tntc -> {
-            if (ntcPerCountry.containsKey(tntc.getCountry().value())) {
+    private static Function<TLine, LineInformation> getLineInformation(final OffsetDateTime targetDateTime) {
+        return tLine -> {
+            TNTC tNtc = getTNtcFromLine(targetDateTime, tLine)
+                .orElseThrow(() -> new CseDataException(String.format("No NTC definition for line %s", tLine.getCode())));
+            if (tNtc.getType().equalsIgnoreCase(ABSOLUTE)) {
+                return new LineInformation(tLine.getCNtc().value(), tNtc.getType(), tNtc.getV().doubleValue());
+            }
+            throw new CseDataException("Flow for yearly value must be absolute");
+        };
+    }
+
+    Map<String, NtcInformation> getNtcInformationByCountry() {
+        final List<TNTC> ntcValues = getNtcValues();
+        Map<String, NtcInformation> ntcByCountry = new HashMap<>();
+        ntcValues.forEach(putInMap(ntcByCountry));
+        return ntcByCountry;
+    }
+
+    static Consumer<TNTC> putInMap(final Map<String, NtcInformation> ntcByCountry) {
+        return tntc -> {
+            final String country = tntc.getCountry().value();
+            final String type = tntc.getType();
+            if (ntcByCountry.containsKey(country)) {
                 throw new CseDataException("Two different NTC values for the same country");
             }
-            if (tntc.getType() == null || tntc.getType().equalsIgnoreCase(NtcUtil.ABSOLUTE)) {
-                ntcPerCountry.put(tntc.getCountry().value(), new NtcInformation(NtcUtil.ABSOLUTE, tntc.getV().doubleValue()));
+            if (type == null || type.equalsIgnoreCase(ABSOLUTE)) {
+                ntcByCountry.put(country, new NtcInformation(ABSOLUTE, tntc.getV().doubleValue()));
             } else {
                 throw new CseDataException("NTC for yearly value must be absolute");
             }
-
-        });
-        return ntcPerCountry;
+        };
     }
 
     private TNTCvaluesImport getTNtcValues() {
         if (ntcAnnualDocument.getNTCvaluesImport().size() == 1) {
-            return ntcAnnualDocument.getNTCvaluesImport().get(0);
+            return ntcAnnualDocument.getNTCvaluesImport().getFirst();
         } else {
             throw new CseDataException("Yearly document should contain exactly 1 \"NTCValuesImport\" tag.");
         }
@@ -82,20 +100,14 @@ public final class YearlyNtcDocumentAdapted {
     }
 
     private List<TNTC> getSpecialDayNtcValues() {
-        TSpecialDays tSpecialDays = getTNtcValues().getSpecialDays();
-        if (tSpecialDays != null) {
-            return NtcUtilAdapted.getTNtcFromDays(targetDateTime, tSpecialDays.getDay());
-        } else {
-            return Collections.emptyList();
-        }
+        return Optional.ofNullable(getTNtcValues().getSpecialDays())
+            .map(days -> getTNtcFromDays(targetDateTime, days.getDay()))
+            .orElse(emptyList());
     }
 
     private List<TNTC> getBasicDayNtcValues() {
-        TBasicDays tBasicDays = getTNtcValues().getBasicDays();
-        if (tBasicDays != null) {
-            return NtcUtilAdapted.getTNtcFromPeriods(targetDateTime, tBasicDays.getPeriod());
-        } else {
-            return Collections.emptyList();
-        }
+        return Optional.ofNullable(getTNtcValues().getBasicDays())
+            .map(days -> getTNtcFromPeriods(targetDateTime, days.getPeriod()))
+            .orElse(emptyList());
     }
 }

@@ -62,7 +62,7 @@ class InitialShiftServiceTest {
                 CseCountry.SI.getEiCode(), 400.);
 
         Mockito.when(cseData.getNtc()).thenReturn(ntc);
-        Mockito.when(ntc.getFlowPerCountryOnNotModelizedLines()).thenReturn(flowPerCountryOnNotModelizedLines);
+        Mockito.when(ntc.getFlowByCountryOnNotModelizedLines()).thenReturn(flowPerCountryOnNotModelizedLines);
 
         Map<String, Double> initialShiftValues = initialShiftService.getInitialShiftValues(cseData, referenceExchanges, ntcsByEic);
 
@@ -120,7 +120,7 @@ class InitialShiftServiceTest {
             final CseData cseData = Mockito.mock(CseData.class);
             final Ntc ntc = Mockito.mock(Ntc.class);
             Mockito.when(cseData.getNtc()).thenReturn(ntc);
-            Mockito.when(ntc.getFlowPerCountryOnNotModelizedLines()).thenReturn(commonEiCodeMap);
+            Mockito.when(ntc.getFlowByCountryOnNotModelizedLines()).thenReturn(commonEiCodeMap);
 
             final ZonalData<Scalable> zonalData = Mockito.mock(ZonalData.class);
             final Scalable scalable = Mockito.mock(Scalable.class);

@@ -313,7 +313,7 @@ class CseDataTest {
         assertNotNull(cseData);
         Ntc ntc = cseData.getNtc();
         assertNotNull(ntc);
-        Map<String, Double> exchanges = ntc.getNtcPerCountry();
+        Map<String, Double> exchanges = ntc.getNtcByCountry();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
         assertEquals(315, exchanges.get(AT));
@@ -333,7 +333,7 @@ class CseDataTest {
         assertNotNull(cseData);
         Ntc ntc = cseData.getNtc();
         assertNotNull(ntc);
-        Map<String, Double> exchanges = ntc.getNtcPerCountry();
+        Map<String, Double> exchanges = ntc.getNtcByCountry();
         assertNotNull(exchanges);
         assertEquals(4, exchanges.size());
         assertEquals(255, exchanges.get(AT));

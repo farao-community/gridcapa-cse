@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.data.ntc;
 
-class NtcInformation {
+public class NtcInformation implements FlowInformation {
     private final String variationType;
     private final double flow;
 
@@ -16,11 +16,11 @@ class NtcInformation {
         this.flow = flow;
     }
 
-    String getVariationType() {
+    public String getVariationType() {
         return variationType;
     }
 
-    double getFlow() {
+    public double getFlow() {
         return flow;
     }
 }

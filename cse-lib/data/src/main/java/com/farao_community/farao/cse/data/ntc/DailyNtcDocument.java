@@ -32,7 +32,7 @@ public final class DailyNtcDocument {
         this.ntcReductionsDocument = ntcReductionsDocument;
     }
 
-    Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
+    Map<String, LineInformation> getLineInformationByLineId(Predicate<TLine> lineSelector) {
         List<TSpecialLines> tSpecialLines = ntcReductionsDocument.getSpecialLines();
         if (tSpecialLines.isEmpty()) {
             return Collections.emptyMap();
@@ -50,7 +50,7 @@ public final class DailyNtcDocument {
         throw new CseDataException("Several special lines sections have been defined");
     }
 
-    Map<String, NtcInformation> getNtcInformationPerCountry() {
+    Map<String, NtcInformation> getNtcInformationByCountry() {
         List<TNTC> ntcValues = NtcUtil.getTNtcFromPeriods(targetDateTime, getTNtcReductions().getPeriod());
         Map<String, NtcInformation> ntcPerCountry = new HashMap<>();
         ntcValues.forEach(tNtc -> {

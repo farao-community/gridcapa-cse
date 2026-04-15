@@ -10,29 +10,29 @@ enum DayOfWeek {
     EVERYDAY(0),
     SATURDAY(6),
     SUNDAY(7),
-    MONTOFRI(8),
-    MONTOSAT(9),
+    MON_TO_FRI(8),
+    MON_TO_SAT(9),
     INVALID(-1);
 
-    private final int daynum;
+    private final int dayNum;
 
-    DayOfWeek(int daynum) {
-        this.daynum = daynum;
+    DayOfWeek(int dayNum) {
+        this.dayNum = dayNum;
     }
 
-    int getDaynum() {
-        return daynum;
+    int getDayNum() {
+        return dayNum;
     }
 
-    static DayOfWeek getInstance(int daynum) {
-        switch (daynum) {
-            case 0 : return EVERYDAY;
-            case 6 : return SATURDAY;
-            case 7 : return SUNDAY;
-            case 8 : return MONTOFRI;
-            case 9 : return MONTOSAT;
-            default: return INVALID;
-        }
+    static DayOfWeek getInstance(final int dayNum) {
+        return switch (dayNum) {
+            case 0 -> EVERYDAY;
+            case 6 -> SATURDAY;
+            case 7 -> SUNDAY;
+            case 8 -> MON_TO_FRI;
+            case 9 -> MON_TO_SAT;
+            default -> INVALID;
+        };
     }
 
 }

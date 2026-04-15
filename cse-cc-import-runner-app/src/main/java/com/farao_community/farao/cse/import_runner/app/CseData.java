@@ -72,7 +72,7 @@ public class CseData {
         if (ntcPerCountry != null) {
             return ntcPerCountry;
         }
-        ntcPerCountry = getNtc().getNtcPerCountry();
+        ntcPerCountry = getNtc().getNtcByCountry();
         return ntcPerCountry;
     }
 
