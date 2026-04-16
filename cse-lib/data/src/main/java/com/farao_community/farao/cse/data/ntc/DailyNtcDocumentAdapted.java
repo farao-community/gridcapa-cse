@@ -32,7 +32,7 @@ public final class DailyNtcDocumentAdapted {
         this.ntcReductionsDocument = ntcReductionsDocument;
     }
 
-    Map<String, LineInformation> getLineInformationPerLineId(Predicate<TLine> lineSelector) {
+    Map<String, LineInformation> getLineInformationById(Predicate<TLine> lineSelector) {
         TSpecialLines tSpecialLines = ntcReductionsDocument.getSpecialLinesImport();
         if (tSpecialLines == null || tSpecialLines.getLine() == null || tSpecialLines.getLine().isEmpty()) {
             return Collections.emptyMap();
@@ -47,7 +47,7 @@ public final class DailyNtcDocumentAdapted {
                 ));
     }
 
-    Map<String, NtcInformation> getNtcInformationPerCountry() {
+    Map<String, NtcInformation> getNtcInformationByCountry() {
         List<TNTC> ntcValues = NtcUtilAdapted.getTNtcFromPeriods(targetDateTime, getTNtcReductionsImport().getPeriod());
         Map<String, NtcInformation> ntcPerCountry = new HashMap<>();
         ntcValues.forEach(tNtc -> {

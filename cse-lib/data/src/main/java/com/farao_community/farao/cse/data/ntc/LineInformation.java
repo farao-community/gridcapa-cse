@@ -7,7 +7,7 @@
 
 package com.farao_community.farao.cse.data.ntc;
 
-class LineInformation {
+public class LineInformation implements FlowInformation {
     private final String country;
     private final String variationType;
     private final double flow;
@@ -18,15 +18,15 @@ class LineInformation {
         this.flow = flow;
     }
 
-    String getCountry() {
+    public String getCountry() {
         return country;
     }
 
-    String getVariationType() {
+    public String getVariationType() {
         return variationType;
     }
 
-    double getFlow() {
+    public double getFlow() {
         return flow;
     }
 }

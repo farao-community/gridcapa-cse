@@ -70,6 +70,6 @@ final class NtcUtilAdapted {
     }
 
     static boolean isTargetDayOfWeekMatchWithDayNum(int daynum, int targetDayZOfWeek) {
-        return NtcUtil.isTargetDayOfWeekMatchWithDayNum(daynum, targetDayZOfWeek);
+        return NtcUtil.dayOfWeekMatchesDayNum(daynum, targetDayZOfWeek);
     }
 }

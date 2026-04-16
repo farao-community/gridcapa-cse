@@ -87,7 +87,7 @@ public class InitialShiftService {
         Map<String, Double> initialShifts = new HashMap<>();
 
         Map<String, Double> flowOnNotModelledLinesPerCountryEic =
-            NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtc().getFlowPerCountryOnNotModelizedLines());
+            NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtc().getFlowByCountryOnNotModelizedLines());
 
         BORDER_COUNTRIES.forEach(country -> {
             double initialShift = ntcsByEic.get(country)
