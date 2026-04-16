@@ -115,7 +115,7 @@ public class CseRunner {
 
             Map<String, Double> ntcsByEic = cseRequest.getProcessType().equals(ProcessType.IDCC) ?
                     cseData.getNtc2().getExchanges() :
-                    NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcPerCountry());
+                    NetworkShifterUtil.convertMapByCountryToMapByEic(cseData.getNtcByCountry());
 
             double initialIndexValue = Optional.ofNullable(cseRequest.getInitialDichotomyIndex()).orElse(ntcsByEic.values().stream().mapToDouble(Double::doubleValue).sum());
             String initialVariantId = network.getVariantManager().getWorkingVariantId();

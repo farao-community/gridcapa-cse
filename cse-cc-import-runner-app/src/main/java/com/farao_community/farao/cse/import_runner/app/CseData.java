@@ -35,7 +35,7 @@ public class CseData {
     private String jsonCracUrl;
     private String preProcesedNetworkUrl;
     private LineFixedFlows lineFixedFlows; // only for D2CC process
-    private Map<String, Double> ntcPerCountry;
+    private Map<String, Double> ntcByCountry;
 
     public CseData(CseRequest cseRequest, FileImporter fileImporter) {
         this.cseRequest = cseRequest;
@@ -44,7 +44,7 @@ public class CseData {
 
     public Map<String, Double> getReducedSplittingFactors() {
         if (reducedSplittingFactors == null) {
-            reducedSplittingFactors = getNtc().computeReducedSplittingFactors();
+            reducedSplittingFactors = getNtc().getReducedSplittingFactors();
         }
         return reducedSplittingFactors;
     }
@@ -68,12 +68,12 @@ public class CseData {
         return mniiOffset;
     }
 
-    public Map<String, Double> getNtcPerCountry() {
-        if (ntcPerCountry != null) {
-            return ntcPerCountry;
+    public Map<String, Double> getNtcByCountry() {
+        if (ntcByCountry != null) {
+            return ntcByCountry;
         }
-        ntcPerCountry = getNtc().getNtcByCountry();
-        return ntcPerCountry;
+        ntcByCountry = getNtc().getNtcByCountry();
+        return ntcByCountry;
     }
 
     public Ntc getNtc() {
@@ -141,7 +141,7 @@ public class CseData {
     }
 
     private void ntc2FallbackToNtc(Map<String, Double> ntc2Exchanges) {
-        getNtcPerCountry().forEach((country, value) -> {
+        getNtcByCountry().forEach((country, value) -> {
             String eicCode = new EICode(Country.valueOf(country)).getAreaCode();
             if (!ntc2Exchanges.containsKey(eicCode)) {
                 ntc2Exchanges.put(eicCode, value);

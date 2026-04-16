@@ -55,8 +55,8 @@ class NtcFilesTest {
     }
 
     @Test
-    void computeReducedSplittingFactors() {
-        Map<String, Double> splittingFactors = ntc.computeReducedSplittingFactors();
+    void getReducedSplittingFactors() {
+        Map<String, Double> splittingFactors = ntc.getReducedSplittingFactors();
         assertEquals(4, splittingFactors.size());
         assertEquals(0.466, splittingFactors.get("FR"), DOUBLE_PRECISION);
         assertEquals(0.409, splittingFactors.get("CH"), DOUBLE_PRECISION);
