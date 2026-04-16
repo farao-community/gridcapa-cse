@@ -181,8 +181,7 @@ public final class Ntc {
             .entrySet().stream()
             .collect(toFlowMap());
 
-        return Optional.ofNullable(dailyInfo)
-            .map(doc -> computeFlowSumByKey(ntcByCountry, dailyInfo))
+        return Optional.ofNullable(computeFlowSumByKey(ntcByCountry, dailyInfo))
             .orElse(emptyMap());
     }
 
