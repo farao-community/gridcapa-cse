@@ -150,14 +150,15 @@ public class FileExporter {
         return minioAdapter.generatePreSignedUrl(outputFilePath);
     }
 
-    String getFilePath(OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
-        String filename;
-        ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
+    String getFilePath(final OffsetDateTime processTargetDate, final ProcessType processType, final boolean isImportEc) {
+        final String filename;
+        final ZonedDateTime targetDateInEuropeZone = processTargetDate.atZoneSameInstant(ZoneId.of(processConfiguration.getZoneId()));
         if (processType == ProcessType.D2CC) {
-            String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
-            filename = "TTC_Calculation_" + dateAndTime + "_2D0_CO_CSE1.xml";
+            final String dateAndTime = targetDateInEuropeZone.format(OUTPUTS_DATE_TIME_FORMATTER);
+            final int dayOfWeek = targetDateInEuropeZone.getDayOfWeek().getValue();
+            filename = "TTC_Calculation_" + dateAndTime + "_2D" + dayOfWeek + "_CO_CSE1.xml";
         } else {
-            String date = targetDateInEuropeZone.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            final String date = targetDateInEuropeZone.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             filename = date + "_XBID2_TTCRes_CSE1.xml";
         }
         return MinioStorageHelper.makeDestinationMinioPath(processTargetDate, processType, MinioStorageHelper.FileKind.OUTPUTS, ZoneId.of(processConfiguration.getZoneId()), isImportEc) + filename;

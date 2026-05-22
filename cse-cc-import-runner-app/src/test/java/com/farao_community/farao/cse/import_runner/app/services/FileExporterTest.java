@@ -45,8 +45,8 @@ class FileExporterTest {
 
     @Test
     void getTTcFilePathForD2ccProcessTest() {
-        String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, false);
-        String expectedFilePath = "CSE/IMPORT/D2CC/2021/09/13/14_30/OUTPUTS/TTC_Calculation_20210913_1430_2D0_CO_CSE1.xml";
+        final String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, false);
+        final String expectedFilePath = "CSE/IMPORT/D2CC/2021/09/13/14_30/OUTPUTS/TTC_Calculation_20210913_1430_2D1_CO_CSE1.xml";
         assertEquals(expectedFilePath, actualFilePath);
         FilenameUtils.getPathNoEndSeparator("CSE/D2CC/2021/");
     }
@@ -117,8 +117,8 @@ class FileExporterTest {
 
     @Test
     void getTTcFilePathForD2ccAdaptedProcessTest() {
-        String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, true);
-        String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/09/13/14_30/OUTPUTS/TTC_Calculation_20210913_1430_2D0_CO_CSE1.xml";
+        final String actualFilePath = fileExporter.getFilePath(OffsetDateTime.parse("2021-09-13T12:30Z"), ProcessType.D2CC, true);
+        final String expectedFilePath = "CSE/IMPORT_EC/D2CC/2021/09/13/14_30/OUTPUTS/TTC_Calculation_20210913_1430_2D1_CO_CSE1.xml";
         assertEquals(expectedFilePath, actualFilePath);
         FilenameUtils.getPathNoEndSeparator("CSE/D2CC/2021/");
     }
@@ -203,9 +203,9 @@ class FileExporterTest {
 
     @Test
     void saveTtcResultD2ccTest() {
-        String ttcFilePath = "CSE/IMPORT_EC/D2CC/1999/01/01/13_30/OUTPUTS/TTC_Calculation_19990101_1330_2D0_CO_CSE1.xml";
+        final String ttcFilePath = "CSE/IMPORT_EC/D2CC/1999/01/01/13_30/OUTPUTS/TTC_Calculation_19990101_1330_2D5_CO_CSE1.xml";
         Mockito.when(minioAdapter.generatePreSignedUrl(ttcFilePath)).thenReturn("SUCCESS");
-        String result = fileExporter.saveTtcResult(new Timestamp(), OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.D2CC, true);
+        final String result = fileExporter.saveTtcResult(new Timestamp(), OffsetDateTime.parse("1999-01-01T12:30Z"), ProcessType.D2CC, true);
         assertNotNull(result);
     }
 
