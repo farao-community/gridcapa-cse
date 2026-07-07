@@ -16,6 +16,7 @@ import com.farao_community.farao.cse.runner.api.resource.ProcessType;
 import com.farao_community.farao.minio_adapter.starter.GridcapaFileGroup;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapter;
 import com.powsybl.commons.datasource.MemDataSource;
+import com.powsybl.commons.report.ReportNode;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.raoapi.json.JsonRaoParameters;
@@ -100,7 +101,7 @@ public class FileExporter {
     public String saveRaoParameters(String basePath, List<String> remedialActionsAppliedInPreviousStep, OffsetDateTime offsetDateTime, ProcessType processType, boolean isImportEc) {
         RaoParameters raoParameters = getRaoParameters(remedialActionsAppliedInPreviousStep);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonRaoParameters.write(raoParameters, baos);
+        JsonRaoParameters.write(raoParameters, baos, ReportNode.NO_OP);
         String raoParametersDestinationPath = getRaoParametersDestinationPath(basePath, processType, offsetDateTime, isImportEc);
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         minioAdapter.uploadArtifactForTimestamp(raoParametersDestinationPath, bais, adaptTargetProcessName(processType, isImportEc), "", offsetDateTime);
@@ -124,7 +125,7 @@ public class FileExporter {
     }
 
     public RaoParameters loadRaoParameters() {
-        return RaoParameters.load();
+        return RaoParameters.load(ReportNode.NO_OP);
     }
 
     String saveTtcResult(Timestamp timestamp, OffsetDateTime processTargetDate, ProcessType processType, boolean isImportEc) {
