@@ -9,6 +9,7 @@ package com.farao_community.farao.cse.data;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 
 public final class DateTimeUtil {
     private static final int MINUTES_STEP = 15;
@@ -21,6 +22,11 @@ public final class DateTimeUtil {
         LocalDate utcDate = offsetDateTime.atZoneSameInstant(ZoneOffset.UTC).toLocalDate();
         LocalDate dayDate = LocalDate.parse(day, DateTimeFormatter.ofPattern("yyyy-MM-dd'Z'"));
         return utcDate.equals(dayDate);
+    }
+
+    public static boolean isLongClockChangePeriod(final String start, final String end) {
+        final long nbHoursInPeriod = OffsetDateTime.parse(start).until(OffsetDateTime.parse(end), ChronoUnit.HOURS);
+        return nbHoursInPeriod == 25;
     }
 
     public static boolean isTargetDateInInterval(OffsetDateTime targetDate, String startingTime, String endingTime) {
