@@ -77,18 +77,18 @@ class NtcFilesAdaptedTest {
     @CsvSource({"2025-10-25T23:30Z, 87.0, 93.0"})
     @CsvSource({"2025-10-26T22:30Z, 107.0, 123.0"})
     @CsvSource({"2025-10-26T23:30Z, 127.0, 153.0"})
-    void testGetFlowByCountry(final String target, final double expectedAt, final double expectedCh) { // SpecialLines
+    void testGetFlowByCountryOnLongClockChange(final String target, final double expectedAt, final double expectedCh) { // SpecialLines
         final OffsetDateTime targetDateTime = OffsetDateTime.parse(target);
         try (final InputStream yearlyData = getClass().getResourceAsStream("TEST_2025_2Dp_NTC_annual_CSE1.xml");
              final InputStream dailyData = getClass().getResourceAsStream("TEST_20251026_2D7_NTC_reductions_CSE1.xml")
         ) {
-            final Ntc ntc = new Ntc(
+            final Ntc longClockChangeNtc = new Ntc(
                 new YearlyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
                 new DailyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)),
                 true
             );
 
-            final Map<String, Double> flowByCountry = ntc.getFlowPerCountryAdapted(l -> true);
+            final Map<String, Double> flowByCountry = longClockChangeNtc.getFlowPerCountryAdapted(l -> true);
             assertEquals(expectedAt, flowByCountry.get("AT"));
             assertEquals(expectedCh, flowByCountry.get("CH"));
         } catch (IOException | JAXBException e) {
@@ -102,18 +102,18 @@ class NtcFilesAdaptedTest {
     @CsvSource({"2025-10-25T23:30Z, 21.0, 22.0, 23.0, 24.0"})
     @CsvSource({"2025-10-26T22:30Z, 31.0, 32.0, 33.0, 34.0"})
     @CsvSource({"2025-10-26T23:30Z, 41.0, 42.0, 43.0, 44.0"})
-    void testGetNtcByCountry(final String target, final double expectedAt, final double expectedCh, final double expectedFr, final double expectedSi) { // BasicDays
+    void testGetNtcByCountryOnLongClockChange(final String target, final double expectedAt, final double expectedCh, final double expectedFr, final double expectedSi) { // BasicDays
         final OffsetDateTime targetDateTime = OffsetDateTime.parse(target);
         try (final InputStream yearlyData = getClass().getResourceAsStream("TEST_2025_2Dp_NTC_annual_CSE1.xml");
              final InputStream dailyData = getClass().getResourceAsStream("TEST_20251026_2D7_NTC_reductions_CSE1.xml")
         ) {
-            final Ntc ntc = new Ntc(
+            final Ntc longClockChangeNtc = new Ntc(
                 new YearlyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
                 new DailyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)),
                 true
             );
 
-            final Map<String, Double> ntcByCountry = ntc.getNtcPerCountry();
+            final Map<String, Double> ntcByCountry = longClockChangeNtc.getNtcPerCountry();
             assertEquals(expectedAt, ntcByCountry.get("AT"));
             assertEquals(expectedCh, ntcByCountry.get("CH"));
             assertEquals(expectedFr, ntcByCountry.get("FR"));
