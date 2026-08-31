@@ -52,13 +52,35 @@ final class NtcUtilAdapted {
             return Collections.emptyList();
         }
 
-        return period.get().getDayOfWeek().stream()
+        final TPeriod tPeriod = period.get();
+        return tPeriod.getDayOfWeek().stream()
                 .filter(tDayOfWeek -> isTargetDayOfWeekMatchWithDayNum(tDayOfWeek.getDaynum(), targetDateTime.getDayOfWeek().getValue()))
-                .filter(tDayOfWeek -> !getTNtcFromTimeIntervals(targetDateTime, tDayOfWeek.getTimeInterval()).isEmpty())
+                .filter(tDayOfWeek -> !getTNtcFromTimeIntervals(targetDateTime, tDayOfWeek.getTimeInterval(), tPeriod).isEmpty())
                 .collect(toOptional())
                 .map(TDayOfWeek::getTimeInterval)
-                .map(tTimeIntervals -> getTNtcFromTimeIntervals(targetDateTime, tTimeIntervals))
+                .map(tTimeIntervals -> getTNtcFromTimeIntervals(targetDateTime, tTimeIntervals, tPeriod))
                 .orElse(Collections.emptyList());
+    }
+
+    static List<TNTC> getTNtcFromTimeIntervals(final OffsetDateTime targetDateTime,
+                                               final List<TTimeInterval> tTimeIntervals,
+                                               final TPeriod tPeriod) {
+        List<TTimeInterval> matchingTimeIntervals = tTimeIntervals.stream()
+            .filter(tTimeInterval -> DateTimeUtil.isTargetDateInInterval(targetDateTime, tTimeInterval.getTini(), tTimeInterval.getTfin()))
+            .toList();
+
+        if (matchingTimeIntervals.size() == 2 && DateTimeUtil.isLongClockChangePeriod(tPeriod.getDtini(), tPeriod.getDtfin())) {
+            if (targetDateTime.getDayOfMonth() == OffsetDateTime.parse(tPeriod.getDtini()).getDayOfMonth()) {
+                matchingTimeIntervals = List.of(matchingTimeIntervals.getFirst());
+            } else {
+                matchingTimeIntervals = List.of(matchingTimeIntervals.getLast());
+            }
+        }
+
+        return matchingTimeIntervals.stream()
+            .collect(toOptional())
+            .map(TTimeInterval::getNTC)
+            .orElse(Collections.emptyList());
     }
 
     static List<TNTC> getTNtcFromTimeIntervals(OffsetDateTime targetDateTime, List<TTimeInterval> tTimeIntervals) {

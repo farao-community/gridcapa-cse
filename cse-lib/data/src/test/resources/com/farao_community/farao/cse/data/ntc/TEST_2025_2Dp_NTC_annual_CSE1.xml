@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NTC_annual_document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" DtdVersion="4" DtdRelease="0" xsi:noNamespaceSchemaLocation="ntc-document.xsd">
+	<DocumentIdentification v="2025_2Dp_NTC_annual_CSE" />
+	<DocumentVersion v="01" />
+	<DocumentType v="A36" />
+	<ProcessType v="A12" />
+	<SenderIdentification v="xxx" codingScheme="A01" />
+	<SenderRole v="A04" />
+	<ReceiverIdentification v="xxx" codingScheme="A01" />
+	<ReceiverRole v="A04" />
+	<CreationDateTime v="2025-02-24T10:49:31Z" />
+	<Domain v="10YDOM-1001A061T" codingScheme="A01" />
+	<NTCvaluesImport>
+		<BasicDays>
+			<Period dtini="2025-10-19T22:00Z" dtfin="2025-10-25T22:00Z" description="NTC 2025-10-19T22:00Z/2025-10-25T22:00Z">
+				<DayOfWeek description="Everyday" daynum="0">
+					<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+						<NTC v="0" country="AT" />
+						<NTC v="0" country="CH" />
+						<NTC v="0" country="FR" />
+						<NTC v="0" country="SI" />
+					</TimeInterval>
+					<TimeInterval tini="T00:00Z" tfin="T21:00Z">
+						<NTC v="0" country="AT" />
+						<NTC v="0" country="CH" />
+						<NTC v="0" country="FR" />
+						<NTC v="0" country="SI" />
+					</TimeInterval>
+					<TimeInterval tini="T21:00Z" tfin="T22:00Z">
+						<NTC v="11" country="AT" />
+						<NTC v="12" country="CH" />
+						<NTC v="13" country="FR" />
+						<NTC v="14" country="SI" />
+					</TimeInterval>
+				</DayOfWeek>
+			</Period>
+			<Period dtini="2025-10-25T22:00Z" dtfin="2025-10-26T23:00Z" description="NTC 2025-10-25T22:00Z/2025-10-25T23:00Z">
+				<DayOfWeek description="Everyday" daynum="0">
+					<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+						<NTC v="21" country="AT" />
+						<NTC v="22" country="CH" />
+						<NTC v="23" country="FR" />
+						<NTC v="24" country="SI" />
+					</TimeInterval>
+					<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+						<NTC v="31" country="AT" />
+						<NTC v="32" country="CH" />
+						<NTC v="33" country="FR" />
+						<NTC v="34" country="SI" />
+					</TimeInterval>
+				</DayOfWeek>
+			</Period>
+			<Period dtini="2025-10-26T23:00Z" dtfin="2025-10-31T23:00Z" description="NTC 2025-10-26T23:00Z/2025-10-31T23:00Z">
+				<DayOfWeek description="Everyday" daynum="0">
+					<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+						<NTC v="41" country="AT" />
+						<NTC v="42" country="CH" />
+						<NTC v="43" country="FR" />
+						<NTC v="44" country="SI" />
+					</TimeInterval>
+					<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+						<NTC v="51" country="AT" />
+						<NTC v="52" country="CH" />
+						<NTC v="53" country="FR" />
+						<NTC v="54" country="SI" />
+					</TimeInterval>
+				</DayOfWeek>
+			</Period>
+		</BasicDays>
+		<SpecialLines>
+			<Line name="line-1" n_to="IT" n_from="CH" modelized="false" fixed_flow="true" code="line-1" c_ntc="CH" merchant_line="false">
+				<Period dtini="2025-09-30T22:00Z" dtfin="2025-10-25T22:00Z" description="line-1">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="10" type="absolute" />
+							<FixedFlow v="10" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T22:00Z">
+							<NTC v="20" type="absolute" />
+							<FixedFlow v="20" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-25T22:00Z" dtfin="2025-10-26T23:00Z" description="line-1">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="30" type="absolute" />
+							<FixedFlow v="30" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+							<NTC v="40" type="absolute" />
+							<FixedFlow v="40" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-26T23:00Z" dtfin="2025-12-31T23:00Z" description="line-1">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+							<NTC v="50" type="absolute" />
+							<FixedFlow v="50" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+							<NTC v="60" type="absolute" />
+							<FixedFlow v="60" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+			</Line>
+			<Line name="line-2" n_to="IT" n_from="CH" modelized="false" fixed_flow="true" code="line-2" c_ntc="CH" merchant_line="false">
+				<Period dtini="2025-09-30T22:00Z" dtfin="2025-10-25T22:00Z" description="line-2">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="11" type="absolute" />
+							<FixedFlow v="11" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T22:00Z">
+							<NTC v="21" type="absolute" />
+							<FixedFlow v="21" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-25T22:00Z" dtfin="2025-10-26T23:00Z" description="line-2">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="31" type="absolute" />
+							<FixedFlow v="31" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+							<NTC v="41" type="absolute" />
+							<FixedFlow v="41" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-26T23:00Z" dtfin="2025-12-31T23:00Z" description="line-2">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+							<NTC v="51" type="absolute" />
+							<FixedFlow v="51" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+							<NTC v="61" type="absolute" />
+							<FixedFlow v="61" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+			</Line>
+			<Line name="line-3" n_to="IT" n_from="CH" modelized="true" fixed_flow="true" code="line-3" c_ntc="CH" merchant_line="false">
+				<Period dtini="2025-09-30T22:00Z" dtfin="2025-10-25T22:00Z" description="line-3">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="12" type="absolute" />
+							<FixedFlow v="12" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T22:00Z">
+							<NTC v="22" type="absolute" />
+							<FixedFlow v="22" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-25T22:00Z" dtfin="2025-10-26T23:00Z" description="line-3">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="32" type="absolute" />
+							<FixedFlow v="32" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+							<NTC v="42" type="absolute" />
+							<FixedFlow v="42" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-26T23:00Z" dtfin="2025-12-31T23:00Z" description="line-3">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+							<NTC v="52" type="absolute" />
+							<FixedFlow v="52" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+							<NTC v="62" type="absolute" />
+							<FixedFlow v="62" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+			</Line>
+			<Line name="line-4" n_to="IT" n_from="AT" modelized="false" fixed_flow="true" code="line-4" c_ntc="AT" merchant_line="true">
+				<Period dtini="2025-10-19T22:00Z" dtfin="2025-10-25T22:00Z" description="line-4">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="13" type="absolute" />
+							<FixedFlow v="13" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T05:00Z">
+							<NTC v="23" type="absolute" />
+							<FixedFlow v="23" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T05:00Z" tfin="T21:00Z">
+							<NTC v="33" type="absolute" />
+							<FixedFlow v="33" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T21:00Z" tfin="T22:00Z">
+							<NTC v="43" type="absolute" />
+							<FixedFlow v="43" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-25T22:00Z" dtfin="2025-10-26T23:00Z" description="line-4">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="53" type="absolute" />
+							<FixedFlow v="53" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+							<NTC v="63" type="absolute" />
+							<FixedFlow v="63" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-26T23:00Z" dtfin="2025-10-31T23:00Z" description="line-4">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+							<NTC v="73" type="absolute" />
+							<FixedFlow v="73" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T06:00Z">
+							<NTC v="83" type="absolute" />
+							<FixedFlow v="83" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T06:00Z" tfin="T22:00Z">
+							<NTC v="93" type="absolute" />
+							<FixedFlow v="93" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T22:00Z" tfin="T23:00Z">
+							<NTC v="103" type="absolute" />
+							<FixedFlow v="103" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+			</Line>
+			<Line name="line-5" n_to="IT" n_from="AT" modelized="false" fixed_flow="true" code="line-5" c_ntc="AT" merchant_line="false">
+				<Period dtini="2025-09-30T22:00Z" dtfin="2025-10-25T22:00Z" description="line-5">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="14" type="absolute" />
+							<FixedFlow v="14" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T22:00Z">
+							<NTC v="24" type="absolute" />
+							<FixedFlow v="24" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-25T22:00Z" dtfin="2025-10-26T23:00Z" description="line-5">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T22:00Z" tfin="T24:00Z">
+							<NTC v="34" type="absolute" />
+							<FixedFlow v="34" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+							<NTC v="44" type="absolute" />
+							<FixedFlow v="44" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+				<Period dtini="2025-10-26T23:00Z" dtfin="2025-12-31T23:00Z" description="line-5">
+					<DayOfWeek description="Everyday" daynum="0">
+						<TimeInterval tini="T23:00Z" tfin="T24:00Z">
+							<NTC v="54" type="absolute" />
+							<FixedFlow v="54" type="absolute" />
+						</TimeInterval>
+						<TimeInterval tini="T00:00Z" tfin="T23:00Z">
+							<NTC v="64" type="absolute" />
+							<FixedFlow v="64" type="absolute" />
+						</TimeInterval>
+					</DayOfWeek>
+				</Period>
+			</Line>
+		</SpecialLines>
+	</NTCvaluesImport>
+	<TRM v="42" />
+</NTC_annual_document>

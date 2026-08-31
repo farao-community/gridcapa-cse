@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NTC_reductions_document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" DtdVersion="4" DtdRelease="0" xsi:noNamespaceSchemaLocation="ntc-document.xsd">
+	<DocumentIdentification v="20251026_2D7_NTC_reductions_CSE" />
+	<DocumentVersion v="01" />
+	<DocumentType v="A36" />
+	<ProcessType v="A15" />
+	<SenderIdentification v="xxx" codingScheme="A01" />
+	<SenderRole v="A04" />
+	<ReceiverIdentification v="xxx" codingScheme="A01" />
+	<ReceiverRole v="A36" />
+	<CreationDateTime v="2025-10-24T16:48:30Z" />
+	<Domain v="10YDOM-1001A061T" codingScheme="A01" />
+	<NTCreductionsImport>
+	</NTCreductionsImport>
+</NTC_reductions_document>
