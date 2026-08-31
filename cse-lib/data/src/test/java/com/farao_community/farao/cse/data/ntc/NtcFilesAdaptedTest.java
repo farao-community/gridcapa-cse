@@ -10,10 +10,12 @@ import com.farao_community.farao.cse.data.DataUtil;
 import com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCAnnualDocument;
 import com.farao_community.farao.cse.data.xsd.ntc_adapted.NTCReductionsDocument;
 import com.farao_community.farao.cse.runner.api.exception.CseInvalidDataException;
+import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
@@ -64,6 +66,58 @@ class NtcFilesAdaptedTest {
                     new DailyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)), true)
                     .getFlowOnFixedFlowLines();
             assertEquals(75, fixedFlowLines.get(MENDRISIO_CAGNO_ID), DOUBLE_PRECISION);
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException("Impossible to create NTC", e);
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({"2025-10-25T21:30Z, 67.0, 63.0"})
+    @CsvSource({"2025-10-25T22:30Z, 87.0, 93.0"})
+    @CsvSource({"2025-10-25T23:30Z, 87.0, 93.0"})
+    @CsvSource({"2025-10-26T22:30Z, 107.0, 123.0"})
+    @CsvSource({"2025-10-26T23:30Z, 127.0, 153.0"})
+    void testGetFlowByCountry(final String target, final double expectedAt, final double expectedCh) { // SpecialLines
+        final OffsetDateTime targetDateTime = OffsetDateTime.parse(target);
+        try (final InputStream yearlyData = getClass().getResourceAsStream("TEST_2025_2Dp_NTC_annual_CSE1.xml");
+             final InputStream dailyData = getClass().getResourceAsStream("TEST_20251026_2D7_NTC_reductions_CSE1.xml")
+        ) {
+            final Ntc ntc = new Ntc(
+                new YearlyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
+                new DailyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)),
+                true
+            );
+
+            final Map<String, Double> flowByCountry = ntc.getFlowPerCountryAdapted(l -> true);
+            assertEquals(expectedAt, flowByCountry.get("AT"));
+            assertEquals(expectedCh, flowByCountry.get("CH"));
+        } catch (IOException | JAXBException e) {
+            throw new CseInvalidDataException("Impossible to create NTC", e);
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({"2025-10-25T21:30Z, 11.0, 12.0, 13.0, 14.0"})
+    @CsvSource({"2025-10-25T22:30Z, 21.0, 22.0, 23.0, 24.0"})
+    @CsvSource({"2025-10-25T23:30Z, 21.0, 22.0, 23.0, 24.0"})
+    @CsvSource({"2025-10-26T22:30Z, 31.0, 32.0, 33.0, 34.0"})
+    @CsvSource({"2025-10-26T23:30Z, 41.0, 42.0, 43.0, 44.0"})
+    void testGetNtcByCountry(final String target, final double expectedAt, final double expectedCh, final double expectedFr, final double expectedSi) { // BasicDays
+        final OffsetDateTime targetDateTime = OffsetDateTime.parse(target);
+        try (final InputStream yearlyData = getClass().getResourceAsStream("TEST_2025_2Dp_NTC_annual_CSE1.xml");
+             final InputStream dailyData = getClass().getResourceAsStream("TEST_20251026_2D7_NTC_reductions_CSE1.xml")
+        ) {
+            final Ntc ntc = new Ntc(
+                new YearlyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(yearlyData, NTCAnnualDocument.class)),
+                new DailyNtcDocumentAdapted(targetDateTime, DataUtil.unmarshalFromInputStream(dailyData, NTCReductionsDocument.class)),
+                true
+            );
+
+            final Map<String, Double> ntcByCountry = ntc.getNtcPerCountry();
+            assertEquals(expectedAt, ntcByCountry.get("AT"));
+            assertEquals(expectedCh, ntcByCountry.get("CH"));
+            assertEquals(expectedFr, ntcByCountry.get("FR"));
+            assertEquals(expectedSi, ntcByCountry.get("SI"));
         } catch (IOException | JAXBException e) {
             throw new CseInvalidDataException("Impossible to create NTC", e);
         }
