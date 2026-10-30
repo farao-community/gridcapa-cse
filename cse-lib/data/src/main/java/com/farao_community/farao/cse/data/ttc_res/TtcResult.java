@@ -312,8 +312,8 @@ public final class TtcResult {
         FlowCnec worstCnec = CnecUtil.getWorstCnec(cracResultsHelper.getCrac(), cracResultsHelper.getRaoResult());
         MonitoredElement monitoredElement = new MonitoredElement();
         Element mostLimitingElement = new Element();
-        fillCommonElementInformation(mostLimitingElement, worstCnec.getName(), worstCnec.getNetworkElement().getName(),
-            cracResultsHelper.getAreaFrom(worstCnec.getNetworkElement()), cracResultsHelper.getAreaTo(worstCnec.getNetworkElement()),
+        fillCommonElementInformation(mostLimitingElement, worstCnec.getName(), worstCnec.getNetworkElementId(),
+            cracResultsHelper.getAreaFrom(worstCnec.getNetworkElementId()), cracResultsHelper.getAreaTo(worstCnec.getNetworkElementId()),
             worstCnec.isOptimized());
         if (worstCnec.getState().isPreventive()) {
             outageName.setV(CracResultsHelper.PREVENTIVE_OUTAGE_NAME);
@@ -373,9 +373,9 @@ public final class TtcResult {
         Code outageElementCode = new Code();
         outageElementCode.setV(contingencyElement.getId());
         Areafrom outageAreaFrom = new Areafrom();
-        outageAreaFrom.setV(cracResultsHelper.getAreaFrom(contingencyElement));
+        outageAreaFrom.setV(cracResultsHelper.getAreaFrom(contingencyElement.getId()));
         Areato outageAreaTo = new Areato();
-        outageAreaTo.setV(cracResultsHelper.getAreaTo(contingencyElement));
+        outageAreaTo.setV(cracResultsHelper.getAreaTo(contingencyElement.getId()));
         outageElement.setCode(outageElementCode);
         outageElement.setAreafrom(outageAreaFrom);
         outageElement.setAreato(outageAreaTo);
