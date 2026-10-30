@@ -17,7 +17,6 @@ import com.powsybl.openrao.commons.Unit;
 import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.crac.api.Identifiable;
 import com.powsybl.openrao.data.crac.api.Instant;
-import com.powsybl.openrao.data.crac.api.NetworkElement;
 import com.powsybl.openrao.data.crac.api.cnec.FlowCnec;
 import com.powsybl.openrao.data.crac.api.rangeaction.InjectionRangeAction;
 import com.powsybl.openrao.data.crac.api.rangeaction.PstRangeAction;
@@ -210,12 +209,12 @@ public class CracResultsHelper {
     }
 
     private CnecCommon makeCnecCommon(FlowCnec cnec, NativeBranch nativeBranch, boolean selected, boolean isMonitored) {
-        NetworkElement networkElement = cnec.getNetworkElement();
+        final String networkElementId = cnec.getNetworkElementId();
         CnecCommon cnecCommon = new CnecCommon();
         cnecCommon.setName(cnec.getName());
         cnecCommon.setCode(makeCode(nativeBranch));
-        cnecCommon.setAreaFrom(getAreaFrom(networkElement, nativeBranch));
-        cnecCommon.setAreaTo(getAreaTo(networkElement, nativeBranch));
+        cnecCommon.setAreaFrom(getAreaFrom(networkElementId, nativeBranch));
+        cnecCommon.setAreaTo(getAreaTo(networkElementId, nativeBranch));
         cnecCommon.setNodeFrom(nativeBranch.getFrom());
         cnecCommon.setNodeTo(nativeBranch.getTo());
         cnecCommon.setOrderCode(nativeBranch.getSuffix());
@@ -259,48 +258,32 @@ public class CracResultsHelper {
         return new FlowCnecResult(flow, iMax);
     }
 
-    public String getAreaFrom(ContingencyElement contingencyElement) {
-        String nodeFrom = getNodeFrom(contingencyElement);
-        String nodeTo = getNodeTo(contingencyElement);
+    public String getAreaFrom(final String contingencyElementId) {
+        String nodeFrom = getNodeFrom(contingencyElementId);
+        String nodeTo = getNodeTo(contingencyElementId);
         String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(contingencyElement.getId(), countryFrom, countryTo);
+        return getCountryOfNode(contingencyElementId, countryFrom, countryTo);
     }
 
-    public String getAreaTo(ContingencyElement contingencyElement) {
-        String nodeFrom = getNodeFrom(contingencyElement);
-        String nodeTo = getNodeTo(contingencyElement);
+    public String getAreaTo(final String  contingencyElementId) {
+        String nodeFrom = getNodeFrom(contingencyElementId);
+        String nodeTo = getNodeTo(contingencyElementId);
         String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(contingencyElement.getId(), countryTo, countryFrom);
+        return getCountryOfNode(contingencyElementId, countryTo, countryFrom);
     }
 
-    public String getAreaFrom(NetworkElement networkElement) {
-        String nodeFrom = getNodeFrom(networkElement);
-        String nodeTo = getNodeTo(networkElement);
-        String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
-        String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(networkElement.getId(), countryFrom, countryTo);
-    }
-
-    public String getAreaTo(NetworkElement networkElement) {
-        String nodeFrom = getNodeFrom(networkElement);
-        String nodeTo = getNodeTo(networkElement);
-        String countryFrom = UcteCountryCode.fromUcteCode(nodeFrom.charAt(0)).toString();
-        String countryTo = UcteCountryCode.fromUcteCode(nodeTo.charAt(0)).toString();
-        return getCountryOfNode(networkElement.getId(), countryTo, countryFrom);
-    }
-
-    private String getAreaFrom(NetworkElement networkElement, NativeBranch nativeBranch) {
+    private String getAreaFrom(final String networkElementId, final NativeBranch nativeBranch) {
         String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
-        return getCountryOfNode(networkElement.getId(), countryFrom, countryTo);
+        return getCountryOfNode(networkElementId, countryFrom, countryTo);
     }
 
-    private String getAreaTo(NetworkElement networkElement, NativeBranch nativeBranch) {
+    private String getAreaTo(final String networkElementId, final NativeBranch nativeBranch) {
         String countryFrom = UcteCountryCode.fromUcteCode(nativeBranch.getFrom().charAt(0)).toString();
         String countryTo = UcteCountryCode.fromUcteCode(nativeBranch.getTo().charAt(0)).toString();
-        return getCountryOfNode(networkElement.getId(), countryTo, countryFrom);
+        return getCountryOfNode(networkElementId, countryTo, countryFrom);
     }
 
     private String getCountryOfNode(String elementId, String nodeCountry, String destinationNodeCountry) {
@@ -342,20 +325,12 @@ public class CracResultsHelper {
         }
     }
 
-    public String getNodeFrom(NetworkElement networkElement) {
-        return networkElement.getId().substring(0, 8);
+    public String getNodeFrom(final String contingencyElementId) {
+        return contingencyElementId.substring(0, 8);
     }
 
-    public String getNodeTo(NetworkElement networkElement) {
-        return networkElement.getId().substring(9, 17);
-    }
-
-    public String getNodeFrom(ContingencyElement contingencyElement) {
-        return contingencyElement.getId().substring(0, 8);
-    }
-
-    public String getNodeTo(ContingencyElement contingencyElement) {
-        return contingencyElement.getId().substring(9, 17);
+    public String getNodeTo(final String contingencyElementId) {
+        return contingencyElementId.substring(9, 17);
     }
 
     public String getOrderCode(ContingencyElement contingencyElement) {

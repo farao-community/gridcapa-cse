@@ -33,7 +33,7 @@ class PstInitializerTest {
             Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
             network);
 
-        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
+        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElementId()).getPhaseTapChanger();
         assertEquals(-5, ptc.getTapPosition());
 
         PstInitializer.withDefaultLogger().initializePsts(network, crac);
@@ -51,7 +51,7 @@ class PstInitializerTest {
             Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
             network);
 
-        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
+        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElementId()).getPhaseTapChanger();
         assertEquals(5, ptc.getTapPosition());
 
         PstInitializer.withDefaultLogger().initializePsts(network, crac);
@@ -69,7 +69,7 @@ class PstInitializerTest {
                 Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
                 network);
 
-        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
+        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElementId()).getPhaseTapChanger();
         assertEquals(4, ptc.getTapPosition());
 
         PstInitializer.withDefaultLogger().initializePsts(network, crac);
@@ -87,7 +87,7 @@ class PstInitializerTest {
                 Objects.requireNonNull(getClass().getResourceAsStream(cracFilename)),
                 network);
 
-        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElement().getId()).getPhaseTapChanger();
+        PhaseTapChanger ptc = network.getTwoWindingsTransformer(crac.getPstRangeAction("PST_PST_RANGE_BBE2AA1  BBE3AA1  1").getNetworkElementId()).getPhaseTapChanger();
         assertEquals(-4, ptc.getTapPosition());
 
         PstInitializer.withDefaultLogger().initializePsts(network, crac);

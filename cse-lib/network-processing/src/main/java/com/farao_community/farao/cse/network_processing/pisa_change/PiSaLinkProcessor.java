@@ -13,7 +13,6 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.extensions.ActivePowerControl;
 import com.powsybl.iidm.network.impl.extensions.ActivePowerControlImpl;
 import com.powsybl.openrao.data.crac.api.Crac;
-import com.powsybl.openrao.data.crac.api.Identifiable;
 import com.powsybl.openrao.data.crac.api.rangeaction.InjectionRangeAction;
 
 import java.util.List;
@@ -130,10 +129,7 @@ public class PiSaLinkProcessor {
             .collect(Collectors.toSet());
 
         return crac.getInjectionRangeActions().stream()
-            .filter(injectionRangeAction -> injectionRangeAction.getInjectionDistributionKeys().keySet().stream()
-                .map(Identifiable::getId)
-                .collect(Collectors.toSet())
-                .containsAll(fictiveGeneratorIds))
+            .filter(injectionRangeAction -> injectionRangeAction.getInjectionDistributionKeysIds().keySet().containsAll(fictiveGeneratorIds))
             .collect(Collectors.toSet());
     }
 
