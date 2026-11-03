@@ -97,8 +97,8 @@ public final class TtcRao {
             contingency.getElements().forEach(contingencyElement -> {
                 Branch branch = new Branch();
                 branch.setCode(getStringValue(cracResultsHelper.getOrderCode(contingencyElement)));
-                branch.setFromNode(getStringValue(cracResultsHelper.getNodeFrom(contingencyElement)));
-                branch.setToNode(getStringValue(cracResultsHelper.getNodeTo(contingencyElement)));
+                branch.setFromNode(getStringValue(cracResultsHelper.getNodeFrom(contingencyElement.getId())));
+                branch.setToNode(getStringValue(cracResultsHelper.getNodeTo(contingencyElement.getId())));
                 outage.getBranch().add(branch);
             });
 

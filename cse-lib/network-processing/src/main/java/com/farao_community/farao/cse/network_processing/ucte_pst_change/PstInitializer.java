@@ -43,7 +43,7 @@ public final class PstInitializer {
             .filter(PstRangeAction.class::isInstance)
             .map(PstRangeAction.class::cast)
             .forEach(pstRangeAction -> {
-                PhaseTapChanger ptc = network.getTwoWindingsTransformer(pstRangeAction.getNetworkElement().getId()).getPhaseTapChanger();
+                PhaseTapChanger ptc = network.getTwoWindingsTransformer(pstRangeAction.getNetworkElementId()).getPhaseTapChanger();
                 if (!pstRangeAction.getRanges().stream().allMatch(r -> ptc.getTapPosition() >= r.getMinTap() && ptc.getTapPosition() <= r.getMaxTap())) {
                     int newTapPosition = pstRangeAction.getRanges().stream()
                         .map(tr -> Integer.max(tr.getMinTap(), ptc.getLowTapPosition()))
@@ -51,7 +51,7 @@ public final class PstInitializer {
                         .orElse(pstRangeAction.getInitialTap());
                     preprocessedPsts.put(pstRangeAction.getId(), newTapPosition);
                     logger.warn("PST tap has been changed from {} to {} because it was initially out of CRAC ranges: {}",
-                        ptc.getTapPosition(), newTapPosition, pstRangeAction.getNetworkElement().getId());
+                        ptc.getTapPosition(), newTapPosition, pstRangeAction.getNetworkElementId());
                     ptc.setTapPosition(newTapPosition);
                 }
             });
